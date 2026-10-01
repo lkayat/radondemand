@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Body MRI Teaching Library — UH Radiology</title>
+<meta name="description" content="Interactive body MRI lessons for radiology residents: subtraction, Dixon and fat–iron quantification, diffusion, and MR Fingerprinting.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧲</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8EDF0;        /* lightbox */
+  --surface:#F5F7F8;
+  --ink:#16212B;       /* film base */
+  --muted:#56646F;
+  --rule:#C3CDD4;
+  --accent:#1D5C86;    /* contrast blue */
+  --phantom-bg:#000;
+  --serif:"Newsreader", Georgia, "Times New Roman", serif;
+  --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A21; --surface:#18222B; --ink:#E3E9ED; --muted:#98A6B0; --rule:#2C3A45; --accent:#7DB3D8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A21; --surface:#18222B; --ink:#E3E9ED; --muted:#98A6B0; --rule:#2C3A45; --accent:#7DB3D8;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:72rem;margin:0 auto;padding:0 1.5rem}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,26rem);gap:3rem;align-items:center;padding:4.5rem 0 3.5rem}
+.org{font-size:.9375rem;color:var(--muted);margin:0 0 1.75rem}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.5rem,5.4vw,4.25rem);line-height:1.04;letter-spacing:-.015em;margin:0 0 1.5rem;max-width:12ch}
+.lede{font-size:1.1875rem;max-width:34rem;margin:0 0 1rem}
+.lede-2{color:var(--muted);max-width:34rem;margin:0}
+
+.viewer{margin:0}
+.screen{position:relative;background:var(--phantom-bg);aspect-ratio:1/1;border-radius:3px;overflow:hidden;touch-action:none;cursor:crosshair}
+.screen canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;color:#E8D27A;font:500 .8125rem/1.35 var(--sans);font-variant-numeric:tabular-nums;pointer-events:none;text-shadow:0 1px 2px #000}
+.ov.tl{top:.6rem;left:.75rem}
+.ov.br{bottom:.6rem;right:.75rem;text-align:right}
+.viewer figcaption{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-top:.85rem;font-size:.9375rem;color:var(--muted)}
+.viewer button{font:inherit;font-size:.875rem;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:3px;padding:.3rem .7rem;cursor:pointer;flex:none}
+.viewer button:hover{border-color:var(--ink)}
+
+/* Lessons */
+.lessons{border-top:1px solid var(--rule);padding:3rem 0 4rem}
+.lessons-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+h2{font-family:var(--serif);font-weight:400;font-size:2rem;line-height:1.15;margin:0}
+.count{color:var(--muted);font-size:.9375rem;margin:0}
+.group{margin-top:2.25rem}
+h3{font-size:1rem;font-weight:600;color:var(--muted);margin:0 0 .25rem}
+.lesson{display:grid;grid-template-columns:4.5rem minmax(0,1fr) auto;gap:1.5rem;align-items:start;padding:1.5rem 0;border-bottom:1px solid var(--rule)}
+.lesson svg{width:4.5rem;height:4.5rem;display:block;background:#000;border-radius:3px}
+.lesson h4{font-family:var(--serif);font-weight:500;font-size:1.4375rem;line-height:1.2;margin:0 0 .35rem}
+.lesson h4 a{color:var(--ink);text-decoration:none}
+.lesson h4 a:hover{color:var(--accent)}
+.lesson p{margin:0;max-width:44rem}
+.lesson .covers{color:var(--muted);font-size:.9375rem;margin-top:.45rem}
+.lesson .note{font-size:.9375rem;margin-top:.45rem;color:var(--accent)}
+.open{align-self:center;white-space:nowrap;font-weight:600;font-size:.9375rem;text-decoration:none;border:1px solid var(--accent);border-radius:3px;padding:.5rem .9rem}
+.open:hover{background:var(--accent);color:var(--surface)}
+
+footer{border-top:1px solid var(--rule);padding:2rem 0 3rem;color:var(--muted);font-size:.9375rem}
+footer p{margin:.25rem 0;max-width:44rem}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;gap:2.5rem;padding-top:3rem}
+  .viewer{max-width:28rem}
+}
+@media (max-width:560px){
+  .lesson{grid-template-columns:3.5rem minmax(0,1fr);gap:1rem}
+  .lesson svg{width:3.5rem;height:3.5rem}
+  .open{grid-column:2;justify-self:start}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <p class="org">Department of Radiology, University Hospitals Cleveland Medical Center</p>
+      <h1>Body MRI teaching library</h1>
+      <p class="lede">Interactive phantoms and simulations for radiology residents. Each lesson runs in your browser: change a parameter and watch the image respond.</p>
+      <p class="lede-2">Built around the questions that come up at the workstation — why a subtraction map lies, what an opposed-phase drop actually means, where an ADC number comes from.</p>
+    </div>
+
+    <figure class="viewer">
+      <div class="screen" id="screen">
+        <canvas id="phantom" width="256" height="256" tabindex="0" role="img"
+          aria-label="Synthetic axial T1-weighted abdomen phantom. Drag to adjust window and level, or use the arrow keys."></canvas>
+        <div class="ov tl">Ax T1 phantom<br>Upper abdomen</div>
+        <div class="ov br" id="wl">W 900<br>L 450</div>
+      </div>
+      <figcaption>
+        <span>Drag on the image to window and level: sideways for width, up and down for level. Arrow keys work too.</span>
+        <button type="button" id="reset">Reset</button>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="lessons" aria-labelledby="lessons-title">
+    <div class="lessons-head">
+      <h2 id="lessons-title">Lessons</h2>
+      <p class="count" id="count"></p>
+    </div>
+    <div id="list"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Department of Radiology, University Hospitals Cleveland Medical Center, and Case Western Reserve University School of Medicine.</p>
+    <p>All images are synthetic phantoms built for teaching. New lessons are added as they're built.</p>
+  </div>
+</footer>
+
+<script>
+/* ---------- Lesson catalogue: add new lessons here ---------- */
+const GROUPS = [
+  { name: "Contrast and subtraction", lessons: [
+    { title: "Subtraction maps on body MRI",
+      url: "lessons/subtraction-maps/",
+      desc: "Build a pre/post-contrast subtraction from a phantom, then break it with misregistration and signal mismatch.",
+      covers: "Subtraction basics, misregistration artifact, mismatch pitfalls, how to QA a subtraction map",
+      glyph: "subtraction" }
+  ]},
+  { name: "Chemical shift and fat–iron quantification", lessons: [
+    { title: "In/opposed phase, multi-echo Dixon and fat–iron quantification",
+      url: "lessons/dixon-fat-iron/",
+      desc: "A synthetic liver-hilum slice with an angiomyolipoma, hepatic cyst, steatotic hepatocellular adenoma and adrenal adenoma.",
+      covers: "Steatosis, organ iron overload, pneumobilia, metal, calcification and hemosiderin, q-Dixon / IDEAL-IQ style PDFF and R2*",
+      glyph: "dixon" }
+  ]},
+  { name: "Diffusion", lessons: [
+    { title: "DWI, ADC and calculated b-values",
+      url: "lessons/dwi-adc/",
+      desc: "Signal-versus-b curves from linear to log scale, tangents as local ADC, and the slope-triangle ADC formula.",
+      covers: "Upper-abdomen slice, prostate with a peripheral-zone lesion, PI-RADS v2.1 calculated b1400 and b2000",
+      glyph: "dwi" }
+  ]},
+  { name: "Quantitative MRI", lessons: [
+    { title: "MR Fingerprinting",
+      url: "lessons/mr-fingerprinting/",
+      desc: "Prostate FISP-MRF from acquisition to maps: EPG dictionary, SVD compression and the matching landscape.",
+      covers: "T1, T2, M0, B1 and synthetic maps, Monte Carlo precision versus conventional IR and multi-echo spin-echo fitting",
+      glyph: "mrf" },
+    { title: "Liver MR Fingerprinting for diffuse liver disease",
+      url: "lessons/liver-mrf/",
+      desc: "Multi-echo water–fat MRF with R2*, water T1 and T2, PDFF and iron-corrected T1.",
+      covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
+      note: "Companion to MR Fingerprinting — start there.",
+      glyph: "liver" }
+  ]}
+];
+
+/* Small monochrome thumbnails, drawn like tiny images */
+const G = {
+  subtraction: `<circle cx="34" cy="38" r="17" fill="#8a8a8a"/><circle cx="40" cy="34" r="17" fill="none" stroke="#e6e6e6" stroke-width="2.5"/>`,
+  dixon: `<path d="M36 18a18 18 0 0 0 0 36z" fill="#d9d9d9"/><path d="M36 18a18 18 0 0 1 0 36z" fill="#4a4a4a"/><circle cx="36" cy="36" r="18" fill="none" stroke="#999" stroke-width="1"/>`,
+  dwi: `<path d="M10 14 C24 40 38 52 62 58" fill="none" stroke="#e6e6e6" stroke-width="2.5"/><path d="M10 14 C18 46 30 58 62 62" fill="none" stroke="#888" stroke-width="2"/><path d="M10 10V62H64" fill="none" stroke="#555" stroke-width="1.5"/>`,
+  mrf: `<polyline fill="none" stroke="#e6e6e6" stroke-width="1.8" points="6,40 10,22 14,50 18,30 22,46 26,26 30,42 34,34 38,48 42,28 46,40 50,32 54,44 58,36 62,40 66,38"/>`,
+  liver: `<path d="M12 30c6-12 30-16 48-10 6 2 6 10 0 14-10 7-22 16-34 18-10 2-18-10-14-22z" fill="#9a9a9a"/><g fill="#e6e6e6"><circle cx="24" cy="30" r="1.6"/><circle cx="34" cy="28" r="1.6"/><circle cx="44" cy="27" r="1.6"/><circle cx="28" cy="40" r="1.6"/><circle cx="38" cy="37" r="1.6"/><circle cx="50" cy="32" r="1.6"/></g>`
+};
+
+(function renderLessons(){
+  const list = document.getElementById("list");
+  let n = 0;
+  for (const g of GROUPS){
+    const sec = document.createElement("div");
+    sec.className = "group";
+    sec.innerHTML = `<h3>${g.name}</h3>` + g.lessons.map(l => {
+      n++;
+      return `<article class="lesson">
+        <svg viewBox="0 0 72 72" aria-hidden="true">${G[l.glyph]||""}</svg>
+        <div>
+          <h4><a href="${l.url}">${l.title}</a></h4>
+          <p>${l.desc}</p>
+          <p class="covers">Covers: ${l.covers}</p>
+          ${l.note ? `<p class="note">${l.note}</p>` : ""}
+        </div>
+        <a class="open" href="${l.url}" aria-label="Open lesson: ${l.title}">Open lesson</a>
+      </article>`;
+    }).join("");
+    list.appendChild(sec);
+  }
+  document.getElementById("count").textContent = `${n} lessons, more on the way`;
+})();
+
+/* ---------- Window/level phantom ---------- */
+(function phantom(){
+  const N = 256, cv = document.getElementById("phantom"), ctx = cv.getContext("2d");
+  const img = ctx.createImageData(N, N), base = new Float32Array(N*N);
+  const ss = (a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+  function ell(x,y,cx,cy,rx,ry,rot=0){
+    const c=Math.cos(rot), s=Math.sin(rot), dx=x-cx, dy=y-cy;
+    const u=(dx*c+dy*s)/rx, v=(-dx*s+dy*c)/ry;
+    return 1-ss(.93,1.07,Math.sqrt(u*u+v*v));
+  }
+  // Seeded RNG so the phantom looks the same every visit
+  let seed = 7; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+  const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+
+  for (let y=0;y<N;y++) for (let x=0;x<N;x++){
+    let v = 0;
+    const body = ell(x,y,128,132,112,84);
+    v = 820*body;                                       // subcutaneous fat
+    const inner = ell(x,y,128,134,102,74);
+    v += (300-v)*ell(x,y,128,134,104,76)*(1-inner);     // abdominal wall muscle
+    v += (700-v)*inner;                                 // visceral fat
+    v += (300-v)*ell(x,y,100,186,22,15);                // paraspinal muscles
+    v += (300-v)*ell(x,y,156,186,22,15);
+    const liver = ell(x,y,84,112,54,44,-.3)*inner;
+    v += (420-v)*liver;
+    v += (215-v)*ell(x,y,70,98,10,9)*liver;             // focal lesion
+    v += (140-v)*ell(x,y,112,132,9,7)*inner;            // gallbladder
+    v += (250-v)*ell(x,y,166,92,24,17,.2)*inner;        // stomach
+    v += (370-v)*ell(x,y,198,132,15,28,.45)*inner;      // spleen
+    v += (460-v)*ell(x,y,142,130,24,6,-.2)*inner;       // pancreas
+    for (const [cx,cy] of [[150,108],[132,104],[176,112],[124,148]]) v += (380-v)*ell(x,y,cx,cy,7,6)*inner; // bowel
+    for (const kx of [80,176]){                         // kidneys
+      const k = ell(x,y,kx,164,14,18,kx<128?.35:-.35)*inner;
+      v += (470-v)*k; v += (320-v)*ell(x,y,kx,164,8,12,kx<128?.35:-.35)*k;
+    }
+    v += (60-v)*ell(x,y,138,150,9,9);                   // aorta, flow void
+    v += (210-v)*ell(x,y,110,148,10,7);                 // IVC
+    v += (70-v)*ell(x,y,128,172,19,18);                 // cortical bone
+    v += (520-v)*ell(x,y,128,172,16,15);                // vertebral marrow
+    v += (90-v)*ell(x,y,128,197,10,9);                  // posterior elements
+    v += (130-v)*ell(x,y,128,196,6,6);                  // canal
+    // Rician-ish noise
+    const nr = v + 16*gauss(), ni = 16*gauss();
+    base[y*N+x] = Math.sqrt(nr*nr+ni*ni);
+  }
+
+  const D = {W:900, L:450}; let W=D.W, L=D.L;
+  const wl = document.getElementById("wl");
+  function draw(){
+    const lo = L - W/2, d = img.data;
+    for (let i=0;i<N*N;i++){
+      let g = (base[i]-lo)/W*255; g = g<0?0:g>255?255:g;
+      d[i*4]=d[i*4+1]=d[i*4+2]=g; d[i*4+3]=255;
+    }
+    ctx.putImageData(img,0,0);
+    wl.innerHTML = `W ${Math.round(W)}<br>L ${Math.round(L)}`;
+  }
+  const set=(w,l)=>{W=Math.min(2000,Math.max(10,w)); L=Math.min(1200,Math.max(-200,l)); draw();};
+
+  const screen = document.getElementById("screen");
+  let drag=null;
+  screen.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,W,L};screen.setPointerCapture(e.pointerId)});
+  screen.addEventListener("pointermove",e=>{
+    if(!drag) return;
+    const k = 1000/screen.clientWidth*2;
+    set(drag.W+(e.clientX-drag.x)*k, drag.L-(e.clientY-drag.y)*k);
+  });
+  const end=()=>{drag=null};
+  screen.addEventListener("pointerup",end); screen.addEventListener("pointercancel",end);
+  screen.addEventListener("dblclick",()=>set(D.W,D.L));
+  cv.addEventListener("keydown",e=>{
+    const s = e.shiftKey?100:25;
+    const m = {ArrowRight:[s,0],ArrowLeft:[-s,0],ArrowUp:[0,s],ArrowDown:[0,-s]}[e.key];
+    if(m){e.preventDefault(); set(W+m[0], L+m[1]);}
+  });
+  document.getElementById("reset").addEventListener("click",()=>set(D.W,D.L));
+  draw();
+})();
+</script>
+</body>
+</html>

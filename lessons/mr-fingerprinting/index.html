@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MR Fingerprinting: acquire, simulate, match, map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F1; --panel:#FFFFFF; --ink:#18222C; --muted:#5A6874; --line:#CFD6DB; --soft:#F5F7F8;
+  --amber:#C98A0C; --cyan:#1F7F95; --rose:#B0476A; --warn:#B8621B; --ok:#2F7D4F;
+  --chip-warn:#FBEEDD; --chip-ok:#E3F1E8;
+  --ui:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --read:"Literata", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843; --soft:#1E2833;
+    --amber:#E8B23A; --cyan:#4FB6CC; --rose:#E07FA0; --warn:#E39B53; --ok:#6CC08D;
+    --chip-warn:#3A2A16; --chip-ok:#1D3327;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843; --soft:#1E2833;
+  --amber:#E8B23A; --cyan:#4FB6CC; --rose:#E07FA0; --warn:#E39B53; --ok:#6CC08D;
+  --chip-warn:#3A2A16; --chip-ok:#1D3327;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:52px 0 6px;line-height:1.2;display:flex;gap:12px;align-items:baseline}
+h2 .n{font-family:var(--ui);font-size:14px;font-weight:700;background:var(--ink);color:var(--bg);border-radius:999px;width:28px;height:28px;display:inline-grid;place-items:center;flex:none;transform:translateY(-3px)}
+h3{font-size:16px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}
+.lede{font-family:var(--read);font-size:18px;max-width:80ch;color:var(--muted)}
+.read{font-family:var(--read);max-width:80ch;line-height:1.65}
+.sub{font-family:var(--read);color:var(--muted);max-width:80ch;margin-bottom:14px}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible,a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 6px}
+.steps a{font-size:14px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.steps a b{color:var(--amber);margin-right:4px}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 10px}
+.scen button{font:inherit;font-size:14px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.scen button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:12px 16px;border-radius:4px;font-family:var(--read);min-height:52px}
+.status{font-size:13px;color:var(--muted);margin:8px 2px 0;min-height:20px;font-variant-numeric:tabular-nums}
+.status.busy{color:var(--amber)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.grid2.w{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+@media (max-width:960px){.grid2,.grid2.w{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.ctl{display:grid;grid-template-columns:140px 1fr 70px;align-items:center;gap:8px;margin:7px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}
+.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:14px;margin:8px 0}
+select{font:inherit;font-size:14px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hint{font-size:12.5px;color:var(--muted)}
+canvas.plot{width:100%;display:block}
+.dark{background:#000;border-radius:8px;padding:10px}
+.dark .cap{color:#C9D3DA;font-size:13px;margin-top:5px;display:flex;justify-content:space-between;gap:8px}
+.dark .cap b{color:#fff;font-weight:600}
+.img{width:100%;height:auto;display:block;border-radius:3px;image-rendering:auto}
+.frames{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:10px;align-items:start}
+@media (max-width:560px){.frames{grid-template-columns:1fr}}
+.maps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.maps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cbar{height:6px;border-radius:3px;margin-top:3px}
+.cbl{display:flex;justify-content:space-between;color:#9fb0bb;font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th{font-weight:600;color:var(--muted);font-size:12px}
+th:first-child,td:first-child{text-align:left}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px;color:var(--muted);margin-top:6px}
+.legend label{display:inline-flex;gap:5px;align-items:center}
+.sw{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+.flag{font-size:13px;padding:8px 10px;border-radius:6px;background:var(--chip-warn);border-left:3px solid var(--warn);margin-top:10px}
+.flag.ok{background:var(--chip-ok);border-left-color:var(--ok)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.card .big{font-family:var(--ui);font-size:26px;font-weight:700;line-height:1.1;margin:2px 0 6px}
+.card .sig{font-size:13px;color:var(--muted);font-family:var(--ui)}
+.pipeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0 4px}
+@media (max-width:760px){.pipeline{grid-template-columns:1fr 1fr}}
+.pipeline div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.pipeline b{display:block;font-size:12px;color:var(--amber);letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px}
+ol.refs{font-size:13.5px;color:var(--muted);padding-left:22px;max-width:90ch;line-height:1.55}
+ol.refs li{margin-bottom:4px}
+.foot{margin-top:30px;font-size:13px;color:var(--muted);max-width:86ch}
+.eq{font-family:var(--read);font-size:18px;margin:6px 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>MR Fingerprinting: acquire, simulate, match, map</h1>
+<p class="lede">Conventional relaxometry measures one property at a time and fits a curve to a handful of points. MRF deliberately varies the acquisition so that every tissue traces its own signal evolution, then identifies the tissue by comparing that evolution against a simulated dictionary. This page runs the whole chain on a synthetic prostate slice, using a FISP-MRF schedule modeled on the prostate protocol, with a real extended-phase-graph simulator, SVD compression and dictionary matching running in your browser.</p>
+
+<div class="pipeline">
+  <div><b>1 Acquire</b>Varying flip angles and TRs, one undersampled spiral frame per TR</div>
+  <div><b>2 Simulate</b>Bloch/EPG dictionary of signal evolutions over T1, T2 (and B1)</div>
+  <div><b>3 Match</b>Each voxel's time course is compared with every dictionary entry</div>
+  <div><b>4 Map</b>T1, T2, M0 and match quality, plus synthetic contrasts</div>
+  <div><b>5 Compare</b>Precision versus conventional curve fitting</div>
+</div>
+
+<div class="scen" id="scen" role="group" aria-label="Teaching cases"></div>
+<div class="note" id="note"></div>
+<div class="status" id="status" aria-live="polite"></div>
+
+<!-- ============ 1 ACQUIRE ============ -->
+<h2 id="s1"><span class="n">1</span>Acquisition: making tissues sing different songs</h2>
+<p class="sub">An inversion pulse is followed by hundreds of TRs, each with its own flip angle and TR. After every excitation a single spiral interleaf is read, so each time frame is heavily undersampled and full of aliasing. No individual frame is a usable image, but every voxel's signal over time carries its tissue's signature.</p>
+<div class="grid2 w">
+  <div class="panel">
+    <h3>Acquisition schedule</h3>
+    <canvas class="plot" id="sched" style="height:210px" aria-label="Flip angle and TR schedule"></canvas>
+    <div class="legend"><span><i class="sw" id="swFA"></i>Flip angle (°)</span><span><i class="sw" id="swTR"></i>TR (ms)</span><span>Dashed line: current frame</span></div>
+    <div class="row" style="margin-top:10px">
+      <label>Schedule <select id="pattern"><option value="fisp">FISP-MRF sinusoidal lobes</option><option value="random">Pseudorandom flip angles</option><option value="const">Constant flip angle (not MRF)</option></select></label>
+      <label>Time points <select id="nTR"><option value="200">200</option><option value="400">400</option><option value="600">600</option><option value="1000">1000</option></select></label>
+    </div>
+    <div class="ctl"><label for="beta">Undersampling aliasing</label><input type="range" id="beta" min="0" max="1.5" step="0.05"><output id="betaO"></output></div>
+    <div class="ctl"><label for="noise">Thermal noise</label><input type="range" id="noise" min="0" max="0.08" step="0.005"><output id="noiseO"></output></div>
+    <p class="hint">Aliasing is modeled as incoherent streak patterns that change from frame to frame, as a rotating spiral produces.</p>
+  </div>
+  <div class="panel">
+    <h3>Frame-by-frame</h3>
+    <div class="frames">
+      <div class="dark"><canvas class="img" id="frame" width="112" height="112" aria-label="Undersampled frame; click to choose a probe voxel"></canvas>
+        <div class="cap"><b id="frameCap">Frame</b><span>click a voxel</span></div></div>
+      <div class="dark"><canvas class="img" id="spiral" width="150" height="150" aria-label="k-space spiral interleaf for this frame"></canvas>
+        <div class="cap"><b>k-space</b><span>1 interleaf</span></div></div>
+    </div>
+    <div class="row"><button class="mini primary" id="play">Play</button><input type="range" id="tSlider" min="0" max="599" step="1" style="flex:1;accent-color:var(--amber)" aria-label="Time point"></div>
+    <canvas class="plot" id="course" style="height:150px" aria-label="Signal evolution of the probed voxel"></canvas>
+    <div class="legend"><span><i class="sw" style="background:#8C959C"></i>Measured (noisy, aliased)</span><span><i class="sw" id="swClean"></i>Underlying fingerprint</span></div>
+  </div>
+</div>
+
+<!-- ============ 2 DICTIONARY ============ -->
+<h2 id="s2"><span class="n">2</span>Dictionary: simulating every possible fingerprint</h2>
+<p class="sub">Because the schedule is known, the signal evolution of any tissue can be simulated in advance. Here each entry is computed with an extended phase graph model of FISP (which captures stimulated echoes from the unbalanced gradient) for a grid of T1 and T2 values, and optionally for several B1 scaling factors.</p>
+<div class="grid2">
+  <div class="panel">
+    <h3>Fingerprint explorer</h3>
+    <canvas class="plot" id="explorer" style="height:230px" aria-label="Simulated fingerprints"></canvas>
+    <div class="legend" id="expLegend"></div>
+    <div class="ctl"><label for="xT1">Custom T1</label><input type="range" id="xT1" min="0" max="1" step="0.001"><output id="xT1O"></output></div>
+    <div class="ctl"><label for="xT2">Custom T2</label><input type="range" id="xT2" min="0" max="1" step="0.001"><output id="xT2O"></output></div>
+    <div class="ctl"><label for="xB1">Custom B1</label><input type="range" id="xB1" min="0.7" max="1.3" step="0.01"><output id="xB1O"></output></div>
+    <p class="hint">Watch how T1 mainly shapes the recovery after the inversion and the lobe envelope, while T2 changes the peaks within each lobe. Try the constant schedule: curves for different T2 nearly overlap.</p>
+  </div>
+  <div class="panel">
+    <h3>The dictionary as a matrix</h3>
+    <canvas class="img" id="dictHeat" width="300" height="220" style="border-radius:4px;background:#000" aria-label="Dictionary heat map, entries by time"></canvas>
+    <div class="legend"><span>Rows: entries sorted by T1, then T2. Columns: time points. Color: normalized signal (blue negative, red positive).</span></div>
+    <div class="row">
+      <label>Grid resolution <select id="grid"><option value="coarse">Coarse</option><option value="std">Standard</option><option value="fine">Fine</option></select></label>
+      <span class="hint" id="dictInfo"></span>
+    </div>
+    <h3 style="margin-top:12px">SVD compression</h3>
+    <canvas class="plot" id="svd" style="height:140px" aria-label="Energy captured by SVD components"></canvas>
+    <div class="ctl"><label for="k">Components kept</label><input type="range" id="k" min="1" max="20" step="1"><output id="kO"></output></div>
+    <p class="hint" id="svdInfo"></p>
+  </div>
+</div>
+
+<!-- ============ 3 MATCH ============ -->
+<h2 id="s3"><span class="n">3</span>Pattern matching: finding each voxel's closest fingerprint</h2>
+<p class="sub">Each voxel's measured time course is normalized and compared with every normalized dictionary entry by inner product. The entry with the highest correlation gives T1 and T2; the scale factor between measurement and entry gives M0. Aliasing and noise differ from frame to frame, so they are nearly orthogonal to every fingerprint and barely move the peak.</p>
+<div class="grid2">
+  <div class="panel">
+    <div class="row" style="margin-top:0"><label>Show <select id="mView"><option value="t1">T1 map</option><option value="t2">T2 map</option><option value="frame">Single frame</option></select></label><span class="hint">Click a voxel to match it.</span></div>
+    <div class="dark"><canvas class="img" id="mImg" width="112" height="112" aria-label="Map for choosing a voxel to match"></canvas>
+      <div class="cap"><b id="mCap">T1 map</b><span id="mProbe"></span></div></div>
+    <table style="margin-top:10px"><thead><tr><th></th><th>T1 (ms)</th><th>T2 (ms)</th><th>M0</th><th>Correlation</th></tr></thead><tbody id="mTbl"></tbody></table>
+  </div>
+  <div class="panel">
+    <h3>Measured versus best match</h3>
+    <canvas class="plot" id="mPlot" style="height:180px" aria-label="Measured fingerprint and best dictionary match"></canvas>
+    <div class="legend"><span><i class="sw" style="background:#8C959C"></i>Measured voxel</span><span><i class="sw" id="swMatch"></i>Best dictionary entry</span></div>
+    <h3 style="margin-top:12px">Correlation landscape</h3>
+    <canvas class="img" id="land" width="240" height="190" style="background:#000;border-radius:4px" aria-label="Correlation across the T1-T2 dictionary grid"></canvas>
+    <div class="legend"><span>x: T1 (log, 100–4000 ms); y: T2 (log, 10–600 ms, up is longer). Bright = high correlation. + marks the peak; ○ marks the true tissue.</span></div>
+  </div>
+</div>
+
+<!-- ============ 4 MAPS ============ -->
+<h2 id="s4"><span class="n">4</span>Maps and post-processing</h2>
+<p class="sub">One acquisition yields perfectly co-registered T1, T2 and M0 maps, a match-quality map, and any synthetic contrast you care to compute from them. B1 inhomogeneity at 3 T biases the match unless the dictionary includes B1 and a B1 map (for example Bloch–Siegert, as in the abdominal MRF work) selects the right slice.</p>
+<div class="grid2 w">
+  <div class="dark">
+    <div class="maps">
+      <div><canvas class="img" id="mapT1" width="112" height="112" aria-label="T1 map"></canvas><div class="cap"><b>T1</b><span>ms</span></div><div class="cbar" id="cbT1"></div><div class="cbl"><span>0</span><span>3000</span></div></div>
+      <div><canvas class="img" id="mapT2" width="112" height="112" aria-label="T2 map"></canvas><div class="cap"><b>T2</b><span>ms</span></div><div class="cbar" id="cbT2"></div><div class="cbl"><span>0</span><span>250</span></div></div>
+      <div><canvas class="img" id="mapM0" width="112" height="112" aria-label="M0 map"></canvas><div class="cap"><b>M0</b><span>a.u.</span></div><div class="cbar" style="background:linear-gradient(90deg,#000,#fff)"></div><div class="cbl"><span>0.4</span><span>1</span></div></div>
+      <div><canvas class="img" id="mapQ" width="112" height="112" aria-label="Match quality map"></canvas><div class="cap"><b>Match quality</b><span>corr.</span></div><div class="cbar" style="background:linear-gradient(90deg,#000,#fff)"></div><div class="cbl"><span>0.97</span><span>1.00</span></div></div>
+      <div><canvas class="img" id="mapB1" width="112" height="112" aria-label="B1 map"></canvas><div class="cap"><b>B1 (true)</b><span>×nominal</span></div><div class="cbar" id="cbB1"></div><div class="cbl"><span>0.8</span><span>1.2</span></div></div>
+      <div><canvas class="img" id="mapSyn" width="112" height="112" aria-label="Synthetic image"></canvas><div class="cap"><b id="synCap">Synthetic T2W</b><span></span></div><div class="cbar" style="background:linear-gradient(90deg,#000,#fff)"></div><div class="cbl"><span></span><span></span></div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Acquisition physics</h3>
+    <div class="row"><label><input type="checkbox" id="b1on"> B1 inhomogeneity (3 T pelvis)</label></div>
+    <div class="row"><label><input type="checkbox" id="b1corr"> Dictionary includes B1, matched with a B1 map</label></div>
+    <div class="row"><label><input type="checkbox" id="lesion"> Peripheral zone lesion (left posterolateral)</label></div>
+    <h3 style="margin-top:12px">Synthetic contrast</h3>
+    <div class="row"><button class="mini" data-syn="t2w">T2-weighted</button><button class="mini" data-syn="t1w">T1-weighted</button><button class="mini" data-syn="pd">PD</button><button class="mini" data-syn="stir">STIR</button></div>
+    <div class="ctl"><label for="sTR">TR</label><input type="range" id="sTR" min="100" max="8000" step="50"><output id="sTRO"></output></div>
+    <div class="ctl"><label for="sTE">TE</label><input type="range" id="sTE" min="5" max="250" step="1"><output id="sTEO"></output></div>
+    <div class="ctl"><label for="sTI">TI (0 = none)</label><input type="range" id="sTI" min="0" max="2500" step="10"><output id="sTIO"></output></div>
+    <p class="hint">S = M0 · |1 − 2e<sup>−TI/T1</sup> + e<sup>−TR/T1</sup>| · e<sup>−TE/T2</sup> (without TI: M0 · (1 − e<sup>−TR/T1</sup>) · e<sup>−TE/T2</sup>).</p>
+    <h3 style="margin-top:12px">ROI measurements</h3>
+    <table><thead><tr><th>Region</th><th>T1 true</th><th>T1 MRF</th><th>T2 true</th><th>T2 MRF</th></tr></thead><tbody id="roiTbl"></tbody></table>
+    <p class="hint">MRF values are ROI mean ± SD. Reference tissue values follow published 3 T prostate MRF measurements (normal PZ, TZ and cancer).</p>
+  </div>
+</div>
+
+<!-- ============ 5 PRECISION ============ -->
+<h2 id="s5"><span class="n">5</span>Why MRF is more precise than curve fitting</h2>
+<div class="read">
+<p>Conventional T1 mapping acquires a few inversion times and fits S = a + b·e<sup>−TI/T1</sup>; conventional T2 mapping acquires a few spin echoes and fits S = A·e<sup>−TE/T2</sup>. Each point is a full image, each property needs its own scan, and every error in each point goes straight into a three- or two-parameter fit. MRF instead constrains T1, T2 and M0 jointly with hundreds of samples, and matching against a physically simulated dictionary means effects such as stimulated echoes and imperfect B1 are modeled rather than ignored. The experiment below repeats both approaches hundreds of times on the same voxel with fresh noise, so you can see the spread of estimates directly. The fair comparison is at equal scan time: reference inversion-recovery and spin-echo mapping take many minutes per slice, while one MRF pass takes seconds. Precision per minute of scanning, plus the absence of misregistration between separately acquired series, is where the reproducibility advantage comes from. Because matching snaps to dictionary entries, use the fine grid in section 2 for the most faithful spread.</p>
+</div>
+<div class="grid2 w">
+  <div class="panel">
+    <h3>Monte Carlo test–retest</h3>
+    <div class="row"><label>Tissue <select id="mcTissue"></select></label><button class="mini primary" id="mcRun">Run 300 repeats</button></div>
+    <div class="ctl"><label for="mcSC">Noise of one fully sampled image</label><input type="range" id="mcSC" min="0.002" max="0.05" step="0.001"><output id="mcSCO"></output></div>
+    <div class="row"><label>Compare at <select id="mcMode"><option value="time">the same total scan time</option><option value="own">each method's own protocol length</option><option value="same">the same noise per image and per frame</option></select></label></div>
+    <p class="hint" id="mcTime"></p>
+    <div class="ctl"><label for="mcTI">Inversion times</label><input type="range" id="mcTI" min="3" max="10" step="1"><output id="mcTIO"></output></div>
+    <div class="ctl"><label for="mcTE">Spin echoes</label><input type="range" id="mcTE" min="3" max="16" step="1"><output id="mcTEO"></output></div>
+    <div class="ctl"><label for="mcB1">True B1</label><input type="range" id="mcB1" min="0.8" max="1.2" step="0.01"><output id="mcB1O"></output></div>
+    <div class="row"><label><input type="checkbox" id="mcB1d"> MRF dictionary includes this B1</label></div>
+    <p class="hint">Noise model: every image needs 48 readouts (spiral interleaves or turbo shots). A reference inversion-recovery image uses TR 10 s, a multi-echo spin-echo series TR 2 s, and each MRF frame is a single interleaf, so it carries √48 ≈ 7× the noise of a fully sampled image. At equal scan time the MRF acquisition can be repeated and averaged. Aliasing is left out here. The spin-echo train is simulated with stimulated echoes, so B1 errors bias its T2.</p>
+    <canvas class="plot" id="mcFit" style="height:170px" aria-label="Example conventional fits"></canvas>
+    <div class="legend"><span><i class="sw" id="swIR"></i>Inversion recovery points and fit</span><span><i class="sw" id="swSE"></i>Multi-echo spin echo points and fit</span></div>
+  </div>
+  <div class="panel">
+    <h3>Distribution of estimates</h3>
+    <canvas class="plot" id="histT1" style="height:150px" aria-label="Histogram of T1 estimates"></canvas>
+    <canvas class="plot" id="histT2" style="height:150px;margin-top:6px" aria-label="Histogram of T2 estimates"></canvas>
+    <div class="legend"><span><i class="sw" style="background:#8C959C"></i>Conventional fit</span><span><i class="sw" id="swMRF"></i>MRF</span><span>Vertical line: true value</span></div>
+    <table style="margin-top:8px"><thead><tr><th></th><th>Mean</th><th>SD</th><th>CV</th><th>Bias</th></tr></thead><tbody id="mcTbl"></tbody></table>
+    <div id="mcFlags"></div>
+  </div>
+</div>
+
+<h2 id="s6"><span class="n">6</span>What the evidence shows</h2>
+<div class="cards">
+  <div class="card"><h3>Repeatability in a standard phantom</h3><div class="big">&lt; 2% / &lt; 4.7%</div><p>Within-scanner coefficient of variation for T1 and T2 over repeated prostate FISP-MRF measurements of the ISMRM/NIST system phantom, across T1 of roughly 300–2400 ms and T2 of roughly 19–250 ms.</p><p class="sig">Lo et al., 2022</p></div>
+  <div class="card"><h3>Reproducibility across continents</h3><div class="big">&lt; 4.9% / &lt; 8.1%</div><p>Between-scanner variation for T1 and T2 on five 3 T scanners at three institutions in the United States and Brazil, all running the same online reconstruction; in vivo prostate test–retest ICC exceeded 0.92.</p><p class="sig">Lo et al., 2022</p></div>
+  <div class="card"><h3>Prostate cancer versus normal PZ</h3><div class="big">1628 vs 2247 ms</div><p>Mean T1 of cancer versus normal-appearing peripheral zone; T2 was 73 versus 169 ms. Combined with ADC, MRF separated cancer from normal PZ and helped grade lesions in later work.</p><p class="sig">Yu et al., 2017; Panda et al., 2019</p></div>
+  <div class="card"><h3>Where MRF is still fragile</h3><p>Very short T2 (below about 30 ms) varies more, partly from coarse dictionary steps; very long T2 can be underestimated when the dictionary range is capped. Motion, partial volume, B0 drift and B1 all add variation, which is why B1-insensitive designs and B1 correction matter.</p><p class="sig">Lo et al., 2022; Ma et al., 2017; Chen et al., 2016</p></div>
+</div>
+
+<h2><span class="n">7</span>QA checklist for MRF maps</h2>
+<div class="read">
+<p><b>Check the dictionary.</b> Know its T1 and T2 ranges and step sizes. Values piling up at the edge of the range, or posterized maps, point to range or resolution limits rather than biology.</p>
+<p><b>Check B1 handling.</b> At 3 T in the pelvis and abdomen, confirm whether B1 was measured and included in matching, or whether a B1-insensitive schedule was used. Left–right gradients in T2 across uniform tissue suggest uncorrected B1.</p>
+<p><b>Look at the match-quality map.</b> Low correlation flags motion, partial volume, flow, off-resonance or tissue behavior the dictionary does not model.</p>
+<p><b>Place ROIs away from boundaries.</b> MRF voxels at tissue interfaces match a single compromise entry; small lesions and thin structures are the most affected. Keep the same ROI method across time points.</p>
+<p><b>Compare like with like.</b> MRF values are reproducible for a given sequence and reconstruction, but are not interchangeable with values from other methods or schedules. Use protocol-specific reference ranges, and phantom QA to monitor drift.</p>
+</div>
+
+<h2><span class="n">8</span>References</h2>
+<ol class="refs">
+  <li>Ma D, Gulani V, Seiberlich N, Liu K, Sunshine JL, Duerk JL, Griswold MA. Magnetic resonance fingerprinting. Nature. 2013;495:187–192.</li>
+  <li>Jiang Y, Ma D, Seiberlich N, Gulani V, Griswold MA. MR fingerprinting using fast imaging with steady state precession (FISP) with spiral readout. Magn Reson Med. 2015;74:1621–1631.</li>
+  <li>McGivney DF, Pierre E, Ma D, Jiang Y, Saybasili H, Gulani V, Griswold MA. SVD compression for magnetic resonance fingerprinting in the time domain. IEEE Trans Med Imaging. 2014;33:2311–2322.</li>
+  <li>Chen Y, Jiang Y, Pahwa S, et al. MR fingerprinting for rapid quantitative abdominal imaging. Radiology. 2016;279:278–286.</li>
+  <li>Yu AC, Badve C, Ponsky LE, et al. Development of a combined MR fingerprinting and diffusion examination for prostate cancer. Radiology. 2017;283:729–738.</li>
+  <li>Jiang Y, Ma D, Keenan KE, Stupic KF, Gulani V, Griswold MA. Repeatability of magnetic resonance fingerprinting T1 and T2 estimates assessed using the ISMRM/NIST MRI system phantom. Magn Reson Med. 2017;78:1452–1457.</li>
+  <li>Ma D, Coppo S, Chen Y, et al. Slice profile and B1 corrections in 2D magnetic resonance fingerprinting. Magn Reson Med. 2017;78:1781–1789.</li>
+  <li>Hamilton JI, Jiang Y, Chen Y, et al. MR fingerprinting for rapid quantification of myocardial T1, T2, and proton spin density. Magn Reson Med. 2017;77:1446–1458.</li>
+  <li>Ma D, Jiang Y, Chen Y, et al. Fast 3D magnetic resonance fingerprinting for a whole-brain coverage. Magn Reson Med. 2018;79:2190–2197.</li>
+  <li>Panda A, O'Connor G, Lo WC, et al. Targeted biopsy validation of peripheral zone prostate cancer characterization with magnetic resonance fingerprinting and diffusion mapping. Invest Radiol. 2019;54:485–493.</li>
+  <li>Panda A, Obmann VC, Lo WC, et al. MR fingerprinting and ADC mapping for characterization of lesions in the transition zone of the prostate gland. Radiology. 2019;292:685–694.</li>
+  <li>Körzdörfer G, Kirsch R, Liu K, et al. Reproducibility and repeatability of MR fingerprinting relaxometry in the human brain. Radiology. 2019;292:429–437.</li>
+  <li>Lo WC, Bittencourt LK, Panda A, et al. Multicenter repeatability and reproducibility of MR fingerprinting in phantoms and in prostatic tissue. Magn Reson Med. 2022;88:1818–1827.</li>
+  <li>Futela D, Yin Z, Afshari Mirak S, et al. Characterization of clinically significant prostate cancer in the peripheral zone using rapid B1-insensitive MR fingerprinting. Radiology. 2026. doi:10.1148/radiol.252547.</li>
+</ol>
+
+<p class="foot">Teaching simulation. The FISP schedule (flip angles about 3–50°, TR about 11–14 ms, inversion-prepared) is modeled on published prostate MRF parameters, but the lobe shapes, TR pattern, dictionary grids, aliasing model and tissue values are illustrative. The EPG simulation uses a truncated number of dephasing states, signals are real-valued, and there is no slice-profile, off-resonance, diffusion, magnetization transfer or motion modeling. Numbers produced here demonstrate principles and should not be quoted as measurements.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+// ================= CORE =================
+const N=112,SC=192/N,TAU=2*Math.PI,KMAX=20,NS=8;
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+function ell(x,y,cx,cy,a,b){const dx=(x-cx)/a,dy=(y-cy)/b;const d=Math.sqrt(dx*dx+dy*dy);return clamp(0.5-(d-1)*Math.min(a,b)/1.3,0,1);}
+function ellr(x,y,cx,cy,a,b,ang){const c=Math.cos(ang),s=Math.sin(ang),dx=x-cx,dy=y-cy;return ell(cx+dx*c+dy*s,cy-dx*s+dy*c,cx,cy,a,b);}
+function h32(a){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+function gh(i){const u=Math.max(h32(i*2+1),1e-9),v=h32(i*2+2);return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);}
+function mulb(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function logspace(a,b,n){const o=[];for(let i=0;i<n;i++)o.push(a*Math.pow(b/a,n===1?0:i/(n-1)));return o;}
+
+const TIS={
+  fat:{T1:380,T2:110,M0:.9,name:"Fat",color:"#D9A21B"},
+  muscle:{T1:1400,T2:35,M0:.75,name:"Muscle",color:"#7C8A96"},
+  bone:{T1:450,T2:70,M0:.6,name:"Pubic marrow",color:"#A07850"},
+  gas:{T1:1000,T2:50,M0:0,name:"Gas"},
+  pz:{T1:2250,T2:150,M0:.9,name:"Peripheral zone",color:"#3E9B5B"},
+  tz:{T1:1780,T2:75,M0:.85,name:"Transition zone",color:"#8E6CC9"},
+  afms:{T1:1500,T2:50,M0:.7,name:"Anterior stroma",color:"#8A9A2E"},
+  urethra:{T1:2500,T2:400,M0:.95,name:"Urethra",color:"#3A9FD6"},
+  blood:{T1:1900,T2:200,M0:.9,name:"NVB vessels",color:"#5B7FD6"},
+  lesion:{T1:1630,T2:73,M0:.85,name:"PZ cancer",color:"#D0463B"}
+};
+const TKEYS=Object.keys(TIS);
+const ROIS={pz:[74,110,4],tz:[108,84,4.5],lesion:[122,108,4.5],muscle:[24,96,6],fat:[58,52,5]};
+
+const S={pattern:"fisp",nTR:600,beta:0.2,noise:0.01,grid:"std",k:12,b1on:false,b1corr:false,lesion:true,t:150,
+  probe:{x:40,y:62},xT1:1200,xT2:80,xB1:1,syn:{TR:4000,TE:100,TI:0,name:"T2-weighted"},
+  mc:{tissue:"lesion",sc:0.012,mode:"time",nTI:5,nTE:8,b1:1.0,b1d:true}};
+const DEF=JSON.parse(JSON.stringify(S));
+
+const C={}; // computed state
+function buildSeq(){
+  const n=S.nTR,fa=new Float32Array(n),tr=new Float32Array(n),amps=[1,.72,.9,.6,.85,.66,.95,.7],r=mulb(99);
+  for(let t=0;t<n;t++){
+    if(S.pattern==="fisp"){const L=200,lob=Math.floor(t/L);fa[t]=3.4+46.6*amps[lob%amps.length]*Math.sin(Math.PI*(t%L+0.5)/L);}
+    else if(S.pattern==="random")fa[t]=3.4+46.6*r();
+    else fa[t]=30;
+    tr[t]=S.pattern==="const"?12:12.7+1.1*Math.sin(t/23+0.7)+0.4*Math.sin(t/7.3+2.1);
+  }
+  return {n,fa,tr,te:2.0,ti:20.6};
+}
+// FISP extended phase graph (real-valued, F = i·f), inversion-prepared
+function fisp(T1,T2,B1,seq,out){
+  const n=seq.n,fp=new Float64Array(NS+1),fm=new Float64Array(NS+1),z=new Float64Array(NS+1);
+  const o=out||new Float32Array(n);
+  z[0]=Math.cos(Math.PI*B1);let E=Math.exp(-seq.ti/T1);z[0]=z[0]*E+1-E;
+  const E1te=Math.exp(-seq.te/T1),E2te=Math.exp(-seq.te/T2);
+  for(let t=0;t<n;t++){
+    const a=seq.fa[t]*B1*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),c2=(1+ca)/2,s2=(1-ca)/2;
+    for(let k=0;k<=NS;k++){const P=fp[k],M=fm[k],Z=z[k];fp[k]=c2*P+s2*M-sa*Z;fm[k]=s2*P+c2*M+sa*Z;z[k]=0.5*sa*(P-M)+ca*Z;}
+    for(let k=0;k<=NS;k++){fp[k]*=E2te;fm[k]*=E2te;if(k)z[k]*=E1te;}z[0]=z[0]*E1te+1-E1te;
+    o[t]=-fp[0];
+    const tau=seq.tr[t]-seq.te,E1=Math.exp(-tau/T1),E2=Math.exp(-tau/T2);
+    for(let k=0;k<=NS;k++){fp[k]*=E2;fm[k]*=E2;if(k)z[k]*=E1;}z[0]=z[0]*E1+1-E1;
+    for(let k=NS;k>=1;k--)fp[k]=fp[k-1];for(let k=0;k<NS;k++)fm[k]=fm[k+1];fm[NS]=0;fp[0]=-fm[0];
+  }
+  return o;
+}
+const GRIDS={coarse:[24,18],std:[56,44],fine:[88,68]};
+const B1S=[0.85,0.9,0.95,1.0,1.05,1.1];
+function gridEntries(){const [a,b]=GRIDS[S.grid],t1=logspace(100,4000,a),t2=logspace(10,600,b),E=[];
+  for(let i=0;i<a;i++)for(let j=0;j<b;j++)if(t2[j]<t1[i])E.push([t1[i],t2[j],i,j]);return {E,t1,t2};}
+function sleep(){return new Promise(r=>setTimeout(r,0));}
+// dictionary slice at a B1: normalized full rows (only kept for B1=1), compressed rows, norms
+async function simSlice(b1,keepFull,prog){
+  const G=C.grid,n=G.E.length,m=C.seq.n,full=keepFull?new Float32Array(n*m):null,norm=new Float32Array(n),tmp=new Float32Array(m);
+  const comp=C.V?new Float32Array(n*KMAX):null;
+  for(let e=0;e<n;e++){
+    fisp(G.E[e][0],G.E[e][1],b1,C.seq,tmp);let s=0;for(let t=0;t<m;t++)s+=tmp[t]*tmp[t];s=Math.sqrt(s)||1;norm[e]=s;
+    if(full)for(let t=0;t<m;t++)full[e*m+t]=tmp[t]/s;
+    if(comp){for(let j=0;j<KMAX;j++){let d=0;const V=C.V,o=j*m;for(let t=0;t<m;t++)d+=V[o+t]*tmp[t];comp[e*KMAX+j]=d/s;}}
+    if(prog&&e%300===299){prog(e/n);await sleep();}
+  }
+  return {b1,full,norm,comp};
+}
+function svdBasis(D,n,m){
+  const r=mulb(7),q=KMAX+8;let Q=new Float64Array(m*q);for(let i=0;i<m*q;i++)Q[i]=r()-.5;
+  const orth=A=>{for(let j=0;j<q;j++){for(let i=0;i<j;i++){let d=0;for(let t=0;t<m;t++)d+=A[t*q+i]*A[t*q+j];for(let t=0;t<m;t++)A[t*q+j]-=d*A[t*q+i];}let s=0;for(let t=0;t<m;t++)s+=A[t*q+j]**2;s=Math.sqrt(s)||1;for(let t=0;t<m;t++)A[t*q+j]/=s;}};
+  orth(Q);const Y=new Float64Array(n*q);
+  const DQ=()=>{Y.fill(0);for(let e=0;e<n;e++){const o=e*m;for(let j=0;j<q;j++){let s=0;for(let t=0;t<m;t++)s+=D[o+t]*Q[t*q+j];Y[e*q+j]=s;}}};
+  for(let it=0;it<3;it++){DQ();const Z=new Float64Array(m*q);for(let e=0;e<n;e++){const o=e*m;for(let j=0;j<q;j++){const y=Y[e*q+j];if(!y)continue;for(let t=0;t<m;t++)Z[t*q+j]+=D[o+t]*y;}}Q=Z;orth(Q);}
+  DQ();const Bm=new Float64Array(q*q);for(let i=0;i<q;i++)for(let j=i;j<q;j++){let s=0;for(let e=0;e<n;e++)s+=Y[e*q+i]*Y[e*q+j];Bm[i*q+j]=Bm[j*q+i]=s;}
+  const Vv=new Float64Array(q*q);for(let i=0;i<q;i++)Vv[i*q+i]=1;
+  for(let sweep=0;sweep<40;sweep++){let off=0;for(let p=0;p<q;p++)for(let r2=p+1;r2<q;r2++){const apq=Bm[p*q+r2];off+=apq*apq;if(Math.abs(apq)<1e-12)continue;
+    const th=(Bm[r2*q+r2]-Bm[p*q+p])/(2*apq),tt=Math.sign(th||1)/(Math.abs(th)+Math.sqrt(th*th+1)),c=1/Math.sqrt(tt*tt+1),s=tt*c;
+    for(let k=0;k<q;k++){const a=Bm[k*q+p],b=Bm[k*q+r2];Bm[k*q+p]=c*a-s*b;Bm[k*q+r2]=s*a+c*b;}
+    for(let k=0;k<q;k++){const a=Bm[p*q+k],b=Bm[r2*q+k];Bm[p*q+k]=c*a-s*b;Bm[r2*q+k]=s*a+c*b;}
+    for(let k=0;k<q;k++){const a=Vv[k*q+p],b=Vv[k*q+r2];Vv[k*q+p]=c*a-s*b;Vv[k*q+r2]=s*a+c*b;}}if(off<1e-18)break;}
+  const idx=[...Array(q).keys()].sort((a,b)=>Bm[b*q+b]-Bm[a*q+a]);
+  const V=new Float32Array(KMAX*m),sv=[];
+  for(let j=0;j<KMAX;j++){const c=idx[j];sv.push(Math.sqrt(Math.max(Bm[c*q+c],0)));for(let t=0;t<m;t++){let s=0;for(let i=0;i<q;i++)s+=Q[t*q+i]*Vv[i*q+c];V[j*m+t]=s;}}
+  return {V,sv,total:n};
+}
+// ---------- phantom ----------
+function buildPhantom(){
+  const W={};TKEYS.forEach(k=>W[k]=new Float32Array(N*N));const w={};const B1=new Float32Array(N*N);
+  for(let py=0;py<N;py++)for(let px=0;px<N;px++){
+    const x=(px+.5)*SC,y=(py+.5)*SC;TKEYS.forEach(k=>w[k]=0);
+    const L=(m,k)=>{if(m<=0)return;for(const q of TKEYS)w[q]*=(1-m);w[k]+=m;};
+    L(ell(x,y,96,100,120,110),"fat");
+    L(ell(x,y,24,96,13,42),"muscle");L(ell(x,y,168,96,13,42),"muscle");
+    L(ellr(x,y,60,134,22,5,-0.7),"muscle");L(ellr(x,y,132,134,22,5,0.7),"muscle");
+    L(ell(x,y,84,22,11,9),"bone");L(ell(x,y,108,22,11,9),"bone");
+    L(ell(x,y,96,149,22,15),"muscle");L(ell(x,y,96,149,9,4),"gas");
+    L(ell(x,y,96,92,41.6,32.6),"muscle");L(ell(x,y,96,92,40,31),"pz");L(ell(x,y,96,84,27,19),"tz");
+    L(Math.min(ell(x,y,96,66,24,8),ell(x,y,96,92,40,31)),"afms");L(ell(x,y,96,86,3,3),"urethra");
+    L(ell(x,y,62,116,3.5,3.5),"blood");L(ell(x,y,130,116,3.5,3.5),"blood");
+    if(S.lesion)L(ell(x,y,122,108,8,8),"lesion");
+    const i=py*N+px;TKEYS.forEach(k=>W[k][i]=w[k]);
+    B1[i]=S.b1on?clamp(0.98-0.13*((x-96)/96)-0.05*((y-96)/96)**2,0.8,1.2):1;
+  }
+  C.W=W;C.B1=B1;
+}
+function tissueFP(key,b1){const kk=key+"|"+b1.toFixed(2);if(!C.fpCache.has(kk)){const t=TIS[key];C.fpCache.set(kk,fisp(t.T1,t.T2,b1,C.seq));}return C.fpCache.get(kk);}
+function aliasFields(){const P=[],r=mulb(31);for(let j=0;j<32;j++){let f=new Float32Array(N*N);
+  for(let i=0;i<N*N;i++){const u=Math.max(r(),1e-9),v=r();f[i]=Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);}
+  for(let pass=0;pass<2;pass++){const g=new Float32Array(N*N);for(let y=0;y<N;y++)for(let x=0;x<N;x++){let s=0,c=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=N||yy>=N)continue;s+=f[yy*N+xx];c++;}g[y*N+x]=s/c;}f=g;}
+  let sd0=0;for(const v of f)sd0+=v*v;sd0=Math.sqrt(sd0/f.length);for(let i=0;i<f.length;i++)f[i]/=sd0;
+  for(let l=0;l<10;l++){const th=r()*Math.PI,off=(r()-.5)*N*.8,c=Math.cos(th),s=Math.sin(th),amp=(r()<.5?-1:1)*0.9;
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){const d=(x-N/2)*s-(y-N/2)*c-off;if(Math.abs(d)<2.5)f[y*N+x]+=amp*Math.exp(-d*d/1.2);}}
+  let mu=0;for(const v of f)mu+=v;mu/=f.length;let sd=0;for(let i=0;i<f.length;i++){f[i]-=mu;sd+=f[i]*f[i];}sd=Math.sqrt(sd/f.length)||1;for(let i=0;i<f.length;i++)f[i]/=sd;P.push(f);}return P;}
+function pixelTerms(i){const b1=Math.round(C.B1[i]*100)/100,terms=[];for(const k of TKEYS){const a=C.W[k][i]*TIS[k].M0;if(a>0.002)terms.push([a,tissueFP(k,b1)]);}return terms;}
+function meanSignal(){const m=C.seq.n,sb=new Float32Array(m);let cnt=0;
+  for(const k of TKEYS){let a=0;for(let i=0;i<N*N;i++)a+=C.W[k][i]*TIS[k].M0;if(a<=0)continue;const f=tissueFP(k,1);for(let t=0;t<m;t++)sb[t]+=a*f[t];}
+  for(let t=0;t<m;t++)sb[t]/=N*N;return sb;}
+function measuredAt(i,t,terms){let x=0;for(const [a,f] of terms)x+=a*f[t];
+  x+=S.noise*gh(i*2048+t+7)+S.beta*C.sbar[t]*C.P[C.perm[t]][i];return x;}
+function synthesize(){
+  const m=C.seq.n,XC=new Float32Array(N*N*KMAX),MASK=new Uint8Array(N*N),V=C.V;
+  C.perm=new Uint8Array(m);for(let t=0;t<m;t++)C.perm[t]=Math.floor(h32(t*131+17)*32);
+  C.sbar=meanSignal();
+  const x=new Float32Array(m);
+  for(let i=0;i<N*N;i++){const terms=pixelTerms(i);let tot=0;for(const [a] of terms)tot+=a;if(tot<0.06)continue;MASK[i]=1;
+    for(let t=0;t<m;t++)x[t]=measuredAt(i,t,terms);
+    for(let j=0;j<KMAX;j++){let s=0;const o=j*m;for(let t=0;t<m;t++)s+=V[o+t]*x[t];XC[i*KMAX+j]=s;}}
+  C.XC=XC;C.MASK=MASK;
+}
+function sliceFor(b1){if(!S.b1corr)return C.slices.get(1);let best=1,bd=9;for(const b of B1S){const d=Math.abs(b-b1);if(d<bd){bd=d;best=b;}}return C.slices.get(best)||C.slices.get(1);}
+function prepNorm(sl){const k=S.k,n=C.grid.E.length,o=new Float32Array(n*k),nk=new Float32Array(n);
+  for(let e=0;e<n;e++){let s=0;for(let j=0;j<k;j++)s+=sl.comp[e*KMAX+j]**2;s=Math.sqrt(s)||1;nk[e]=s;for(let j=0;j<k;j++)o[e*k+j]=sl.comp[e*KMAX+j]/s;}sl.cn=o;sl.cnk=nk;sl.cnK=k;}
+function matchVec(sl,x){const k=S.k,n=C.grid.E.length;if(sl.cnK!==k)prepNorm(sl);let xn=0;for(let j=0;j<k;j++)xn+=x[j]*x[j];xn=Math.sqrt(xn)||1;
+  let best=-1e9,be=0;const cn=sl.cn;for(let e=0;e<n;e++){let d=0;const o=e*k;for(let j=0;j<k;j++)d+=cn[o+j]*x[j];if(d>best){best=d;be=e;}}
+  return {e:be,corr:best/xn,m0:best/(sl.cnk[be]*sl.norm[be])};}
+function matchAll(){
+  const T1=new Float32Array(N*N),T2=new Float32Array(N*N),M0=new Float32Array(N*N),Q=new Float32Array(N*N),x=new Float32Array(KMAX);
+  for(let i=0;i<N*N;i++){if(!C.MASK[i])continue;for(let j=0;j<KMAX;j++)x[j]=C.XC[i*KMAX+j];const r=matchVec(sliceFor(C.B1[i]),x);
+    const E=C.grid.E[r.e];T1[i]=E[0];T2[i]=E[1];M0[i]=r.m0;Q[i]=r.corr;}
+  C.T1=T1;C.T2=T2;C.M0=M0;C.Q=Q;
+}
+// ---------- conventional methods ----------
+function cpmg(T2,T1,b1,nE,esp){ // complex EPG, 90y excitation, 180x refocusing
+  const K=2*nE+3,fr=new Float64Array(K),fi=new Float64Array(K),gr=new Float64Array(K),gi=new Float64Array(K),zr=new Float64Array(K),zi=new Float64Array(K);zr[0]=1;
+  function rf(a,phi){const c2=Math.cos(a/2)**2,s2=Math.sin(a/2)**2,sa=Math.sin(a),ca=Math.cos(a),cp=Math.cos(phi),sp=Math.sin(phi),c2p=Math.cos(2*phi),s2p=Math.sin(2*phi);
+    for(let k=0;k<K;k++){const Pr=fr[k],Pi=fi[k],Mr=gr[k],Mi=gi[k],Zr=zr[k],Zi=zi[k];
+      // F+ = c2 P + e^{2iφ} s2 M − i e^{iφ} sa Z
+      fr[k]=c2*Pr+s2*(c2p*Mr-s2p*Mi)+sa*(sp*Zr+cp*Zi);fi[k]=c2*Pi+s2*(c2p*Mi+s2p*Mr)-sa*(cp*Zr-sp*Zi);
+      // F− = e^{−2iφ} s2 P + c2 M + i e^{−iφ} sa Z
+      gr[k]=s2*(c2p*Pr+s2p*Pi)+c2*Mr+sa*(sp*Zr-cp*Zi);gi[k]=s2*(c2p*Pi-s2p*Pr)+c2*Mi+sa*(cp*Zr+sp*Zi);
+      // Z = −(i/2) e^{−iφ} sa P + (i/2) e^{iφ} sa M + ca Z
+      zr[k]=0.5*sa*(-sp*Pr+cp*Pi) + 0.5*sa*(-sp*Mr-cp*Mi)+ca*Zr;
+      zi[k]=0.5*sa*(-cp*Pr-sp*Pi) + 0.5*sa*(cp*Mr-sp*Mi)+ca*Zi;}}
+  function relax(tm){const E1=Math.exp(-tm/T1),E2=Math.exp(-tm/T2);for(let k=0;k<K;k++){fr[k]*=E2;fi[k]*=E2;gr[k]*=E2;gi[k]*=E2;if(k){zr[k]*=E1;zi[k]*=E1;}}zr[0]=zr[0]*E1+1-E1;zi[0]*=E1;}
+  function shift(){for(let k=K-1;k>=1;k--){fr[k]=fr[k-1];fi[k]=fi[k-1];}for(let k=0;k<K-1;k++){gr[k]=gr[k+1];gi[k]=gi[k+1];}gr[K-1]=gi[K-1]=0;fr[0]=gr[0];fi[0]=-gi[0];}
+  rf(Math.PI/2*b1,Math.PI/2);const out=[];
+  for(let e=0;e<nE;e++){relax(esp/2);shift();rf(Math.PI*b1,0);relax(esp/2);shift();out.push(Math.hypot(fr[0],fi[0]));}
+  return out;
+}
+function fitIR(TI,y){let best=1e18,bt=1000,ba=0,bb=0;const grid=logspace(50,6000,300);
+  const one=g=>{let sx=0,sy=0,sxx=0,sxy=0;const n=TI.length;for(let i=0;i<n;i++){const e=Math.exp(-TI[i]/g);sx+=e;sy+=y[i];sxx+=e*e;sxy+=e*y[i];}
+    const det=n*sxx-sx*sx;if(Math.abs(det)<1e-12)return;const b=(n*sxy-sx*sy)/det,a=(sy-b*sx)/n;let r=0;for(let i=0;i<n;i++){const d=y[i]-a-b*Math.exp(-TI[i]/g);r+=d*d;}if(r<best){best=r;bt=g;ba=a;bb=b;}};
+  grid.forEach(one);const g0=bt;for(let g=g0*0.95;g<=g0*1.05;g+=g0*0.002)one(g);return {T1:bt,a:ba,b:bb};}
+function fitSE(TE,y){let best=1e18,bt=50,bA=0;const one=g=>{let se=0,sy=0;for(let i=0;i<TE.length;i++){const e=Math.exp(-TE[i]/g);se+=e*e;sy+=e*y[i];}const A=sy/se;let r=0;for(let i=0;i<TE.length;i++){const d=y[i]-A*Math.exp(-TE[i]/g);r+=d*d;}if(r<best){best=r;bt=g;bA=A;}};
+  logspace(5,1500,300).forEach(one);const g0=bt;for(let g=g0*0.95;g<=g0*1.05;g+=g0*0.002)one(g);return {T2:bt,A:bA};}
+// ================= CORE END =================
+
+// ---------------- pipeline ----------------
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function status(t,busy){const e=$("status");e.textContent=t;e.classList.toggle("busy",!!busy);}
+let running=null,pending=0;
+async function rebuild(level){ // 3 seq/grid → dictionary; 2 b1corr slices; 1 phantom/noise; 0 match
+  pending=Math.max(pending,level);if(running)return;running=true;
+  while(pending>=0){const L=pending;pending=-1;const t0=performance.now();
+    try{
+      if(L>=3||!C.slices){C.seq=buildSeq();C.fpCache=new Map();C.grid=gridEntries();C.V=null;
+        status("Simulating dictionary…",true);await sleep();
+        const base=await simSlice(1,true,f=>status("Simulating dictionary… "+Math.round(f*100)+"%",true));
+        status("Computing SVD basis…",true);await sleep();
+        const sv=svdBasis(base.full,C.grid.E.length,C.seq.n);C.V=sv.V;C.sv=sv.sv;C.svTotal=sv.total;
+        base.comp=new Float32Array(C.grid.E.length*KMAX);const m=C.seq.n;
+        for(let e=0;e<C.grid.E.length;e++)for(let j=0;j<KMAX;j++){let d=0;for(let t=0;t<m;t++)d+=C.V[j*m+t]*base.full[e*m+t];base.comp[e*KMAX+j]=d;}
+        C.slices=new Map([[1,base]]);C.full=base.full;C.P=C.P||aliasFields();C.mcCache=new Map();
+      }
+      if(S.b1corr&&C.slices.size<B1S.length){for(const b of B1S){if(C.slices.has(b))continue;status("Adding B1 = "+b.toFixed(2)+" to the dictionary…",true);await sleep();C.slices.set(b,await simSlice(b,false));}}
+      if(L>=1||!C.XC){buildPhantom();status("Simulating the acquisition…",true);await sleep();synthesize();}
+      status("Matching "+C.MASK.reduce((a,b)=>a+b,0).toLocaleString()+" voxels…",true);await sleep();matchAll();
+      const dt=((performance.now()-t0)/1000).toFixed(1);
+      status(`Dictionary: ${C.grid.E.length.toLocaleString()} entries × ${C.seq.n} time points${S.b1corr?" × "+B1S.length+" B1 values":""}; compressed to ${S.k} SVD components; last update ${dt} s.`);
+    }catch(err){status("Error: "+err.message);console.error(err);}
+    drawAll();mcTimes();
+  }
+  running=null;
+}
+
+// ---------------- drawing helpers ----------------
+const CM={
+  t1:[[0,0,4],[40,11,84],[101,21,110],[159,42,99],[212,72,66],[245,125,21],[250,193,39],[252,255,164]],
+  t2:[[3,19,38],[8,55,93],[23,96,125],[48,132,122],[91,164,108],[150,190,98],[213,212,131],[252,244,217]],
+  div:[[33,102,172],[103,169,207],[247,247,247],[239,138,98],[178,24,43]]
+};
+function cmap(name,t){const s=CM[name];t=clamp(t,0,1)*(s.length-1);const i=Math.min(Math.floor(t),s.length-2),f=t-i;return [0,1,2].map(k=>s[i][k]+(s[i+1][k]-s[i][k])*f);}
+function grad(name){return "linear-gradient(90deg,"+CM[name].map((c,i)=>`rgb(${c}) ${(i/(CM[name].length-1)*100).toFixed(0)}%`).join(",")+")";}
+function drawField(cv,arr,lo,hi,name,mask){const ctx=cv.getContext("2d"),w=cv.width,h=cv.height,img=ctx.createImageData(w,h),d=img.data;
+  for(let i=0;i<w*h;i++){let r,g,b;if(mask&&!mask[i]){r=g=b=0;}else{const t=(arr[i]-lo)/(hi-lo);if(name){[r,g,b]=cmap(name,t);}else{r=g=b=clamp(t,0,1)*255;}}d[i*4]=r;d[i*4+1]=g;d[i*4+2]=b;d[i*4+3]=255;}
+  ctx.putImageData(img,0,0);}
+function probeMark(cv){const ctx=cv.getContext("2d");ctx.save();ctx.strokeStyle="#4FB6CC";ctx.lineWidth=1;const {x,y}=S.probe;ctx.strokeRect(x-2.5,y-2.5,6,6);ctx.restore();}
+function setup(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext("2d");c.scale(dpr,dpr);c.clearRect(0,0,w,h);return [c,w,h];}
+function lineplot(cv,series,o){
+  const [c,w,h]=setup(cv),pl=o.pl||40,pr=o.pr||10,pt=8,pb=o.pb||22,W=w-pl-pr,H=h-pt-pb;
+  const X=v=>pl+(v-o.x0)/(o.x1-o.x0)*W,Y=v=>pt+(1-(v-o.y0)/(o.y1-o.y0))*H;
+  c.font="11px system-ui, sans-serif";c.strokeStyle=css("--line");c.fillStyle=css("--muted");c.lineWidth=1;
+  (o.yt||[]).forEach(v=>{c.beginPath();c.moveTo(pl,Y(v));c.lineTo(w-pr,Y(v));c.stroke();c.textAlign="right";c.fillText(o.yf?o.yf(v):v,pl-5,Y(v)+4);});
+  c.textAlign="center";(o.xt||[]).forEach(v=>c.fillText(o.xf?o.xf(v):v,X(v),h-6));c.textAlign="left";
+  if(o.vline!==undefined){c.strokeStyle=css("--amber");c.setLineDash([4,4]);c.beginPath();c.moveTo(X(o.vline),pt);c.lineTo(X(o.vline),pt+H);c.stroke();c.setLineDash([]);}
+  series.forEach(s=>{c.strokeStyle=s.color;c.lineWidth=s.w||1.5;c.globalAlpha=s.a||1;c.setLineDash(s.dash||[]);
+    if(s.pts){c.fillStyle=s.color;s.pts.forEach(p=>{c.beginPath();c.arc(X(p[0]),Y(p[1]),s.r||3,0,TAU);c.fill();});}
+    else{c.beginPath();const xs=s.x;for(let i=0;i<s.y.length;i++){const xv=xs?xs[i]:i;i?c.lineTo(X(xv),Y(s.y[i])):c.moveTo(X(xv),Y(s.y[i]));}c.stroke();}
+    c.globalAlpha=1;c.setLineDash([]);});
+  if(o.ylab){c.save();c.translate(10,pt+H/2);c.rotate(-Math.PI/2);c.textAlign="center";c.fillStyle=css("--muted");c.fillText(o.ylab,0,0);c.restore();}
+  return {X,Y};
+}
+
+// ---------------- section 1 ----------------
+function drawSchedule(){const q=C.seq;const [c,w,h]=setup($("sched")),pl=34,pr=38,pt=10,pb=22,W=w-pl-pr,H=h-pt-pb,n=q.n;
+  const X=t=>pl+t/(n-1)*W,Yf=v=>pt+(1-v/60)*H,Yt=v=>pt+(1-(v-10)/6)*H;
+  c.font="11px system-ui, sans-serif";c.fillStyle=css("--muted");c.strokeStyle=css("--line");
+  [0,20,40,60].forEach(v=>{c.beginPath();c.moveTo(pl,Yf(v));c.lineTo(w-pr,Yf(v));c.stroke();c.textAlign="right";c.fillText(v+"°",pl-4,Yf(v)+4);});
+  [10,12,14,16].forEach(v=>{c.textAlign="left";c.fillText(v+" ms",w-pr+4,Yt(v)+4);});
+  c.textAlign="center";for(let t=0;t<=n;t+=n/4)c.fillText(Math.round(t),X(Math.min(t,n-1)),h-6);
+  c.strokeStyle=css("--amber");c.lineWidth=1.6;c.beginPath();for(let t=0;t<n;t++){t?c.lineTo(X(t),Yf(q.fa[t])):c.moveTo(X(t),Yf(q.fa[t]));}c.stroke();
+  c.strokeStyle=css("--cyan");c.lineWidth=1.2;c.beginPath();for(let t=0;t<n;t++){t?c.lineTo(X(t),Yt(q.tr[t])):c.moveTo(X(t),Yt(q.tr[t]));}c.stroke();
+  c.fillStyle=css("--rose");c.fillRect(pl-2,pt,4,H);c.textAlign="left";c.fillText("180° inversion",pl+6,pt+10);
+  c.strokeStyle=css("--ink");c.setLineDash([3,3]);c.beginPath();c.moveTo(X(S.t),pt);c.lineTo(X(S.t),pt+H);c.stroke();c.setLineDash([]);
+  $("swFA").style.background=css("--amber");$("swTR").style.background=css("--cyan");}
+function drawFrame(){const t=Math.min(S.t,C.seq.n-1),arr=new Float32Array(N*N);let mx=1e-6;
+  for(let i=0;i<N*N;i++){if(!C.MASK[i])continue;const v=Math.abs(measuredAt(i,t,pixelTerms(i)));arr[i]=v;if(v>mx)mx=v;}
+  const vals=[];for(let i=0;i<N*N;i+=3)vals.push(arr[i]);vals.sort((a,b)=>a-b);const hi=vals[Math.floor(vals.length*.99)]||mx;
+  drawField($("frame"),arr,0,hi,null);probeMark($("frame"));$("frameCap").textContent="Frame "+(t+1)+", flip "+C.seq.fa[t].toFixed(0)+"°";
+  if($("mView").value==="frame"){drawField($("mImg"),arr,0,hi,null);probeMark($("mImg"));}
+  // spiral
+  const cv=$("spiral"),ctx=cv.getContext("2d"),w=cv.width;ctx.fillStyle="#000";ctx.fillRect(0,0,w,w);
+  for(let back=6;back>=0;back--){const tt=t-back;if(tt<0)continue;const rot=tt*2.39996;ctx.strokeStyle=back?`rgba(79,182,204,${0.12*(7-back)/7})`:"#E8B23A";ctx.lineWidth=back?1:1.6;ctx.beginPath();
+    for(let s=0;s<=220;s++){const u=s/220,r=u*w*0.46,a=u*6*Math.PI+rot;const x=w/2+r*Math.cos(a),y=w/2+r*Math.sin(a);s?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}
+}
+function probeCourse(){const i=S.probe.y*N+S.probe.x,terms=pixelTerms(i),m=C.seq.n,meas=new Float32Array(m),clean=new Float32Array(m);
+  for(let t=0;t<m;t++){meas[t]=measuredAt(i,t,terms);let x=0;for(const [a,f] of terms)x+=a*f[t];clean[t]=x;}return {meas,clean,i};}
+function drawCourse(){const {meas,clean}=probeCourse();let lo=0,hi=0;for(const v of meas){lo=Math.min(lo,v);hi=Math.max(hi,v);}const pad=(hi-lo)*.05||.1;
+  lineplot($("course"),[{y:meas,color:"#8C959C",w:1,a:.8},{y:clean,color:css("--cyan"),w:2}],{x0:0,x1:C.seq.n-1,y0:lo-pad,y1:hi+pad,yt:[0],xt:[0,C.seq.n/2,C.seq.n],vline:S.t,pl:28});
+  $("swClean").style.background=css("--cyan");}
+
+// ---------------- section 2 ----------------
+const EXP=["pz","tz","lesion","muscle","fat"];const expOn={pz:true,tz:true,lesion:true,muscle:false,fat:true};
+function sliderToT(v,a,b){return a*Math.pow(b/a,v);}function tToSlider(t,a,b){return Math.log(t/a)/Math.log(b/a);}
+function drawExplorer(){const series=[];let lo=0,hi=0;
+  EXP.forEach(k=>{if(!expOn[k])return;const f=fisp(TIS[k].T1,TIS[k].T2,1,C.seq);f.forEach(v=>{lo=Math.min(lo,v);hi=Math.max(hi,v);});series.push({y:f,color:TIS[k].color,w:1.6});});
+  const cu=fisp(S.xT1,S.xT2,S.xB1,C.seq);cu.forEach(v=>{lo=Math.min(lo,v);hi=Math.max(hi,v);});series.push({y:cu,color:css("--ink"),w:2.4,dash:[5,3]});
+  lineplot($("explorer"),series,{x0:0,x1:C.seq.n-1,y0:lo*1.05,y1:hi*1.05,yt:[0],xt:[0,C.seq.n/2,C.seq.n],pl:26});
+  const lg=$("expLegend");lg.innerHTML="";EXP.forEach(k=>{const l=document.createElement("label");l.innerHTML=`<input type="checkbox" ${expOn[k]?"checked":""}><span class="dot" style="background:${TIS[k].color}"></span>${TIS[k].name} (${TIS[k].T1}/${TIS[k].T2})`;
+    l.querySelector("input").onchange=e=>{expOn[k]=e.target.checked;drawExplorer();};lg.appendChild(l);});
+  const s=document.createElement("span");s.innerHTML=`<i class="sw" style="background:${css("--ink")}"></i>Custom`;lg.appendChild(s);}
+function drawDict(){const cv=$("dictHeat"),ctx=cv.getContext("2d"),w=cv.width,h=cv.height,img=ctx.createImageData(w,h),d=img.data,n=C.grid.E.length,m=C.seq.n,F=C.full;
+  let mx=0;for(let i=0;i<F.length;i+=7)mx=Math.max(mx,Math.abs(F[i]));
+  for(let y=0;y<h;y++){const e=Math.floor(y/h*n);for(let x=0;x<w;x++){const t=Math.floor(x/w*m);const v=F[e*m+t]/mx;const [r,g,b]=cmap("div",0.5+0.5*v);const o=(y*w+x)*4;d[o]=r;d[o+1]=g;d[o+2]=b;d[o+3]=255;}}
+  ctx.putImageData(img,0,0);
+  $("dictInfo").textContent=`${n.toLocaleString()} entries: T1 100–4000 ms (${GRIDS[S.grid][0]} steps), T2 10–600 ms (${GRIDS[S.grid][1]} steps)`;}
+function drawSVD(){const sv=C.sv,tot=C.svTotal;let cum=0;const pts=[],bars=[];sv.forEach((s,j)=>{cum+=s*s;pts.push([j+1,cum/tot*100]);});
+  const [c,w,h]=setup($("svd")),pl=36,pr=10,pt=8,pb=20,W=w-pl-pr,H=h-pt-pb;const X=j=>pl+(j-0.5)/KMAX*W,Y=v=>pt+(1-(v-80)/20)*H;
+  c.font="11px system-ui, sans-serif";c.fillStyle=css("--muted");c.strokeStyle=css("--line");
+  [80,90,100].forEach(v=>{c.beginPath();c.moveTo(pl,Y(v));c.lineTo(w-pr,Y(v));c.stroke();c.textAlign="right";c.fillText(v+"%",pl-4,Y(v)+4);});
+  pts.forEach(([j,v])=>{c.fillStyle=j<=S.k?css("--amber"):css("--line");const y=Y(Math.max(v,80));c.fillRect(X(j)-W/KMAX*0.35,y,W/KMAX*0.7,pt+H-y);});
+  c.fillStyle=css("--muted");c.textAlign="center";[1,5,10,15,20].forEach(j=>c.fillText(j,X(j),h-5));
+  const e=pts[S.k-1][1];$("svdInfo").textContent=`${S.k} components keep ${e.toFixed(2)}% of the dictionary's energy: each ${C.seq.n}-point fingerprint becomes a ${S.k}-number vector, and matching is ${Math.round(C.seq.n/S.k)}× faster. The prostate protocol compressed 3000 time points to 43 components while preserving 99.9% of the information.`;}
+
+// ---------------- section 3 ----------------
+function drawMatchView(){const v=$("mView").value,cv=$("mImg");
+  if(v==="t1"){drawField(cv,C.T1,0,3000,"t1",C.MASK);$("mCap").textContent="T1 map";}
+  else if(v==="t2"){drawField(cv,C.T2,0,250,"t2",C.MASK);$("mCap").textContent="T2 map";}
+  else{$("mCap").textContent="Frame "+(S.t+1);drawFrame();return;}probeMark(cv);}
+function drawMatch(){
+  const {meas,clean,i}=probeCourse();$("mProbe").textContent=`voxel (${S.probe.x}, ${S.probe.y})`;
+  if(!C.MASK[i]){$("mTbl").innerHTML="<tr><td colspan=5>Outside the body: pick another voxel.</td></tr>";return;}
+  const x=new Float32Array(KMAX);for(let j=0;j<KMAX;j++)x[j]=C.XC[i*KMAX+j];const sl=sliceFor(C.B1[i]);const r=matchVec(sl,x);const E=C.grid.E[r.e];
+  const mf=fisp(E[0],E[1],sl.b1,C.seq);const scale=r.m0;const mfit=mf.map(v=>v*scale);
+  let lo=0,hi=0;for(const v of meas){lo=Math.min(lo,v);hi=Math.max(hi,v);}
+  lineplot($("mPlot"),[{y:meas,color:"#8C959C",w:1,a:.8},{y:mfit,color:css("--rose"),w:2}],{x0:0,x1:C.seq.n-1,y0:lo*1.05,y1:hi*1.05,yt:[0],xt:[0,C.seq.n/2,C.seq.n],pl:28});
+  $("swMatch").style.background=css("--rose");
+  // dominant tissue
+  let dom=null,dw=0;for(const k of TKEYS){if(C.W[k][i]>dw){dw=C.W[k][i];dom=k;}}
+  const t=TIS[dom];
+  $("mTbl").innerHTML=`<tr><td>True (${t.name}${dw<0.95?", partial volume":""})</td><td>${t.T1}</td><td>${t.T2}</td><td>${t.M0.toFixed(2)}</td><td></td></tr>
+    <tr><td><b>MRF match</b></td><td><b>${E[0].toFixed(0)}</b></td><td><b>${E[1].toFixed(0)}</b></td><td><b>${r.m0.toFixed(2)}</b></td><td><b>${r.corr.toFixed(4)}</b></td></tr>`;
+  // landscape
+  const cv=$("land"),ctx=cv.getContext("2d"),w=cv.width,h=cv.height,[n1,n2]=GRIDS[S.grid];const cor=new Float32Array(n1*n2).fill(NaN);
+  const k=S.k;let xn=0;for(let j=0;j<k;j++)xn+=x[j]*x[j];xn=Math.sqrt(xn)||1;let cmax=-1,cmin=1;
+  C.grid.E.forEach((E2,e)=>{let d=0;for(let j=0;j<k;j++)d+=sl.cn[e*k+j]*x[j];const c=d/xn;cor[E2[2]*n2+E2[3]]=c;cmax=Math.max(cmax,c);cmin=Math.min(cmin,c);});
+  const lo2=Math.max(cmin,cmax-0.25);const img=ctx.createImageData(w,h),d=img.data;
+  for(let y=0;y<h;y++){const j=Math.floor((1-y/h)*n2);for(let xx=0;xx<w;xx++){const ii=Math.floor(xx/w*n1);const c=cor[ii*n2+j];const o=(y*w+xx)*4;
+    if(isNaN(c)){d[o]=d[o+1]=d[o+2]=28;}else{const [r2,g,b]=cmap("t1",Math.pow((c-lo2)/(cmax-lo2),2));d[o]=r2;d[o+1]=g;d[o+2]=b;}d[o+3]=255;}}
+  ctx.putImageData(img,0,0);
+  const px=v=>Math.log(v/100)/Math.log(40)*w,py=v=>(1-Math.log(v/10)/Math.log(60))*h;
+  ctx.strokeStyle="#fff";ctx.lineWidth=2;const X0=px(E[0]),Y0=py(E[1]);ctx.beginPath();ctx.moveTo(X0-7,Y0);ctx.lineTo(X0+7,Y0);ctx.moveTo(X0,Y0-7);ctx.lineTo(X0,Y0+7);ctx.stroke();
+  ctx.strokeStyle="#4FB6CC";ctx.beginPath();ctx.arc(px(t.T1),py(t.T2),6,0,TAU);ctx.stroke();
+  ctx.fillStyle="#fff";ctx.font="11px system-ui";ctx.fillText("T1 →",w-34,h-6);ctx.save();ctx.translate(12,30);ctx.rotate(-Math.PI/2);ctx.fillText("T2 →",-10,0);ctx.restore();
+}
+
+// ---------------- section 4 ----------------
+function synth(){const {TR,TE,TI}=S.syn,o=new Float32Array(N*N);
+  for(let i=0;i<N*N;i++){if(!C.MASK[i])continue;const T1=C.T1[i],T2=C.T2[i],M=C.M0[i];let s;
+    if(TI>0)s=M*Math.abs(1-2*Math.exp(-TI/T1)+Math.exp(-TR/T1))*Math.exp(-TE/T2);else s=M*(1-Math.exp(-TR/T1))*Math.exp(-TE/T2);o[i]=s;}return o;}
+function drawMaps(){
+  drawField($("mapT1"),C.T1,0,3000,"t1",C.MASK);drawField($("mapT2"),C.T2,0,250,"t2",C.MASK);
+  drawField($("mapM0"),C.M0,0.4,1,null,C.MASK);drawField($("mapQ"),C.Q,0.97,1,null,C.MASK);drawField($("mapB1"),C.B1,0.8,1.2,"div");
+  const sy=synth();const v=[];for(let i=0;i<N*N;i+=2)if(C.MASK[i])v.push(sy[i]);v.sort((a,b)=>a-b);drawField($("mapSyn"),sy,0,v[Math.floor(v.length*.995)]||1,null,C.MASK);
+  $("synCap").textContent="Synthetic "+S.syn.name;
+  $("cbT1").style.background=grad("t1");$("cbT2").style.background=grad("t2");$("cbB1").style.background=grad("div");
+  let rows="";Object.keys(ROIS).forEach(k=>{if(k==="lesion"&&!S.lesion)return;const r=ROIS[k],idx=[];
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){const dx=(x+.5)*SC-r[0],dy=(y+.5)*SC-r[1];if(dx*dx+dy*dy<=r[2]*r[2]&&C.MASK[y*N+x])idx.push(y*N+x);}
+    const ms=a=>{let m=0;idx.forEach(i=>m+=a[i]);m/=idx.length;let s=0;idx.forEach(i=>s+=(a[i]-m)**2);return [m,Math.sqrt(s/Math.max(idx.length-1,1))];};
+    const [a,as]=ms(C.T1),[b,bs]=ms(C.T2),t=TIS[k];
+    rows+=`<tr><td><span class="dot" style="background:${t.color}"></span>${t.name}</td><td>${t.T1}</td><td>${a.toFixed(0)} ± ${as.toFixed(0)}</td><td>${t.T2}</td><td>${b.toFixed(0)} ± ${bs.toFixed(0)}</td></tr>`;});
+  $("roiTbl").innerHTML=rows;
+}
+function drawAll(){if(!C.XC)return;drawSchedule();drawFrame();drawCourse();drawExplorer();drawDict();drawSVD();drawMatchView();drawMatch();drawMaps();}
+
+// ---------------- section 5: Monte Carlo ----------------
+async function mcDict(b1){const key=b1.toFixed(2);if(b1===1)return C.slices.get(1);if(C.slices.has(+key))return C.slices.get(+key);
+  if(!C.mcCache.has(key)){status("Simulating a dictionary at B1 = "+key+"…",true);await sleep();C.mcCache.set(key,await simSlice(b1,false));}return C.mcCache.get(key);}
+let mcRes=null;
+async function runMC(){
+  const M=S.mc,t=TIS[M.tissue],b1=M.b1,trials=300,m=C.seq.n,k=S.k;M.sm=mcTimes();
+  const sl=M.b1d?await mcDict(b1):C.slices.get(1);
+  const f=fisp(t.T1,t.T2,b1,C.seq),r=mulb(12345),gs=()=>{const u=Math.max(r(),1e-9),v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);};
+  const TI=logspace(50,4000,M.nTI),ESP=12,TE=[...Array(M.nTE)].map((_,j)=>(j+1)*ESP);
+  const ir0=TI.map(ti=>t.M0*(1-(1-Math.cos(Math.PI*b1))*Math.exp(-ti/t.T1)));const se0=cpmg(t.T2,t.T1,b1,M.nTE,ESP).map(v=>v*t.M0*Math.sin(Math.PI/2*b1)/Math.max(Math.sin(Math.PI/2*b1),1e-6));
+  const R={cT1:[],cT2:[],mT1:[],mT2:[]},x=new Float32Array(m),xc=new Float32Array(KMAX);let ex=null;
+  for(let n=0;n<trials;n++){
+    const yi=ir0.map(v=>v+M.sc*gs());const fi=fitIR(TI,yi);R.cT1.push(fi.T1);
+    const ys=se0.map(v=>Math.abs(v+M.sc*gs()));const fs=fitSE(TE,ys);R.cT2.push(fs.T2);
+    if(n===0)ex={TI,yi,fi,TE,ys,fs};
+    for(let q=0;q<m;q++)x[q]=t.M0*f[q]+M.sm*gs();
+    for(let j=0;j<KMAX;j++){let s=0;const o=j*m;for(let q=0;q<m;q++)s+=C.V[o+q]*x[q];xc[j]=s;}
+    const mr=matchVec(sl,xc),E=C.grid.E[mr.e];R.mT1.push(E[0]);R.mT2.push(E[1]);
+  }
+  mcRes={R,ex,t};drawMC();status(`Monte Carlo: ${trials} repeats of ${t.name}, conventional ${M.nTI} TIs and ${M.nTE} echoes versus ${m}-point MRF.`);
+}
+function st(a,truth){const n=a.length;const mu=a.reduce((s,v)=>s+v,0)/n;const sd=Math.sqrt(a.reduce((s,v)=>s+(v-mu)**2,0)/(n-1));return {mu,sd,cv:sd/mu*100,bias:(mu-truth)/truth*100};}
+function hist(cv,A,B,truth,label){const all=A.concat(B);let lo=Math.min(...all,truth),hi=Math.max(...all,truth);const pad=(hi-lo)*.08||truth*.05;lo-=pad;hi+=pad;const nb=40;
+  const bin=a=>{const h=new Array(nb).fill(0);a.forEach(v=>h[clamp(Math.floor((v-lo)/(hi-lo)*nb),0,nb-1)]++);return h;};const ha=bin(A),hb=bin(B),mx=Math.max(...ha,...hb);
+  const [c,w,h]=setup(cv),pl=22,pr=22,pt=16,pb=20,W=w-pl-pr,H=h-pt-pb;const X=v=>pl+(v-lo)/(hi-lo)*W;
+  const draw=(hh,col,al)=>{c.fillStyle=col;c.globalAlpha=al;hh.forEach((v,i)=>{const bh=v/mx*H;c.fillRect(pl+i/nb*W+0.5,pt+H-bh,W/nb-1,bh);});c.globalAlpha=1;};
+  draw(ha,"#8C959C",.75);draw(hb,css("--amber"),.8);
+  c.strokeStyle=css("--ink");c.lineWidth=1.5;c.beginPath();c.moveTo(X(truth),pt-4);c.lineTo(X(truth),pt+H);c.stroke();
+  c.fillStyle=css("--muted");c.font="11px system-ui, sans-serif";c.fillText(label,pl,11);c.textAlign="center";
+  const ticks=5;for(let i=0;i<=ticks;i++){const v=lo+(hi-lo)*i/ticks;c.fillText(v.toFixed(0),X(v),h-5);}}
+function drawMC(){if(!mcRes)return;const {R,ex,t}=mcRes;
+  hist($("histT1"),R.cT1,R.mT1,t.T1,"T1 (ms)");hist($("histT2"),R.cT2,R.mT2,t.T2,"T2 (ms)");$("swMRF").style.background=css("--amber");
+  const a=st(R.cT1,t.T1),b=st(R.mT1,t.T1),c=st(R.cT2,t.T2),d=st(R.mT2,t.T2);
+  const row=(n,s)=>`<tr><td>${n}</td><td>${s.mu.toFixed(0)}</td><td>${s.sd.toFixed(1)}</td><td>${s.cv.toFixed(1)}%</td><td>${s.bias>=0?"+":""}${s.bias.toFixed(1)}%</td></tr>`;
+  $("mcTbl").innerHTML=row("T1 conventional",a)+row("T1 MRF",b)+row("T2 conventional",c)+row("T2 MRF",d);
+  const fl=[];
+  {const [g1,g2]=GRIDS[S.grid],s1=(Math.pow(40,1/(g1-1))-1)*100,s2=(Math.pow(60,1/(g2-1))-1)*100,b1b=b.cv<0.8*a.cv,b2b=d.cv<0.8*c.cv;
+  if(b1b&&b2b)fl.push({ok:1,t:`MRF is more precise for both: T1 CV ${b.cv.toFixed(1)}% vs ${a.cv.toFixed(1)}%, T2 CV ${d.cv.toFixed(1)}% vs ${c.cv.toFixed(1)}%.`});
+  else if(b1b||b2b){const w=b1b?"T1":"T2",o=b1b?"T2":"T1";fl.push({ok:1,t:`MRF is clearly more precise for ${w} (CV ${(b1b?b.cv:d.cv).toFixed(1)}% vs ${(b1b?a.cv:c.cv).toFixed(1)}%). ${o} is similar (${(b1b?d.cv:b.cv).toFixed(1)}% vs ${(b1b?c.cv:a.cv).toFixed(1)}%); with dictionary steps of about ${(b1b?s2:s1).toFixed(0)}% in ${o}, MRF estimates snap between neighboring entries, so grid spacing rather than noise sets the spread.`});}}
+  if(S.mc.mode==="own"&&(b.cv>a.cv||d.cv>c.cv))fl.push({t:"A single short MRF pass is noisier than a long reference protocol, but it took a tiny fraction of the time. Precision per minute of scanning (efficiency) is what MRF buys; switch to equal scan time to see it."});
+  if(Math.abs(c.bias)>5&&Math.abs(S.mc.b1-1)>0.03)fl.push({t:`B1 = ${S.mc.b1.toFixed(2)} gives the spin-echo train stimulated echoes, so the mono-exponential fit is biased (${c.bias.toFixed(0)}%). MRF models this in the dictionary${S.mc.b1d?"":", but only if B1 is included; tick the box"}.`});
+  if(!S.mc.b1d&&Math.abs(S.mc.b1-1)>0.03&&Math.abs(d.bias)>5)fl.push({t:`MRF matched against a B1 = 1 dictionary is biased too (T2 ${d.bias.toFixed(0)}%). This is why B1 mapping or B1-insensitive schedules matter at 3 T.`});
+  if(d.sd<1e-6||b.sd<1e-6)fl.push({t:"Every MRF repeat landed on the same dictionary entry: precision is now limited by grid spacing, not noise. Switch to the fine grid to see the true spread."});
+  $("mcFlags").innerHTML=fl.map(f=>`<div class="flag${f.ok?" ok":""}">${f.t}</div>`).join("");
+  // example fits
+  const [cc,w,h]=setup($("mcFit")),pl=34,pr=10,pt=10,pb=20,W=(w-pl-pr-30)/2,H=h-pt-pb;
+  const panel=(x0,xs,ys,fit,xmax,ymin,ymax,col,lab)=>{const X=v=>x0+v/xmax*W,Y=v=>pt+(1-(v-ymin)/(ymax-ymin))*H;
+    cc.strokeStyle=css("--line");cc.beginPath();cc.moveTo(x0,Y(0));cc.lineTo(x0+W,Y(0));cc.stroke();cc.fillStyle=css("--muted");cc.font="11px system-ui, sans-serif";cc.fillText(lab,x0,h-5);
+    cc.strokeStyle=col;cc.lineWidth=1.8;cc.beginPath();for(let i=0;i<=120;i++){const v=i/120*xmax;const y=fit(v);i?cc.lineTo(X(v),Y(y)):cc.moveTo(X(v),Y(y));}cc.stroke();
+    cc.fillStyle=col;xs.forEach((v,i)=>{cc.beginPath();cc.arc(X(v),Y(ys[i]),3.5,0,TAU);cc.fill();});};
+  const Mx=t.M0*1.1;
+  panel(pl,ex.TI,ex.yi,v=>ex.fi.a+ex.fi.b*Math.exp(-v/ex.fi.T1),4200,-Mx,Mx,css("--cyan"),`IR: T1 fit ${ex.fi.T1.toFixed(0)} ms`);
+  panel(pl+W+30,ex.TE,ex.ys,v=>ex.fs.A*Math.exp(-v/ex.fs.T2),ex.TE[ex.TE.length-1]*1.05,0,Mx,css("--rose"),`MESE: T2 fit ${ex.fs.T2.toFixed(0)} ms`);
+  $("swIR").style.background=css("--cyan");$("swSE").style.background=css("--rose");
+}
+
+// ---------------- controls ----------------
+const SL={beta:[v=>(+v).toFixed(2),1],noise:[v=>(+v).toFixed(3),1],k:[v=>v,0]};
+Object.keys(SL).forEach(key=>$(key).addEventListener("input",e=>{S[key]=parseFloat(e.target.value);$(key+"O").textContent=SL[key][0](S[key]);custom();
+  if(key==="k"){drawSVD();}rebuild(SL[key][1]);}));
+$("pattern").onchange=e=>{S.pattern=e.target.value;custom();rebuild(3);};
+$("nTR").onchange=e=>{S.nTR=+e.target.value;S.t=Math.min(S.t,S.nTR-1);$("tSlider").max=S.nTR-1;custom();rebuild(3);};
+$("grid").onchange=e=>{S.grid=e.target.value;custom();rebuild(3);};
+["b1on","b1corr","lesion"].forEach(k=>$(k).onchange=e=>{S[k]=e.target.checked;custom();rebuild(k==="b1corr"?2:1);});
+$("tSlider").addEventListener("input",e=>{S.t=+e.target.value;drawSchedule();drawFrame();drawCourse();});
+let playing=false;$("play").onclick=()=>{playing=!playing;$("play").textContent=playing?"Pause":"Play";const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const step=()=>{if(!playing)return;S.t=(S.t+(reduce?20:3))%C.seq.n;$("tSlider").value=S.t;drawSchedule();drawFrame();drawCourse();setTimeout(()=>requestAnimationFrame(step),reduce?400:40);};step();};
+function pick(cv,e){const r=cv.getBoundingClientRect();S.probe={x:clamp(Math.floor((e.clientX-r.left)/r.width*N),0,N-1),y:clamp(Math.floor((e.clientY-r.top)/r.height*N),0,N-1)};drawFrame();drawCourse();drawMatchView();drawMatch();}
+["frame","mImg"].forEach(id=>$(id).addEventListener("click",e=>pick($(id),e)));
+$("mView").onchange=()=>{drawMatchView();};
+const XR={xT1:[100,4000],xT2:[10,600]};
+["xT1","xT2"].forEach(k=>$(k).addEventListener("input",e=>{S[k]=sliderToT(+e.target.value,...XR[k]);$(k+"O").textContent=S[k].toFixed(0)+" ms";drawExplorer();}));
+$("xB1").addEventListener("input",e=>{S.xB1=+e.target.value;$("xB1O").textContent=S.xB1.toFixed(2);drawExplorer();});
+const SYN={t2w:{TR:4000,TE:100,TI:0,name:"T2-weighted"},t1w:{TR:500,TE:10,TI:0,name:"T1-weighted"},pd:{TR:3000,TE:12,TI:0,name:"PD"},stir:{TR:5000,TE:40,TI:260,name:"STIR"}};
+document.querySelectorAll("[data-syn]").forEach(b=>b.onclick=()=>{S.syn=Object.assign({},SYN[b.dataset.syn]);syncSyn();drawMaps();});
+["sTR","sTE","sTI"].forEach(k=>$(k).addEventListener("input",e=>{S.syn[k.slice(1)]=+e.target.value;S.syn.name="custom";syncSyn();drawMaps();}));
+function syncSyn(){$("sTR").value=S.syn.TR;$("sTRO").textContent=S.syn.TR+" ms";$("sTE").value=S.syn.TE;$("sTEO").textContent=S.syn.TE+" ms";$("sTI").value=S.syn.TI;$("sTIO").textContent=S.syn.TI?S.syn.TI+" ms":"none";}
+// MC controls
+const mcT=$("mcTissue");["lesion","pz","tz","muscle"].forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=`${TIS[k].name} (T1 ${TIS[k].T1}, T2 ${TIS[k].T2})`;mcT.appendChild(o);});
+mcT.onchange=e=>{S.mc.tissue=e.target.value;};
+const MCS={mcSC:["sc",v=>(+v).toFixed(3)],mcTI:["nTI",v=>v],mcTE:["nTE",v=>v],mcB1:["b1",v=>(+v).toFixed(2)]};
+Object.keys(MCS).forEach(id=>$(id).addEventListener("input",e=>{S.mc[MCS[id][0]]=parseFloat(e.target.value);$(id+"O").textContent=MCS[id][1](e.target.value);mcTimes();}));
+$("mcMode").onchange=e=>{S.mc.mode=e.target.value;mcTimes();};
+function mcTimes(){if(!C.seq)return null;const M=S.mc,Tir=M.nTI*48*10,Tse=48*2,Tc=Tir+Tse,Tm=C.seq.tr.reduce((a,b)=>a+b,0)/1000,fr=M.sc*Math.sqrt(48);
+  let sm=fr,txt;if(M.mode==="time"){const nav=Tc/Tm;sm=fr/Math.sqrt(nav);txt=`Conventional: ${M.nTI} IR images (${(Tir/60).toFixed(0)} min) + spin-echo train (${(Tse/60).toFixed(1)} min) = ${(Tc/60).toFixed(1)} min. One MRF pass takes ${Tm.toFixed(1)} s, so ${Math.round(nav)} passes fit in the same time; effective noise per MRF frame ${sm.toFixed(4)}.`;}
+  else if(M.mode==="own"){txt=`Conventional ${(Tc/60).toFixed(1)} min versus a single ${Tm.toFixed(1)} s MRF pass, ${Math.round(Tc/Tm)}× faster; noise per MRF frame ${sm.toFixed(3)}.`;}
+  else{sm=M.sc;txt=`Same noise (${sm.toFixed(3)}) in every conventional image and every MRF frame, ignoring that an MRF frame takes one TR and a conventional image takes minutes.`;}
+  $("mcTime").textContent=txt;return sm;}
+$("mcB1d").onchange=e=>{S.mc.b1d=e.target.checked;};
+$("mcRun").onclick=async()=>{if(running){status("Wait for the current update to finish…",true);return;}$("mcRun").disabled=true;try{await runMC();}finally{$("mcRun").disabled=false;}};
+
+function syncUI(){
+  $("pattern").value=S.pattern;$("nTR").value=S.nTR;$("tSlider").max=S.nTR-1;$("tSlider").value=S.t;$("grid").value=S.grid;
+  ["beta","noise","k"].forEach(k=>{$(k).value=S[k];$(k+"O").textContent=SL[k][0](S[k]);});
+  ["b1on","b1corr","lesion"].forEach(k=>$(k).checked=S[k]);
+  $("xT1").value=tToSlider(S.xT1,100,4000);$("xT1O").textContent=S.xT1.toFixed(0)+" ms";$("xT2").value=tToSlider(S.xT2,10,600);$("xT2O").textContent=S.xT2.toFixed(0)+" ms";$("xB1").value=S.xB1;$("xB1O").textContent=S.xB1.toFixed(2);
+  syncSyn();mcT.value=S.mc.tissue;$("mcMode").value=S.mc.mode;mcTimes();Object.keys(MCS).forEach(id=>{$(id).value=S.mc[MCS[id][0]];$(id+"O").textContent=MCS[id][1](S.mc[MCS[id][0]]);});$("mcB1d").checked=S.mc.b1d;
+}
+
+// ---------------- scenarios ----------------
+const SCEN=[
+  {id:"base",label:"FISP-MRF baseline",set:{},lvl:3,note:"A 600-frame inversion-prepared FISP-MRF acquisition of the mid prostate with moderate aliasing and noise. Scrub or play the frames in section 1: every frame is unreadable, yet the maps in section 4 come out clean. Click voxels in section 3 to see why."},
+  {id:"alias",label:"Heavy undersampling",set:{beta:0.7,noise:0.03},lvl:1,note:"Aliasing and noise are pushed well beyond what any conventional image would tolerate. Correlations drop and the maps get noisier, most of all T1 in long-T1 tissue like the peripheral zone, yet anatomy and tissue contrast survive because the artifacts change from frame to frame and do not resemble any fingerprint. Real reconstructions add low-rank or deep-learning methods to push this further."},
+  {id:"const",label:"Constant flip angle",set:{pattern:"const"},lvl:3,note:"Without variation in flip angle and TR, the schedule is a plain inversion-recovery FISP: T1 is still encoded by the recovery, but fingerprints for different T2 are nearly identical, so the T2 map fails. Variation is what makes fingerprints unique."},
+  {id:"short",label:"Short train",set:{nTR:200},lvl:3,note:"Only 200 time points. The acquisition is shorter, but each fingerprint carries less information and T2 in particular becomes noisier. MRF trades scan time against precision like any other method; the difference is how efficiently it spends each sample."},
+  {id:"b1u",label:"B1 not corrected",set:{b1on:true,b1corr:false},lvl:1,note:"At 3 T the transmitted flip angle varies across the pelvis (see the B1 map). Matching against a dictionary that assumes nominal flip angles produces a left–right gradient in T2 across the prostate. Compare the ROI table with ground truth."},
+  {id:"b1c",label:"B1 corrected",set:{b1on:true,b1corr:true},lvl:2,note:"The dictionary is extended with several B1 values, and each voxel is matched only against the slice that corresponds to its measured B1. The gradient disappears, at the cost of a larger dictionary. Rapid B1-insensitive schedules are another route to the same goal."},
+  {id:"coarse",label:"Coarse dictionary",set:{grid:"coarse"},lvl:3,note:"Few T1 and T2 steps: the maps look posterized and nearby values collapse onto the same entry. This is the dictionary-resolution effect behind the higher variability reported for very short T2 in the multicenter prostate study."}
+];
+let active=null;const scenEl=$("scen");
+SCEN.forEach(sc=>{const b=document.createElement("button");b.textContent=sc.label;b.dataset.id=sc.id;b.onclick=()=>applyScen(sc.id);scenEl.appendChild(b);});
+function applyScen(id){const sc=SCEN.find(s=>s.id===id);active=id;const prev={pattern:S.pattern,nTR:S.nTR,grid:S.grid,b1corr:S.b1corr};
+  const keep={probe:S.probe,t:S.t,mc:S.mc,syn:S.syn,xT1:S.xT1,xT2:S.xT2,xB1:S.xB1};Object.assign(S,JSON.parse(JSON.stringify(DEF)),keep,sc.set);S.t=Math.min(S.t,S.nTR-1);
+  let lvl=sc.lvl;if(S.pattern!==prev.pattern||S.nTR!==prev.nTR||S.grid!==prev.grid)lvl=3;else if(S.b1corr&&!prev.b1corr)lvl=Math.max(lvl,2);else lvl=Math.max(1,Math.min(lvl,1));
+  scenEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.id===id));$("note").textContent=sc.note;syncUI();rebuild(lvl);}
+function custom(){if(!active)return;active=null;scenEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed","false"));$("note").textContent="Custom settings. Use the frames, the correlation landscape and the ROI table to explain what changed.";}
+window.addEventListener("resize",()=>{if(C.XC){drawSchedule();drawCourse();drawExplorer();drawSVD();drawMatch();drawMC();}});
+S.probe={x:Math.round(122/SC),y:Math.round(108/SC)};
+syncUI();applyScen("base");
+})();
+</script>
+</body>
+</html>

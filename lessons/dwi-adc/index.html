@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diffusion-weighted imaging: b-values, ADC and calculated b</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F1; --panel:#FFFFFF; --ink:#18222C; --muted:#5A6874; --line:#CFD6DB;
+  --amber:#C98A0C; --cyan:#1F7F95; --warn:#B8621B; --ok:#2F7D4F;
+  --chip-warn:#FBEEDD; --chip-ok:#E3F1E8; --soft:#F5F7F8;
+  --ui:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --read:"Literata", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843;
+    --amber:#E8B23A; --cyan:#4FB6CC; --warn:#E39B53; --ok:#6CC08D;
+    --chip-warn:#3A2A16; --chip-ok:#1D3327; --soft:#1E2833;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843;
+  --amber:#E8B23A; --cyan:#4FB6CC; --warn:#E39B53; --ok:#6CC08D;
+  --chip-warn:#3A2A16; --chip-ok:#1D3327; --soft:#1E2833;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-family:var(--read);font-weight:600;font-size:26px;margin:46px 0 12px;line-height:1.2}
+h3{font-size:16px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}
+.lede{font-family:var(--read);font-size:18px;max-width:78ch;color:var(--muted)}
+.read{font-family:var(--read);max-width:78ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+.organ{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:20px 0 4px;background:var(--panel)}
+.organ button{font:inherit;font-size:16px;font-weight:600;padding:9px 20px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.organ button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 12px}
+.scen button{font:inherit;font-size:14px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.scen button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:12px 16px;border-radius:4px;font-family:var(--read);margin-bottom:16px;min-height:52px}
+
+.stage{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.stage{grid-template-columns:1fr}}
+.lightbox{background:#000;border-radius:10px;padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.frame canvas{width:100%;height:auto;display:block;border-radius:3px;cursor:crosshair}
+.cap{color:#C9D3DA;font-size:13px;margin-top:5px;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:26px}
+.cap b{color:#fff;font-weight:600}
+.cap select{background:#1b242d;color:#fff;border:1px solid #3a4652;border-radius:5px;font:inherit;font-size:13px;padding:2px 4px;max-width:66%}
+.hint{font-size:12.5px;color:var(--muted)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-4px -4px 12px}
+.tabs button{font:inherit;font-size:14px;font-weight:600;background:none;border:0;border-bottom:2px solid transparent;padding:6px 10px;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--amber)}
+.tabpanel[hidden]{display:none}
+.ctl{display:grid;grid-template-columns:130px 1fr 72px;align-items:center;gap:8px;margin:7px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}
+.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.grp{font-size:13px;color:var(--muted);margin:14px 0 4px;font-weight:600}
+.grp:first-child{margin-top:0}
+.row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:14px;margin:7px 0}
+.bchips{display:flex;flex-wrap:wrap;gap:6px}
+.bchips button{font:inherit;font-size:13px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums}
+.bchips button[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#1a1300;font-weight:600}
+.dyn[hidden]{display:none}
+
+.graphp{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px}
+@media (max-width:1000px){.graphp{grid-template-columns:1fr}}
+.gbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:14px;margin-bottom:8px}
+.morph{display:flex;align-items:center;gap:8px}
+.morph input{width:170px;accent-color:var(--amber)}
+.morph span{font-size:13px;color:var(--muted)}
+.mini{font:inherit;font-size:13px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+#graph{width:100%;height:400px;display:block;cursor:ew-resize;touch-action:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.legend .lg{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px;background:var(--panel)}
+.legend .lg input{margin:0 0 0 9px;accent-color:var(--ink)}
+.legend .lg button{font:inherit;font-size:13px;border:0;background:none;color:var(--ink);padding:4px 10px 4px 6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.legend .lg.focus{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.formula{font-family:var(--read);background:var(--soft);border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:15px;line-height:1.7}
+.formula .big{font-size:18px}
+.formula b{font-family:var(--ui);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th{font-weight:600;color:var(--muted);font-size:12px}
+th:first-child,td:first-child{text-align:left;white-space:nowrap}
+.flag{font-size:13px;padding:8px 10px;border-radius:6px;background:var(--chip-warn);border-left:3px solid var(--warn);margin-top:10px}
+.flag.ok{background:var(--chip-ok);border-left-color:var(--ok)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.card .sig{font-size:13px;color:var(--muted);font-family:var(--ui)}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow-x:auto;margin-top:10px}
+.tbl table{min-width:620px}
+.tbl th,.tbl td{padding:9px 12px;text-align:left;vertical-align:top;font-size:14.5px}
+.tbl th{font-size:13px}
+ol.qa{counter-reset:q;list-style:none;padding:0;margin:10px 0 0;max-width:82ch}
+ol.qa li{counter-increment:q;position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--line);font-family:var(--read);line-height:1.6}
+ol.qa li::before{content:counter(q);position:absolute;left:0;top:12px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--ui);font-weight:600;font-size:14px;display:grid;place-items:center}
+ol.qa li b{font-family:var(--ui)}
+.quote{font-family:var(--read);font-style:italic;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;max-width:82ch}
+.eqline{font-family:var(--read);font-size:19px;margin:10px 0 14px}
+.foot{margin-top:40px;font-size:13px;color:var(--muted);max-width:82ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Diffusion-weighted imaging: from b-values to ADC to calculated b</h1>
+<p class="lede">Every tissue on this page decays with its own mix of perfusion, diffusion and T2, and is imaged at whatever b-values you choose. Watch the curves separate, flip the plot to a log scale to see them straighten into lines whose slopes are the ADC, then extrapolate those lines to build a calculated high b-value.</p>
+<p class="eqline">S(b) = S₀ · e<sup>−b·ADC</sup> &nbsp;⟺&nbsp; ln S(b) = ln S₀ − ADC · b</p>
+
+<div class="organ" id="organ" role="group" aria-label="Anatomy">
+  <button data-o="abd">Upper abdomen</button>
+  <button data-o="pro">Prostate</button>
+</div>
+<div class="scen" id="scen" role="group" aria-label="Teaching cases"></div>
+<div class="note" id="note"></div>
+
+<div class="stage">
+  <div>
+    <div class="lightbox">
+      <div class="frame"><canvas id="c1" width="192" height="192" aria-label="Acquired diffusion image"></canvas>
+        <div class="cap"><b id="cap1t">Acquired</b><span id="cap1"></span></div></div>
+      <div class="frame"><canvas id="c2" width="192" height="192" aria-label="ADC map"></canvas>
+        <div class="cap"><b>ADC map</b><span id="cap2"></span></div></div>
+      <div class="frame"><canvas id="c3" width="192" height="192" aria-label="Selectable image 1"></canvas>
+        <div class="cap"><select id="p3" aria-label="Choose image for panel 3"></select><span id="cap3"></span></div></div>
+      <div class="frame"><canvas id="c4" width="192" height="192" aria-label="Selectable image 2"></canvas>
+        <div class="cap"><select id="p4" aria-label="Choose image for panel 4"></select><span id="cap4"></span></div></div>
+    </div>
+    <p class="hint" style="margin-top:8px">Each diffusion image is auto-windowed like PACS, except that calculated and acquired images at the same b share one window so you can compare them. The ADC map is fixed at 0–3.0 ×10⁻³ mm²/s. Colored circles are the ROIs feeding the graph.</p>
+  </div>
+
+  <div class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="t1">Acquisition</button>
+      <button role="tab" aria-selected="false" data-tab="t2">Tissue</button>
+    </div>
+    <div class="tabpanel" id="t1">
+      <div class="grp">b-values used to compute ADC</div>
+      <div class="bchips" id="fitchips"></div>
+      <p class="hint" style="margin-top:6px">All chips are acquired; highlighted ones feed the least-squares ADC fit (and therefore the calculated b-value).</p>
+      <div class="grp">Display</div>
+      <div class="ctl"><label for="bImg">Panel 1 b-value</label><input type="range" id="bImg" min="0" max="2000" step="10"><output id="bImgO"></output></div>
+      <div class="ctl"><label for="bCalc">Calculated b</label><input type="range" id="bCalc" min="800" max="3000" step="50"><output id="bCalcO"></output></div>
+      <div class="ctl"><label for="noise">Noise</label><input type="range" id="noise" min="0" max="0.03" step="0.001"><output id="noiseO"></output></div>
+    </div>
+    <div class="tabpanel" id="t2" hidden>
+      <div class="dyn" id="abdCtl">
+        <div class="grp">Liver lesions</div>
+        <div class="row"><label><input type="checkbox" id="cyst"> Simple cyst</label><label><input type="checkbox" id="hem"> Hemangioma</label><label><input type="checkbox" id="met"> Metastasis</label></div>
+        <div class="ctl"><label for="metD">Metastasis D</label><input type="range" id="metD" min="0.5" max="1.8" step="0.05"><output id="metDO"></output></div>
+        <div class="grp">Liver microcirculation (IVIM)</div>
+        <div class="ctl"><label for="liverF">Perfusion fraction</label><input type="range" id="liverF" min="0" max="0.45" step="0.01"><output id="liverFO"></output></div>
+        <p class="hint">Perfusion fraction is the share of signal from capillary flow, which dephases at very low b. It lowers with cirrhosis.</p>
+      </div>
+      <div class="dyn" id="proCtl">
+        <div class="grp">Peripheral zone lesion (left posterolateral)</div>
+        <div class="row"><label><input type="checkbox" id="les"> Show lesion</label></div>
+        <div class="ctl"><label for="size">Diameter</label><input type="range" id="size" min="5" max="25" step="1"><output id="sizeO"></output></div>
+        <div class="ctl"><label for="lesD">Lesion D</label><input type="range" id="lesD" min="0.5" max="1.8" step="0.05"><output id="lesDO"></output></div>
+        <div class="ctl"><label for="lesT2">Lesion T2</label><input type="range" id="lesT2" min="50" max="200" step="5"><output id="lesT2O"></output></div>
+        <div class="ctl"><label for="lesK">Lesion kurtosis</label><input type="range" id="lesK" min="0" max="1.4" step="0.05"><output id="lesKO"></output></div>
+        <div class="grp">Other findings</div>
+        <div class="row"><label><input type="checkbox" id="bph"> BPH stromal nodule (transition zone)</label></div>
+        <div class="row"><label><input type="checkbox" id="gas"> Distended rectal gas (EPI distortion)</label></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="graphp">
+  <div class="panel">
+    <h3>Signal versus b-value</h3>
+    <div class="gbar">
+      <div class="morph"><span>Linear</span><input type="range" id="morph" min="0" max="1" step="0.01" aria-label="Linear to log transform"><span>Log</span>
+        <button class="mini" id="anim">Transform</button></div>
+      <label><select id="axis"><option value="true">True b spacing</option><option value="even">Evenly spaced b (classic slide)</option></select></label>
+      <label><input type="checkbox" id="tan"> Tangents at cursor</label>
+      <label><input type="checkbox" id="tri"> Slope triangle</label>
+      <label><input type="checkbox" id="ext"> Extrapolate to calculated b</label>
+    </div>
+    <canvas id="graph" tabindex="0" aria-label="Signal versus b-value graph. Drag or use arrow keys to move the b cursor."></canvas>
+    <div class="legend" id="legend"></div>
+    <p class="hint" style="margin-top:8px">Solid lines: true tissue signal. Dots: ROI measurements (filled if used in the fit). Dashed: mono-exponential fit. Drag across the graph to move the b cursor. Click a tissue name to focus it; the checkbox shows or hides it.</p>
+  </div>
+  <div class="panel">
+    <h3>How the ADC is computed</h3>
+    <div class="formula" id="formula"></div>
+    <table><thead><tr><th>Tissue</th><th>D</th><th>f</th><th>ADC fit</th><th>local</th><th>calc/acq</th></tr></thead><tbody id="tbl"></tbody></table>
+    <p class="hint" style="margin-top:6px">Values in ×10⁻³ mm²/s. "Local" is the log-slope at the graph cursor. "calc/acq" compares calculated and acquired signal at the calculated b.</p>
+    <div id="flags"></div>
+  </div>
+</div>
+
+<h2>What the curves are telling you</h2>
+<div class="cards">
+  <div class="card"><h3>Vessels: gone by b 50</h3>
+    <p>Flowing blood and capillary perfusion move so fast that even small diffusion gradients dephase them. Signal collapses at the lowest b-values, which is why b 50 images look black-blood.</p>
+    <p class="sig">This fast component is the IVIM perfusion fraction. It inflates any ADC that includes b 0.</p></div>
+  <div class="card"><h3>Water: bright start, steep fall</h3>
+    <p>Cysts and bile have long T2, so they start bright on b 0. Water diffuses freely, so the log-line is steep (ADC about 3.0). At b 800 a cyst may still be faintly visible; at b 1400 it is gone.</p>
+    <p class="sig">Some residual brightness at high b in a fluid structure is T2 shine-through, not restriction.</p></div>
+  <div class="card"><h3>Parenchyma: shallow slopes</h3>
+    <p>Liver, spleen, pancreas and prostate zones decay more slowly because cells and membranes hinder water. The spleen and normal lymph nodes are naturally restricted and bright on high b, a useful internal reference.</p>
+    <p class="sig">Liver has a large perfusion fraction, so its ADC depends heavily on the lowest b-value used.</p></div>
+  <div class="card"><h3>Tumor: the line that refuses to fall</h3>
+    <p>High cellularity restricts diffusion, so tumor keeps its signal at high b while everything around it fades. That is the whole contrast mechanism of DWI: the tumor is not getting brighter, the background is getting darker.</p>
+    <p class="sig">The flattest line on the log plot is the lowest ADC.</p></div>
+</div>
+
+<h2>Reading high b together with ADC</h2>
+<div class="tbl"><table>
+  <thead><tr><th>High b image</th><th>ADC map</th><th>Interpretation</th><th>Examples</th></tr></thead>
+  <tbody>
+    <tr><td>Bright</td><td>Dark</td><td>True restricted diffusion</td><td>Tumor, abscess, lymph node, spleen, acute infarct</td></tr>
+    <tr><td>Bright</td><td>Bright</td><td>T2 shine-through</td><td>Hemangioma, cysts with long T2, some edema</td></tr>
+    <tr><td>Dark</td><td>Dark</td><td>T2 blackout (low signal everywhere)</td><td>Fibrosis, hemosiderin, some mucinous or treated lesions with low T2</td></tr>
+    <tr><td>Dark</td><td>Bright</td><td>Free diffusion</td><td>Simple fluid, necrosis, benign cysts</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Why the log transform matters</h2>
+<div class="read">
+<p>On a linear plot, a mono-exponential curve bends everywhere, and its tangent gets shallower as the signal falls, so the slope says nothing directly about diffusion. Take the natural log and the same curve becomes a straight line: ln S = ln S₀ − ADC·b. The slope is −ADC, the intercept is ln S₀, and the intercept carries all the T2 weighting. Two tissues with the same slope have the same ADC regardless of how bright they started. That is why ADC removes T2 shine-through and why high b images alone cannot.</p>
+<p>Real tissue is not perfectly mono-exponential. At low b, the perfusion component makes the log curve start steeper (IVIM). At high b, restricted and hindered compartments make it curve upward (non-Gaussian behavior, described by kurtosis). At very high b, noise adds a floor that flattens the curve further. Turn on tangents and drag the cursor: in log view each tangent slope is the local ADC. A pure mono-exponential tissue has the same local ADC everywhere; real tissue does not, which is why ADC values depend on which b-values you choose, and why protocols must stay consistent for follow-up.</p>
+</div>
+
+<h2>Calculated (extrapolated) b-values</h2>
+<div class="read">
+<p>PI-RADS v2.1 asks for a high b-value image of at least 1400 s/mm², read alongside the ADC map. Acquiring b 1400 or 2000 directly needs stronger or longer diffusion gradients, which means a longer TE, lower signal-to-noise and more distortion, and at the highest b the signal of normal tissue approaches the noise floor. The alternative is to compute it. Having fitted each voxel to ln S = ln S₀ − ADC·b from the acquired b-values (typically b 50–100 and 800–1000), the scanner or workstation simply evaluates the line further out:</p>
+</div>
+<p class="eqline">S(b<sub>calc</sub>) = S₀,fit · e<sup>−ADC·b<sub>calc</sub></sup></p>
+<div class="cards">
+  <div class="card"><h3>Advantages</h3>
+    <p>No extra scan time. No longer TE, so no extra T2 decay or distortion. No Rician noise floor, so background prostate is properly dark. Perfect registration with the ADC map, and any b-value can be generated after the fact.</p></div>
+  <div class="card"><h3>What it inherits</h3>
+    <p>Everything in the source images: their noise (amplified, because an error in ADC is multiplied by b), their artifacts and distortion, and their T2 weighting, so shine-through persists. Including b 0 adds perfusion bias that darkens tissue on the calculated image.</p></div>
+  <div class="card"><h3>What it assumes</h3>
+    <p>That the tissue stays mono-exponential beyond the highest acquired b. Real tissue, especially tumor, shows non-Gaussian diffusion, so its true signal at b 2000 is higher than the extrapolation. Turn on "Extrapolate" and compare the dashed line with the true curve and the acquired point.</p></div>
+</div>
+
+<h2>Prostate DWI under PI-RADS v2.1</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Score</th><th>Peripheral zone DWI (dominant sequence in the PZ)</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>No abnormality on ADC and high b</td></tr>
+    <tr><td>2</td><td>Linear or wedge-shaped hypointensity on ADC and/or linear or wedge-shaped hyperintensity on high b</td></tr>
+    <tr><td>3</td><td>Focal (discrete) mild or moderate hypointensity on ADC and/or mild or moderate hyperintensity on high b; may be markedly hypointense on ADC or markedly hyperintense on high b, but not both</td></tr>
+    <tr><td>4</td><td>Focal markedly hypointense on ADC and markedly hyperintense on high b; &lt; 1.5 cm in greatest dimension</td></tr>
+    <tr><td>5</td><td>Same as 4 but ≥ 1.5 cm, or definite extraprostatic extension or invasive behavior</td></tr>
+  </tbody>
+</table></div>
+<div class="read" style="margin-top:14px">
+<p>Recommended acquisition: ADC from a low b of 0–100 (50–100 preferred) and a high b of 800–1000 s/mm², plus a high b of at least 1400 s/mm², acquired or calculated. ADC thresholds in roughly the 750–900 ×10⁻⁶ mm²/s range have been reported to support clinically significant cancer, but scoring remains a visual assessment, and the simulator's suggested score below is a teaching heuristic only.</p>
+</div>
+
+<h2>How to QA a DWI series</h2>
+<ol class="qa">
+  <li><b>Confirm the b-values.</b> Check which b-values were acquired, which built the ADC map (the DICOM header or series description), and whether the high b is acquired or calculated. Numbers from different b sets are not comparable.</li>
+  <li><b>Look at the low b image first.</b> It is your anatomic and artifact check: distortion near rectal gas, bowel gas or metal; ghosting; fat suppression failure; motion. Anything wrong here is baked into the ADC and the calculated b.</li>
+  <li><b>Always pair high b with ADC.</b> Bright on high b and dark on ADC is restriction. Bright on both is shine-through. Dark on both is T2 blackout. Never call restriction on the high b alone.</li>
+  <li><b>Check the noise floor.</b> On acquired high b images, look at the background and at tissue that should be dark. If normal tissue is not darker than the noise, low ADC values in that region may just be the floor.</li>
+  <li><b>Use internal references.</b> Spleen and lymph nodes are restricted; bile, CSF and urine should have ADC near 3.0; normal PZ usually above 1.4. If references are off, suspect the fit, b-value choice or artifacts.</li>
+  <li><b>Place ROIs carefully.</b> Stay inside the lesion, away from edges, cyst walls, vessels and susceptibility. Report the b-values used and whether the value is a mean or minimum.</li>
+  <li><b>Scrutinize calculated high b images.</b> Compare with an acquired high b if you have one. Bright foci that exist only on the calculated image, or that sit where the source images show artifact, deserve suspicion.</li>
+  <li><b>Correlate with T2 and DCE.</b> In the PZ, DWI is dominant; in the TZ, T2 is. A DWI finding without a T2 correlate, or a markedly restricted TZ nodule that is well circumscribed and encapsulated on T2, should be scored with the zone rules in mind.</li>
+</ol>
+<div class="quote">Left posterolateral peripheral zone, mid gland: 1.3 cm focal lesion, markedly hypointense on ADC (mean 0.78 ×10⁻³ mm²/s, b 50/800) and markedly hyperintense on calculated b 1400. PI-RADS DWI 4.</div>
+
+<p class="foot">Synthetic teaching phantom with schematic anatomy. Signal uses an IVIM (perfusion) plus kurtosis model with a fixed echo time; relaxation times, diffusion coefficients and perfusion fractions are illustrative, not calibrated to any scanner. The acquired image at the calculated b models the SNR penalty of acquiring high b directly by increasing noise. Rician noise, auto-windowing and the EPI distortion near rectal gas are simplified approximations.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+// =============== CORE ===============
+const N=192,TAU=2*Math.PI;
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+function ell(x,y,cx,cy,a,b){const dx=(x-cx)/a,dy=(y-cy)/b;const d=Math.sqrt(dx*dx+dy*dy);return clamp(0.5-(d-1)*Math.min(a,b)/1.3,0,1);}
+function ellr(x,y,cx,cy,a,b,ang){const c=Math.cos(ang),s=Math.sin(ang),dx=x-cx,dy=y-cy;return ell(cx+dx*c+dy*s,cy-dx*s+dy*c,cx,cy,a,b);}
+function mul(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const NOISE=[];(function(){for(let f=0;f<26;f++){const r=mul(4242+f*7907),o=new Float32Array(N*N);for(let i=0;i<N*N;i+=2){const u=Math.max(r(),1e-9),v=r(),m=Math.sqrt(-2*Math.log(u));o[i]=m*Math.cos(TAU*v);o[i+1]=m*Math.sin(TAU*v);}NOISE.push(o);}})();
+
+const MMPX=150/192;
+const ORG={
+  abd:{name:"Upper abdomen",TE:70,bList:[0,50,100,200,400,800,1000,1500],fit:[50,400,800],bImg:800,bCalc:1500,bmax:1600,noise:0.008,p3:"calc",p4:"b0",
+       graph:["blood","cyst","liver","met","spleen","kidney","hem","pancreas","muscle"],vis:["blood","cyst","liver","met"],focus:"liver"},
+  pro:{name:"Prostate",TE:80,bList:[0,50,100,400,800,1000,1400,2000],fit:[50,800],bImg:800,bCalc:1400,bmax:2200,noise:0.006,p3:"calc",p4:"t2w",
+       graph:["pz","tz","lesion","bph","afms","muscle","blood"],vis:["pz","tz","lesion"],focus:"lesion"}
+};
+const S={organ:"abd",t:0,axis:"true",tan:false,tri:false,ext:false,cursor:100,focus:"liver",vis:{},fit:[],bImg:800,bCalc:1500,noise:0.008,p3:"calc",p4:"b0",
+  abd:{cyst:true,hem:true,met:true,metD:0.9,liverF:0.25},
+  pro:{les:true,size:13,D:0.8,T2:80,K:1.0,bph:false,gas:false}};
+const DEFP={abd:JSON.parse(JSON.stringify(S.abd)),pro:JSON.parse(JSON.stringify(S.pro))};
+
+function tissues(){
+  if(S.organ==="abd"){const A=S.abd;return {
+    bg:{pd:0,t2:1,D:0},
+    fat:{pd:.9,t2:60,sup:.06,D:.4,t2w:.78},
+    muscle:{pd:.75,t2:35,D:1.45,f:.1,Ds:25,K:.4,name:"Muscle",color:"#7C8A96",roi:[80,152,4]},
+    liver:{pd:.75,t2:42,D:1.1,f:A.liverF,Ds:60,K:.4,name:"Liver",color:"#3E9B5B",roi:[38,82,4]},
+    spleen:{pd:.8,t2:80,D:.85,f:.1,Ds:40,K:.5,name:"Spleen",color:"#8E6CC9",roi:[158,92,4]},
+    pancreas:{pd:.75,t2:45,D:1.3,f:.18,Ds:40,K:.5,name:"Pancreas",color:"#8A9A2E",roi:[118,110,2.5]},
+    kidney:{pd:.85,t2:85,D:1.9,f:.25,Ds:40,K:.4,name:"Kidney",color:"#C46A9A",roi:[47,126,3]},
+    blood:{pd:.9,t2:200,D:1.8,f:.95,Ds:250,K:0,name:"Vessels",color:"#3A9FD6",roi:[106,124,3.5]},
+    bile:{pd:1,t2:600,D:2.8},
+    csf:{pd:1,t2:1500,D:3.0},
+    marrow:{pd:.6,t2:50,sup:.25,D:.5,t2w:.5},
+    cortex:{pd:.1,t2:20,D:.3},
+    gas:{pd:0,t2:1,D:0},
+    cyst:{pd:1,t2:800,D:3.0,name:"Water (cyst)",color:"#D9A21B",roi:[40,98,3],off:!A.cyst},
+    hem:{pd:.85,t2:180,D:1.8,f:.2,Ds:30,K:.3,name:"Hemangioma",color:"#E08A3C",roi:[56,70,3.5],off:!A.hem},
+    met:{pd:.8,t2:90,D:A.metD,f:.08,Ds:30,K:.9,name:"Metastasis",color:"#D0463B",roi:[100,66,3.5],off:!A.met}
+  };}
+  const P=S.pro,r=P.size/2/MMPX;return {
+    bg:{pd:0,t2:1,D:0},
+    fat:{pd:.9,t2:60,sup:.06,D:.4,t2w:.5},
+    muscle:{pd:.75,t2:35,D:1.5,f:.1,Ds:20,K:.4,name:"Muscle",color:"#7C8A96",roi:[26,96,5]},
+    bone:{pd:.5,t2:45,sup:.2,D:.4,t2w:.4},
+    gas:{pd:0,t2:1,D:0},
+    pz:{pd:.9,t2:110,D:2.0,f:.08,Ds:20,K:.45,name:"Peripheral zone",color:"#3E9B5B",roi:[74,110,3.5]},
+    tz:{pd:.85,t2:80,D:1.35,f:.1,Ds:20,K:.6,name:"Transition zone",color:"#8E6CC9",roi:[108,84,4]},
+    afms:{pd:.7,t2:40,D:1.1,f:.05,Ds:20,K:.7,name:"Anterior stroma",color:"#8A9A2E",roi:[96,67,2.5]},
+    urethra:{pd:.95,t2:250,D:2.0},
+    blood:{pd:.9,t2:150,D:1.8,f:.9,Ds:150,name:"NVB vessels",color:"#3A9FD6",roi:[62,116,2]},
+    lesion:{pd:.85,t2:P.T2,D:P.D,f:.05,Ds:20,K:P.K,name:"PZ lesion",color:"#D0463B",roi:[122,108,Math.max(1.5,r*0.6)],off:!P.les},
+    bph:{pd:.75,t2:55,D:1.0,f:.06,Ds:20,K:.8,name:"BPH nodule",color:"#E08A3C",roi:[84,82,4],off:!P.bph}
+  };
+}
+// true signal of a tissue at b (s/mm²)
+function sig(t,b){
+  if(!t.pd)return 0;
+  const s0=(t.sup||1)*t.pd*Math.exp(-ORG[S.organ].TE/t.t2);
+  const f=t.f||0,Ds=(t.Ds||0)*1e-3,D=t.D*1e-3,K=t.K||0;
+  let x=b*D; const xm=K>0?Math.min(x,2.4/K):x; // keep kurtosis term physical
+  const tis=Math.exp(-x+xm*xm*K/6);
+  return s0*(f*Math.exp(-b*Ds)+(1-f)*tis);
+}
+function t2wSig(t){if(t.t2w!==undefined)return t.t2w;return t.pd*Math.exp(-100/t.t2);}
+
+let T=null,KEYS=[],W=null,WARP=null;
+function buildGeometry(){
+  T=tissues();KEYS=Object.keys(T);const K=KEYS.length,idx={};KEYS.forEach((k,i)=>idx[k]=i);
+  W=KEYS.map(()=>new Float32Array(N*N));
+  const w=new Float64Array(K);
+  const L=(m,k)=>{if(m<=0||T[k].off)return;const j=idx[k];for(let q=0;q<K;q++)w[q]*=(1-m);w[j]+=m;};
+  for(let py=0;py<N;py++)for(let px=0;px<N;px++){
+    const x=px+.5,y=py+.5;w.fill(0);w[0]=1;
+    if(S.organ==="abd"){
+      L(ell(x,y,96,98,86,66),"fat");L(ell(x,y,96,98,78,58),"muscle");L(ell(x,y,96,98,73,53),"fat");
+      L(ell(x,y,80,152,13,8),"muscle");L(ell(x,y,112,152,13,8),"muscle");
+      L(ell(x,y,96,138,13,11),"cortex");L(ell(x,y,96,138,11,9),"marrow");L(ell(x,y,96,152,5,4),"csf");
+      L(Math.max(ell(x,y,60,92,36,40),ell(x,y,100,68,26,14)),"liver");
+      L(ellr(x,y,88,84,6,2.2,0.5),"fat");L(ellr(x,y,78,97,7,4.5,0.3),"blood");
+      L(ell(x,y,66,114,8,5),"bile");L(ell(x,y,84,121,7,5),"blood");L(ell(x,y,106,124,6,6),"blood");
+      L(ell(x,y,46,124,13,15),"fat");L(ell(x,y,47,124,10,12),"kidney");
+      L(ell(x,y,146,124,13,16),"fat");L(ell(x,y,146,124,10,13),"kidney");L(ell(x,y,138,126,3.5,5),"fat");
+      L(ell(x,y,157,94,11,24),"spleen");L(ellr(x,y,128,114,16,1.8,-0.2),"blood");
+      L(ellr(x,y,118,110,13,4.5,-0.15),"pancreas");L(ellr(x,y,141,104,12,4.5,-0.35),"pancreas");
+      const st=ell(x,y,138,84,14,10);L(ell(x,y,138,84,15.5,11.5),"muscle");L(st,"bile");L(st*clamp(80.5-y,0,1),"gas");
+      L(ell(x,y,40,98,6,6),"cyst");L(ell(x,y,56,70,7,7),"hem");L(ell(x,y,100,66,6,6),"met");
+    }else{
+      const P=S.pro,r=P.size/2/MMPX;
+      L(ell(x,y,96,100,120,110),"fat");
+      L(ell(x,y,24,96,13,42),"muscle");L(ell(x,y,168,96,13,42),"muscle");
+      L(ellr(x,y,60,134,22,5,-0.7),"muscle");L(ellr(x,y,132,134,22,5,0.7),"muscle");
+      L(ell(x,y,84,22,11,9),"bone");L(ell(x,y,108,22,11,9),"bone");
+      L(ell(x,y,96,149,22,15),"muscle");
+      if(P.gas)L(ell(x,y,96,149,15,9),"gas");else L(ell(x,y,96,149,8,3),"gas");
+      L(ell(x,y,96,92,41.6,32.6),"muscle");L(ell(x,y,96,92,40,31),"pz");L(ell(x,y,96,84,27,19),"tz");
+      L(Math.min(ell(x,y,96,66,24,8),ell(x,y,96,92,40,31)),"afms");L(ell(x,y,96,86,2.5,2.5),"urethra");
+      L(ell(x,y,84,82,7,7),"bph");
+      L(ell(x,y,62,116,3,3),"blood");L(ell(x,y,130,116,3,3),"blood");
+      L(ell(x,y,122,108,r,r),"lesion");
+    }
+    const i=py*N+px;for(let q=0;q<K;q++)W[q][i]=w[q];
+  }
+  WARP=null;
+  if(S.organ==="pro"){ // EPI distortion + dephasing near rectal gas (phase direction A–P)
+    const g=W[idx.gas],B=new Float32Array(N*N),R=50;
+    const ker=[];for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){const r=Math.hypot(dx,dy);if(r<=R)ker.push(dx,dy,1/(1+(r/9)*(r/9)));}
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){const v=g[y*N+x];if(v<.02)continue;
+      for(let k=0;k<ker.length;k+=3){const xx=x+ker[k],yy=y+ker[k+1];if(xx<0||yy<0||xx>=N||yy>=N)continue;B[yy*N+xx]+=v*ker[k+2];}}
+    const dy=new Float32Array(N*N),loss=new Float32Array(N*N);
+    for(let i=0;i<N*N;i++){dy[i]=0.15*B[i];loss[i]=Math.exp(-0.02*B[i]);}
+    WARP={dy,loss};
+  }
+}
+function cleanAt(b){
+  const o=new Float32Array(N*N);
+  KEYS.forEach((k,q)=>{const s=sig(T[k],b);if(!s)return;const w=W[q];for(let i=0;i<N*N;i++)o[i]+=w[i]*s;});
+  if(!WARP)return o;
+  const r=new Float32Array(N*N);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x;const sy=y-WARP.dy[i];const y0=Math.floor(sy),f=sy-y0;
+    const a=(y0>=0&&y0<N)?o[y0*N+x]:0,c=(y0+1>=0&&y0+1<N)?o[(y0+1)*N+x]:0;r[i]=(a*(1-f)+c*f)*WARP.loss[i];}
+  return r;
+}
+function rician(clean,nf,scale){const s=S.noise*(scale||1),a=NOISE[nf],c=NOISE[nf+1],o=new Float32Array(N*N);
+  for(let i=0;i<N*N;i++){o[i]=Math.hypot(clean[i]+s*a[i],s*c[i]);}return o;}
+const G={};
+function computeAll(){
+  const O=ORG[S.organ];
+  G.acq=O.bList.map((b,k)=>rician(cleanAt(b),2*k));
+  G.img=rician(cleanAt(S.bImg),18);
+  G.b0=G.acq[0];
+  G.acqCalc=rician(cleanAt(S.bCalc),20,1.4);
+  G.t2w=new Float32Array(N*N);KEYS.forEach((k,q)=>{const s=t2wSig(T[k]);const w=W[q];for(let i=0;i<N*N;i++)G.t2w[i]+=w[i]*s;});
+  {const r=NOISE[22];for(let i=0;i<N*N;i++)G.t2w[i]=Math.abs(G.t2w[i]+0.012*r[i]);}
+  fitMaps();
+}
+function fitMaps(){
+  const O=ORG[S.organ],sel=O.bList.map((b,k)=>[b,k]).filter(p=>S.fit.includes(p[0]));
+  const n=sel.length,ADC=new Float32Array(N*N),A=new Float32Array(N*N),CALC=new Float32Array(N*N);
+  G.ADC=ADC;G.A=A;G.CALC=CALC;if(n<2)return;
+  let mx=0;sel.forEach(p=>mx+=p[0]);mx/=n;let sxx=0;sel.forEach(p=>sxx+=(p[0]-mx)*(p[0]-mx));
+  const bg=W[0],lowK=sel[0][1],thr=4*Math.max(S.noise,0.002);
+  for(let i=0;i<N*N;i++){if(bg[i]>0.5||G.acq[lowK][i]<thr)continue;
+    let my=0;const ys=[];for(const p of sel){const v=Math.log(Math.max(G.acq[p[1]][i],1e-4));ys.push(v);my+=v;}my/=n;
+    let sxy=0;for(let j=0;j<n;j++)sxy+=(sel[j][0]-mx)*(ys[j]-my);
+    const slope=sxy/sxx;let adc=clamp(-slope,0,0.004);const a=my+adc*mx;
+    ADC[i]=adc*1000;A[i]=a;CALC[i]=Math.exp(a-adc*S.bCalc);}
+}
+function roiIdx(r){const a=[];for(let y=Math.floor(r[1]-r[2]);y<=Math.ceil(r[1]+r[2]);y++)for(let x=Math.floor(r[0]-r[2]);x<=Math.ceil(r[0]+r[2]);x++){if(x<0||y<0||x>=N||y>=N)continue;const dx=x+.5-r[0],dy=y+.5-r[1];if(dx*dx+dy*dy<=r[2]*r[2])a.push(y*N+x);}return a;}
+function mean(arr,idx){let s=0;for(const i of idx)s+=arr[i];return idx.length?s/idx.length:0;}
+function lsFit(pts){const n=pts.length;if(n<2)return null;let mx=0,my=0;pts.forEach(p=>{mx+=p[0];my+=Math.log(Math.max(p[1],1e-5));});mx/=n;my/=n;
+  let sxx=0,sxy=0;pts.forEach(p=>{sxx+=(p[0]-mx)**2;sxy+=(p[0]-mx)*(Math.log(Math.max(p[1],1e-5))-my);});const adc=-sxy/sxx;return {adc,a:my+adc*mx};}
+function roiStats(){
+  const O=ORG[S.organ],out={};
+  for(const k of O.graph){const t=T[k];if(!t||t.off)continue;const idx=roiIdx(t.roi);
+    const pts=O.bList.map((b,j)=>[b,mean(G.acq[j],idx)]);
+    const fitPts=pts.filter(p=>S.fit.includes(p[0]));const f=lsFit(fitPts);
+    out[k]={pts,fit:f,adcMap:mean(G.ADC,idx),calc:mean(G.CALC,idx),acqCalc:mean(G.acqCalc,idx)};}
+  return out;
+}
+function localADC(t,b){const h=5;const a=sig(t,Math.max(b-h,0)),c=sig(t,b+h);if(a<=0||c<=0)return 0;return -(Math.log(c)-Math.log(a))/((b+h)-Math.max(b-h,0))*1000;}
+// =============== CORE END ===============
+
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const PANEL={
+  calc:{label:"Calculated b",get:()=>G.CALC,cap:()=>"b "+S.bCalc+" (from "+S.fit.join(", ")+")",grp:"hb"},
+  acqcalc:{label:"Acquired at calculated b",get:()=>G.acqCalc,cap:()=>"b "+S.bCalc+", lower SNR",grp:"hb"},
+  b0:{label:"b 0 (T2-weighted EPI)",get:()=>G.b0,cap:()=>""},
+  t2w:{label:"T2-weighted TSE (anatomy)",get:()=>G.t2w,cap:()=>"",fixed:[0,.6]},
+  adc2:{label:"ADC map",get:()=>G.ADC,cap:()=>"0–3.0",fixed:[0,3]},
+  img:{label:"Acquired (panel 1 b)",get:()=>G.img,cap:()=>"b "+S.bImg}
+};
+["p3","p4"].forEach(p=>{const s=$(p);for(const k in PANEL){const o=document.createElement("option");o.value=k;o.textContent=PANEL[k].label;s.appendChild(o);}s.onchange=e=>{S[p]=e.target.value;drawImages();};});
+
+function pctl(arr){const bg=W[0],v=[];for(let i=0;i<N*N;i+=3)if(bg[i]<0.5)v.push(arr[i]);v.sort((a,b)=>a-b);return v[Math.floor(v.length*0.995)]||1;}
+function drawImg(cv,arr,lo,hi){
+  const ctx=cv.getContext("2d"),img=ctx.createImageData(N,N),d=img.data;
+  for(let i=0;i<N*N;i++){const g=clamp((arr[i]-lo)/(hi-lo),0,1)*255;d[i*4]=d[i*4+1]=d[i*4+2]=g;d[i*4+3]=255;}
+  ctx.putImageData(img,0,0);
+  const O=ORG[S.organ];ctx.save();ctx.lineWidth=.7;
+  O.graph.forEach(k=>{const t=T[k];if(!t||t.off||!S.vis[k])return;ctx.strokeStyle=t.color;ctx.globalAlpha=k===S.focus?.85:.55;ctx.beginPath();ctx.arc(t.roi[0],t.roi[1],t.roi[2]+.8,0,TAU);ctx.stroke();});
+  ctx.restore();
+}
+function drawImages(){
+  const hbHi=Math.max(pctl(G.CALC),pctl(G.acqCalc));
+  drawImg($("c1"),G.img,0,pctl(G.img));$("cap1t").textContent="Acquired b "+S.bImg;$("cap1").textContent="";
+  drawImg($("c2"),G.ADC,0,3);$("cap2").textContent=S.fit.length<2?"pick ≥ 2 b-values":"b "+S.fit.join(", ");
+  [3,4].forEach(n=>{const P=PANEL[S["p"+n]];const arr=P.get();const hi=P.fixed?P.fixed[1]:P.grp==="hb"?hbHi:pctl(arr);drawImg($("c"+n),arr,P.fixed?P.fixed[0]:0,hi);$("cap"+n).textContent=P.cap();});
+}
+
+// =============== GRAPH ===============
+const gcv=$("graph");let GM=null;
+function xmapFactory(){
+  const O=ORG[S.organ];
+  if(S.axis==="true")return {f:b=>b/O.bmax,ticks:(()=>{const a=[];for(let b=0;b<=O.bmax;b+=O.bmax>1800?250:200)a.push(b);return a;})()};
+  const kn=O.bList.slice();if(kn[kn.length-1]<O.bmax)kn.push(O.bmax);
+  const f=b=>{if(b<=kn[0])return 0;for(let i=1;i<kn.length;i++){if(b<=kn[i])return (i-1+(b-kn[i-1])/(kn[i]-kn[i-1]))/(kn.length-1);}return 1;};
+  return {f,ticks:O.bList.slice()};
+}
+function plot(){
+  const dpr=window.devicePixelRatio||1,w=gcv.clientWidth,h=gcv.clientHeight;gcv.width=w*dpr;gcv.height=h*dpr;
+  const ctx=gcv.getContext("2d");ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+  const O=ORG[S.organ],t=S.t,pl=58,pr=18,pt=18,pb=42,H=h-pt-pb,Wd=w-pl-pr;
+  const vis=O.graph.filter(k=>T[k]&&!T[k].off&&S.vis[k]);
+  let Smax=0.05;vis.forEach(k=>Smax=Math.max(Smax,sig(T[k],0)));Smax*=1.08;
+  const lnMax=Math.log(Smax),lnMin=Math.log(0.004);
+  const Y=s=>{const yl=pt+(1-s/Smax)*H;const ls=Math.log(Math.max(s,0.004));const yg=pt+(lnMax-ls)/(lnMax-lnMin)*H;return (1-t)*yl+t*yg;};
+  const xm=xmapFactory(),X=b=>pl+xm.f(b)*Wd;
+  GM={X,pl,Wd,O,xm};
+  const ink=css("--ink"),mut=css("--muted"),line=css("--line");
+  ctx.font="12px system-ui, sans-serif";ctx.lineWidth=1;
+  // y grid: linear ticks fade out, log ticks fade in
+  const lt=[0,.25,.5,.75,1].map(f=>f*Smax/1.08);
+  ctx.textAlign="right";ctx.globalAlpha=Math.max(0,1-2*t);ctx.strokeStyle=line;ctx.fillStyle=mut;
+  lt.forEach(v=>{const y=Y(v);ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(w-pr,y);ctx.stroke();ctx.fillText(v.toFixed(2),pl-6,y+4);});
+  ctx.globalAlpha=Math.max(0,2*t-1);
+  [1,.5,.2,.1,.05,.02,.01,.005].filter(v=>v<Smax).forEach(v=>{const y=Y(v);ctx.strokeStyle=line;ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(w-pr,y);ctx.stroke();ctx.fillStyle=mut;ctx.fillText(v+"",pl-6,y+4);});
+  ctx.globalAlpha=1;ctx.textAlign="left";
+  ctx.save();ctx.translate(11,pt+H/2);ctx.rotate(-Math.PI/2);ctx.fillStyle=mut;ctx.textAlign="center";ctx.fillText(t<.5?"Signal intensity":"Signal intensity, log scale",0,0);ctx.restore();
+  // x axis
+  ctx.strokeStyle=mut;ctx.beginPath();ctx.moveTo(pl,pt+H);ctx.lineTo(w-pr,pt+H);ctx.stroke();ctx.fillStyle=mut;ctx.textAlign="center";
+  xm.ticks.forEach(b=>{const x=X(b);ctx.beginPath();ctx.moveTo(x,pt+H);ctx.lineTo(x,pt+H+4);ctx.stroke();ctx.fillText(b,x,pt+H+17);});
+  ctx.fillText("b-value (s/mm²)"+(S.axis==="even"?" — evenly spaced, not to scale":""),pl+Wd/2,h-6);ctx.textAlign="left";
+  // calculated b marker
+  if(S.ext||S.organ==="pro"){const x=X(S.bCalc);ctx.strokeStyle=css("--amber");ctx.setLineDash([4,4]);ctx.globalAlpha=.7;ctx.beginPath();ctx.moveTo(x,pt);ctx.lineTo(x,pt+H);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle=css("--amber");ctx.fillText("calculated b "+S.bCalc,Math.min(x+4,w-pr-110),pt+12);}
+  const R=G.roi;
+  const bFitMax=Math.max(...S.fit),bFitMin=Math.min(...S.fit);
+  // curves
+  vis.forEach(k=>{const tt=T[k],col=tt.color,isF=k===S.focus;
+    ctx.strokeStyle=col;ctx.lineWidth=isF?3:2;ctx.globalAlpha=isF||!S.focus?1:.8;ctx.beginPath();
+    for(let i=0;i<=400;i++){const b=i/400*O.bmax;const y=Y(sig(tt,b));i?ctx.lineTo(X(b),y):ctx.moveTo(X(b),y);}ctx.stroke();
+    const r=R[k];
+    if(r&&r.fit&&S.fit.length>=2){ctx.setLineDash([6,5]);ctx.lineWidth=1.5;ctx.beginPath();
+      const bEnd=S.ext?Math.max(S.bCalc,bFitMax):bFitMax;
+      for(let i=0;i<=200;i++){const b=bFitMin+(bEnd-bFitMin)*i/200;const y=Y(Math.exp(r.fit.a-r.fit.adc*b));i?ctx.lineTo(X(b),y):ctx.moveTo(X(b),y);}ctx.stroke();ctx.setLineDash([]);
+      if(S.ext){const yc=Y(Math.exp(r.fit.a-r.fit.adc*S.bCalc));star(ctx,X(S.bCalc),yc,6,col);
+        ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(X(S.bCalc),Y(r.acqCalc),4.5,0,TAU);ctx.stroke();}}
+    if(r){r.pts.forEach(p=>{const inF=S.fit.includes(p[0]);ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),inF?4:3.5,0,TAU);if(inF){ctx.fillStyle=col;ctx.fill();}else{ctx.strokeStyle=col;ctx.lineWidth=1.3;ctx.stroke();}});}
+    ctx.globalAlpha=1;
+  });
+  // slope triangle on the fit line of the focus tissue
+  const fr=R[S.focus];
+  if(S.tri&&fr&&fr.fit&&S.fit.length>=2&&S.vis[S.focus]){
+    const b1=bFitMin,b2=bFitMax,s1=Math.exp(fr.fit.a-fr.fit.adc*b1),s2=Math.exp(fr.fit.a-fr.fit.adc*b2);
+    const x1=X(b1),x2=X(b2),y1=Y(s1),y2=Y(s2);ctx.strokeStyle=ink;ctx.lineWidth=1.5;ctx.fillStyle=ink;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    ctx.globalAlpha=.08;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y1);ctx.lineTo(x2,y2);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+    ctx.fillText("Δb = "+(b2-b1),(x1+x2)/2-24,y1-6);
+    ctx.fillText(t>=.5?"Δ ln S = "+Math.log(s1/s2).toFixed(2):"ΔS = "+(s1-s2).toFixed(3),x2+6,(y1+y2)/2);
+  }
+  // cursor + tangents
+  const xc=X(S.cursor);ctx.strokeStyle=mut;ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(xc,pt);ctx.lineTo(xc,pt+H);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=mut;ctx.fillText("b "+Math.round(S.cursor),Math.min(xc+4,w-pr-40),pt+H-6);
+  if(S.tan){vis.forEach(k=>{const tt=T[k],s=sig(tt,S.cursor);if(s<=0.0045&&t>.5)return;
+      const h2=Math.max(4,O.bmax/400),y0=Y(sig(tt,Math.max(S.cursor-h2,0))),y1=Y(sig(tt,S.cursor+h2)),x0=X(Math.max(S.cursor-h2,0)),x1=X(S.cursor+h2);
+      const dx=x1-x0,dy=y1-y0,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,cx=X(S.cursor),cy=Y(s),Lh=k===S.focus?70:45;
+      ctx.strokeStyle=tt.color;ctx.lineWidth=k===S.focus?2.5:1.5;ctx.beginPath();ctx.moveTo(cx-ux*Lh,cy-uy*Lh);ctx.lineTo(cx+ux*Lh,cy+uy*Lh);ctx.stroke();
+      ctx.fillStyle=tt.color;ctx.beginPath();ctx.arc(cx,cy,3.5,0,TAU);ctx.fill();
+      if(k===S.focus){const la=localADC(tt,S.cursor);const txt=t>=.5?"slope = −ADC = −"+la.toFixed(2)+" ×10⁻³":"slope = −ADC·S = −"+(la*s).toFixed(3)+" per 1000 b";
+        ctx.font="600 12px system-ui, sans-serif";const tw=ctx.measureText(txt).width;const lx=clamp(cx+ux*Lh+6,pl,w-pr-tw),ly=clamp(cy+uy*Lh,pt+14,pt+H-8);
+        ctx.fillStyle=css("--panel");ctx.globalAlpha=.85;ctx.fillRect(lx-3,ly-12,tw+6,16);ctx.globalAlpha=1;ctx.fillStyle=tt.color;ctx.fillText(txt,lx,ly);ctx.font="12px system-ui, sans-serif";}
+    });}
+}
+function star(ctx,x,y,r,col){ctx.fillStyle=col;ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a));}ctx.closePath();ctx.fill();}
+function bFromX(px){const {pl,Wd,O,xm}=GM;const u=clamp((px-pl)/Wd,0,1);let lo=0,hi=O.bmax;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(xm.f(m)<u)lo=m;else hi=m;}return (lo+hi)/2;}
+let gdrag=false;
+gcv.addEventListener("pointerdown",e=>{gdrag=true;gcv.setPointerCapture(e.pointerId);moveCursor(e);});
+gcv.addEventListener("pointermove",e=>{if(gdrag)moveCursor(e);});
+gcv.addEventListener("pointerup",()=>gdrag=false);gcv.addEventListener("pointercancel",()=>gdrag=false);
+gcv.addEventListener("keydown",e=>{const st=e.shiftKey?100:10;if(e.key==="ArrowRight"){S.cursor=clamp(S.cursor+st,0,ORG[S.organ].bmax);e.preventDefault();graphOnly();}if(e.key==="ArrowLeft"){S.cursor=clamp(S.cursor-st,0,ORG[S.organ].bmax);e.preventDefault();graphOnly();}});
+function moveCursor(e){const r=gcv.getBoundingClientRect();S.cursor=Math.round(bFromX(e.clientX-r.left));graphOnly();}
+let graf=0;function graphOnly(){if(graf)return;graf=requestAnimationFrame(()=>{graf=0;plot();side();});}
+
+// =============== SIDE PANEL ===============
+function side(){
+  const O=ORG[S.organ],R=G.roi,f=R[S.focus],t=T[S.focus];
+  let html="";
+  if(f&&f.fit&&S.fit.length>=2){
+    const b1=Math.min(...S.fit),b2=Math.max(...S.fit),j1=O.bList.indexOf(b1),j2=O.bList.indexOf(b2),s1=f.pts[j1][1],s2=f.pts[j2][1];
+    const two=Math.log(s1/s2)/(b2-b1)*1000;
+    html+=`<div><span class="dot" style="background:${t.color}"></span> <b>${t.name}</b></div>`;
+    html+=`<div class="big">ADC = ln(S<sub>${b1}</sub> / S<sub>${b2}</sub>) / (${b2} − ${b1})</div>`;
+    html+=`<div>= ln(<b>${s1.toFixed(3)}</b> / <b>${s2.toFixed(3)}</b>) / ${b2-b1} = <b>${two.toFixed(2)}</b> ×10⁻³ mm²/s</div>`;
+    if(S.fit.length>2)html+=`<div>Least squares over ${S.fit.length} b-values: <b>${(f.fit.adc*1000).toFixed(2)}</b></div>`;
+    const sc=Math.exp(f.fit.a-f.fit.adc*S.bCalc);
+    html+=`<div style="margin-top:6px">S(b<sub>${S.bCalc}</sub>) = S₀,fit · e<sup>−ADC·${S.bCalc}</sup> = <b>${sc.toFixed(4)}</b> calculated, vs <b>${f.acqCalc.toFixed(4)}</b> acquired</div>`;
+  }else html+="Select at least two b-values and a visible tissue to see the calculation.";
+  $("formula").innerHTML=html;
+  let rows="";
+  O.graph.forEach(k=>{const tt=T[k],r=R[k];if(!tt||tt.off||!r)return;
+    rows+=`<tr><td><span class="dot" style="background:${tt.color}"></span> ${tt.name}</td><td>${tt.D.toFixed(2)}</td><td>${(tt.f||0).toFixed(2)}</td><td>${r.fit?(r.fit.adc*1000).toFixed(2):"–"}</td><td>${localADC(tt,S.cursor).toFixed(2)}</td><td>${r.fit?(Math.exp(r.fit.a-r.fit.adc*S.bCalc)/Math.max(r.acqCalc,1e-6)).toFixed(2):"–"}</td></tr>`;});
+  $("tbl").innerHTML=rows;
+  const flags=[];
+  if(S.fit.includes(0)&&S.fit.length>=2)flags.push({t:"b 0 is in the fit: fast perfusion signal is being counted as diffusion, so ADC is overestimated (most in liver, kidney and vessels) and calculated high b images come out too dark."});
+  if(R.cyst&&R.cyst.fit&&R.cyst.fit.adc*1000<2.4&&S.fit.some(b=>b>=1000))flags.push({t:"The cyst's high-b points sit on the noise floor, so its fitted ADC is too low. Drop the highest b from the fit or reduce noise."});
+  if(S.organ==="pro"&&R.lesion&&R.pz&&R.lesion.fit){
+    const adc=R.lesion.adcMap,ratio=R.lesion.calc/Math.max(R.pz.calc,1e-6);
+    let sc,why;
+    if(adc>=1.3||ratio<1.2){sc="1–2";why="no convincing focal restriction";}
+    else if(adc>=1.0||ratio<1.6){sc="3";why="mild to moderate focal change";}
+    else{sc=S.pro.size>=15?"5":"4";why="markedly low ADC and markedly bright on high b, "+(S.pro.size>=15?"≥":"<")+" 1.5 cm";}
+    flags.push({ok:1,t:`Lesion ADC ${adc.toFixed(2)} ×10⁻³ mm²/s, ${ratio.toFixed(1)}× brighter than PZ on calculated b ${S.bCalc}. Suggested DWI score ${sc} (${why}). Teaching heuristic, not a PI-RADS tool.`});
+  }
+  if(S.organ==="pro"&&S.pro.gas)flags.push({t:"Rectal gas distorts the echo-planar images along the phase direction and dephases signal in the posterior PZ. The T2-weighted TSE image is unaffected. Check the low b image before trusting ADC there."});
+  $("flags").innerHTML=flags.map(f=>`<div class="flag${f.ok?" ok":""}">${f.t}</div>`).join("");
+}
+
+// =============== UI WIRING ===============
+function legend(){
+  const O=ORG[S.organ],el=$("legend");el.innerHTML="";
+  O.graph.forEach(k=>{const t=T[k];if(!t||t.off)return;const d=document.createElement("span");d.className="lg"+(k===S.focus?" focus":"");
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!S.vis[k];cb.setAttribute("aria-label","Show "+t.name);cb.onchange=()=>{S.vis[k]=cb.checked;custom();plot();side();drawImages();};
+    const b=document.createElement("button");b.innerHTML=`<span class="dot" style="background:${t.color}"></span>${t.name}`;b.setAttribute("aria-pressed",k===S.focus);
+    b.onclick=()=>{S.focus=k;S.vis[k]=true;legend();plot();side();drawImages();};
+    d.appendChild(cb);d.appendChild(b);el.appendChild(d);});
+}
+function fitChips(){
+  const el=$("fitchips");el.innerHTML="";ORG[S.organ].bList.forEach(b=>{const x=document.createElement("button");x.textContent="b "+b;x.setAttribute("aria-pressed",S.fit.includes(b));
+    x.onclick=()=>{if(S.fit.includes(b))S.fit=S.fit.filter(v=>v!==b);else S.fit=[...S.fit,b].sort((a,c)=>a-c);custom();fitChips();schedule(1);};el.appendChild(x);});
+}
+const SL={bImg:v=>v,bCalc:v=>v,noise:v=>Number(v).toFixed(3),metD:v=>Number(v).toFixed(2),liverF:v=>Number(v).toFixed(2),size:v=>v+" mm",lesD:v=>Number(v).toFixed(2),lesT2:v=>v+" ms",lesK:v=>Number(v).toFixed(2)};
+const SLMAP={metD:["abd","metD"],liverF:["abd","liverF"],size:["pro","size"],lesD:["pro","D"],lesT2:["pro","T2"],lesK:["pro","K"]};
+Object.keys(SL).forEach(k=>$(k).addEventListener("input",e=>{const v=parseFloat(e.target.value);$(k+"O").textContent=SL[k](v);
+  if(SLMAP[k])S[SLMAP[k][0]][SLMAP[k][1]]=v;else S[k]=v;custom();schedule(k==="size"?2:(SLMAP[k]?2:1));}));
+[["cyst","abd"],["hem","abd"],["met","abd"],["les","pro"],["bph","pro"],["gas","pro"]].forEach(([k,o])=>$(k).onchange=e=>{S[o][k]=e.target.checked;custom();schedule(2);});
+$("morph").addEventListener("input",e=>{S.t=parseFloat(e.target.value);graphOnly();});
+$("anim").onclick=()=>{const from=S.t,to=S.t<.5?1:0,t0=performance.now();const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function step(now){const u=reduce?1:clamp((now-t0)/1100,0,1);const e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;S.t=from+(to-from)*e;$("morph").value=S.t;plot();side();if(u<1)requestAnimationFrame(step);}requestAnimationFrame(step);};
+$("axis").onchange=e=>{S.axis=e.target.value;graphOnly();};
+["tan","tri","ext"].forEach(k=>$(k).onchange=e=>{S[k]=e.target.checked;graphOnly();});
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));document.querySelectorAll(".tabpanel").forEach(p=>p.hidden=p.id!==b.dataset.tab);});
+document.querySelectorAll("#organ button").forEach(b=>b.onclick=()=>setOrgan(b.dataset.o,true));
+
+function syncUI(){
+  const O=ORG[S.organ];
+  $("bImg").max=O.bmax;$("bImg").value=S.bImg;$("bImgO").textContent=S.bImg;$("bCalc").value=S.bCalc;$("bCalcO").textContent=S.bCalc;$("noise").value=S.noise;$("noiseO").textContent=S.noise.toFixed(3);
+  $("metD").value=S.abd.metD;$("metDO").textContent=SL.metD(S.abd.metD);$("liverF").value=S.abd.liverF;$("liverFO").textContent=SL.liverF(S.abd.liverF);
+  ["cyst","hem","met"].forEach(k=>$(k).checked=S.abd[k]);
+  $("size").value=S.pro.size;$("sizeO").textContent=SL.size(S.pro.size);$("lesD").value=S.pro.D;$("lesDO").textContent=SL.lesD(S.pro.D);
+  $("lesT2").value=S.pro.T2;$("lesT2O").textContent=SL.lesT2(S.pro.T2);$("lesK").value=S.pro.K;$("lesKO").textContent=SL.lesK(S.pro.K);
+  $("les").checked=S.pro.les;$("bph").checked=S.pro.bph;$("gas").checked=S.pro.gas;
+  $("abdCtl").hidden=S.organ!=="abd";$("proCtl").hidden=S.organ!=="pro";
+  $("morph").value=S.t;$("axis").value=S.axis;$("tan").checked=S.tan;$("tri").checked=S.tri;$("ext").checked=S.ext;$("p3").value=S.p3;$("p4").value=S.p4;
+  document.querySelectorAll("#organ button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.o===S.organ));
+  fitChips();
+}
+let dirtyG=true,dirtyI=true,raf=0;
+function schedule(l){if(l>=2)dirtyG=true;dirtyI=true;if(!raf)raf=requestAnimationFrame(run);}
+function run(){raf=0;if(dirtyG){buildGeometry();dirtyG=false;}if(dirtyI){computeAll();dirtyI=false;}G.roi=roiStats();legend();drawImages();plot();side();}
+
+// =============== SCENARIOS ===============
+const SCEN={
+ abd:[
+  {id:"basic",label:"Signal vs b",set:{axis:"even"},note:"The four classic curves: vessels, water, liver and tumor, plotted on evenly spaced b-values as many lecture slides do. Switch the axis to true b spacing and notice how the kinks disappear: they were produced by the axis, not the tissue. Every curve here is a smooth decay."},
+  {id:"log",label:"Log transform",set:{t:0,tri:true},focus:"liver",note:"Press Transform. On the log scale mono-exponential decay becomes a straight line. The slope triangle on the liver's fit shows exactly the numbers in the formula card: Δ ln S divided by Δb is the ADC."},
+  {id:"tan",label:"Tangents become ADCs",set:{t:0,tan:true,cursor:600},focus:"met",note:"Tangents are drawn at the cursor. On the linear plot the tangent slope is −ADC × S, so it depends on how bright the tissue is. Press Transform and the tangents straighten into slopes that equal the ADC alone. Drag the cursor: the metastasis slope barely changes, while liver and vessels are steep at low b because of perfusion."},
+  {id:"ivim",label:"Perfusion bias",set:{t:1,fit:[0,800],tan:true,cursor:30},focus:"liver",vis:["blood","liver","kidney","met"],note:"The ADC is being computed from b 0 and 800. The steep initial drop from capillary flow is folded into the ADC, so liver and kidney read high. Toggle b 0 off and b 50 on in the Acquisition tab and watch the values fall."},
+  {id:"shine",label:"T2 shine-through",set:{t:1,bImg:800,p3:"b0",p4:"calc"},focus:"hem",vis:["cyst","hem","met","liver"],note:"On b 800 the hemangioma and the metastasis are both bright. On the log plot their lines start at different heights (T2) and fall with different slopes (ADC). The hemangioma is bright because it started bright; the ADC map, which only sees the slope, shows it is not restricted."},
+  {id:"floor",label:"Noise floor",set:{t:1,noise:0.02,fit:[50,400,800,1000,1500],bImg:1500},focus:"cyst",vis:["cyst","liver","met"],note:"With heavy noise, the cyst's measured points stop falling once they reach the Rician noise floor, bending the log line upward and underestimating ADC. Remove b 1000 and 1500 from the fit and compare."}
+ ],
+ pro:[
+  {id:"pz",label:"PZ lesion",set:{p3:"calc",p4:"t2w",ext:true,t:1},focus:"lesion",note:"A 13 mm left posterolateral PZ lesion: dark on T2, dark on ADC, bright on b 800 and brighter still on calculated b 1400 as the normal PZ fades. The dashed fit lines, extended to b 1400, produce the stars; hollow circles show what a direct acquisition measures."},
+  {id:"calc",label:"Calculated vs acquired b1400",set:{p3:"calc",p4:"acqcalc",ext:true,t:1,noise:0.008},focus:"lesion",note:"Panel 3 is calculated from b 50 and 800; panel 4 is acquired at b 1400, with the SNR penalty of the longer echo time. Same window for both. The acquired image is noisier and its background PZ cannot go darker than the noise floor, so lesion conspicuity is lower."},
+  {id:"b2000",label:"Pushing to b2000",set:{bCalc:2000,p3:"calc",p4:"acqcalc",ext:true,t:1},focus:"lesion",note:"Extrapolating further amplifies both contrast and any error. Real tissue, especially tumor, is not mono-exponential: the true curves bend above the dashed lines at high b (kurtosis). The calculated ÷ acquired column quantifies the gap; lower the lesion kurtosis to see it close."},
+  {id:"b0",label:"Source b-values",set:{fit:[0,800],p3:"calc",p4:"adc2",ext:true,t:1},focus:"pz",note:"The ADC and calculated b are built from b 0 and 800. The perfusion component raises every ADC and darkens the calculated image. PI-RADS recommends a low b of 50–100 for this reason. Swap b 0 for b 50 and compare."},
+  {id:"bph",label:"BPH stromal nodule",set:{p3:"calc",p4:"t2w",t:1},pro:{bph:true},focus:"bph",vis:["pz","tz","lesion","bph"],note:"A stromal BPH nodule in the transition zone is restricted too: low ADC and bright on high b. In the TZ, T2 is the dominant sequence; a round, circumscribed, encapsulated nodule is scored on its T2 appearance, not on DWI alone."},
+  {id:"gas",label:"Rectal gas artifact",set:{p3:"b0",p4:"t2w",t:1},pro:{gas:true},focus:"pz",note:"Distended rectal gas warps the echo-planar images along the phase direction and dephases the posterior PZ. Compare the b 0 with the T2-weighted TSE. The artifact is carried into the ADC map and the calculated b image."},
+  {id:"big",label:"Size and score",set:{p3:"calc",p4:"t2w",t:1,ext:true},pro:{size:18},focus:"lesion",note:"The same lesion at 18 mm. DWI characteristics are unchanged, but size ≥ 1.5 cm moves a PI-RADS 4 to 5. Drag the diameter slider across 15 mm and watch the suggested score."}
+ ]
+};
+let active=null;
+function setOrgan(o,withDefault){S.organ=o;if(withDefault)applyScen(SCEN[o][0].id);}
+function applyScen(id){
+  const sc=SCEN[S.organ].find(s=>s.id===id),O=ORG[S.organ];active=id;
+  Object.assign(S,{t:0,axis:"true",tan:false,tri:false,ext:false,cursor:S.organ==="pro"?800:100,fit:O.fit.slice(),bImg:O.bImg,bCalc:O.bCalc,noise:O.noise,p3:O.p3,p4:O.p4,focus:O.focus});
+  S.abd=JSON.parse(JSON.stringify(DEFP.abd));S.pro=JSON.parse(JSON.stringify(DEFP.pro));
+  Object.assign(S,JSON.parse(JSON.stringify(sc.set)));if(sc.pro)Object.assign(S.pro,sc.pro);if(sc.abd)Object.assign(S.abd,sc.abd);
+  if(sc.focus)S.focus=sc.focus;
+  S.vis={};(sc.vis||O.vis).forEach(k=>S.vis[k]=true);S.vis[S.focus]=true;
+  const el=$("scen");el.innerHTML="";SCEN[S.organ].forEach(s=>{const b=document.createElement("button");b.textContent=s.label;b.setAttribute("aria-pressed",s.id===id);b.onclick=()=>applyScen(s.id);el.appendChild(b);});
+  $("note").textContent=sc.note;syncUI();schedule(2);
+}
+function custom(){if(!active)return;active=null;$("scen").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed","false"));$("note").textContent="Custom settings. Follow the ROI circles into the graph and the formula card to explain what you see.";}
+window.addEventListener("resize",()=>plot());
+if(window.matchMedia){const mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",()=>{plot();});}
+setOrgan("abd",true);
+})();
+</script>
+</body>
+</html>

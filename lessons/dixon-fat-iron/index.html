@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>In/opposed phase, multi-echo Dixon and fat–iron quantification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F1; --panel:#FFFFFF; --ink:#18222C; --muted:#5A6874; --line:#CFD6DB;
+  --amber:#C98A0C; --cyan:#1F7F95; --rose:#B0476A; --warn:#B8621B; --bad:#B3261E; --ok:#2F7D4F;
+  --chip-warn:#FBEEDD; --chip-ok:#E3F1E8;
+  --ui:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --read:"Literata", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843;
+    --amber:#E8B23A; --cyan:#4FB6CC; --rose:#E07FA0; --warn:#E39B53; --bad:#F07A70; --ok:#6CC08D;
+    --chip-warn:#3A2A16; --chip-ok:#1D3327;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843;
+  --amber:#E8B23A; --cyan:#4FB6CC; --rose:#E07FA0; --warn:#E39B53; --bad:#F07A70; --ok:#6CC08D;
+  --chip-warn:#3A2A16; --chip-ok:#1D3327;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-family:var(--read);font-weight:600;font-size:26px;margin:46px 0 12px;line-height:1.2}
+h3{font-size:16px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}
+.lede{font-family:var(--read);font-size:18px;max-width:76ch;color:var(--muted)}
+.read{font-family:var(--read);max-width:76ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 12px}
+.scen button{font:inherit;font-size:14px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.scen button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:12px 16px;border-radius:4px;font-family:var(--read);margin-bottom:16px;min-height:52px}
+
+.stage{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.stage{grid-template-columns:1fr}}
+.lightbox{background:#000;border-radius:10px;padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.frame canvas{width:100%;height:auto;display:block;border-radius:3px;cursor:crosshair}
+.cap{color:#C9D3DA;font-size:13px;margin-top:5px;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:26px}
+.cap b{color:#fff;font-weight:600}
+.cap select{background:#1b242d;color:#fff;border:1px solid #3a4652;border-radius:5px;font:inherit;font-size:13px;padding:2px 4px;max-width:62%}
+.cbar{height:6px;border-radius:3px;margin-top:3px}
+.cbl{display:flex;justify-content:space-between;color:#9fb0bb;font-size:11px}
+.rois{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;align-items:center;font-size:13px;color:var(--muted)}
+.rois button{font:inherit;font-size:13px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.rois button[aria-pressed="true"]{border-color:var(--cyan);box-shadow:inset 0 0 0 1px var(--cyan)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-4px -4px 12px}
+.tabs button{font:inherit;font-size:14px;font-weight:600;background:none;border:0;border-bottom:2px solid transparent;padding:6px 10px;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--amber)}
+.tabpanel[hidden]{display:none}
+.ctl{display:grid;grid-template-columns:128px 1fr 62px;align-items:center;gap:8px;margin:7px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}
+.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.grp{font-size:13px;color:var(--muted);margin:14px 0 2px;font-weight:600}
+.grp:first-child{margin-top:0}
+.row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:14px;margin:7px 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;padding:4px 12px;border:0;background:var(--panel);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+select{font:inherit;font-size:14px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.iron{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;font-size:14px}
+.iron label{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.mini{font:inherit;font-size:13px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.hint{font-size:12.5px;color:var(--muted)}
+
+.lab{display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.15fr) minmax(0,1.15fr);gap:18px;margin-top:18px}
+@media (max-width:1100px){.lab{grid-template-columns:1fr 1fr}.lab .knobp{grid-column:1/-1}}
+@media (max-width:700px){.lab{grid-template-columns:1fr}}
+.knobwrap{display:grid;grid-template-columns:1fr;gap:10px;justify-items:center}
+.knobwrap>div{width:100%}
+@media (max-width:1100px) and (min-width:701px){.knobwrap{grid-template-columns:220px 1fr;align-items:center}}
+#knob{width:220px;height:220px;touch-action:none;cursor:grab;display:block}
+#knob:active{cursor:grabbing}
+.kv{font-size:14px;color:var(--muted)}
+.kv b{color:var(--ink);font-variant-numeric:tabular-nums}
+canvas.plot{width:100%;height:220px;display:block}
+.pleg{display:flex;gap:12px;font-size:12.5px;color:var(--muted);margin-top:4px;flex-wrap:wrap}
+.sw{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:5px 4px;border-bottom:1px solid var(--line)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.k{color:var(--muted)}
+.flags{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.flag{font-size:13px;padding:7px 10px;border-radius:6px;background:var(--chip-warn);color:var(--ink);border-left:3px solid var(--warn)}
+.flag.ok{background:var(--chip-ok);border-left-color:var(--ok)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.card .sig{font-size:13px;color:var(--muted);font-family:var(--ui)}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow-x:auto;margin-top:10px}
+.tbl table{min-width:640px}
+.tbl th,.tbl td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14.5px}
+.tbl th{font-weight:600;color:var(--muted);font-size:13px}
+ol.qa{counter-reset:q;list-style:none;padding:0;margin:10px 0 0;max-width:82ch}
+ol.qa li{counter-increment:q;position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--line);font-family:var(--read);line-height:1.6}
+ol.qa li::before{content:counter(q);position:absolute;left:0;top:12px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--ui);font-weight:600;font-size:14px;display:grid;place-items:center}
+ol.qa li b{font-family:var(--ui)}
+.quote{font-family:var(--read);font-style:italic;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;max-width:82ch}
+.foot{margin-top:40px;font-size:13px;color:var(--muted);max-width:82ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>In-phase, opposed-phase and beyond: fat and iron on body MRI</h1>
+<p class="lede">A synthetic axial slice at the liver hilum, simulated from first principles: each voxel holds water and a six-peak fat spectrum, decays with its own R2*, and is sampled at whatever echo times you choose. Add steatosis, iron, gas, metal and lesions, then compare what dual-echo imaging suggests with what a multi-echo PDFF/R2* fit actually measures.</p>
+
+<div class="scen" id="scen" role="group" aria-label="Teaching cases"></div>
+<div class="note" id="note"></div>
+
+<div class="stage">
+  <div>
+    <div class="lightbox">
+      <div class="frame"><canvas id="c1" width="192" height="192" aria-label="In-phase image"></canvas>
+        <div class="cap"><b>In-phase</b><span id="cap1"></span></div></div>
+      <div class="frame"><canvas id="c2" width="192" height="192" aria-label="Opposed-phase image"></canvas>
+        <div class="cap"><b>Opposed-phase</b><span id="cap2"></span></div></div>
+      <div class="frame"><canvas id="c3" width="192" height="192" aria-label="Selectable map 1"></canvas>
+        <div class="cap"><select id="p3" aria-label="Choose image for panel 3"></select><span id="cap3"></span></div>
+        <div class="cbar" id="cb3"></div><div class="cbl" id="cbl3"></div></div>
+      <div class="frame"><canvas id="c4" width="192" height="192" aria-label="Selectable map 2"></canvas>
+        <div class="cap"><select id="p4" aria-label="Choose image for panel 4"></select><span id="cap4"></span></div>
+        <div class="cbar" id="cb4"></div><div class="cbl" id="cbl4"></div></div>
+    </div>
+    <div class="rois" id="rois"><span>Probe:</span></div>
+    <p class="hint" style="margin-top:6px">Click any image to probe a custom point. Image left is patient right; anterior is up.</p>
+  </div>
+
+  <div class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="t1">Scanner</button>
+      <button role="tab" aria-selected="false" data-tab="t2">Fat and iron</button>
+      <button role="tab" aria-selected="false" data-tab="t3">Lesions and artifacts</button>
+    </div>
+
+    <div class="tabpanel" id="t1">
+      <div class="grp">Field strength</div>
+      <div class="row"><span class="seg" id="b0"><button data-v="1.5">1.5 T</button><button data-v="3">3 T</button></span>
+        <span class="hint" id="b0hint"></span></div>
+      <div class="grp">Clinical dual-echo (T1-weighted)</div>
+      <div class="row"><label>Echo order <select id="order"><option value="op">Opposed-phase first (usual)</option><option value="ip">In-phase first (OP is the later echo)</option></select></label></div>
+      <div class="ctl"><label for="faC">Flip angle</label><input type="range" id="faC" min="3" max="30" step="1"><output id="faCO"></output></div>
+      <div class="ctl"><label for="bw">Pixel bandwidth</label><input type="range" id="bw" min="120" max="1000" step="10"><output id="bwO"></output></div>
+      <div class="row"><label>Frequency direction <select id="dir"><option value="lr">Left–right</option><option value="ap">Anterior–posterior</option></select></label><span class="hint" id="shiftHint"></span></div>
+      <div class="grp">Quantitative multi-echo (q-Dixon / IDEAL-IQ style)</div>
+      <div class="ctl"><label for="nE">Echoes</label><input type="range" id="nE" min="3" max="12" step="1"><output id="nEO"></output></div>
+      <div class="ctl"><label for="te1">First TE</label><input type="range" id="te1" min="0.6" max="3" step="0.05"><output id="te1O"></output></div>
+      <div class="ctl"><label for="dte">Echo spacing</label><input type="range" id="dte" min="0.5" max="3.5" step="0.05"><output id="dteO"></output></div>
+      <div class="ctl"><label for="faQ">Flip angle</label><input type="range" id="faQ" min="2" max="25" step="1"><output id="faQO"></output></div>
+      <div class="ctl"><label for="noise">Noise</label><input type="range" id="noise" min="0" max="0.05" step="0.002"><output id="noiseO"></output></div>
+    </div>
+
+    <div class="tabpanel" id="t2" hidden>
+      <div class="grp">Hepatic steatosis</div>
+      <div class="ctl"><label for="ff">Liver PDFF</label><input type="range" id="ff" min="0" max="45" step="0.5"><output id="ffO"></output></div>
+      <div class="row"><label><input type="checkbox" id="spare"> Focal fat sparing near the gallbladder fossa</label></div>
+      <div class="grp">Iron overload</div>
+      <div class="iron">
+        <label>Liver <select id="feL"></select></label>
+        <label>Pancreas <select id="feP"></select></label>
+        <label>Spleen <select id="feS"></select></label>
+        <label>Bone marrow <select id="feM"></select></label>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="mini" data-pat="hh">Parenchymal pattern (hemochromatosis)</button>
+        <button class="mini" data-pat="res">Reticuloendothelial pattern (transfusional)</button>
+        <button class="mini" data-pat="none">Clear iron</button>
+      </div>
+      <p class="hint">Iron adds R2* to the tissue; at 3 T every R2* value is roughly doubled.</p>
+    </div>
+
+    <div class="tabpanel" id="t3" hidden>
+      <div class="grp">Lesions</div>
+      <div class="row"><label><input type="checkbox" id="aml"> Renal angiomyolipoma (macroscopic fat, left kidney)</label></div>
+      <div class="row"><label><input type="checkbox" id="cyst"> Hepatic cyst</label></div>
+      <div class="row"><label><input type="checkbox" id="hepad"> Steatotic hepatocellular adenoma</label></div>
+      <div class="row"><label><input type="checkbox" id="adrad"> Lipid-rich left adrenal adenoma</label></div>
+      <div class="grp">Susceptibility sources</div>
+      <div class="ctl"><label for="pneumo">Pneumobilia</label><input type="range" id="pneumo" min="0" max="3" step="1"><output id="pneumoO"></output></div>
+      <div class="row"><label><input type="checkbox" id="clip"> Cholecystectomy clip (metal)</label></div>
+      <div class="row"><label><input type="checkbox" id="calc"> Pancreatic calcifications</label></div>
+      <div class="row"><label><input type="checkbox" id="gg"> Splenic siderotic nodules (hemosiderin)</label></div>
+      <p class="hint">Gastric gas is always present. Susceptibility is modeled as extra intravoxel dephasing that grows with TE and with field strength.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lab">
+  <div class="panel knobp">
+    <h3>Phase clock</h3>
+    <div class="knobwrap">
+      <svg id="knob" viewBox="-1.35 -1.35 2.7 2.7" role="slider" tabindex="0" aria-label="Echo time dial" aria-valuemin="0" aria-valuemax="20"></svg>
+      <div>
+        <p class="kv">Drag the dial or use arrow keys. Water is the fixed gray arrow; fat peaks (rose) rotate at their own frequencies; the sum (amber) is the voxel signal.</p>
+        <p class="kv">TE <b id="teV"></b><br>Main fat peak at <b id="phV"></b><br>Signal <b id="sV"></b> of full</p>
+        <input type="range" id="te" min="0" max="20" step="0.05" aria-label="Echo time" style="width:100%;accent-color:var(--amber)">
+        <div class="row"><button class="mini" id="goOP">Jump to OP</button><button class="mini" id="goIP">Jump to IP</button></div>
+      </div>
+    </div>
+    <table style="margin-top:10px"><tbody id="readout"></tbody></table>
+    <div class="flags" id="flags"></div>
+  </div>
+  <div class="panel">
+    <h3>Signal versus TE</h3>
+    <canvas class="plot" id="decay" aria-label="Signal decay versus echo time for the probed region"></canvas>
+    <div class="pleg">
+      <span><i class="sw" id="lgTrue"></i>True signal</span>
+      <span><i class="sw" style="background:#8C959C"></i>Water only</span>
+      <span><i class="sw" id="lgEnv"></i>R2* envelope</span>
+      <span><i class="sw" id="lgFit"></i>Multi-echo samples and fit</span>
+    </div>
+    <p class="hint" style="margin-top:8px">The fat–water beat rides on the R2* envelope. Dual-echo imaging samples only two points of this curve; the multi-echo fit uses all of them.</p>
+  </div>
+  <div class="panel">
+    <h3>Proton spectrum</h3>
+    <canvas class="plot" id="spec" aria-label="Proton spectrum of the probed region"></canvas>
+    <div class="pleg"><span><i class="sw" style="background:#8C959C"></i>Water</span><span><i class="sw" id="lgFat"></i>Fat peaks</span><span><i class="sw" id="lgSum"></i>Sum</span></div>
+    <p class="hint" style="margin-top:8px" id="specHint"></p>
+  </div>
+</div>
+
+<h2>Why fat and water go in and out of phase</h2>
+<div class="read">
+<p>Fat protons (mostly methylene, CH<sub>2</sub>) resonate about 3.4 ppm below water. That is roughly 217 Hz at 1.5 T and 434 Hz at 3 T, so after excitation the fat signal rotates relative to water, completing a full turn every 4.6 ms at 1.5 T and every 2.3 ms at 3 T. Sample at half a turn and the two cancel (opposed phase); sample at a full turn and they add (in phase). A voxel containing both fat and water therefore loses signal on the opposed-phase image. That is the whole basis of chemical-shift imaging, and the phase clock above shows it directly.</p>
+<p>Real fat is not one peak. It has at least six, so fat never perfectly realigns with water, and the in-phase time based on the main peak is only approximately in phase. Separately, every echo is later than the one before, so T2* decay removes signal no matter what fat is doing. Those two facts drive most of the pitfalls on this page.</p>
+</div>
+
+<h2>Reading the dual-echo pair</h2>
+<div class="cards">
+  <div class="card"><h3>Microscopic (intravoxel) fat</h3>
+    <p>Fat and water mixed within the same voxel: lipid-laden cells in steatosis, lipid-rich adrenal adenoma, steatotic hepatocellular adenoma, some HCCs, and clear cell RCC and its metastases. The whole lesion drops in signal on opposed phase, and fat saturation does little because fat is a minority of the voxel.</p>
+    <p class="sig">Try: adrenal adenoma case. Quantify with signal intensity index or adrenal-to-spleen ratio, never liver as reference if the liver may be steatotic.</p></div>
+  <div class="card"><h3>Macroscopic fat</h3>
+    <p>Voxels that are mostly fat: angiomyolipoma, myelolipoma, teratoma, lipoma, liposarcoma. The fat follows subcutaneous fat on every sequence and drops on fat-saturated images. It stays bright on opposed phase because a fat-dominant voxel has almost no water to cancel against.</p>
+    <p class="sig">Signature: an India-ink (etching) black line on opposed phase at the fat–tissue interface, where boundary voxels hold both.</p></div>
+  <div class="card"><h3>Chemical shift of the first kind</h3>
+    <p>Separate from phase cancellation: because fat resonates at a different frequency, it is mapped to the wrong position along the frequency-encoding direction. It appears as a bright band on one side of a fat interface and a dark band on the other, on every echo.</p>
+    <p class="sig">Try: drop pixel bandwidth to about 150 Hz and watch the AML and perirenal fat bands, then swap frequency direction.</p></div>
+  <div class="card"><h3>Susceptibility and the later echo</h3>
+    <p>Metal, gas, hemosiderin, calcification and parenchymal iron create local field gradients. Spins dephase within the voxel, and dephasing accumulates with time. The later echo therefore shows more signal loss and blooming. At 1.5 T with the usual echo order, that later echo is the in-phase one.</p>
+    <p class="sig">Rule: drop on opposed phase suggests fat; drop on the later echo (usually in-phase) suggests T2* from iron or susceptibility.</p></div>
+  <div class="card"><h3>The echo-order trap</h3>
+    <p>Some 3 T protocols acquire in-phase at about 2.3 ms and opposed phase at about 3.5 ms. The opposed-phase image is then both the fat-cancelling echo and the more T2*-weighted one, so iron or susceptibility produces an opposed-phase drop that mimics microscopic fat.</p>
+    <p class="sig">Always read the TEs before calling fat. Try the 3 T pitfall case.</p></div>
+  <div class="card"><h3>Recognising which image is which</h3>
+    <p>Series labels are not always trustworthy. The opposed-phase image shows India ink around the kidneys, spleen and bowel. The in-phase image shows more blooming around bowel gas, clips and pneumobilia when it is the later echo.</p>
+    <p class="sig">Check the TE in the DICOM header when something does not fit.</p></div>
+</div>
+
+<h2>Iron deposition patterns</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Pattern</th><th>Organs affected</th><th>Typical causes</th><th>Clue on dual echo</th></tr></thead>
+  <tbody>
+    <tr><td>Parenchymal</td><td>Liver, pancreas (and heart); spleen and marrow spared</td><td>Hereditary hemochromatosis; ineffective erythropoiesis (e.g. thalassemia intermedia)</td><td>Liver and pancreas darker than paraspinal muscle, dropping further on the later echo; spleen normal</td></tr>
+    <tr><td>Reticuloendothelial</td><td>Liver, spleen, bone marrow; pancreas spared until the system saturates</td><td>Transfusional siderosis</td><td>Liver, spleen and marrow all drop on the later echo; pancreas normal</td></tr>
+    <tr><td>Renal cortical</td><td>Renal cortex</td><td>Intravascular hemolysis (e.g. paroxysmal nocturnal hemoglobinuria, mechanical valves)</td><td>Dark renal cortex on the later echo (not simulated here)</td></tr>
+  </tbody>
+</table></div>
+
+<h2>From dual echo to quantification</h2>
+<div class="read">
+<p>A two-point magnitude estimate, signal fat fraction = (IP − OP) / (2 × IP), is quick but confounded in five ways: T2* decay between echoes (iron or susceptibility biases it down, or up if OP is later); T1 weighting, since fat recovers faster than water at typical flip angles and is over-represented; the multi-peak fat spectrum; noise bias in low-signal voxels; and a hard ceiling at 50%, because magnitude data cannot tell whether fat or water is dominant. A 90% fat voxel reads as 10%.</p>
+<p>Chemical shift–encoded multi-echo methods remove these confounders. Siemens q-Dixon (LiverLab) and GE IDEAL-IQ, like Philips mDIXON Quant, acquire about six echoes of a 3D spoiled gradient echo with a low flip angle (about 3–5°) to minimise T1 bias. They fit each voxel with a multi-peak fat model plus a common R2* term, using complex or hybrid fitting that resolves fat-dominant from water-dominant voxels. Outputs are water, fat, proton density fat fraction (PDFF) and R2* maps, with field or quality maps depending on the vendor. PDFF is a reproducible biomarker across vendors and field strengths.</p>
+<p>In the simulator, the multi-echo panels use exactly this idea: six-peak fat model, single R2*, real-valued water and fat fitted to the complex echoes. Raise the quantitative flip angle to see T1 bias, stretch the echo spacing in severe iron at 3 T to see the fit fail, or put a voxel over the AML to see the 50% ceiling of the dual-echo estimate.</p>
+</div>
+<div class="tbl"><table>
+  <thead><tr><th>Measure</th><th>Common reference points</th><th>Caveat</th></tr></thead>
+  <tbody>
+    <tr><td>Liver PDFF</td><td>About 5–6% upper limit of normal; histologic grade cut-offs of roughly 6.4%, 17.4% and 22.1% (grades 1–3) from NAFLD cohorts</td><td>Grade thresholds overlap; follow change over time rather than a single number</td></tr>
+    <tr><td>Liver R2* (1.5 T)</td><td>Normal about 30–50 s⁻¹ (T2* ≳ 20 ms); LIC (mg Fe/g dry weight) ≈ 0.0254 × R2* + 0.202 (Wood calibration)</td><td>Calibrations are field- and sequence-specific; at 3 T R2* is roughly doubled; very high iron exceeds the measurable range</td></tr>
+    <tr><td>Adrenal dual echo</td><td>Signal intensity index &gt; 16.5% or adrenal-to-spleen ratio &lt; 0.71 supports lipid-rich adenoma</td><td>Requires OP as the earlier echo; intracellular lipid also occurs in clear cell RCC and HCC metastases</td></tr>
+  </tbody>
+</table></div>
+
+<h2>How to QA a PDFF / R2* exam</h2>
+<ol class="qa">
+  <li><b>Confirm the protocol.</b> Multi-echo (usually six) with low flip angle and multi-peak modeling, not a two-point Dixon. Note the field strength, because R2* values and iron calibrations depend on it.</li>
+  <li><b>Check internal controls.</b> Spleen PDFF should be near 0%, subcutaneous fat should read about 90% or more, and spleen R2* should be low unless there is reticuloendothelial iron. If these fail, distrust the liver number.</li>
+  <li><b>Look for fat–water swaps.</b> A region where subcutaneous fat reads as water, or liver PDFF jumps above 50%, usually at the edge of the field of view or near gas. Scroll the water and fat images, not just the PDFF map.</li>
+  <li><b>Read the R2* map before placing ROIs.</b> Blooming from bowel gas, the lung base, clips or pneumobilia raises R2* and disturbs the fit nearby. Keep ROIs away from these, from vessels, bile ducts and the liver edge.</li>
+  <li><b>Sample widely.</b> Use several large ROIs (for example one per lobe or segment group, or whole-liver segmentation) and place identical ROIs on PDFF and R2*. Heterogeneous steatosis and focal sparing are common.</li>
+  <li><b>Respect the measurable range.</b> When R2* is very high the signal has largely gone by the first echo, so R2* is underestimated and PDFF is unreliable. Report it as exceeding the method's range and consider 1.5 T with shorter echoes, or R2-based methods.</li>
+  <li><b>Correlate with dual echo and T2-weighted images.</b> Does liver signal drop on the later echo? Is the spleen or marrow dark? Does the pattern fit a clinical story? Discordance usually means an artifact or a confounder.</li>
+  <li><b>Report what you measured and how.</b> PDFF in %, R2* in s⁻¹ with field strength, ROI method, and any estimated LIC with the calibration used.</li>
+</ol>
+<div class="quote">Liver PDFF 18% (mean of three large ROIs), compatible with moderate steatosis. Liver R2* 42 s⁻¹ at 1.5 T, within normal limits. Spleen PDFF 0%, internal control satisfactory. A 1.4 cm left adrenal nodule loses signal on opposed-phase imaging (signal intensity index 32%), consistent with a lipid-rich adenoma.</div>
+
+<p class="foot">Synthetic teaching phantom. Anatomy is schematic and all signal values, relaxation times and iron levels are illustrative; they are not calibrated to any vendor implementation. The fat model is a published six-peak liver fat spectrum; susceptibility is approximated as TE-dependent intravoxel dephasing without geometric distortion or field-map effects.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+// ================= CORE (no DOM) =================
+const N=192, TAU=2*Math.PI;
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+function ell(x,y,cx,cy,a,b){const dx=(x-cx)/a,dy=(y-cy)/b;const d=Math.sqrt(dx*dx+dy*dy);return clamp(0.5-(d-1)*Math.min(a,b)/1.3,0,1);}
+function ellr(x,y,cx,cy,a,b,ang){const c=Math.cos(ang),s=Math.sin(ang),dx=x-cx,dy=y-cy;return ell(cx+dx*c+dy*s,cy-dx*s+dy*c,cx,cy,a,b);}
+const PPM=[-3.80,-3.40,-2.60,-1.94,-0.39,0.60], AMP=[0.087,0.693,0.128,0.004,0.039,0.048];
+const PEAKNAME=["CH₃","CH₂","α-carboxyl","","glycerol","olefinic"];
+const IRON={L:[0,110,280,650],P:[0,90,220,450],S:[0,90,220,450],M:[0,120,300,600]};
+const IRONLBL=["None","Mild","Moderate","Severe"];
+
+const S={B0:1.5,order:"op",faC:10,bw:480,dir:"lr",nE:6,te1:1.2,dte:2.0,faQ:3,noise:0.012,
+  ff:2,spare:false,feL:0,feP:0,feS:0,feM:0,aml:true,cyst:true,hepad:true,adrad:true,
+  pneumo:0,clip:false,calc:false,gg:false,p3:"pdff",p4:"knob",te:2.3};
+const DEF=JSON.parse(JSON.stringify(S));
+
+function fHz(){return PPM.map(p=>p*42.577*S.B0);}
+function fMain(){return PPM[1]*42.577*S.B0;}
+function dualTE(){const t=1000/(2*Math.abs(fMain()));return S.order==="op"?{op:t,ip:2*t}:{ip:2*t,op:3*t};}
+function meTE(){const a=[];for(let k=0;k<S.nE;k++)a.push(S.te1+k*S.dte);return a;}
+function cOf(TE){const F=fHz();let re=0,im=0;for(let p=0;p<6;p++){const ph=TAU*F[p]*TE/1000;re+=AMP[p]*Math.cos(ph);im+=AMP[p]*Math.sin(ph);}return [re,im];}
+function spgr(T1,fa,TR){const E=Math.exp(-TR/T1),a=fa*Math.PI/180;return Math.sin(a)*(1-E)/(1-Math.cos(a)*E);}
+
+function mul(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const NOISE=[];
+(function(){for(let f=0;f<30;f++){const r=mul(1000+f*7919),o=new Float32Array(N*N);for(let i=0;i<N*N;i+=2){const u=Math.max(r(),1e-9),v=r(),m=Math.sqrt(-2*Math.log(u));o[i]=m*Math.cos(TAU*v);o[i+1]=m*Math.sin(TAU*v);}NOISE.push(o);}})();
+
+function tissues(){
+  const p=S.ff/100, ps=Math.min(p,0.015);
+  return {
+    bg:{rw:0,rf:0,T1:[1000,1000],r2:0},
+    fat:{rw:.08,rf:.9,T1:[800,1000],r2:25},
+    muscle:{rw:.72,rf:.02,T1:[1000,1400],r2:30},
+    liver:{rw:.75*(1-p),rf:.75*p,T1:[590,810],r2:32+IRON.L[S.feL]},
+    spared:{rw:.75*(1-ps),rf:.75*ps,T1:[590,810],r2:32+IRON.L[S.feL]},
+    spleen:{rw:.8,rf:0,T1:[1060,1330],r2:20+IRON.S[S.feS]},
+    pancreas:{rw:.68,rf:.02,T1:[580,725],r2:30+IRON.P[S.feP]},
+    kidney:{rw:.82,rf:0,T1:[970,1140],r2:22},
+    blood:{rw:.85,rf:0,T1:[1400,1900],r2:15},
+    fluid:{rw:1,rf:0,T1:[3000,3500],r2:5},
+    marrow:{rw:.35,rf:.45,T1:[600,750],r2:60+IRON.M[S.feM]},
+    cortex:{rw:.05,rf:0,T1:[1000,1000],r2:400},
+    adrenal:{rw:.72,rf:.02,T1:[800,1000],r2:28},
+    adrad:{rw:.57,rf:.15,T1:[800,1000],r2:30},
+    hepad:{rw:.56,rf:.19,T1:[700,900],r2:35},
+    aml:{rw:.15,rf:.75,T1:[1000,1200],r2:25},
+    gas:{rw:0,rf:0,T1:[1000,1000],r2:0,src:160},
+    metal:{rw:0,rf:0,T1:[1000,1000],r2:0,src:2600},
+    calc:{rw:.08,rf:0,T1:[1000,1000],r2:150,src:70},
+    hemo:{rw:.5,rf:0,T1:[900,1100],r2:300,src:220}
+  };
+}
+// channel order: wc fc wq fq rw rf r2 src
+function effAll(T){
+  const i=S.B0===3?1:0, fT1=[290,370][i], nc=spgr(fT1,S.faC,7), nq=spgr(fT1,S.faQ,10), f3=S.B0===3?1.9:1, sb=S.B0/1.5;
+  const E={};
+  for(const k in T){const t=T[k];E[k]=[t.rw*spgr(t.T1[i],S.faC,7)/nc,t.rf,t.rw*spgr(t.T1[i],S.faQ,10)/nq,t.rf,t.rw,t.rf,t.r2*f3,(t.src||0)*sb];}
+  return E;
+}
+const PNEU=[[80,90,5,1.3,0.6],[72,84,5,1.1,0.9],[88,90,4,1,0.2],[64,80,5,1,1.1],[94,82,4,1,-0.3],[70,94,4,1,0.4]];
+const PNEU_N=[0,1,3,6];
+
+let CH=null;
+function buildPhantom(){
+  const E=effAll(tissues());
+  const ch=[];for(let k=0;k<8;k++)ch.push(new Float32Array(N*N));
+  const v=new Float64Array(8);
+  function L(m,e){if(m<=0)return;for(let k=0;k<8;k++)v[k]+=(e[k]-v[k])*m;}
+  for(let py=0;py<N;py++){for(let px=0;px<N;px++){
+    const x=px+.5,y=py+.5; v.fill(0);
+    L(ell(x,y,96,98,86,66),E.fat);
+    L(ell(x,y,96,98,78,58),E.muscle);
+    L(ell(x,y,96,98,73,53),E.fat);
+    L(ell(x,y,80,152,13,8),E.muscle); L(ell(x,y,112,152,13,8),E.muscle);
+    L(ell(x,y,96,138,13,11),E.cortex); L(ell(x,y,96,138,11,9),E.marrow);
+    L(ell(x,y,96,152,5,4),E.fluid);
+    // liver
+    L(Math.max(ell(x,y,60,92,36,40),ell(x,y,100,68,26,14)),E.liver);
+    if(S.spare&&S.ff>3)L(ell(x,y,75,108,8,5.5),E.spared);
+    L(ellr(x,y,88,84,6,2.2,0.5),E.fat);
+    L(ellr(x,y,78,97,7,4.5,0.3),E.blood);
+    if(!S.clip)L(ell(x,y,66,114,8,5),E.fluid);
+    L(ell(x,y,84,121,7,5),E.blood);
+    L(ell(x,y,106,124,6,6),E.blood);
+    // kidneys
+    L(ell(x,y,46,124,13,15),E.fat); L(ell(x,y,47,124,10,12),E.kidney);
+    L(ell(x,y,146,124,13,16),E.fat); L(ell(x,y,146,124,10,13),E.kidney); L(ell(x,y,138,126,3.5,5),E.fat);
+    // adrenals
+    L(ellr(x,y,74,133,1.8,6,0.3),E.adrenal);
+    L(ellr(x,y,124,127,2.2,7,-0.35),E.adrenal);
+    // spleen, pancreas
+    L(ell(x,y,157,94,11,24),E.spleen);
+    L(ellr(x,y,128,114,16,1.8,-0.2),E.blood);
+    L(ellr(x,y,118,110,13,4.5,-0.15),E.pancreas); L(ellr(x,y,141,104,12,4.5,-0.35),E.pancreas);
+    // stomach with air-fluid level
+    const st=ell(x,y,138,84,14,10);
+    L(ell(x,y,138,84,15.5,11.5),E.muscle); L(st,E.fluid); L(st*clamp(80.5-y,0,1),E.gas);
+    // lesions
+    if(S.adrad)L(ell(x,y,128,120,4.5,4.5),E.adrad);
+    if(S.cyst)L(ell(x,y,40,98,6,6),E.fluid);
+    if(S.hepad)L(ell(x,y,56,70,7,7),E.hepad);
+    if(S.aml)L(ell(x,y,149,121,5,5),E.aml);
+    // susceptibility sources
+    for(let j=0;j<PNEU_N[S.pneumo];j++){const b=PNEU[j];L(ellr(x,y,b[0],b[1],b[2],b[3],b[4]),E.gas);}
+    if(S.clip){L(ellr(x,y,68,116,2.4,1.1,0.4),E.metal);}
+    if(S.calc){L(ell(x,y,112,109,1.3,1.3),E.calc);L(ell(x,y,121,111,1.2,1.2),E.calc);L(ell(x,y,135,106,1.3,1.3),E.calc);}
+    if(S.gg){[[153,80],[160,90],[152,100],[159,108],[162,97],[155,112]].forEach(q=>L(ell(x,y,q[0],q[1],1.1,1.1),E.hemo));}
+    const i=py*N+px;for(let k=0;k<8;k++)ch[k][i]=v[k];
+  }}
+  // susceptibility convolution
+  const src=ch[7], r2=ch[6], R=10;
+  const K=[];for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){const d=Math.hypot(dx,dy);if(d<=R)K.push([dx,dy,1/(1+Math.pow(d/1.5,3))]);}
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const s=src[y*N+x];if(s<1)continue;
+    for(const [dx,dy,w] of K){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=N||yy>=N)continue;r2[yy*N+xx]+=s*w;}}
+  // chemical shift of the first kind: displace fat along frequency axis
+  const dpx=Math.abs(fMain())/S.bw;
+  ch[1]=shiftArr(ch[1],dpx); ch[3]=shiftArr(ch[3],dpx);
+  CH={wc:ch[0],fc:ch[1],wq:ch[2],fq:ch[3],rw:ch[4],rf:ch[5],r2:ch[6]};
+}
+function shiftArr(a,d){
+  const o=new Float32Array(N*N),i0=Math.floor(d),f=d-i0;
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    let v0,v1;
+    if(S.dir==="lr"){const x0=x-i0,x1=x0-1;v0=(x0>=0&&x0<N)?a[y*N+x0]:0;v1=(x1>=0&&x1<N)?a[y*N+x1]:0;}
+    else{const y0=y-i0,y1=y0-1;v0=(y0>=0&&y0<N)?a[y0*N+x]:0;v1=(y1>=0&&y1<N)?a[y1*N+x]:0;}
+    o[y*N+x]=v0*(1-f)+v1*f;}
+  return o;
+}
+function echo(W,F,TE,nf,wantComplex){
+  const [cr,ci]=cOf(TE),r2=CH.r2,nr=NOISE[nf],ni=NOISE[nf+1],sg=S.noise;
+  const mag=new Float32Array(N*N),re=wantComplex?new Float32Array(N*N):null,im=wantComplex?new Float32Array(N*N):null;
+  for(let i=0;i<N*N;i++){const e=Math.exp(-r2[i]*TE/1000);const a=e*(W[i]+F[i]*cr)+sg*nr[i],b=e*F[i]*ci+sg*ni[i];mag[i]=Math.hypot(a,b);if(wantComplex){re[i]=a;im[i]=b;}}
+  return {mag,re,im};
+}
+const G={};
+function computeImages(){
+  const t=dualTE();
+  G.IP=echo(CH.wc,CH.fc,t.ip,0,false).mag;
+  G.OP=echo(CH.wc,CH.fc,t.op,2,false).mag;
+  const tes=meTE();G.ME=tes.map((te,k)=>echo(CH.wq,CH.fq,te,6+2*k,true));G.TEs=tes;
+  const n=N*N;G.SFF=new Float32Array(n);G.W2=new Float32Array(n);G.F2=new Float32Array(n);G.TPDFF=new Float32Array(n);
+  for(let i=0;i<n;i++){const ip=G.IP[i],op=G.OP[i];G.W2[i]=(ip+op)/2;G.F2[i]=(ip-op)/2;G.SFF[i]=ip>0.06?(ip-op)/(2*ip):0;
+    const s=CH.rw[i]+CH.rf[i];G.TPDFF[i]=s>0.05?CH.rf[i]/s:0;}
+  fit();
+}
+function computeKnob(){G.KNOB=echo(CH.wc,CH.fc,S.te,4,false).mag;}
+
+function fit(){
+  const n=G.TEs.length, TEs=G.TEs, CR=[],CI=[];
+  TEs.forEach(te=>{const c=cOf(te);CR.push(c[0]);CI.push(c[1]);});
+  const step=25,gmax=3000,NG=gmax/step+1;
+  const E=new Float64Array(NG*n),AA=new Float64Array(NG),BB=new Float64Array(NG),AB=new Float64Array(NG);
+  for(let g=0;g<NG;g++){let aa=0,bb=0,ab=0;for(let k=0;k<n;k++){const e=Math.exp(-g*step*TEs[k]/1000);E[g*n+k]=e;aa+=e*e;bb+=e*e*(CR[k]*CR[k]+CI[k]*CI[k]);ab+=e*e*CR[k];}AA[g]=aa;BB[g]=bb;AB[g]=ab;}
+  const FW=new Float32Array(N*N),FF=new Float32Array(N*N),FR=new Float32Array(N*N),PD=new Float32Array(N*N);
+  const sr=new Float64Array(n),q=new Float64Array(n),ek=new Float64Array(n);
+  const thr=n*Math.max(0.004,9*S.noise*S.noise);
+  let W=0,F=0,res=0;
+  function solve(aa,bb,ab,as,bs,ss){
+    const det=aa*bb-ab*ab;let w=(bb*as-ab*bs)/det,f=(aa*bs-ab*as)/det;
+    if(det>1e-12&&w>=0&&f>=0){W=w;F=f;res=ss-(w*as+f*bs);return;}
+    const r1=ss-(as>0?as*as/aa:0),r2=ss-(bs>0?bs*bs/bb:0);
+    if(r1<=r2){W=Math.max(as,0)/aa;F=0;res=r1;}else{W=0;F=Math.max(bs,0)/bb;res=r2;}
+  }
+  for(let i=0;i<N*N;i++){
+    let ss=0;for(let k=0;k<n;k++){const a=G.ME[k].re[i],b=G.ME[k].im[i];sr[k]=a;q[k]=CR[k]*a+CI[k]*b;ss+=a*a+b*b;}
+    if(ss<thr)continue;
+    let best=0,bestRes=Infinity,bW=0,bF=0;
+    for(let g=0;g<NG;g++){let as=0,bs=0;const o=g*n;for(let k=0;k<n;k++){const e=E[o+k];as+=e*sr[k];bs+=e*q[k];}
+      solve(AA[g],BB[g],AB[g],as,bs,ss);if(res<bestRes){bestRes=res;best=g*step;bW=W;bF=F;}}
+    let bR=best;
+    for(let r=Math.max(0,best-24);r<=best+24;r+=3){let aa=0,bb=0,ab=0,as=0,bs=0;
+      for(let k=0;k<n;k++){const e=Math.exp(-r*TEs[k]/1000);ek[k]=e;aa+=e*e;bb+=e*e*(CR[k]*CR[k]+CI[k]*CI[k]);ab+=e*e*CR[k];as+=e*sr[k];bs+=e*q[k];}
+      solve(aa,bb,ab,as,bs,ss);if(res<bestRes){bestRes=res;bR=r;bW=W;bF=F;}}
+    FW[i]=bW;FF[i]=bF;FR[i]=bR;PD[i]=(bW+bF)>0.05?bF/(bW+bF):0;
+  }
+  G.FW=FW;G.FF=FF;G.FR=FR;G.PDFF=PD;
+}
+// ================= CORE END =================
+
+const ROIS={
+  liver:{x:38,y:82,r:4,name:"Liver"},
+  spleen:{x:158,y:92,r:4,name:"Spleen"},
+  pancreas:{x:118,y:110,r:2.5,name:"Pancreas"},
+  marrow:{x:96,y:138,r:4,name:"Marrow"},
+  adrad:{x:128,y:120,r:2.5,name:"Adrenal adenoma"},
+  hepad:{x:56,y:70,r:3.5,name:"Hepatic adenoma"},
+  aml:{x:149,y:121,r:2.5,name:"AML"},
+  cyst:{x:40,y:98,r:3,name:"Cyst"},
+  kidney:{x:149,y:132,r:2,name:"Kidney"},
+  fat:{x:14,y:98,r:2,name:"Subcutaneous fat"}
+};
+function roiIdx(r){const a=[];for(let y=Math.floor(r.y-r.r);y<=Math.ceil(r.y+r.r);y++)for(let x=Math.floor(r.x-r.r);x<=Math.ceil(r.x+r.r);x++){if(x<0||y<0||x>=N||y>=N)continue;const dx=x+.5-r.x,dy=y+.5-r.y;if(dx*dx+dy*dy<=r.r*r.r)a.push(y*N+x);}return a;}
+function mean(arr,idx){let s=0;for(const i of idx)s+=arr[i];return idx.length?s/idx.length:0;}
+let probe={key:"liver",...ROIS.liver};
+
+// ================= UI =================
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const VIR=[[68,1,84],[72,40,120],[62,74,137],[49,104,142],[38,130,142],[31,158,137],[53,183,121],[110,206,88],[181,222,43],[253,231,37]];
+function vir(t){t=clamp(t,0,1)*(VIR.length-1);const i=Math.min(Math.floor(t),VIR.length-2),f=t-i;return [0,1,2].map(k=>VIR[i][k]+(VIR[i+1][k]-VIR[i][k])*f);}
+const virGrad="linear-gradient(90deg,"+VIR.map((c,i)=>`rgb(${c})`+" "+(i/(VIR.length-1)*100).toFixed(0)+"%").join(",")+")";
+
+const PANELS={
+  knob:{label:"Image at dial TE",get:()=>G.KNOB,lo:0,hi:1,cap:()=>"TE "+S.te.toFixed(2)+" ms"},
+  pdff:{label:"Multi-echo PDFF",get:()=>G.PDFF,lo:0,hi:.5,cmap:1,unit:"%",scale:100},
+  r2:{label:"Multi-echo R2*",get:()=>G.FR,lo:0,hi:()=>S.B0===3?1000:500,cmap:1,unit:" s⁻¹"},
+  mew:{label:"Multi-echo water",get:()=>G.FW,lo:0,hi:1},
+  mef:{label:"Multi-echo fat",get:()=>G.FF,lo:0,hi:1},
+  sff:{label:"Dual-echo fat fraction",get:()=>G.SFF,lo:0,hi:.5,cmap:1,unit:"%",scale:100},
+  w2:{label:"Dual-echo water (IP+OP)/2",get:()=>G.W2,lo:0,hi:1},
+  f2:{label:"Dual-echo fat (IP−OP)/2",get:()=>G.F2,lo:0,hi:.5},
+  truth:{label:"Ground-truth PDFF",get:()=>G.TPDFF,lo:0,hi:.5,cmap:1,unit:"%",scale:100}
+};
+["p3","p4"].forEach(p=>{const s=$(p);for(const k in PANELS){const o=document.createElement("option");o.value=k;o.textContent=PANELS[k].label;s.appendChild(o);}s.onchange=e=>{S[p]=e.target.value;drawAll();};});
+
+function drawImg(cv,arr,lo,hi,cmap){
+  const ctx=cv.getContext("2d"),img=ctx.createImageData(N,N),d=img.data;
+  for(let i=0;i<N*N;i++){const t=clamp((arr[i]-lo)/(hi-lo),0,1);
+    if(cmap){if(arr[i]===0&&cmap){d[i*4]=d[i*4+1]=d[i*4+2]=0;}else{const c=vir(t);d[i*4]=c[0];d[i*4+1]=c[1];d[i*4+2]=c[2];}}
+    else{d[i*4]=d[i*4+1]=d[i*4+2]=t*255;}d[i*4+3]=255;}
+  ctx.putImageData(img,0,0);
+  ctx.save();ctx.strokeStyle="#4FB6CC";ctx.lineWidth=1;ctx.beginPath();ctx.arc(probe.x,probe.y,Math.max(probe.r,2)+1,0,TAU);ctx.stroke();ctx.restore();
+}
+function drawPanel(n){
+  const key=S["p"+n],P=PANELS[key],hi=typeof P.hi==="function"?P.hi():P.hi;
+  drawImg($("c"+n),P.get(),P.lo,hi,P.cmap);
+  $("cap"+n).textContent=P.cap?P.cap():"";
+  const cb=$("cb"+n),cbl=$("cbl"+n);
+  if(P.cmap){cb.style.background=virGrad;cbl.innerHTML=`<span>${(P.lo*(P.scale||1)).toFixed(0)}${P.unit}</span><span>${(hi*(P.scale||1)).toFixed(0)}${P.unit}${key==="pdff"||key==="sff"||key==="truth"?"+":""}</span>`;}
+  else{cb.style.background="linear-gradient(90deg,#000,#fff)";cbl.innerHTML="<span></span><span></span>";}
+}
+function drawAll(){
+  const t=dualTE();
+  drawImg($("c1"),G.IP,0,1,0);drawImg($("c2"),G.OP,0,1,0);
+  $("cap1").textContent="TE "+t.ip.toFixed(2)+" ms";$("cap2").textContent="TE "+t.op.toFixed(2)+" ms";
+  drawPanel(3);drawPanel(4);
+  drawKnob();plotDecay();plotSpec();readout();
+}
+
+// --- dirty pipeline
+let dirtyP=true,dirtyI=true,raf=0;
+function schedule(level){if(level>=2)dirtyP=true;if(level>=1)dirtyI=true;if(!raf)raf=requestAnimationFrame(run);}
+function run(){raf=0;if(dirtyP){buildPhantom();dirtyP=false;dirtyI=true;}if(dirtyI){computeImages();dirtyI=false;}computeKnob();drawAll();}
+
+// --- controls
+const SL={faC:v=>v+"°",bw:v=>v+" Hz/px",nE:v=>v,te1:v=>Number(v).toFixed(2)+" ms",dte:v=>Number(v).toFixed(2)+" ms",faQ:v=>v+"°",noise:v=>Number(v).toFixed(3),ff:v=>Number(v).toFixed(1)+"%",pneumo:v=>["None","Few","More","Extensive"][v]};
+Object.keys(SL).forEach(k=>$(k).addEventListener("input",e=>{S[k]=parseFloat(e.target.value);$(k+"O").textContent=SL[k](S[k]);custom();schedule(2);if(k==="bw")shiftHint();}));
+["feL","feP","feS","feM"].forEach(k=>{const s=$(k);IRONLBL.forEach((l,i)=>{const o=document.createElement("option");o.value=i;o.textContent=l;s.appendChild(o);});s.onchange=e=>{S[k]=+e.target.value;custom();schedule(2);};});
+["spare","aml","cyst","hepad","adrad","clip","calc","gg"].forEach(k=>$(k).onchange=e=>{S[k]=e.target.checked;custom();schedule(2);});
+$("order").onchange=e=>{S.order=e.target.value;custom();schedule(1);};
+$("dir").onchange=e=>{S.dir=e.target.value;custom();schedule(2);};
+document.querySelectorAll("#b0 button").forEach(b=>b.onclick=()=>{setField(parseFloat(b.dataset.v));custom();syncUI();schedule(2);});
+function setField(b){S.B0=b;if(b===3){S.te1=1.0;S.dte=1.2;}else{S.te1=1.2;S.dte=2.0;}S.te=dualTE().op;}
+document.querySelectorAll("[data-pat]").forEach(b=>b.onclick=()=>{const p=b.dataset.pat;
+  if(p==="hh")Object.assign(S,{feL:3,feP:2,feS:0,feM:0});if(p==="res")Object.assign(S,{feL:3,feP:0,feS:2,feM:2});if(p==="none")Object.assign(S,{feL:0,feP:0,feS:0,feM:0});
+  custom();syncUI();schedule(2);});
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll(".tabpanel").forEach(p=>p.hidden=p.id!==b.dataset.tab);});
+function shiftHint(){$("shiftHint").textContent="fat shift "+(Math.abs(fMain())/S.bw).toFixed(2)+" px";}
+function syncUI(){
+  Object.keys(SL).forEach(k=>{$(k).value=S[k];$(k+"O").textContent=SL[k](S[k]);});
+  ["feL","feP","feS","feM"].forEach(k=>$(k).value=S[k]);
+  ["spare","aml","cyst","hepad","adrad","clip","calc","gg"].forEach(k=>$(k).checked=S[k]);
+  $("order").value=S.order;$("dir").value=S.dir;$("p3").value=S.p3;$("p4").value=S.p4;
+  document.querySelectorAll("#b0 button").forEach(b=>b.setAttribute("aria-pressed",parseFloat(b.dataset.v)===S.B0));
+  const f=Math.abs(fMain()),t=dualTE();$("b0hint").textContent=`fat−water ${f.toFixed(0)} Hz, OP ${t.op.toFixed(2)} ms, IP ${t.ip.toFixed(2)} ms`;
+  shiftHint();$("te").value=S.te;
+}
+// probe buttons
+const roisEl=$("rois");
+Object.keys(ROIS).forEach(k=>{const b=document.createElement("button");b.textContent=ROIS[k].name;b.dataset.k=k;b.onclick=()=>{probe={key:k,...ROIS[k]};markProbe();drawAll();};roisEl.appendChild(b);});
+function markProbe(){roisEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===probe.key));}
+["c1","c2","c3","c4"].forEach(id=>$(id).addEventListener("click",e=>{const r=e.currentTarget.getBoundingClientRect();
+  probe={key:"custom",name:"Custom point",x:clamp((e.clientX-r.left)/r.width*N,0,N-1),y:clamp((e.clientY-r.top)/r.height*N,0,N-1),r:1.6};markProbe();drawAll();}));
+
+// --- probe stats
+function stats(){
+  const idx=roiIdx(probe);
+  const m=a=>mean(a,idx);
+  const o={idx,wq:m(CH.wq),fq:m(CH.fq),wc:m(CH.wc),fc:m(CH.fc),rw:m(CH.rw),rf:m(CH.rf),r2:m(CH.r2),ip:m(G.IP),op:m(G.OP),sff:m(G.SFF),pdff:m(G.PDFF),fr:m(G.FR),fw:m(G.FW),ff:m(G.FF)};
+  o.tpdff=(o.rw+o.rf)>0.02?o.rf/(o.rw+o.rf):0;
+  o.me=G.ME.map(e=>m(e.mag));
+  return o;
+}
+
+// --- phase clock
+const svg=$("knob"),NS="http://www.w3.org/2000/svg";
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+el("circle",{cx:0,cy:0,r:1,fill:"none",stroke:"var(--line)","stroke-width":.03});
+el("circle",{cx:0,cy:0,r:1.22,fill:"none",stroke:"var(--line)","stroke-width":.1,opacity:.6});
+el("line",{x1:-1.05,y1:0,x2:1.05,y2:0,stroke:"var(--line)","stroke-width":.012,"stroke-dasharray":".04 .04"});
+const tIP=el("text",{x:1.02,y:-.08,"font-size":.13,fill:"var(--muted)","text-anchor":"end"});tIP.textContent="in phase";
+const tOP=el("text",{x:-1.02,y:-.08,"font-size":.13,fill:"var(--muted)"});tOP.textContent="opposed";
+const wArrow=el("line",{stroke:"#8C959C","stroke-width":.06,"stroke-linecap":"round"});
+const fLines=[];for(let p=0;p<6;p++)fLines.push(el("line",{stroke:"var(--rose)","stroke-width":.045,"stroke-linecap":"round",opacity:.85}));
+const sArrow=el("line",{stroke:"var(--amber)","stroke-width":.055,"stroke-linecap":"round"});
+const sTip=el("circle",{r:.06,fill:"var(--amber)"});
+const handle=el("circle",{r:.09,fill:"var(--ink)"});
+function drawKnob(){
+  const st=stats(),s0=Math.max(st.wq+st.fq,1e-6),w=st.wq/s0,f=st.fq/s0,dec=Math.exp(-st.r2*S.te/1000),F=fHz();
+  let x=w*dec,y=0;wArrow.setAttribute("x1",0);wArrow.setAttribute("y1",0);wArrow.setAttribute("x2",x);wArrow.setAttribute("y2",0);
+  for(let p=0;p<6;p++){const ph=TAU*F[p]*S.te/1000,dx=f*AMP[p]*dec*Math.cos(ph),dy=f*AMP[p]*dec*Math.sin(ph);
+    const L=fLines[p];L.setAttribute("x1",x);L.setAttribute("y1",-y);x+=dx;y+=dy;L.setAttribute("x2",x);L.setAttribute("y2",-y);}
+  sArrow.setAttribute("x1",0);sArrow.setAttribute("y1",0);sArrow.setAttribute("x2",x);sArrow.setAttribute("y2",-y);sTip.setAttribute("cx",x);sTip.setAttribute("cy",-y);
+  const phm=TAU*fMain()*S.te/1000;handle.setAttribute("cx",1.22*Math.cos(phm));handle.setAttribute("cy",-1.22*Math.sin(phm));
+  let deg=((fMain()*S.te/1000*360)%360+360)%360;const rel=deg>180?deg-360:deg;
+  const lab=Math.abs(rel)<15?" (in phase)":Math.abs(Math.abs(rel)-180)<15?" (opposed)":"";
+  $("teV").textContent=S.te.toFixed(2)+" ms";$("phV").textContent=Math.abs(rel).toFixed(0)+"° from water"+lab;
+  $("sV").textContent=(Math.hypot(x,y)*100).toFixed(0)+"%";
+  svg.setAttribute("aria-valuenow",S.te.toFixed(2));svg.setAttribute("aria-valuetext","TE "+S.te.toFixed(2)+" ms");
+  $("te").value=S.te;
+}
+let drag=false,prevA=0;
+function ang(e){const r=svg.getBoundingClientRect();const x=((e.clientX-r.left)/r.width)*2.7-1.35,y=((e.clientY-r.top)/r.height)*2.7-1.35;return Math.atan2(-y,x);}
+svg.addEventListener("pointerdown",e=>{drag=true;prevA=ang(e);svg.setPointerCapture(e.pointerId);});
+svg.addEventListener("pointermove",e=>{if(!drag)return;const a=ang(e);let d=a-prevA;if(d>Math.PI)d-=TAU;if(d<-Math.PI)d+=TAU;prevA=a;
+  S.te=clamp(S.te+d/(TAU*fMain())*1000,0,20);knobChanged();});
+svg.addEventListener("pointerup",()=>drag=false);svg.addEventListener("pointercancel",()=>drag=false);
+svg.addEventListener("keydown",e=>{const st=e.shiftKey?1:0.05;if(e.key==="ArrowRight"||e.key==="ArrowUp"){S.te=clamp(S.te+st,0,20);knobChanged();e.preventDefault();}
+  if(e.key==="ArrowLeft"||e.key==="ArrowDown"){S.te=clamp(S.te-st,0,20);knobChanged();e.preventDefault();}});
+$("te").addEventListener("input",e=>{S.te=parseFloat(e.target.value);knobChanged();});
+$("goOP").onclick=()=>{S.te=dualTE().op;knobChanged();};$("goIP").onclick=()=>{S.te=dualTE().ip;knobChanged();};
+let kraf=0;function knobChanged(){if(kraf)return;kraf=requestAnimationFrame(()=>{kraf=0;computeKnob();drawKnob();if(S.p3==="knob")drawPanel(3);if(S.p4==="knob")drawPanel(4);plotDecay();});}
+
+// --- plots
+function setupCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext("2d");c.scale(dpr,dpr);c.clearRect(0,0,w,h);return [c,w,h];}
+function plotDecay(){
+  const [ctx,w,h]=setupCanvas($("decay")),st=stats();
+  const tmax=S.B0===3?10:18,pl=30,pr=8,pt=10,pb=24;
+  const X=t=>pl+t/tmax*(w-pl-pr),Y=v=>pt+(1.1-v)/1.1*(h-pt-pb);
+  ctx.font="11px system-ui, sans-serif";ctx.fillStyle=css("--muted");ctx.strokeStyle=css("--line");ctx.lineWidth=1;
+  [0,.5,1].forEach(v=>{ctx.beginPath();ctx.moveTo(pl,Y(v));ctx.lineTo(w-pr,Y(v));ctx.stroke();ctx.fillText(v.toFixed(1),4,Y(v)+4);});
+  for(let t=0;t<tmax;t+=2){ctx.fillText(t,X(t)-3,h-8);}ctx.fillText("ms",w-pr-14,h-8);
+  const t=dualTE();
+  [["OP",t.op],["IP",t.ip]].forEach(([l,te])=>{ctx.strokeStyle=css("--line");ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(X(te),pt);ctx.lineTo(X(te),h-pb);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=css("--muted");ctx.fillText(l,X(te)+3,pt+10);});
+  ctx.strokeStyle=css("--amber");ctx.globalAlpha=.35;ctx.beginPath();ctx.moveTo(X(S.te),pt);ctx.lineTo(X(S.te),h-pb);ctx.stroke();ctx.globalAlpha=1;
+  const s0=Math.max(st.wq+st.fq,1e-6),F=fHz();
+  function curve(fn,col,dash,lw){ctx.strokeStyle=col;ctx.lineWidth=lw||1.8;ctx.setLineDash(dash||[]);ctx.beginPath();for(let i=0;i<=300;i++){const te=i/300*tmax;const v=fn(te);i?ctx.lineTo(X(te),Y(v)):ctx.moveTo(X(te),Y(v));}ctx.stroke();ctx.setLineDash([]);}
+  const sig=(W,Fa,R)=>te=>{const c=cOf(te),e=Math.exp(-R*te/1000);return Math.hypot(W+Fa*c[0],Fa*c[1])*e/s0;};
+  curve(te=>Math.exp(-st.r2*te/1000),css("--muted"),[2,3],1.2);
+  curve(te=>st.wq*Math.exp(-st.r2*te/1000)/s0,"#8C959C",[5,4],1.4);
+  curve(sig(st.wq,st.fq,st.r2),css("--cyan"),null,2);
+  if(st.fw+st.ff>0.02)curve(sig(st.fw,st.ff,st.fr),css("--amber"),[1,0],1.1);
+  ctx.fillStyle=css("--amber");G.TEs.forEach((te,k)=>{if(te>tmax)return;ctx.beginPath();ctx.arc(X(te),Y(st.me[k]/s0),3.2,0,TAU);ctx.fill();});
+  const c0=Math.max(st.wc+st.fc,1e-6);ctx.strokeStyle=css("--ink");ctx.lineWidth=1.5;
+  [[t.op,st.op],[t.ip,st.ip]].forEach(([te,v])=>{ctx.beginPath();ctx.arc(X(te),Y(v/c0),4.5,0,TAU);ctx.stroke();});
+  $("lgTrue").style.background=css("--cyan");$("lgEnv").style.background=css("--muted");$("lgFit").style.background=css("--amber");
+}
+function plotSpec(){
+  const [ctx,w,h]=setupCanvas($("spec")),st=stats();
+  const lo=-0.3,hi=6.3,pl=10,pr=10,pt=10,pb=26,MHz=42.577*S.B0;
+  const X=p=>pl+(hi-p)/(hi-lo)*(w-pl-pr);
+  const fw=r=>Math.max(r,5)/Math.PI/MHz; // FWHM in ppm
+  const L=(p,c,a,g)=>a*(g/2)*(g/2)/((p-c)*(p-c)+(g/2)*(g/2))/(g);
+  const ref=L(0,0,0.8,fw(30));
+  const Y=v=>pt+(1-Math.min(v/ref,1.05)/1.05)*(h-pt-pb);
+  const g=fw(st.r2),tot=Math.max(st.rw+st.rf,1e-6);
+  const wAmp=st.rw,fAmp=st.rf;
+  ctx.font="11px system-ui, sans-serif";ctx.fillStyle=css("--muted");ctx.strokeStyle=css("--line");
+  ctx.beginPath();ctx.moveTo(pl,h-pb);ctx.lineTo(w-pr,h-pb);ctx.stroke();
+  for(let p=0;p<=6;p++){ctx.fillText(p,X(p)-3,h-10);}ctx.fillText("ppm",w-pr-22,h-10);
+  function line(fn,col,lw,fill){ctx.beginPath();for(let i=0;i<=500;i++){const p=hi-(hi-lo)*i/500;const v=fn(p);i?ctx.lineTo(X(p),Y(v)):ctx.moveTo(X(p),Y(v));}
+    if(fill){ctx.lineTo(X(lo),h-pb);ctx.lineTo(X(hi),h-pb);ctx.closePath();ctx.fillStyle=fill;ctx.fill();}else{ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke();}}
+  const water=p=>L(p,4.7,wAmp,g);
+  const fat=p=>{let s=0;for(let k=0;k<6;k++)s+=L(p,4.7+PPM[k],fAmp*AMP[k],g);return s;};
+  ctx.globalAlpha=.18;line(water,null,0,"#8C959C");line(fat,null,0,css("--rose"));ctx.globalAlpha=1;
+  line(water,"#8C959C",1.4);line(fat,css("--rose"),1.4);line(p=>water(p)+fat(p),css("--amber"),1.8);
+  ctx.fillStyle=css("--muted");
+  const pk=4.7+PPM[1],fv=fat(pk)+water(pk),wv=water(4.7)+fat(4.7);
+  if(fv>ref*0.12)ctx.fillText("fat CH₂ 1.3",X(pk)-26,Math.max(Y(fv)-6,pt+8));
+  if(wv>ref*0.12)ctx.fillText("water 4.7",X(4.7)-24,Math.max(Y(wv)-6,pt+8));
+  $("lgFat").style.background=css("--rose");$("lgSum").style.background=css("--amber");
+  $("specHint").textContent=`Main fat peak is ${Math.abs(fMain()).toFixed(0)} Hz from water at ${S.B0} T. Linewidth here ≈ ${(Math.max(st.r2,5)/Math.PI).toFixed(0)} Hz (R2*/π): iron and susceptibility broaden and flatten the peaks while preserving their area.`;
+}
+
+// --- readout
+function readout(){
+  const st=stats(),t=dualTE();
+  const pct=v=>(v*100).toFixed(1)+"%";
+  const drop=st.ip>0.02?(st.ip-st.op)/st.ip:0;
+  const rows=[["True PDFF (phantom)",pct(st.tpdff)],["True R2* (T2*)",st.r2.toFixed(0)+" s⁻¹ ("+(st.r2>1?(1000/st.r2).toFixed(1):"∞")+" ms)"],
+    ["IP / OP signal",st.ip.toFixed(3)+" / "+st.op.toFixed(3)],["OP signal drop (SI index)",(drop*100).toFixed(1)+"%"],
+    ["Dual-echo fat fraction",pct(st.sff)],["Multi-echo PDFF",pct(st.pdff)],["Multi-echo R2*",st.fr.toFixed(0)+" s⁻¹"]];
+  const flags=[];
+  if(probe.key==="adrad"){const sp=roiIdx(ROIS.spleen),sip=mean(G.IP,sp),sop=mean(G.OP,sp);const asr=(st.op/sop)/(st.ip/sip);rows.push(["Adrenal-to-spleen ratio",asr.toFixed(2)]);
+    flags.push({ok:drop>0.165&&asr<0.71,t:`SI index ${(drop*100).toFixed(0)}% (threshold 16.5%), ASR ${asr.toFixed(2)} (threshold 0.71).`});}
+  if(probe.key==="liver"||probe.key==="custom"&&st.tpdff<0.5){
+    if(probe.key==="liver"){const p=st.pdff*100;const gr=p<6.4?"grade 0 range":p<17.4?"grade 1 range":p<22.1?"grade 2 range":"grade 3 range";rows.push(["PDFF grade (approx.)",gr]);
+      if(S.B0===1.5)rows.push(["LIC estimate (Wood, 1.5 T)",(0.0254*st.fr+0.202).toFixed(1)+" mg/g"]);else rows.push(["LIC estimate","needs a 3 T calibration"]);}
+  }
+  if(st.tpdff>0.5)flags.push({t:`Fat-dominant voxel: magnitude dual echo cannot exceed 50%, so it reads ${pct(st.sff)} while true PDFF is ${pct(st.tpdff)}.`});
+  if(st.op>st.ip*1.03&&st.ip>0.03)flags.push({t:"OP is brighter than IP: the later in-phase echo lost signal to T2* (iron or susceptibility), not to fat."});
+  if(S.order==="ip"&&st.r2>90&&st.tpdff<0.05&&drop>0.08)flags.push({t:"Opposed phase is the later echo here, so T2* decay produces an OP drop that mimics fat."});
+  if(S.order==="op"&&st.r2>120&&st.tpdff>0.03&&Math.abs(st.sff-st.tpdff)>0.04)flags.push({t:`T2* between echoes biases the dual-echo estimate (${pct(st.sff)} vs true ${pct(st.tpdff)}); the multi-echo fit corrects for R2*.`});
+  if(st.r2>250&&st.fr<st.r2*0.75)flags.push({t:"R2* is underestimated: signal has decayed to noise by the first echoes. Shorten the first TE and spacing, or image at 1.5 T."});
+  if(S.faQ>6&&st.tpdff>0.03&&st.pdff-st.tpdff>0.015)flags.push({t:`T1 bias: at ${S.faQ}° fat is over-represented, inflating PDFF by ${((st.pdff-st.tpdff)*100).toFixed(1)} points.`});
+  if(Math.abs(st.pdff-st.tpdff)<0.02&&st.tpdff>0.03&&!flags.length)flags.push({ok:1,t:"Multi-echo PDFF agrees with ground truth."});
+  $("readout").innerHTML=`<tr><td colspan="2" style="font-weight:600">${probe.name}</td></tr>`+rows.map(r=>`<tr><td class="k">${r[0]}</td><td class="num">${r[1]}</td></tr>`).join("");
+  $("flags").innerHTML=flags.map(f=>`<div class="flag${f.ok?" ok":""}">${f.t}</div>`).join("");
+}
+
+// --- scenarios
+const SCEN=[
+  {id:"normal",label:"Normal",set:{},probe:"marrow",p3:"pdff",p4:"knob",te:"op",note:"A normal slice at 1.5 T with four fat-containing or fluid lesions switched on. The probe sits on vertebral marrow, which is roughly half fat in adults, so the phase clock is easy to read: drag it and watch the fat vector swing against water while panel 4 cycles between in-phase and opposed. Note the black India-ink rims around the kidneys and spleen on opposed phase."},
+  {id:"adr",label:"Adrenal adenoma",set:{},probe:"adrad",p3:"sff",p4:"pdff",te:"op",note:"The left adrenal nodule contains intracytoplasmic lipid. It keeps its signal on in-phase and drops on opposed phase. The readout computes the signal intensity index and adrenal-to-spleen ratio against the spleen, which is the safer reference."},
+  {id:"steat",label:"Moderate steatosis",set:{ff:18},probe:"liver",p3:"pdff",p4:"sff",te:"op",note:"Liver PDFF 18%. The whole liver drops on opposed phase relative to the spleen. Compare the dual-echo fat fraction with the multi-echo PDFF: close here, because there is no iron and the quantitative flip angle is low."},
+  {id:"sparing",label:"Focal sparing",set:{ff:24,spare:true},probe:"liver",p3:"pdff",p4:"truth",te:"op",note:"Severe steatosis with focal fat sparing next to the gallbladder fossa. On opposed phase the spared area looks like a bright nodule; on PDFF it is simply normal liver. Probe it with a click."},
+  {id:"hepad",label:"Adenoma in fatty liver",set:{ff:22},probe:"hepad",p3:"pdff",p4:"knob",te:"op",note:"A steatotic hepatocellular adenoma in a liver with 22% PDFF. Both drop on opposed phase, so relative contrast nearly vanishes. The PDFF map still separates them because it measures fat rather than comparing signal."},
+  {id:"aml",label:"AML: macroscopic fat",set:{bw:150},probe:"aml",p3:"f2",p4:"knob",te:"op",note:"The renal angiomyolipoma is mostly fat: bright on both echoes, with an India-ink ring where it meets renal parenchyma. At low bandwidth the fat is also displaced along the frequency axis, giving bright and dark bands. The dual-echo fat fraction hits its 50% ceiling and badly underestimates."},
+  {id:"hh",label:"Hemochromatosis",set:{feL:3,feP:2},probe:"liver",p3:"r2",p4:"knob",te:"ip",note:"Parenchymal pattern: liver and pancreas lose signal on the later (in-phase) echo and are dark on the R2* map, while spleen and marrow are spared; iron-laden organs are bright on the R2* map. On the signal-versus-TE plot the envelope collapses within a few milliseconds."},
+  {id:"tf",label:"Transfusional iron",set:{feL:3,feS:2,feM:2},probe:"spleen",p3:"r2",p4:"knob",te:"ip",note:"Reticuloendothelial pattern: liver, spleen and marrow darken on in-phase and light up on R2*; the pancreas is spared. Compare the spleen with the previous case."},
+  {id:"mix",label:"Fat plus iron",set:{ff:15,feL:2},probe:"liver",p3:"sff",p4:"pdff",te:"ip",note:"Steatosis and moderate iron together. The fat lowers the opposed-phase signal while iron lowers the later in-phase signal, so the dual-echo estimate is pulled down (it can even go negative). The multi-echo fit models R2* and recovers PDFF."},
+  {id:"order",label:"3 T echo-order pitfall",set:{B0:3,order:"ip",feL:1,ff:1},probe:"liver",p3:"sff",p4:"pdff",te:"op",note:"3 T with in-phase at 2.3 ms and opposed phase at 3.5 ms. The liver has mild iron and essentially no fat, yet it drops on opposed phase because OP is also the more T2*-weighted echo. Multi-echo PDFF shows no fat."},
+  {id:"sus",label:"Susceptibility zoo",set:{pneumo:3,clip:true,calc:true,gg:true},probe:"custom",p3:"r2",p4:"knob",te:"ip",note:"Pneumobilia, a cholecystectomy clip, pancreatic calcifications, splenic siderotic nodules and gastric gas. All bloom more on the later echo and raise local R2*. Drag the dial past 10 ms and watch the voids grow; switch to 3 T and they grow faster."},
+  {id:"t1",label:"T1 bias",set:{ff:10,faQ:20},probe:"liver",p3:"pdff",p4:"truth",te:"op",note:"Multi-echo acquisition at a 20° flip angle. Fat has a short T1 and recovers more between excitations, so it is over-represented and PDFF reads high. Bring the flip angle back to 3° and the bias disappears."},
+  {id:"sev3",label:"Severe iron at 3 T",set:{B0:3,feL:3,feS:1},probe:"liver",p3:"r2",p4:"pdff",te:"op",note:"Severe liver iron at 3 T: T2* under 1 ms. With a 1.0 ms first echo the fit barely holds, resting on one or two echoes above the noise. Push the first TE to 2 ms or raise the noise and the liver drops out of the maps: R2* collapses and PDFF becomes meaningless. Then switch to 1.5 T."}
+];
+const scenEl=$("scen");let active="normal";
+SCEN.forEach(sc=>{const b=document.createElement("button");b.textContent=sc.label;b.dataset.id=sc.id;b.onclick=()=>applyScen(sc.id);scenEl.appendChild(b);});
+function applyScen(id){
+  const sc=SCEN.find(s=>s.id===id);active=id;
+  Object.assign(S,JSON.parse(JSON.stringify(DEF)));
+  if(sc.set.B0)setField(sc.set.B0);
+  Object.assign(S,sc.set);S.p3=sc.p3;S.p4=sc.p4;
+  S.te=sc.te==="ip"?dualTE().ip:dualTE().op;
+  if(sc.probe==="custom")probe={key:"custom",name:"Custom point (near clip and pneumobilia)",x:74,y:108,r:1.6};else probe={key:sc.probe,...ROIS[sc.probe]};
+  markProbe();syncUI();
+  scenEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.id===id));
+  $("note").textContent=sc.note;schedule(2);
+}
+function custom(){if(!active)return;active=null;scenEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed","false"));
+  $("note").textContent="Custom settings. Use the probe, the phase clock and the readout flags to explain what you see.";}
+window.addEventListener("resize",()=>{plotDecay();plotSpec();});
+if(window.matchMedia){const mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",()=>drawAll());}
+applyScen("normal");
+})();
+</script>
+</body>
+</html>

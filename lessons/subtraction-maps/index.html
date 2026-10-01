@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Subtraction maps on body MRI: basics, pitfalls, QA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F1; --panel:#FFFFFF; --ink:#18222C; --muted:#5A6874; --line:#CFD6DB;
+  --amber:#C98A0C; --cyan:#1F7F95; --warn:#B8621B; --bad:#B3261E; --ok:#2F7D4F;
+  --chip-ok:#E3F1E8; --chip-warn:#FBEEDD; --chip-bad:#F8E1DF;
+  --ui:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --read:"Literata", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843;
+    --amber:#E8B23A; --cyan:#4FB6CC; --warn:#E39B53; --bad:#F07A70; --ok:#6CC08D;
+    --chip-ok:#1D3327; --chip-warn:#3A2A16; --chip-bad:#3D1E1C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843;
+  --amber:#E8B23A; --cyan:#4FB6CC; --warn:#E39B53; --bad:#F07A70; --ok:#6CC08D;
+  --chip-ok:#1D3327; --chip-warn:#3A2A16; --chip-bad:#3D1E1C;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-family:var(--read);font-weight:600;font-size:26px;margin:44px 0 12px;line-height:1.2}
+h3{font-size:17px;margin:0 0 6px;font-weight:600}
+p{margin:0 0 12px}
+.lede{font-family:var(--read);font-size:18px;max-width:72ch;color:var(--muted)}
+.eq{font-family:var(--read);font-size:20px;margin:18px 0 6px}
+.eq b{color:var(--amber)}
+.read{font-family:var(--read);max-width:74ch;line-height:1.65}
+
+/* scenarios */
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 14px}
+.scen button{font:inherit;font-size:14px;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.scen button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:12px 16px;border-radius:4px;font-family:var(--read);max-width:none;margin-bottom:16px;min-height:52px}
+
+/* lightbox */
+.lightbox{background:#000;border-radius:10px;padding:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.lightbox{grid-template-columns:1fr}}
+.frame{position:relative}
+.frame canvas{width:100%;height:auto;display:block;border-radius:3px;cursor:crosshair;image-rendering:auto}
+.cap{color:#C9D3DA;font-size:13px;margin-top:6px;display:flex;justify-content:space-between;gap:8px}
+.cap b{color:#fff;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:10px 2px 0}
+.legend span b{color:var(--amber);font-weight:700}
+
+/* controls + qa */
+.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;margin-top:18px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.ctl{display:grid;grid-template-columns:150px 1fr 56px;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.group{font-size:13px;color:var(--muted);margin:14px 0 2px;font-weight:600}
+.group:first-child{margin-top:0}
+.row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:14px;margin:8px 0}
+select{font:inherit;font-size:14px;padding:4px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:13px}
+td.num{font-variant-numeric:tabular-nums;text-align:right}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.chip.ok{background:var(--chip-ok);color:var(--ok)} .chip.warn{background:var(--chip-warn);color:var(--warn)} .chip.bad{background:var(--chip-bad);color:var(--bad)}
+.probe{font-size:14px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted)}
+.probe b{color:var(--ink);font-variant-numeric:tabular-nums}
+.plotwrap{margin-top:18px}
+#plot{width:100%;height:190px;display:block}
+.pleg{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:4px;flex-wrap:wrap}
+.sw{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+
+/* teaching sections */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-size:15px}
+.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px}
+.card .sig{font-size:13px;color:var(--muted);font-family:var(--ui)}
+ol.qa{counter-reset:q;list-style:none;padding:0;margin:10px 0 0;max-width:80ch}
+ol.qa li{counter-increment:q;position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--line);font-family:var(--read);line-height:1.6}
+ol.qa li::before{content:counter(q);position:absolute;left:0;top:12px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--ui);font-weight:600;font-size:14px;display:grid;place-items:center}
+ol.qa li b{font-family:var(--ui)}
+.quote{font-family:var(--read);font-style:italic;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;max-width:80ch}
+.foot{margin-top:40px;font-size:13px;color:var(--muted);max-width:80ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Subtraction maps on body MRI</h1>
+<p class="lede">A synthetic upper-abdomen slice you can break on purpose. Change breathing, patient motion, scaling and fat suppression between the pre- and post-contrast acquisitions, and watch what the subtraction does to three liver lesions.</p>
+<p class="eq">Subtraction = <b>post</b> − <b>pre</b>, voxel by voxel. It only means "enhancement" if everything else stayed identical.</p>
+
+<div class="scen" id="scen" role="group" aria-label="Scenarios"></div>
+<div class="note" id="note"></div>
+
+<div class="lightbox">
+  <div class="frame"><canvas id="cPre" width="256" height="256" aria-label="Pre-contrast image"></canvas>
+    <div class="cap"><b>Pre-contrast T1 FS</b><span>window 0–1</span></div></div>
+  <div class="frame"><canvas id="cPost" width="256" height="256" aria-label="Post-contrast image"></canvas>
+    <div class="cap"><b>Post-contrast T1 FS</b><span id="phaseCap">arterial</span></div></div>
+  <div class="frame"><canvas id="cSub" width="256" height="256" aria-label="Subtraction image"></canvas>
+    <div class="cap"><b>Subtraction</b><span id="subCap">clinical window</span></div></div>
+</div>
+<div class="legend">
+  <span><b>A</b> enhancing lesion (HCC-like)</span>
+  <span><b>H</b> T1-bright, non-enhancing (hemorrhagic / proteinaceous cyst)</span>
+  <span><b>C</b> simple cyst</span>
+  <span><b>GB</b> gallbladder</span>
+  <span>Dashed line = intensity profile below. Click any image to probe a pixel.</span>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <div class="group">Acquisition</div>
+    <div class="row">
+      <label>Phase <select id="phase"><option value="art">Late arterial</option><option value="pv">Portal venous</option></select></label>
+      <label><input type="checkbox" id="labels" checked> Lesion labels</label>
+    </div>
+    <div class="group">Breath-hold mismatch (organs move, body wall doesn't)</div>
+    <div class="ctl"><label for="ry">Craniocaudal / AP shift</label><input type="range" id="ry" min="-8" max="8" step="0.5"><output id="ryO"></output></div>
+    <div class="ctl"><label for="rx">Left-right shift</label><input type="range" id="rx" min="-6" max="6" step="0.5"><output id="rxO"></output></div>
+    <div class="group">Bulk patient motion (everything moves)</div>
+    <div class="ctl"><label for="gx">Shift x</label><input type="range" id="gx" min="-6" max="6" step="0.5"><output id="gxO"></output></div>
+    <div class="ctl"><label for="gy">Shift y</label><input type="range" id="gy" min="-6" max="6" step="0.5"><output id="gyO"></output></div>
+    <div class="ctl"><label for="rot">Rotation</label><input type="range" id="rot" min="-4" max="4" step="0.5"><output id="rotO"></output></div>
+    <div class="row"><label><input type="checkbox" id="reg"> Apply rigid registration (removes bulk motion only)</label></div>
+    <div class="group">Signal consistency</div>
+    <div class="ctl"><label for="gain">Post scaling / gain</label><input type="range" id="gain" min="0.8" max="1.2" step="0.01"><output id="gainO"></output></div>
+    <div class="ctl"><label for="fatFail">Fat-sat failure on post</label><input type="range" id="fatFail" min="0" max="1" step="0.05"><output id="fatFailO"></output></div>
+    <div class="ctl"><label for="noise">Noise</label><input type="range" id="noise" min="0" max="0.05" step="0.005"><output id="noiseO"></output></div>
+    <div class="group">Subtraction display</div>
+    <div class="row">
+      <label><input type="radio" name="disp" value="clin" checked> Clinical (0 = black, negatives clipped)</label>
+      <label><input type="radio" name="disp" value="signed"> Signed (0 = gray)</label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>QA readout: reference ROIs on the subtraction</h3>
+    <table>
+      <thead><tr><th>ROI</th><th>Should be</th><th style="text-align:right">Sub mean</th><th>Check</th></tr></thead>
+      <tbody id="roiBody"></tbody>
+    </table>
+    <div class="probe" id="probe">Click a pixel on any image to read pre, post, subtraction and percent enhancement at that point (5×5 average).</div>
+    <div class="plotwrap">
+      <canvas id="plot" aria-label="Intensity profile through lesions C and H"></canvas>
+      <div class="pleg">
+        <span><i class="sw" style="background:#9AA3AA"></i>Pre</span>
+        <span><i class="sw" id="swPost"></i>Post</span>
+        <span><i class="sw" id="swSub"></i>Subtraction</span>
+        <span>Profile crosses C, then H</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Why subtraction is worth doing</h2>
+<div class="read">
+<p>Enhancement is a change in T1 signal, not bright T1 signal. When a lesion is already bright before contrast, the post-contrast image cannot tell you whether it enhanced; the eye sees a bright lesion either way. Subtracting the pre removes the intrinsic signal and leaves only the gadolinium effect. Lesion H in the demo is the whole argument: on the post image it looks as bright as the enhancing lesion A, and on a clean subtraction it vanishes.</p>
+<p>That is why subtraction earns its keep in blood-product and protein-rich lesions (hemorrhagic or proteinaceous renal and hepatic cysts, endometriomas, hemorrhagic adnexal lesions), in T1-bright hepatic observations, after ablation or embolization where the treated zone is often T1-bright, and in Bosniak v2019 assessment of cystic renal masses. Its value collapses the moment its core assumption fails: the same voxel must hold the same tissue, measured the same way, on both acquisitions.</p>
+</div>
+
+<h2>What goes wrong when pre and post don't match</h2>
+<div class="cards">
+  <div class="card"><h3>Breath-hold mismatch</h3>
+    <p>The most common failure in the abdomen. Liver, spleen and kidneys move with the diaphragm while the body wall and spine stay put, and different organs move by different amounts. That makes it non-rigid, so a single rigid registration cannot fix it.</p>
+    <p class="sig">Signature: paired bright and dark bands on opposite sides of structures, all oriented the same way. Worst at high-contrast interfaces: T1-bright lesion against liver, liver dome against lung, kidney poles against fat.</p></div>
+  <div class="card"><h3>Pseudo-enhancement of T1-bright lesions</h3>
+    <p>Shift a hemorrhagic cyst by a few pixels and the leading edge becomes a bright crescent on a clinical-window subtraction. It looks like a thin enhancing wall or a mural nodule, which can upgrade a Bosniak category or suggest viable tumor after treatment.</p>
+    <p class="sig">Signature: crescent on one side only; the opposite side goes negative (hidden as black in the clinical window).</p></div>
+  <div class="card"><h3>Masked true enhancement</h3>
+    <p>The same bands can cancel real enhancement at an edge, and through-plane motion means you may be subtracting a slice that does not contain the lesion at all. Small arterial-phase foci and thin septa are most at risk.</p>
+    <p class="sig">Signature: vessel positions and the liver dome level differ between pre and post on the same slice number.</p></div>
+  <div class="card"><h3>Scaling / receiver gain mismatch</h3>
+    <p>If the post series is scaled differently (separate prescan or auto-scaling, different rescale slope, a changed coil selection), every pixel is multiplied by a factor. Non-enhancing tissue that is bright on the pre leaves a proportional residual.</p>
+    <p class="sig">Signature: global, not edge-based. Bright non-enhancing structures (H, marrow, blood products) "enhance" uniformly; dark ones barely change.</p></div>
+  <div class="card"><h3>Inconsistent fat suppression</h3>
+    <p>Fat saturation that works on one acquisition and fails on the other, often at the periphery of the field of view or near metal, leaves fat on the subtraction. In the pelvis and at the body wall this mimics enhancement of fat-containing or marginal lesions.</p>
+    <p class="sig">Signature: subcutaneous and mesenteric fat not black; often patchy and worst at the edges of the field.</p></div>
+  <div class="card"><h3>Registered subtraction side effects</h3>
+    <p>Vendor or PACS non-rigid registration reduces band artifacts but interpolates and warps. It can blur a thin wall, shrink a small nodule, or deform the region you care about. Know whether the images in front of you were registered.</p>
+    <p class="sig">Signature: unusually smooth subtraction with soft edges; lesion size or shape differs from the source images.</p></div>
+</div>
+
+<h2>How to QA a subtraction map</h2>
+<ol class="qa">
+  <li><b>Know what you are looking at.</b> Which post phase minus which pre, generated on the scanner or in PACS, registered or not. Pre and post should share sequence parameters (TR, TE, flip angle, FOV, matrix, slice positions, fat suppression, coil selection) and the same signal scaling, for example by keeping prescan and receiver gain fixed between the two acquisitions. If the scaling is uncertain, check the source series in the DICOM header.</li>
+  <li><b>Survey the whole slice before the lesion.</b> Background, subcutaneous fat, marrow and muscle should be near-black on the clinical window, with muscle only faint. Bright fat points to fat-sat inconsistency; a uniform residual in bright non-enhancing tissue points to scaling.</li>
+  <li><b>Check an internal negative control near the lesion.</b> Gallbladder bile, a simple cyst, CSF, or urine in the collecting system before excretion should null. If the control does not null, the subtraction cannot prove or exclude enhancement at that level.</li>
+  <li><b>Hunt for edge signatures.</b> Look for paired bright and dark bands that point the same way across different organs. Switch to a signed or gray-centered window if your viewer allows it; negative bands are hidden on the default window. Compare liver dome level and vessel positions on the pre and post at the same slice.</li>
+  <li><b>Ask whether the "enhancement" follows the lesion or the motion.</b> True enhancement respects lesion morphology: a nodule, a thick septum, the whole solid component. Artifact sits on the edge that faces the direction of motion and shows up on every high-contrast interface in the same direction.</li>
+  <li><b>Scroll adjacent slices and other phases.</b> Real enhancement is reproducible across slices and follows an expected time course across arterial, portal venous and delayed phases. Artifact changes with each breath-hold.</li>
+  <li><b>Measure on the source images when in doubt.</b> Place matched ROIs on pre and post (copy-paste the ROI, adjusting only for obvious anatomic shift) and compute the percent change, compared against a reference non-enhancing structure at the same level. Treat any published threshold as supporting evidence rather than a verdict, especially in small or heterogeneous lesions.</li>
+  <li><b>Report the limitation.</b> If misregistration makes the subtraction unreliable, say so and state what your enhancement call rests on instead: source images, quantitative ROIs, DWI, or a recommendation for repeat imaging, CT or contrast-enhanced ultrasound.</li>
+</ol>
+<p class="read" style="margin-top:16px">Useful report phrasing:</p>
+<div class="quote">Subtraction images are degraded by respiratory misregistration at this level; the apparent peripheral enhancement of the right renal lesion is attributed to artifact. On source images, there is no measurable enhancement (signal change &lt;5% relative to pre-contrast).</div>
+
+<h2>Things to try with the resident</h2>
+<div class="read">
+<p>Set a 4-pixel craniocaudal shift in the clinical window and ask what H shows. Then switch to the signed window and let them find the matching dark crescent. Add bulk motion, turn on rigid registration, and show that the body wall cleans up while the liver bands stay. Finally, set scaling to 1.12 with no motion: there are no edge artifacts at all, yet H and the marrow now "enhance". That case is the one most likely to fool someone who only looks for misregistration bands.</p>
+</div>
+
+<p class="foot">Synthetic teaching phantom with schematic anatomy and illustrative signal values; it is not derived from patient data and is not a quantitative model of any sequence or vendor implementation.</p>
+</div>
+
+<script>
+(function(){
+const N=256, CX=128, CY=130;
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+function ell(x,y,cx,cy,a,b){const dx=(x-cx)/a,dy=(y-cy)/b;const d=Math.sqrt(dx*dx+dy*dy);return clamp(0.5-(d-1)*Math.min(a,b),0,1);}
+function mix(v,t,m){return v+(t-v)*m;}
+
+// seeded gaussian noise
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+function gauss(seed){const r=mulberry(seed),o=new Float32Array(N*N);for(let i=0;i<N*N;i+=2){const u=Math.max(r(),1e-9),v=r();const m=Math.sqrt(-2*Math.log(u));o[i]=m*Math.cos(6.2832*v);if(i+1<N*N)o[i+1]=m*Math.sin(6.2832*v);}return o;}
+const NPRE=gauss(11), NPOST=gauss(97);
+
+const TIS={
+  pre:{fat:.07,muscle:.28,liver:.42,spleen:.36,cortex:.42,medulla:.32,aorta:.16,ivc:.18,gb:.12,vert:.30,A:.34,H:.88,C:.08},
+  art:{fat:.07,muscle:.32,liver:.52,spleen:.72,cortex:.95,medulla:.38,aorta:1.0,ivc:.26,gb:.12,vert:.34,A:.95,H:.88,C:.08},
+  pv:{fat:.07,muscle:.35,liver:.72,spleen:.74,cortex:.86,medulla:.78,aorta:.80,ivc:.76,gb:.12,vert:.37,A:.60,H:.88,C:.08}
+};
+
+function render(post,s){
+  const t=Object.assign({},post?TIS[s.phase]:TIS.pre);
+  if(post) t.fat=.07+s.fatFail*.7;
+  const out=new Float32Array(N*N);
+  const moved=post&&!s.reg;
+  const th=moved?s.rot*Math.PI/180:0, gx=moved?s.gx:0, gy=moved?s.gy:0;
+  const c=Math.cos(-th), sn=Math.sin(-th);
+  const rx=post?s.rx:0, ry=post?s.ry:0;
+  const nz=post?NPOST:NPRE, g=post?s.gain:1;
+  for(let py=0;py<N;py++){for(let px=0;px<N;px++){
+    const x=px+.5-CX-gx, y=py+.5-CY-gy;
+    const bx=CX+x*c-y*sn, by=CY+x*sn+y*c;
+    let v=.02;
+    v=mix(v,t.fat,ell(bx,by,128,130,114,88));
+    v=mix(v,t.muscle,ell(bx,by,128,130,104,78));
+    v=mix(v,t.fat,ell(bx,by,128,130,98,72));
+    v=mix(v,t.muscle,ell(bx,by,103,197,16,9));
+    v=mix(v,t.muscle,ell(bx,by,153,197,16,9));
+    v=mix(v,t.vert,ell(bx,by,128,180,18,15));
+    v=mix(v,t.aorta,ell(bx,by,142,156,8,8));
+    v=mix(v,t.ivc,ell(bx,by,114,152,8,7));
+    const kx=bx-rx*.6, ky=by-ry*.6;
+    v=mix(v,t.cortex,ell(kx,ky,84,170,14,19)); v=mix(v,t.medulla,ell(kx,ky,84,170,8,12));
+    v=mix(v,t.cortex,ell(kx,ky,172,168,14,19)); v=mix(v,t.medulla,ell(kx,ky,172,168,8,12));
+    const sx=bx-rx*.85, sy=by-ry*.85;
+    v=mix(v,t.spleen,ell(sx,sy,194,108,20,30));
+    const lx=bx-rx, ly=by-ry;
+    v=mix(v,t.liver,Math.max(ell(lx,ly,90,110,56,40),ell(lx,ly,136,94,32,18)));
+    v=mix(v,t.gb,ell(lx,ly,118,138,10,7));
+    v=mix(v,t.A,ell(lx,ly,72,98,9,9));
+    v=mix(v,t.H,ell(lx,ly,100,122,8,8));
+    v=mix(v,t.C,ell(lx,ly,58,124,6,6));
+    out[py*N+px]=v*g+nz[py*N+px]*s.noise;
+  }}
+  return out;
+}
+
+const ROIS=[
+  {name:"Subcutaneous fat",cx:19,cy:130,r:3,kind:"zero",hint:"Fat should null; residual means fat-sat or scaling mismatch"},
+  {name:"Gallbladder bile",cx:118,cy:138,r:5,kind:"zero",hint:"Internal negative control"},
+  {name:"Simple cyst C",cx:58,cy:124,r:3.5,kind:"zero",hint:"Dark on pre, so scaling barely shows here"},
+  {name:"T1-bright cyst H",cx:100,cy:122,r:5,kind:"zero",hint:"Most sensitive to scaling and misregistration"},
+  {name:"Paraspinal muscle",cx:103,cy:197,r:5,kind:"small",hint:"Faint positive expected"},
+  {name:"Enhancing lesion A",cx:72,cy:98,r:6,kind:"pos",hint:"True enhancement should persist"}
+];
+const roiIdx=ROIS.map(r=>{const a=[];for(let y=Math.floor(r.cy-r.r);y<=Math.ceil(r.cy+r.r);y++)for(let x=Math.floor(r.cx-r.r);x<=Math.ceil(r.cx+r.r);x++){const dx=x+.5-r.cx,dy=y+.5-r.cy;if(dx*dx+dy*dy<=r.r*r.r)a.push(y*N+x);}return a;});
+
+const S={phase:"art",rx:0,ry:0,gx:0,gy:0,rot:0,reg:false,gain:1,fatFail:0,noise:.015,disp:"clin",labels:true};
+const DEF=Object.assign({},S);
+
+const SCEN=[
+  {id:"ideal",label:"Perfect match",set:{},note:"Identical position, scaling and fat suppression. Everything that did not change cancels: gallbladder, both cysts, fat and marrow go black, and only enhancing tissue remains. Note how H is bright on both pre and post yet disappears on the subtraction."},
+  {id:"breath",label:"Breath-hold mismatch",set:{ry:4},note:"The post was acquired at a slightly different diaphragm position: liver, spleen and kidneys shifted, body wall did not. H now shows a bright crescent that mimics rim or nodular enhancement. Switch to the signed window to reveal the matching dark crescent on the opposite side."},
+  {id:"bulk",label:"Patient moved",set:{gx:3,gy:-2,rot:2},note:"Bulk motion between acquisitions: every interface, including the body wall and spine, gets paired bands. Tick rigid registration and the artifact largely disappears, because this motion really is rigid."},
+  {id:"regfail",label:"Registration can't fix breathing",set:{gx:3,gy:-2,rot:2,ry:4,rx:1,reg:true},note:"Rigid registration is on. The body wall and spine are now clean, but the organs moved independently of the body wall with breathing, so the liver, kidney and H bands remain. A clean body wall does not certify the organs."},
+  {id:"gain",label:"Scaling mismatch",set:{gain:1.12},note:"No motion at all, but the post is scaled 12% higher. There are no edge bands to warn you, yet H, marrow and muscle all appear to enhance. Only a bright non-enhancing reference exposes this: check the ROI table."},
+  {id:"fat",label:"Fat-sat failure on post",set:{fatFail:.5},note:"Fat suppression was weaker on the post. Subcutaneous and intra-abdominal fat light up on the subtraction and can hide or mimic enhancement at fat interfaces."},
+  {id:"pv",label:"Portal venous washout",set:{phase:"pv"},note:"Portal venous phase minus pre. Lesion A still shows positive subtraction signal but less than the surrounding liver: washout is a relative finding, not negative subtraction."}
+];
+let active="ideal";
+
+const $=id=>document.getElementById(id);
+const scenEl=$("scen");
+SCEN.forEach(sc=>{const b=document.createElement("button");b.textContent=sc.label;b.dataset.id=sc.id;b.setAttribute("aria-pressed",sc.id===active);b.onclick=()=>applyScen(sc.id);scenEl.appendChild(b);});
+function applyScen(id){
+  const sc=SCEN.find(x=>x.id===id);active=id;
+  const keep={disp:S.disp,labels:S.labels,noise:S.noise};
+  Object.assign(S,DEF,keep,sc.set);
+  syncUI();update();
+  scenEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.id===id));
+  $("note").textContent=sc.note;
+}
+
+const sliders={ry:v=>v+" px",rx:v=>v+" px",gx:v=>v+" px",gy:v=>v+" px",rot:v=>v+"°",gain:v=>"×"+Number(v).toFixed(2),fatFail:v=>Math.round(v*100)+"%",noise:v=>Number(v).toFixed(3)};
+Object.keys(sliders).forEach(k=>{$(k).addEventListener("input",e=>{S[k]=parseFloat(e.target.value);$(k+"O").textContent=sliders[k](S[k]);markCustom();update();});});
+$("phase").onchange=e=>{S.phase=e.target.value;markCustom();update();};
+$("reg").onchange=e=>{S.reg=e.target.checked;markCustom();update();};
+$("labels").onchange=e=>{S.labels=e.target.checked;update();};
+document.querySelectorAll('input[name=disp]').forEach(r=>r.onchange=e=>{S.disp=e.target.value;update();});
+function markCustom(){scenEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed","false"));$("note").textContent="Custom settings. Use the ROI table and the signed window to work out which assumption you broke.";}
+function syncUI(){Object.keys(sliders).forEach(k=>{$(k).value=S[k];$(k+"O").textContent=sliders[k](S[k]);});$("phase").value=S.phase;$("reg").checked=S.reg;$("labels").checked=S.labels;document.querySelectorAll('input[name=disp]').forEach(r=>r.checked=r.value===S.disp);}
+
+let PRE,POST,SUB,probe=null;
+function draw(cv,arr,lo,hi,overlay){
+  const ctx=cv.getContext("2d"),img=ctx.createImageData(N,N),d=img.data;
+  for(let i=0;i<N*N;i++){const g=clamp((arr[i]-lo)/(hi-lo),0,1)*255;d[i*4]=d[i*4+1]=d[i*4+2]=g;d[i*4+3]=255;}
+  ctx.putImageData(img,0,0);
+  ctx.save();ctx.strokeStyle="rgba(232,178,58,.75)";ctx.lineWidth=.8;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(30,122.5);ctx.lineTo(150,122.5);ctx.stroke();ctx.restore();
+  if(overlay)overlay(ctx);
+  if(probe){ctx.save();ctx.strokeStyle="#4FB6CC";ctx.lineWidth=1;ctx.strokeRect(probe.x-2,probe.y-2,5,5);
+    ctx.beginPath();ctx.moveTo(probe.x+.5,probe.y-9);ctx.lineTo(probe.x+.5,probe.y-4);ctx.moveTo(probe.x+.5,probe.y+5);ctx.lineTo(probe.x+.5,probe.y+10);
+    ctx.moveTo(probe.x-9,probe.y+.5);ctx.lineTo(probe.x-4,probe.y+.5);ctx.moveTo(probe.x+5,probe.y+.5);ctx.lineTo(probe.x+10,probe.y+.5);ctx.stroke();ctx.restore();}
+}
+function labels(ctx){
+  if(!S.labels)return;
+  ctx.save();ctx.font="600 10px 'Instrument Sans', system-ui, sans-serif";ctx.fillStyle="#E8B23A";ctx.textBaseline="middle";
+  [["A",84,86],["H",112,112],["C",44,114],["GB",124,150]].forEach(([t,x,y])=>ctx.fillText(t,x,y));ctx.restore();
+}
+function update(){
+  PRE=render(false,S);POST=render(true,S);SUB=new Float32Array(N*N);
+  for(let i=0;i<N*N;i++)SUB[i]=POST[i]-PRE[i];
+  draw($("cPre"),PRE,0,1,labels);draw($("cPost"),POST,0,1,labels);
+  if(S.disp==="clin"){draw($("cSub"),SUB,0,.7,labels);$("subCap").textContent="clinical window";}
+  else{draw($("cSub"),SUB,-.5,.5,labels);$("subCap").textContent="signed window";}
+  $("phaseCap").textContent=S.phase==="art"?"late arterial":"portal venous";
+  roiTable();plot();probeText();
+}
+function mean(arr,idx){let s=0;for(const i of idx)s+=arr[i];return s/idx.length;}
+function roiTable(){
+  let html="";
+  ROIS.forEach((r,k)=>{
+    const m=mean(SUB,roiIdx[k]);let cls,txt,exp;
+    if(r.kind==="zero"){exp="≈ 0";const a=Math.abs(m);cls=a<.04?"ok":a<.08?"warn":"bad";txt=a<.04?"Nulls":a<.08?"Residual":"Fails to null";}
+    else if(r.kind==="small"){exp="small +";cls=(m>-.04&&m<.12)?"ok":"warn";txt=cls==="ok"?"As expected":"Unexpected";}
+    else{exp="clearly +";cls=m>.15?"ok":m>.05?"warn":"bad";txt=m>.15?"Preserved":m>.05?"Reduced":"Lost";}
+    html+=`<tr><td>${r.name}<div style="font-size:12px;color:var(--muted)">${r.hint}</div></td><td>${exp}</td><td class="num">${m>=0?"+":""}${m.toFixed(3)}</td><td><span class="chip ${cls}">${txt}</span></td></tr>`;
+  });
+  $("roiBody").innerHTML=html;
+}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function plot(){
+  const cv=$("plot"),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  cv.width=w*dpr;cv.height=h*dpr;const ctx=cv.getContext("2d");ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+  const x0=30,x1=150,row=122,lo=-.6,hi=1.1,pl=34,pr=8,pt=8,pb=18;
+  const X=x=>pl+(x-x0)/(x1-x0)*(w-pl-pr),Y=v=>pt+(hi-v)/(hi-lo)*(h-pt-pb);
+  ctx.strokeStyle=css("--line");ctx.lineWidth=1;ctx.fillStyle=css("--muted");ctx.font="11px system-ui, sans-serif";
+  [-.5,0,.5,1].forEach(v=>{ctx.beginPath();ctx.moveTo(pl,Y(v));ctx.lineTo(w-pr,Y(v));ctx.stroke();ctx.fillText(v.toFixed(1),2,Y(v)+4);});
+  ctx.strokeStyle=css("--muted");ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(pl,Y(0));ctx.lineTo(w-pr,Y(0));ctx.stroke();ctx.setLineDash([]);
+  const series=[[PRE,"#9AA3AA"],[POST,css("--cyan")],[SUB,css("--amber")]];
+  series.forEach(([arr,col])=>{ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.beginPath();
+    for(let x=x0;x<=x1;x++){const v=(arr[row*N+x]+arr[(row+1)*N+x])/2;x===x0?ctx.moveTo(X(x),Y(v)):ctx.lineTo(X(x),Y(v));}ctx.stroke();});
+  $("swPost").style.background=css("--cyan");$("swSub").style.background=css("--amber");
+}
+function probeText(){
+  if(!probe)return;
+  const idx=[];for(let y=probe.y-2;y<=probe.y+2;y++)for(let x=probe.x-2;x<=probe.x+2;x++)if(x>=0&&y>=0&&x<N&&y<N)idx.push(y*N+x);
+  const a=mean(PRE,idx),b=mean(POST,idx),s=mean(SUB,idx);
+  const pct=a>.05?((b-a)/a*100).toFixed(0)+"%":"n/a (pre near zero)";
+  $("probe").innerHTML=`Pixel (${probe.x}, ${probe.y}): pre <b>${a.toFixed(3)}</b>, post <b>${b.toFixed(3)}</b>, subtraction <b>${s>=0?"+":""}${s.toFixed(3)}</b>, percent change <b>${pct}</b>`;
+}
+["cPre","cPost","cSub"].forEach(id=>$(id).addEventListener("click",e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  probe={x:clamp(Math.floor((e.clientX-r.left)/r.width*N),0,N-1),y:clamp(Math.floor((e.clientY-r.top)/r.height*N),0,N-1)};update();
+}));
+window.addEventListener("resize",()=>plot());
+if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>plot());
+
+applyScen("ideal");
+})();
+</script>
+</body>
+</html>
