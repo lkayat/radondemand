@@ -32,7 +32,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
-.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
 h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em}
 h2{font-family:var(--read);font-weight:600;font-size:26px;margin:44px 0 12px;line-height:1.2}
 h3{font-size:17px;margin:0 0 6px;font-weight:600}
@@ -94,11 +94,16 @@ ol.qa li::before{content:counter(q);position:absolute;left:0;top:12px;width:30px
 ol.qa li b{font-family:var(--ui)}
 .quote{font-family:var(--read);font-style:italic;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;max-width:80ch}
 .foot{margin-top:40px;font-size:13px;color:var(--muted);max-width:80ch}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
 <h1>Subtraction maps on body MRI</h1>
 <p class="lede">A synthetic upper-abdomen slice you can break on purpose. Change breathing, patient motion, scaling and fat suppression between the pre- and post-contrast acquisitions, and watch what the subtraction does to three liver lesions.</p>
 <p class="eq">Subtraction = <b>post</b> − <b>pre</b>, voxel by voxel. It only means "enhancement" if everything else stayed identical.</p>
@@ -214,7 +219,7 @@ ol.qa li b{font-family:var(--ui)}
 <p>Set a 4-pixel craniocaudal shift in the clinical window and ask what H shows. Then switch to the signed window and let them find the matching dark crescent. Add bulk motion, turn on rigid registration, and show that the body wall cleans up while the liver bands stay. Finally, set scaling to 1.12 with no motion: there are no edge artifacts at all, yet H and the marrow now "enhance". That case is the one most likely to fool someone who only looks for misregistration bands.</p>
 </div>
 
-<p class="foot">Synthetic teaching phantom with schematic anatomy and illustrative signal values; it is not derived from patient data and is not a quantitative model of any sequence or vendor implementation.</p>
+<p class="foot">Synthetic teaching phantom with schematic anatomy and illustrative signal values; it is not derived from patient data and is not a quantitative model of any sequence or vendor implementation. For teaching only; not for clinical use.</p>
 </div>
 
 <script>

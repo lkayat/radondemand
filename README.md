@@ -7,7 +7,7 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 (only external request: Google Fonts, with system-font fallbacks).
 
 ## Layout
-- `index.html` — landing page. Lesson catalogue is the `GROUPS` array in its script.
+- `index.html` — landing page. Lesson catalog is the `GROUPS` array in its script.
 - `lessons/<slug>/index.html` — one self-contained lesson each.
 - `vercel.json` — clean URLs, trailing slash.
 

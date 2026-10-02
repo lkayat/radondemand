@@ -96,12 +96,17 @@ th:first-child,td:first-child{text-align:left}
 ol.refs{font-size:13.5px;color:var(--muted);padding-left:22px;max-width:90ch;line-height:1.55}
 ol.refs li{margin-bottom:4px}
 .foot{margin-top:30px;font-size:13px;color:var(--muted);max-width:86ch}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .eq{font-family:var(--read);font-size:18px;margin:6px 0 10px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
 <h1>MR Fingerprinting: acquire, simulate, match, map</h1>
 <p class="lede">Conventional relaxometry measures one property at a time and fits a curve to a handful of points. MRF deliberately varies the acquisition so that every tissue traces its own signal evolution, then identifies the tissue by comparing that evolution against a simulated dictionary. This page runs the whole chain on a synthetic prostate slice, using a FISP-MRF schedule modeled on the prostate protocol, with a real extended-phase-graph simulator, SVD compression and dictionary matching running in your browser.</p>
 
@@ -291,7 +296,7 @@ ol.refs li{margin-bottom:4px}
   <li>Futela D, Yin Z, Afshari Mirak S, et al. Characterization of clinically significant prostate cancer in the peripheral zone using rapid B1-insensitive MR fingerprinting. Radiology. 2026. doi:10.1148/radiol.252547.</li>
 </ol>
 
-<p class="foot">Teaching simulation. The FISP schedule (flip angles about 3–50°, TR about 11–14 ms, inversion-prepared) is modeled on published prostate MRF parameters, but the lobe shapes, TR pattern, dictionary grids, aliasing model and tissue values are illustrative. The EPG simulation uses a truncated number of dephasing states, signals are real-valued, and there is no slice-profile, off-resonance, diffusion, magnetization transfer or motion modeling. Numbers produced here demonstrate principles and should not be quoted as measurements.</p>
+<p class="foot">Teaching simulation. The FISP schedule (flip angles about 3–50°, TR about 11–14 ms, inversion-prepared) is modeled on published prostate MRF parameters, but the lobe shapes, TR pattern, dictionary grids, aliasing model and tissue values are illustrative. The EPG simulation uses a truncated number of dephasing states, signals are real-valued, and there is no slice-profile, off-resonance, diffusion, magnetization transfer or motion modeling. Numbers produced here demonstrate principles and should not be quoted as measurements. For teaching only; not for clinical use.</p>
 </div>
 
 <script>

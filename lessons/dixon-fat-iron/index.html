@@ -114,11 +114,16 @@ ol.qa li::before{content:counter(q);position:absolute;left:0;top:12px;width:30px
 ol.qa li b{font-family:var(--ui)}
 .quote{font-family:var(--read);font-style:italic;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;max-width:82ch}
 .foot{margin-top:40px;font-size:13px;color:var(--muted);max-width:82ch}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
 <h1>In-phase, opposed-phase and beyond: fat and iron on body MRI</h1>
 <p class="lede">A synthetic axial slice at the liver hilum, simulated from first principles: each voxel holds water and a six-peak fat spectrum, decays with its own R2*, and is sampled at whatever echo times you choose. Add steatosis, iron, gas, metal and lesions, then compare what dual-echo imaging suggests with what a multi-echo PDFF/R2* fit actually measures.</p>
 
@@ -302,7 +307,7 @@ ol.qa li b{font-family:var(--ui)}
 </ol>
 <div class="quote">Liver PDFF 18% (mean of three large ROIs), compatible with moderate steatosis. Liver R2* 42 s⁻¹ at 1.5 T, within normal limits. Spleen PDFF 0%, internal control satisfactory. A 1.4 cm left adrenal nodule loses signal on opposed-phase imaging (signal intensity index 32%), consistent with a lipid-rich adenoma.</div>
 
-<p class="foot">Synthetic teaching phantom. Anatomy is schematic and all signal values, relaxation times and iron levels are illustrative; they are not calibrated to any vendor implementation. The fat model is a published six-peak liver fat spectrum; susceptibility is approximated as TE-dependent intravoxel dephasing without geometric distortion or field-map effects.</p>
+<p class="foot">Synthetic teaching phantom. Anatomy is schematic and all signal values, relaxation times and iron levels are illustrative; they are not calibrated to any vendor implementation. The fat model is a published six-peak liver fat spectrum; susceptibility is approximated as TE-dependent intravoxel dephasing without geometric distortion or field-map effects. For teaching only; not for clinical use.</p>
 </div>
 
 <script>

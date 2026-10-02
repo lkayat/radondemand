@@ -99,11 +99,16 @@ th:first-child,td:first-child{text-align:left}
 ol.refs{font-size:13.5px;color:var(--muted);padding-left:22px;max-width:90ch;line-height:1.55}
 ol.refs li{margin-bottom:4px}
 .foot{margin-top:30px;font-size:13px;color:var(--muted);max-width:86ch}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
 <h1>Liver MR Fingerprinting: separating fat, iron, inflammation and fibrosis</h1>
 <p class="lede">Diffuse liver disease rarely comes one process at a time. Fat, iron, inflammation and fibrosis all change the liver's relaxation times, often in opposite directions, so a single T1 value can look normal in a sick liver. This page simulates a breath-hold liver MRF acquisition with a multi-echo readout, separates water from fat, estimates R2*, and matches the water-only fingerprint to a dictionary. You can then see how each process moves each measurement.</p>
 
@@ -225,7 +230,7 @@ ol.refs li{margin-bottom:4px}
   <li>Wood JC, Enriquez C, Ghugre N, et al. MRI R2 and R2* mapping accurately estimates hepatic iron concentration in transfusion-dependent thalassemia and sickle cell disease patients. Blood. 2005;106:1460–1465.</li>
 </ol>
 
-<p class="foot">Teaching simulation. The acquisition is a FISP-MRF schedule with a three-echo readout, standing in for the several published liver MRF designs (preparation-block, quadratic-RF and multi-echo variants). Tissue values and every disease effect on T1, T2 and R2* are illustrative and chosen to show directions and interactions, not calibrated to histology or to any product. The iron-corrected T1 here uses this simulator's own iron model; commercial cT1 uses a different, proprietary calibration. Signals are real-valued with complex echo phases from a six-peak fat model; there is no motion, off-resonance, slice-profile or magnetization-transfer modeling.</p>
+<p class="foot">Teaching simulation. The acquisition is a FISP-MRF schedule with a three-echo readout, standing in for the several published liver MRF designs (preparation-block, quadratic-RF and multi-echo variants). Tissue values and every disease effect on T1, T2 and R2* are illustrative and chosen to show directions and interactions, not calibrated to histology or to any product. The iron-corrected T1 here uses this simulator's own iron model; commercial cT1 uses a different, proprietary calibration. Signals are real-valued with complex echo phases from a six-peak fat model; there is no motion, off-resonance, slice-profile or magnetization-transfer modeling. For teaching only; not for clinical use.</p>
 </div>
 
 <script>
