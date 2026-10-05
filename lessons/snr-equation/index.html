@@ -489,25 +489,42 @@ const SCN={
  abd:[
   {seq:"t1",label:"Halve the slice (3 → 1.5 mm)",set:{thk:1.5},note:"Thinner partitions halve voxel volume and SNR. The small liver lesion gains contrast because it no longer averages with surrounding liver, but coverage also halves; restoring it needs twice the partitions and breaks the breath hold."},
   {seq:"t1",label:"Breath-hold too long",set:{Nz:96,R:1},note:"More partitions without parallel imaging: SNR rises (√Nz, √R) but the scan runs well past 20 s. The patient breathes, and breathing ghosts replicate the abdominal wall across the liver. Noise was never the real enemy here."},
+  {seq:"t1",label:"Higher matrix (320 → 448)",set:{Nx:448,Ny:384},note:"Finer in-plane pixels cost SNR through voxel volume, only partly repaid by the extra phase lines, and the extra lines push the breath hold to about 30 s. Breathing ghosts follow."},
   {seq:"t1",label:"Narrow bandwidth",set:{BW:150},note:"Bandwidth from 450 to 150 Hz/px buys √3 in SNR, but the longer readout raises minimum TE and TR (longer breath hold) and fat now shifts several pixels along the frequency direction at every fat–water interface."},
+  {seq:"t1",label:"3 T",set:{B0:3},note:"SNR roughly doubles, partly offset by longer T1 at the same TR and flip angle. Chemical shift in pixels doubles at the same bandwidth. Spend the gain on resolution or a shorter breath hold."},
+  {seq:"t1",label:"Body coil only",set:{coil:"body"},note:"Without the phased-array coil the image is three times noisier at the same time and resolution. The array is the single cheapest SNR gain available."}],
+ abd_t2:[],
+ _:[]
+};
+SCN.abd=SCN.abd.concat([
   {seq:"t2",label:"Phase left–right",set:{dir:"LR"},note:"With phase encoding left–right and a 75% phase FOV, the wide abdomen wraps in from both flanks, and aortic pulsation ghosts now run horizontally across the liver and kidneys. Anterior–posterior phase encoding is chosen for a reason."},
   {seq:"t2",label:"Fix wrap with oversampling",set:{FOV:300,os:0},note:"A smaller FOV improves resolution but the abdomen wraps along the phase direction. Raise phase oversampling until the wrap disappears: SNR rises with the extra lines, and so does the time."},
   {seq:"t2",label:"Double the averages",set:{NEX:2},note:"Two averages buy √2 in SNR and dampen motion ghosts, but double the time and the number of breath holds. SNR efficiency does not change at all."},
+  {seq:"t2",label:"Longer echo train (24 → 48)",set:{ETL:48},note:"Fewer shots per slice, but each train now lasts several T2s of liver: blurring rises, and fewer slices fit in each TR, so concatenations increase. Total time does not improve; here it even rises slightly. Echo train length is not free speed."},
+  {seq:"t2",label:"Shorter TR (2000 → 1200 ms)",set:{TR:1200},note:"Less T1 recovery lowers SNR, and fewer slices fit in each TR, so more concatenations are needed. The time saving is small; a long TR is cheap in multislice TSE."},
+  {seq:"t2",label:"Thicker slices (6 → 8 mm)",set:{thk:8},note:"SNR rises in proportion to thickness and fewer slices cover the liver, so there are fewer concatenations and breath holds. The small lesion fades into the surrounding liver through partial volume."},
   {seq:"dwi",label:"Parallel imaging R = 3",set:{R:3},note:"Shorter echo train: TE drops and distortion near bowel gas shrinks. The g-factor and √R cost SNR, partly repaid by the shorter TE. Try R = 1 for the opposite trade."},
-  {seq:"dwi",label:"3 T",set:{B0:3},note:"SNR roughly doubles, but T1 lengthens, T2 shortens slightly, and susceptibility distortion near bowel gas doubles. Raise R or bandwidth to tame it."},
-  {seq:"t1",label:"Body coil only",set:{coil:"body"},note:"Without the phased-array coil the image is three times noisier at the same time and resolution. The array is the single cheapest SNR gain available."}],
- pro:[
+  {seq:"dwi",label:"More averages (4 → 8)",set:{NEX:8},note:"DWI is SNR-starved, so averages are the usual fix: √2 more SNR and steadier ADC values, at twice the time. Free breathing makes averaging also smooth out motion."},
+  {seq:"dwi",label:"Higher matrix (128 → 192)",set:{Nx:192,Ny:192},note:"Smaller voxels cost SNR, and the longer phase-encode train lengthens TE and doubles distortion near bowel gas. In single-shot EPI, resolution is paid for three times."},
+  {seq:"dwi",label:"Higher b-value (800 → 1400)",set:{b:1400},note:"Normal liver signal falls steeply at high b and TE lengthens for the stronger diffusion encoding. SNR drops sharply; lesion conspicuity may still improve, but noise floor effects begin to matter."},
+  {seq:"dwi",label:"3 T",set:{B0:3},note:"Twice the field, but only about a third more SNR here: longer T1 at this TR and shorter T2 at this TE take their share. Susceptibility distortion near bowel gas doubles; raise R or bandwidth to tame it."}]);
+SCN.pro=[
   {seq:"t2",label:"Endorectal coil",set:{coil:"erc",NEX:1},note:"Adding an endorectal coil roughly doubles SNR in the posterior peripheral zone, enough to drop to one average and halve the time. Signal falls off quickly with distance, so the anterior gland gains less."},
   {seq:"t2",label:"No phase oversampling",set:{os:0},note:"The 18 cm FOV is smaller than the pelvis in the phase direction. Without oversampling, the buttocks and femoral region fold back over the image. Oversampling removes it at a time cost."},
   {seq:"t2",label:"Phase left–right",set:{dir:"LR"},note:"The pelvis is much wider than it is deep: with left–right phase encoding the hips wrap even with 40% oversampling. Keep phase anterior–posterior on small-FOV prostate T2W, or add much more oversampling."},
   {seq:"t2",label:"Faster, coarser T2W",set:{Nx:320,Ny:256,NEX:1},note:"A lower matrix and one average: SNR holds up because voxels are larger, and time drops, but the frequency resolution no longer meets PI-RADS (≤ 0.4 mm). The compliance chips turn red."},
   {seq:"dwi",label:"More averages (6 → 12)",set:{NEX:12},note:"DWI is SNR-starved at b 1000. Doubling NEX buys √2 and steadier ADC, at double the time."},
+  {seq:"dwi",label:"Acquired b 1500",set:{b:1500},note:"Acquiring a high b directly costs SNR twice: less tissue signal and a longer TE for stronger diffusion encoding. This is why many sites calculate b 1400 or higher from lower b-values instead (see the DWI lesson)."},
+  {seq:"dwi",label:"Smaller FOV (220 → 160 mm)",set:{FOV:160},note:"Same matrix on a smaller FOV: finer pixels, much less SNR, and the pelvis now wraps in the phase direction. Small-FOV DWI needs oversampling or dedicated reduced-FOV techniques."},
+  {seq:"dwi",label:"Parallel imaging R = 3",set:{R:3},note:"A shorter echo train reduces distortion near rectal gas and shortens TE, at the price of the g-factor and √R."},
   {seq:"dwi",label:"1.5 T",set:{B0:1.5},note:"At 1.5 T SNR roughly halves but distortion near rectal gas halves too. Many sites compensate with more averages and wider bandwidth."},
-  {seq:"t1",label:"Higher-resolution DCE",set:{Ny:256,Nx:256,Nz:32},note:"Finer in-plane resolution and more partitions improve detail but push temporal resolution past 15 s, out of PI-RADS range, and cost SNR per voxel."}]
-};
+  {seq:"t1",label:"Higher-resolution DCE",set:{Ny:256,Nx:256,Nz:36},note:"Finer in-plane resolution and more partitions improve detail but push temporal resolution past 15 s, out of PI-RADS range, and cost SNR per voxel."},
+  {seq:"t1",label:"Faster DCE (R = 3)",set:{R:3},note:"Parallel imaging shortens each dynamic, improving temporal resolution, at the cost of the g-factor and √R in SNR."},
+  {seq:"t1",label:"Thicker partitions (3 → 4 mm)",set:{thk:4},note:"More SNR per voxel and more coverage, but slices thicker than 3 mm fall outside the PI-RADS recommendation for DCE, and small lesions blur through-plane."},
+  {seq:"t1",label:"Body coil only",set:{coil:"body"},note:"Without the pelvic array, SNR falls to about a third. No protocol tweak recovers that cheaply."}];
 let active=null;
-function setScenarios(){const el=$("scen");el.innerHTML="";const list=SCN[S.an].filter(s=>s.seq===S.seq).concat(SCN[S.an].filter(s=>s.seq!==S.seq));
-  list.forEach(sc=>{const b=document.createElement("button");b.textContent=(sc.seq!==S.seq?{t1:"T1: ",t2:"T2: ",dwi:"DWI: "}[sc.seq]:"")+sc.label;b.onclick=()=>applyScen(sc);el.appendChild(b);b.dataset.l=sc.label;});
+function setScenarios(){const el=$("scen");el.innerHTML="";const list=SCN[S.an].filter(s=>s.seq===S.seq);
+  list.forEach(sc=>{const b=document.createElement("button");b.textContent=sc.label;b.onclick=()=>applyScen(sc);el.appendChild(b);b.dataset.l=sc.label;});
   $("note").textContent=intro();active=null;}
 function intro(){return S.an==="abd"?"Baseline protocols are typical 1.5 T liver settings. Move any control, or pick a move above; the left image stays at baseline so you can compare.":"Baseline protocols are typical 3 T prostate settings that meet PI-RADS v2.1 minimums. Watch the compliance chips as you trade SNR, time and resolution.";}
 function applyScen(sc){S.seq=sc.seq;S.P[S.an+S.seq]=Object.assign(JSON.parse(JSON.stringify(BASE[S.an][S.seq])),sc.set);setScenarios();setupSliders();syncUI();
