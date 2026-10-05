@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The SNR equation: knobs, costs and tradeoffs in body MRI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F1; --panel:#FFFFFF; --ink:#18222C; --muted:#5A6874; --line:#CFD6DB; --soft:#F5F7F8;
+  --amber:#C98A0C; --cyan:#1F7F95; --rose:#B0476A; --warn:#B8621B; --ok:#2F7D4F; --gain:#2F8F5B; --loss:#B8475E;
+  --chip-warn:#FBEEDD; --chip-ok:#E3F1E8; --chip-bad:#F8E1DF;
+  --ui:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --read:"Literata", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843; --soft:#1E2833;
+    --amber:#E8B23A; --cyan:#4FB6CC; --rose:#E07FA0; --warn:#E39B53; --ok:#6CC08D; --gain:#5CC28A; --loss:#E8798F;
+    --chip-warn:#3A2A16; --chip-ok:#1D3327; --chip-bad:#3D1E1C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --panel:#18212A; --ink:#E4EAEE; --muted:#9AA8B3; --line:#2C3843; --soft:#1E2833;
+  --amber:#E8B23A; --cyan:#4FB6CC; --rose:#E07FA0; --warn:#E39B53; --ok:#6CC08D; --gain:#5CC28A; --loss:#E8798F;
+  --chip-warn:#3A2A16; --chip-ok:#1D3327; --chip-bad:#3D1E1C;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1260px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px;line-height:1.2}
+h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}
+.lede{font-family:var(--read);font-size:18px;max-width:80ch;color:var(--muted)}
+.read{font-family:var(--read);max-width:80ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,svg:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.eqn{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:16px 0 4px;font-family:var(--read)}
+.eqn .f{font-size:clamp(17px,2.2vw,22px);line-height:1.5}
+.eqn .live{font-family:var(--ui);font-size:13.5px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:18px 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:15px;font-weight:600;padding:7px 15px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg.sm button{font-size:13.5px;padding:4px 11px;font-weight:500}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.scen button{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.scen button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);min-height:48px}
+.stage{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:1000px){.stage{grid-template-columns:1fr}}
+.dark{background:#000;border-radius:10px;padding:10px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}}
+.pair canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:3px;background:#000}
+.cap{color:#C9D3DA;font-size:12.5px;margin-top:5px;display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.cap b{color:#fff}
+.zoom{display:flex;gap:10px;align-items:center;color:#C9D3DA;font-size:12.5px;margin-top:8px}
+.zoom .seg{background:#1b242d;border-color:#3a4652}.zoom .seg button{color:#dfe6ea}.zoom .seg button[aria-pressed="true"]{background:#dfe6ea;color:#000}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.m{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.m .k{font-size:12px;color:var(--muted)}
+.m .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.m .d{font-size:12.5px;font-variant-numeric:tabular-nums}
+.up{color:var(--gain)}.dn{color:var(--loss)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip-ok);color:var(--ink);border:1px solid transparent}
+.chip.warn{background:var(--chip-warn)}.chip.bad{background:var(--chip-bad)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.grp{font-size:12px;color:var(--muted);margin:14px 0 4px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.grp:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:118px 1fr 74px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}
+.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px;margin:6px 0}
+select{font:inherit;font-size:14px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.knobs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 2px}
+.knob{text-align:center;font-size:12.5px;color:var(--muted)}
+.knob svg{width:78px;height:78px;cursor:grab;touch-action:none;display:block;margin:0 auto}
+.knob b{display:block;color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.hint{font-size:12.5px;color:var(--muted)}
+.ledgers{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;margin-top:18px}
+@media (max-width:900px){.ledgers{grid-template-columns:1fr}}
+canvas.plot{width:100%;display:block}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow-x:auto;margin-top:10px}
+.tbl table{width:100%;min-width:760px;border-collapse:collapse}
+.tbl th,.tbl td{padding:8px 11px;text-align:left;vertical-align:top;font-size:14px;border-bottom:1px solid var(--line)}
+.tbl th{font-size:12.5px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+ol.refs{font-size:13.5px;color:var(--muted);padding-left:22px;max-width:90ch;line-height:1.55}
+.foot{margin-top:30px;font-size:13px;color:var(--muted);max-width:86ch}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>The SNR equation: every knob has a price</h1>
+<p class="lede">Each protocol parameter moves signal-to-noise, scan time, resolution and artifacts at once. Pick an anatomy and a sequence, then turn the knobs. The image on the right is re-acquired from the same synthetic slice at your voxel size and noise level, next to the department baseline on the left. The ledgers below show exactly which factor bought or cost you SNR and time.</p>
+
+<div class="eqn">
+  <div class="f">SNR ∝ B₀ · coil · (Δx · Δy · Δz) · √( N<sub>phase</sub> · NEX · N<sub>z</sub> / BW ) / g · S(TR, TE, flip, b)</div>
+  <div class="live" id="eqLive"></div>
+</div>
+
+<div class="bar">
+  <span class="seg" id="anat" role="group" aria-label="Anatomy"><button data-v="abd">Liver / abdomen</button><button data-v="pro">Prostate</button></span>
+  <span class="seg" id="seq" role="group" aria-label="Sequence"><button data-v="t1">T1-weighted</button><button data-v="t2">T2-weighted</button><button data-v="dwi">DWI</button></span>
+  <button class="mini" id="reset">Reset to baseline</button>
+</div>
+<div class="scen" id="scen" role="group" aria-label="Teaching moves"></div>
+<div class="note" id="note"></div>
+
+<div class="stage">
+  <div>
+    <div class="dark">
+      <div class="pair">
+        <div><canvas id="cBase" width="560" height="560" aria-label="Baseline protocol image"></canvas><div class="cap"><b>Baseline</b><span id="capBase"></span></div></div>
+        <div><canvas id="cCur" width="560" height="560" aria-label="Your protocol image"></canvas><div class="cap"><b>Your protocol</b><span id="capCur"></span></div></div>
+      </div>
+      <div class="zoom"><span>View</span><span class="seg sm" id="zoom"><button data-v="full">Full FOV</button><button data-v="organ">Zoom on organ</button></span><span id="seqName"></span></div>
+    </div>
+    <div class="metrics" id="metrics"></div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="panel" id="ctrls">
+    <div class="grp">Knobs</div>
+    <div class="knobs">
+      <div class="knob"><svg id="kNEX" viewBox="-50 -50 100 100" role="slider" tabindex="0" aria-label="Averages"></svg>Averages (NEX)<b id="kNEXv"></b></div>
+      <div class="knob"><svg id="kR" viewBox="-50 -50 100 100" role="slider" tabindex="0" aria-label="Parallel imaging factor"></svg>Parallel imaging R<b id="kRv"></b></div>
+      <div class="knob"><svg id="kPF" viewBox="-50 -50 100 100" role="slider" tabindex="0" aria-label="Partial Fourier"></svg>Partial Fourier<b id="kPFv"></b></div>
+    </div>
+    <div class="grp">Geometry</div>
+    <div class="ctl"><label for="FOV">FOV (freq.)</label><input type="range" id="FOV"><output id="FOVo"></output></div>
+    <div class="ctl"><label for="rect">Phase FOV</label><input type="range" id="rect" min="50" max="100" step="5"><output id="recto"></output></div>
+    <div class="ctl"><label for="Nx">Matrix freq.</label><input type="range" id="Nx" min="64" max="512" step="16"><output id="Nxo"></output></div>
+    <div class="ctl"><label for="Ny">Matrix phase (full FOV)</label><input type="range" id="Ny" min="64" max="512" step="8"><output id="Nyo"></output></div>
+    <div class="ctl"><label for="thk">Slice thickness</label><input type="range" id="thk" min="1" max="10" step="0.5"><output id="thko"></output></div>
+    <div class="ctl" id="NzRow"><label for="Nz">3D partitions</label><input type="range" id="Nz" min="16" max="128" step="4"><output id="Nzo"></output></div>
+    <div class="grp">Phase encoding</div>
+    <div class="row"><span>Direction</span><span class="seg sm" id="dir"><button data-v="AP">Anterior–posterior</button><button data-v="LR">Left–right</button></span></div>
+    <div class="ctl"><label for="os">Oversampling</label><input type="range" id="os" min="0" max="100" step="5"><output id="oso"></output></div>
+    <div class="grp">Timing and contrast</div>
+    <div class="ctl"><label for="TR">TR</label><input type="range" id="TR"><output id="TRo"></output></div>
+    <div class="ctl"><label for="TE">TE</label><input type="range" id="TE"><output id="TEo"></output></div>
+    <div class="ctl" id="FArow"><label for="FA">Flip angle</label><input type="range" id="FA" min="4" max="40" step="1"><output id="FAo"></output></div>
+    <div class="ctl" id="ETLrow"><label for="ETL">Echo train</label><input type="range" id="ETL" min="4" max="64" step="1"><output id="ETLo"></output></div>
+    <div class="ctl" id="brow"><label for="b">b-value</label><input type="range" id="b" min="400" max="2000" step="50"><output id="bo"></output></div>
+    <div class="ctl"><label for="BW">Bandwidth</label><input type="range" id="BW"><output id="BWo"></output></div>
+    <div class="row" id="FSrow"><label><input type="checkbox" id="FS"> Fat suppression</label></div>
+    <div class="grp">Hardware</div>
+    <div class="row"><span>Field</span><span class="seg sm" id="B0"><button data-v="1.5">1.5 T</button><button data-v="3">3 T</button></span>
+      <label>Coil <select id="coil"></select></label></div>
+  </div>
+</div>
+
+<div class="ledgers">
+  <div class="panel"><h3>SNR ledger: what each change bought or cost (relative to baseline)</h3><canvas class="plot" id="ledSNR" style="height:380px" aria-label="SNR factor ledger"></canvas></div>
+  <div class="panel"><h3>Time ledger</h3><canvas class="plot" id="ledT" style="height:250px" aria-label="Scan time ledger"></canvas>
+    <p class="hint" style="margin-top:8px">SNR efficiency (SNR ÷ √time) is the fair way to compare protocols of different length: averaging doubles time to buy √2, so it never improves efficiency.</p></div>
+</div>
+
+<h2>What each parameter really does</h2>
+<div class="tbl"><table>
+<thead><tr><th>Parameter</th><th>SNR</th><th>Scan time</th><th>Resolution</th><th>Main side effects</th></tr></thead>
+<tbody>
+<tr><td>FOV ↑ (same matrix)</td><td>↑ (∝ voxel area)</td><td>–</td><td>↓ coarser</td><td>Less wrap; less visible detail</td></tr>
+<tr><td>Rectangular (smaller phase) FOV</td><td>↓ (fewer phase lines, √)</td><td>↓</td><td>unchanged</td><td>Wrap if anatomy exceeds the phase FOV</td></tr>
+<tr><td>Frequency matrix ↑</td><td>↓ (∝ 1 / N)</td><td>– (longer echo spacing / TE)</td><td>↑</td><td>Longer readout: more chemical shift, longer TE and EPI train</td></tr>
+<tr><td>Phase matrix ↑</td><td>↓ (∝ 1 / √N net)</td><td>↑ (∝ N)</td><td>↑</td><td>Longer EPI echo train: more distortion in DWI</td></tr>
+<tr><td>Slice thickness ↑</td><td>↑ (∝ thickness)</td><td>↓ coverage cost</td><td>↓ through-plane</td><td>Partial volume hides small lesions</td></tr>
+<tr><td>TR ↑</td><td>↑ (more T1 recovery)</td><td>↑</td><td>–</td><td>Less T1 weighting; more slices per TR in 2D</td></tr>
+<tr><td>TE ↑</td><td>↓ (T2 / T2* decay)</td><td>–</td><td>–</td><td>More T2 weighting; in DWI often forced by b and matrix</td></tr>
+<tr><td>Bandwidth ↓</td><td>↑ (∝ 1 / √BW)</td><td>↑ (longer readout, TR, ETL spacing)</td><td>–</td><td>Chemical shift ↑, susceptibility distortion, blurring in TSE</td></tr>
+<tr><td>NEX ↑</td><td>↑ (∝ √NEX)</td><td>↑ (∝ NEX)</td><td>–</td><td>Reduces motion ghosts; never improves SNR efficiency</td></tr>
+<tr><td>Phase oversampling ↑</td><td>↑ (more lines, √)</td><td>↑</td><td>–</td><td>Removes wrap; costs time</td></tr>
+<tr><td>Partial Fourier ↓</td><td>↓ (√ fraction)</td><td>↓</td><td>slight blurring</td><td>Shorter TE in EPI</td></tr>
+<tr><td>Parallel imaging R ↑</td><td>↓ (1 / g√R)</td><td>↓ (∝ 1 / R)</td><td>–</td><td>Shorter EPI train (less distortion, shorter TE); residual unfolding artifacts</td></tr>
+<tr><td>Phase direction</td><td>via FOV and lines</td><td>via FOV and lines</td><td>–</td><td>Moves wrap, pulsation and breathing ghosts, and EPI distortion</td></tr>
+<tr><td>3D instead of 2D</td><td>↑ (∝ √N<sub>z</sub>)</td><td>↑ (∝ N<sub>z</sub>)</td><td>thin slices possible</td><td>Long scan unless TR is very short</td></tr>
+<tr><td>Field 1.5 → 3 T</td><td>≈ ×2</td><td>–</td><td>–</td><td>Longer T1, double chemical shift and susceptibility, more B1 inhomogeneity and SAR</td></tr>
+<tr><td>Coil closer / more elements</td><td>↑↑ near the coil</td><td>–</td><td>–</td><td>Signal falls off with depth; enables higher R</td></tr>
+</tbody></table></div>
+
+<h2>Strategies by sequence</h2>
+<div class="cards">
+  <div class="card"><h3>Abdomen T1-weighted 3D GRE</h3><p>The hard limit is the breath hold. Buy time with parallel imaging and partial Fourier, then reinvest it in resolution or coverage. Exceeding about 20 seconds trades noise for breathing ghosts, which are far worse. Use the widest bandwidth that keeps chemical shift under a pixel.</p></div>
+  <div class="card"><h3>Abdomen T2-weighted TSE</h3><p>Echo train length sets how many breath holds you need. Phase encode anterior–posterior to use a rectangular FOV and keep aortic pulsation ghosts off the liver; add oversampling if the arms or flanks wrap.</p></div>
+  <div class="card"><h3>DWI (single-shot EPI)</h3><p>The weakest-SNR sequence, so it gets averages. Parallel imaging and partial Fourier shorten the echo train, which reduces distortion and TE; the shorter TE partly repays the g-factor penalty. Keep the matrix modest: phase resolution lengthens the train.</p></div>
+  <div class="card"><h3>Prostate (PI-RADS v2.1)</h3><p>T2W: 3 mm slices, in-plane ≤ 0.7 mm (phase) by ≤ 0.4 mm (frequency). DWI: ≤ 4 mm slices, in-plane ≤ 2.5 mm, FOV 16–22 cm. DCE: 3D T1 GRE, ≤ 2 mm in-plane, temporal resolution ≤ 15 s. Small FOVs need phase oversampling to avoid wrap from the hips and buttocks.</p></div>
+</div>
+
+<h2>Measuring SNR without fooling yourself</h2>
+<div class="read">
+<p><b>Mean over standard deviation needs a valid noise estimate.</b> The classic "signal ROI divided by background-air SD" assumes uniform noise. That breaks with multichannel coils, parallel imaging (noise varies with the g-factor map), partial Fourier, filtering and magnitude reconstruction (Rician noise in air). It can overstate SNR substantially.</p>
+<p><b>Better methods.</b> Subtract two identical acquisitions and measure the SD of the difference (divided by √2), or acquire a noise-only scan, or use the scanner's SNR-unit reconstruction where available. Measure in the organ you care about, because coil sensitivity makes SNR position-dependent.</p>
+<p><b>Compare protocols fairly.</b> Report voxel size, scan time and SNR together, or compare SNR efficiency (SNR per √time). A protocol that looks better may simply be longer or coarser.</p>
+</div>
+
+<h2>References</h2>
+<ol class="refs">
+  <li>Edelstein WA, Glover GH, Hardy CJ, Redington RW. The intrinsic signal-to-noise ratio in NMR imaging. Magn Reson Med. 1986;3:604–618.</li>
+  <li>Pruessmann KP, Weiger M, Scheidegger MB, Boesiger P. SENSE: sensitivity encoding for fast MRI. Magn Reson Med. 1999;42:952–962.</li>
+  <li>Dietrich O, Raya JG, Reeder SB, Reiser MF, Schoenberg SO. Measurement of signal-to-noise ratios in MR images: influence of multichannel coils, parallel imaging, and reconstruction filters. J Magn Reson Imaging. 2007;26:375–385.</li>
+  <li>Turkbey B, Rosenkrantz AB, Haider MA, et al. Prostate Imaging Reporting and Data System version 2.1. Eur Urol. 2019;76:340–351.</li>
+  <li>Bernstein MA, King KF, Zhou XJ. Handbook of MRI Pulse Sequences. Elsevier Academic Press; 2004.</li>
+</ol>
+
+<p class="foot">Teaching simulation. SNR is modeled with the standard proportionality above, a simple g-factor table and illustrative tissue relaxation values; the baseline protocols are calibrated to plausible organ SNR, not to any scanner. Minimum TE/TR, echo spacing and EPI timing follow simplified formulas. Wrap, pulsation and breathing ghosts, chemical shift and EPI distortion are rendered geometrically for intuition, and through-plane partial volume is applied to the lesion only. Real scanners add filtering, coil-specific noise maps and many more constraints. For teaching only; not for clinical use.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const TAU=2*Math.PI,clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+function h32(a){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+function gh(i){const u=Math.max(h32(i*2+1),1e-9),v=h32(i*2+2);return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);}
+const inE=(u,v,cx,cy,a,b)=>((u-cx)/a)**2+((v-cy)/b)**2<=1;
+function inR(u,v,cx,cy,a,b,ang){const c=Math.cos(ang),s=Math.sin(ang),dx=u-cx,dy=v-cy;return inE(cx+dx*c+dy*s,cy-dx*s+dy*c,cx,cy,a,b);}
+
+// ---------------- tissues ----------------
+// T1/T2 as [1.5T, 3T]; ff = fat fraction of PD; ves = vessel flag
+const TIS={
+ abd:[{n:"air",PD:0,T1:[1000,1000],T2:[10,10],ADC:0},
+  {n:"fat",PD:.9,ff:.9,T1:[800,1000],T2:[40,35],ADC:.01},
+  {n:"muscle",PD:.75,T1:[1000,1400],T2:[35,32],ADC:1.5},
+  {n:"liver",PD:.75,T1:[580,810],T2:[45,35],ADC:1.1},
+  {n:"spleen",PD:.8,T1:[1050,1300],T2:[60,55],ADC:.85},
+  {n:"pancreas",PD:.7,T1:[600,800],T2:[45,40],ADC:1.3},
+  {n:"kidney",PD:.85,T1:[950,1250],T2:[70,60],ADC:1.9},
+  {n:"vessel",PD:.85,T1:[1400,1900],T2:[200,150],ADC:2.5,ves:1},
+  {n:"fluid",PD:1,T1:[2800,3500],T2:[600,500],ADC:3.0},
+  {n:"marrow",PD:.6,ff:.5,T1:[700,900],T2:[45,40],ADC:.5},
+  {n:"cortex",PD:.05,T1:[1000,1000],T2:[10,10],ADC:.3},
+  {n:"gas",PD:0,T1:[1000,1000],T2:[10,10],ADC:0},
+  {n:"lesion",PD:.8,T1:[800,1100],T2:[90,80],ADC:.9}],
+ pro:[{n:"air",PD:0,T1:[1000,1000],T2:[10,10],ADC:0},
+  {n:"fat",PD:.9,ff:.9,T1:[800,1000],T2:[40,35],ADC:.01},
+  {n:"muscle",PD:.75,T1:[1000,1400],T2:[35,32],ADC:1.5},
+  {n:"PZ",PD:.9,T1:[1700,2250],T2:[130,120],ADC:1.8},
+  {n:"TZ",PD:.85,T1:[1300,1780],T2:[85,75],ADC:1.3},
+  {n:"AFMS",PD:.7,T1:[1100,1500],T2:[45,40],ADC:1.1},
+  {n:"urethra",PD:.95,T1:[2000,2500],T2:[300,250],ADC:2.0},
+  {n:"vessel",PD:.85,T1:[1400,1900],T2:[200,150],ADC:2.5,ves:1},
+  {n:"marrow",PD:.6,ff:.6,T1:[600,800],T2:[45,40],ADC:.5},
+  {n:"cortex",PD:.05,T1:[1000,1000],T2:[10,10],ADC:.3},
+  {n:"gas",PD:0,T1:[1000,1000],T2:[10,10],ADC:0},
+  {n:"lesion",PD:.85,T1:[1500,1630],T2:[80,73],ADC:.8}]};
+const FATR={T1:[290,370],T2:[100,90]};
+// ---------------- anatomy ----------------
+const A={
+ abd:{unit:2,cu:96,cv:98,X:[-200,200],Y:[-150,150],res:0.4,ext:{AP:132,LR:172},organ:3,lesD:10,cover:200,zoom:{x:-62,y:-12,w:170},gasMax:1,
+   layers:[["e",96,98,86,66,1],["e",96,98,78,58,2],["e",96,98,73,53,1],["e",80,152,13,8,2],["e",112,152,13,8,2],["e",96,138,13,11,10],["e",96,138,11,9,9],["e",96,152,5,4,8],
+   ["e",60,92,36,40,3],["e",100,68,26,14,3],["r",88,84,6,2.2,0.5,1],["r",78,97,7,4.5,0.3,7],["e",66,114,8,5,8],["e",84,121,7,5,7],["e",106,124,6,6,7],
+   ["e",46,124,13,15,1],["e",47,124,10,12,6],["e",146,124,13,16,1],["e",146,124,10,13,6],["e",138,126,3.5,5,1],
+   ["e",157,94,11,24,4],["r",128,114,16,1.8,-0.2,7],["r",118,110,13,4.5,-0.15,5],["r",141,104,12,4.5,-0.35,5],
+   ["e",138,84,15.5,11.5,2],["e",138,84,14,10,8],["f",(u,v)=>inE(u,v,138,84,14,10)&&v<80.5,11],["e",52,82,2.5,2.5,12]]},
+ pro:{unit:0.8,cu:96,cv:92,X:[-195,195],Y:[-125,135],res:0.3,ext:{AP:126,LR:184},organ:3,lesD:9,cover:66,zoom:{x:2,y:6,w:95},
+   layers:[["e",96,100,230,150,1],["e",-10,150,60,45,2],["e",202,150,60,45,2],["e",-50,95,32,30,9],["e",-50,95,29,27,8],["e",242,95,32,30,9],["e",242,95,29,27,8],
+   ["e",-5,40,6,6,7],["e",197,40,6,6,7],["e",24,96,13,42,2],["e",168,96,13,42,2],["r",60,134,22,5,-0.7,2],["r",132,134,22,5,0.7,2],
+   ["e",84,22,12,10,9],["e",84,22,10,8,8],["e",108,22,12,10,9],["e",108,22,10,8,8],["e",96,149,22,15,2],["e",96,149,8,3.5,10],
+   ["e",96,92,41.6,32.6,2],["e",96,92,40,31,3],["e",96,84,27,19,4],["f",(u,v)=>inE(u,v,96,66,24,8)&&inE(u,v,96,92,40,31),5],["e",96,86,2.5,2.5,6],
+   ["e",62,116,3,3,7],["e",130,116,3,3,7],["e",122,108,5.6,5.6,11]]}
+};
+const G={};
+function buildLabels(an){const a=A[an],nx=Math.round((a.X[1]-a.X[0])/a.res),ny=Math.round((a.Y[1]-a.Y[0])/a.res),L=new Uint8Array(nx*ny);
+  const bb=a.layers.map(l=>l[0]==="f"?null:[l[1]-(l[3]||0)-(l[0]==="r"?l[3]:0),l[1]+l[3]+(l[0]==="r"?l[3]:0),l[2]-l[4]-(l[0]==="r"?l[3]:0),l[2]+l[4]+(l[0]==="r"?l[3]:0)]);
+  for(let j=0;j<ny;j++){const y=a.Y[0]+(j+.5)*a.res,v=y/a.unit+a.cv;for(let i=0;i<nx;i++){const x=a.X[0]+(i+.5)*a.res,u=x/a.unit+a.cu;let lab=0;
+    for(let k=0;k<a.layers.length;k++){const l=a.layers[k],b=bb[k];if(b&&(u<b[0]||u>b[1]||v<b[2]||v>b[3]))continue;
+      if(l[0]==="e"?inE(u,v,l[1],l[2],l[3],l[4]):l[0]==="r"?inR(u,v,l[1],l[2],l[3],l[4],l[5]):l[1](u,v))lab=l[l.length-1];}
+    L[j*nx+i]=lab;}}
+  // gas field (coarse) for EPI distortion
+  const cr=4,cx=Math.ceil(nx*a.res/cr),cy=Math.ceil(ny*a.res/cr),gas=new Float32Array(cx*cy),gasLab=TIS[an].findIndex(t=>t.n==="gas");
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++)if(L[j*nx+i]===gasLab)gas[Math.floor(j*a.res/cr)*cx+Math.floor(i*a.res/cr)]+=a.res*a.res/(cr*cr);
+  const fld=new Float32Array(cx*cy);let mx=1e-9;
+  for(let j=0;j<cy;j++)for(let i=0;i<cx;i++){let s=0;for(let q=0;q<cy;q++)for(let p=0;p<cx;p++){const g=gas[q*cx+p];if(!g)continue;const r=Math.hypot(p-i,q-j)*cr;if(r>90)continue;s+=g/(1+(r/18)**2);}fld[j*cx+i]=s;if(s>mx)mx=s;}
+  for(let k=0;k<fld.length;k++)fld[k]/=mx;
+  G[an]={L,nx,ny,fld,cx,cy,cr};}
+
+// ---------------- protocol presets ----------------
+const BASE={
+ abd:{t1:{B0:1.5,coil:"array",FOV:380,rect:75,Nx:320,Ny:256,thk:3,Nz:60,dir:"AP",os:0,TR:4.6,TE:2.2,FA:12,BW:450,NEX:1,R:2,PF:.75,FS:false},
+      t2:{B0:1.5,coil:"array",FOV:380,rect:75,Nx:320,Ny:296,thk:6,dir:"AP",os:0,TR:2000,TE:90,ETL:24,BW:220,NEX:1,R:2,PF:1,FS:true},
+      dwi:{B0:1.5,coil:"array",FOV:380,rect:80,Nx:128,Ny:128,thk:6,dir:"AP",os:0,TR:5000,TE:60,b:800,BW:2000,NEX:4,R:2,PF:.75,FS:true}},
+ pro:{t2:{B0:3,coil:"array",FOV:180,rect:100,Nx:464,Ny:320,thk:3,dir:"AP",os:40,TR:4000,TE:100,ETL:25,BW:250,NEX:2,R:2,PF:1,FS:false},
+      dwi:{B0:3,coil:"array",FOV:220,rect:100,Nx:128,Ny:104,thk:4,dir:"AP",os:20,TR:4000,TE:70,b:1000,BW:1800,NEX:6,R:2,PF:.75,FS:true},
+      t1:{B0:3,coil:"array",FOV:240,rect:100,Nx:192,Ny:160,thk:3,Nz:24,dir:"AP",os:10,TR:4.0,TE:1.5,FA:12,BW:400,NEX:1,R:2,PF:.75,FS:true}}};
+const TARGET={abd:{t1:40,t2:25,dwi:15},pro:{t1:30,t2:30,dwi:12}};
+const COILS={abd:{body:["Body coil only",.33],array:["Phased-array torso",1]},pro:{body:["Body coil only",.33],array:["Phased-array pelvis",1],erc:["Array + endorectal",1]}};
+const GF=[1,1,1.12,1.35,1.75];
+const RANGES={t1:{TR:[2,12,.1],TE:[1,8,.1],BW:[100,1000,10]},t2:{TR:[800,8000,100],TE:[20,250,1],BW:[100,600,10]},dwi:{TR:[1500,10000,100],TE:[40,140,1],BW:[800,3200,50]}};
+const FOVR={abd:[280,480,10],pro:[120,320,10]};
+const S={an:"abd",seq:"t1",zoom:"full",P:{}};
+function params(){const k=S.an+S.seq;if(!S.P[k])S.P[k]=JSON.parse(JSON.stringify(BASE[S.an][S.seq]));return S.P[k];}
+
+// ---------------- physics ----------------
+function derive(an,seq,P){
+  const Fi=P.B0===3?1:0,a=A[an],FOVp=P.FOV*P.rect/100,Np=Math.max(8,Math.round(P.Ny*P.rect/100)),dx=P.FOV/P.Nx,dy=FOVp/Np,lines=Np*(1+P.os/100)*P.PF/P.R,parts=seq==="t1"?P.Nz:1;
+  const o={Fi,FOVp,Np,dx,dy,dz:P.thk,lines,parts,g:GF[P.R]};
+  if(seq==="t1"){o.TEmin=0.6+500/P.BW;o.TE=Math.max(P.TE,o.TEmin);o.TRmin=o.TE+500/P.BW+1.2;o.TR=Math.max(P.TR,o.TRmin);o.time=o.TR*Math.ceil(lines)*parts*P.NEX/1000;o.slices=parts;o.cover=parts*P.thk;o.tbh=o.time;o.concat=1;}
+  if(seq==="t2"){o.esp=1000/P.BW+3;o.TE=clamp(P.TE,o.esp,P.ETL*o.esp);o.TR=P.TR;const shots=Math.ceil(lines/P.ETL),train=P.ETL*o.esp,per=Math.max(1,Math.floor(P.TR/(train+15)));o.slices=Math.ceil(a.cover/P.thk);o.concat=Math.ceil(o.slices/per);
+    o.tbh=P.TR*shots*P.NEX/1000;o.time=o.tbh*o.concat;o.cover=o.slices*P.thk;o.train=train;o.shots=shots;}
+  if(seq==="dwi"){o.esp=1000/P.BW+0.25;o.readout=lines*o.esp;o.TEmin=20+0.75*Math.sqrt(P.b)+0.6*o.readout;o.TE=Math.max(P.TE,o.TEmin);o.TR=P.TR;o.slices=Math.ceil(a.cover/P.thk);
+    const per=Math.max(1,Math.floor(P.TR/(o.TE+o.readout/2+12)));o.concat=Math.ceil(o.slices/per);o.time=P.TR*(3*P.NEX+2)*o.concat/1000;o.cover=o.slices*P.thk;o.tbh=0;}
+  o.raw=(P.B0/1.5)*COILS[an][P.coil][1]*(dx*dy*P.thk)*Math.sqrt(lines*P.NEX*parts/P.BW)/o.g;
+  o.fatPx=(P.FS?0:1)*(220*P.B0/1.5)/P.BW;o.csh=(220*P.B0/1.5)/P.BW*dx; // mm along freq
+  return o;}
+function sigs(an,seq,P,o){const Fi=o.Fi,T=TIS[an],out=[];const lesionPV=Math.min(1,A[an].lesD/P.thk);
+  for(const t of T){const T1=t.T1[Fi],T2=t.T2[Fi],ff=t.ff||0;let w=0,f=0;
+    if(seq==="t1"){const a=P.FA*Math.PI/180,sp=T1x=>{const E=Math.exp(-o.TR/T1x);return Math.sin(a)*(1-E)/(1-Math.cos(a)*E);};w=t.PD*(1-ff)*sp(T1)*Math.exp(-o.TE/(0.6*T2));f=t.PD*ff*sp(FATR.T1[Fi])*Math.exp(-o.TE/(0.6*FATR.T2[Fi]))*(P.FS?0.06:1);if(t.ves)w=t.PD*0.12;}
+    if(seq==="t2"){w=t.PD*(1-ff)*(1-Math.exp(-o.TR/T1))*Math.exp(-o.TE/T2);f=t.PD*ff*(1-Math.exp(-o.TR/FATR.T1[Fi]))*Math.exp(-o.TE/FATR.T2[Fi])*(P.FS?0.06:1);if(t.ves)w*=0.06;}
+    if(seq==="dwi"){const base=(1-Math.exp(-o.TR/T1))*Math.exp(-o.TE/T2);w=t.PD*(1-ff)*base*Math.exp(-P.b*t.ADC/1000);f=t.PD*ff*(1-Math.exp(-o.TR/FATR.T1[Fi]))*Math.exp(-o.TE/FATR.T2[Fi])*0.03;if(t.ves)w*=0.03;}
+    out.push([w,f]);}
+  const org=A[an].organ,les=T.length-1;out[les]=[out[org][0]+(out[les][0]-out[org][0])*lesionPV,out[org][1]+(out[les][1]-out[org][1])*lesionPV];
+  return out;}
+const KCAL={};
+function kcal(an,seq){const k=an+seq;if(KCAL[k])return KCAL[k];const P=BASE[an][seq],o=derive(an,seq,P),s=sigs(an,seq,P,o)[A[an].organ][0]*coilGainOrgan(an,P);KCAL[k]=TARGET[an][seq]/(o.raw*s);return KCAL[k];}
+function coilGainAt(an,P,x,y){if(an!=="pro"||P.coil!=="erc")return 1;const d=Math.hypot(x,y-45.6);return 1+2.2*Math.exp(-Math.max(d-8,0)/16);}
+function coilGainOrgan(an,P){return an==="pro"?coilGainAt(an,P,-17,14):1;}
+function metrics(an,seq,P){const o=derive(an,seq,P),s=sigs(an,seq,P,o),K=kcal(an,seq),gain=coilGainOrgan(an,P),org=A[an].organ,les=s.length-1;
+  o.G=o.raw*K;o.snr=o.G*s[org][0]*gain;o.cnr=o.G*Math.abs(s[les][0]-s[org][0])*(an==="pro"?coilGainAt(an,P,21,13):1);o.sig=s;o.eff=o.snr/Math.sqrt(Math.max(o.time,0.01)/60);
+  const ext=A[an].ext[P.dir],acq=o.FOVp*(1+P.os/100)/2;o.wrap=Math.max(0,ext-acq);
+  o.distort=seq==="dwi"?0.07*o.readout*P.B0/1.5:0;
+  o.resp=an==="abd"&&seq!=="dwi"?0.2*clamp((o.tbh-20)/20,0,1)/Math.sqrt(P.NEX):0;
+  o.puls=(an==="abd"?{t1:.07,t2:.07,dwi:0}[seq]:{t1:.05,t2:.04,dwi:0}[seq])/Math.sqrt(P.NEX);
+  return o;}
+
+// ---------------- rendering ----------------
+function integral(arr,nx,ny){const I=new Float64Array((nx+1)*(ny+1));for(let j=0;j<ny;j++){let r=0;for(let i=0;i<nx;i++){r+=arr[j*nx+i];I[(j+1)*(nx+1)+i+1]=I[j*(nx+1)+i+1]+r;}}return I;}
+function render(an,seq,P,seed){
+  const g=G[an],a=A[an],o=metrics(an,seq,P),s=o.sig,nx=g.nx,ny=g.ny,W=new Float32Array(nx*ny),F=new Float32Array(nx*ny),V=new Float32Array(nx*ny),T=TIS[an];
+  for(let i=0;i<nx*ny;i++){const l=g.L[i];W[i]=s[l][0];F[i]=s[l][1];if(T[l].ves)V[i]=s[l][0];}
+  const IW=integral(W,nx,ny),IF=integral(F,nx,ny),IV=integral(V,nx,ny),res=a.res,n1=nx+1;
+  const box=(I,x0,x1,y0,y1)=>{let i0=(x0-a.X[0])/res,i1=(x1-a.X[0])/res,j0=(y0-a.Y[0])/res,j1=(y1-a.Y[0])/res;const area=(i1-i0)*(j1-j0);
+    i0=Math.round(i0);i1=Math.max(Math.round(i1),i0+1);j0=Math.round(j0);j1=Math.max(Math.round(j1),j0+1);const full=(i1-i0)*(j1-j0);
+    const a0=clamp(i0,0,nx),a1=clamp(i1,0,nx),b0=clamp(j0,0,ny),b1=clamp(j1,0,ny);if(a1<=a0||b1<=b0)return 0;
+    return (I[b1*n1+a1]-I[b0*n1+a1]-I[b1*n1+a0]+I[b0*n1+a0])/full;};
+  const AP=P.dir==="AP",fs=o.dx,ps=o.dy,cols=AP?P.Nx:o.Np,rows=AP?o.Np:P.Nx,hx=(AP?P.FOV:o.FOVp)/2,hy=(AP?o.FOVp:P.FOV)/2,cw=AP?fs:ps,rh=AP?ps:fs;
+  const FOVacq=o.FOVp*(1+P.os/100),gs=o.FOVp/4.3,gr=o.FOVp/6.5,img=new Float32Array(cols*rows),noise=1/o.G;
+  const sample=(I,x,y)=>box(I,x-cw/2,x+cw/2,y-rh/2,y+rh/2);
+  const fieldAt=(x,y)=>{const i=clamp(Math.floor((x-a.X[0])/g.cr),0,g.cx-1),j=clamp(Math.floor((y-a.Y[0])/g.cr),0,g.cy-1);return g.fld[j*g.cx+i];};
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let x=-hx+(c+.5)*cw,y=-hy+(r+.5)*rh;
+    if(o.distort){const d=o.distort*fieldAt(x,y);if(AP)y+=d;else x+=d;}
+    const at=(px,py)=>sample(IW,px,py)+sample(IF,AP?px-o.csh:px,AP?py:py-o.csh);
+    let v=0;for(let n=-2;n<=2;n++){const sh=n*FOVacq;v+=AP?at(x,y+sh):at(x+sh,y);}
+    if(o.puls)for(let k=1;k<=3;k++){const a1=o.puls/k;for(const sg of [-1,1]){const sh=sg*k*gs;v+=a1*(AP?box(IV,x-cw/2,x+cw/2,y-sh-3*rh,y-sh+3*rh):box(IV,x-sh-3*cw,x-sh+3*cw,y-rh/2,y+rh/2));}}
+    if(o.resp)for(let k=1;k<=3;k++){const a1=o.resp/k;for(const sg of [-1,1]){const sh=sg*k*gr;v+=a1*(AP?at(x,y-sh):at(x-sh,y));}}
+    v*=coilGainAt(an,P,x,y);
+    const idx=r*cols+c,n1r=gh(seed*1000003+idx*2),n2r=gh(seed*1000003+idx*2+1);img[idx]=Math.hypot(v+noise*n1r,noise*n2r);}
+  return {img,cols,rows,cw,rh,hx,hy,o};}
+function draw(cv,R){const ctx=cv.getContext("2d"),W=cv.width,H=cv.height;ctx.fillStyle="#000";ctx.fillRect(0,0,W,H);
+  const vals=[];for(let i=0;i<R.img.length;i+=3)vals.push(R.img[i]);vals.sort((a,b)=>a-b);const hi=vals[Math.floor(vals.length*.995)]||1;
+  const off=document.createElement("canvas");off.width=R.cols;off.height=R.rows;const oc=off.getContext("2d"),im=oc.createImageData(R.cols,R.rows);
+  for(let i=0;i<R.img.length;i++){const g=clamp(R.img[i]/hi,0,1)*255;im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=g;im.data[i*4+3]=255;}oc.putImageData(im,0,0);
+  // view box in mm
+  const a=A[S.an];let vx0,vx1,vy0,vy1;if(S.zoom==="organ"){const z=a.zoom;vx0=z.x-z.w/2;vx1=z.x+z.w/2;vy0=z.y-z.w/2;vy1=z.y+z.w/2;}else{const m=Math.max(R.hx,R.hy);vx0=-m;vx1=m;vy0=-m;vy1=m;}
+  const sc=W/(vx1-vx0);ctx.imageSmoothingEnabled=false;
+  const sx0=(vx0+R.hx)/R.cw,sy0=(vy0+R.hy)/R.rh,sx1=(vx1+R.hx)/R.cw,sy1=(vy1+R.hy)/R.rh;
+  const cx0=clamp(sx0,0,R.cols),cy0=clamp(sy0,0,R.rows),cx1=clamp(sx1,0,R.cols),cy1=clamp(sy1,0,R.rows);
+  if(cx1>cx0&&cy1>cy0)ctx.drawImage(off,cx0,cy0,cx1-cx0,cy1-cy0,(cx0-sx0)*R.cw*sc,(cy0-sy0)*R.rh*sc,(cx1-cx0)*R.cw*sc,(cy1-cy0)*R.rh*sc);
+  // phase direction arrow
+  ctx.strokeStyle="rgba(232,178,58,.85)";ctx.fillStyle="rgba(232,178,58,.85)";ctx.lineWidth=2;ctx.font="13px system-ui";const P=R.P||{};
+  ctx.beginPath();if(R.dir==="AP"){ctx.moveTo(W-18,22);ctx.lineTo(W-18,62);ctx.stroke();ctx.fillText("phase",W-58,76);}else{ctx.moveTo(W-62,22);ctx.lineTo(W-22,22);ctx.stroke();ctx.fillText("phase",W-60,40);}}
+
+// ---------------- UI ----------------
+const $=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s),css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const SEQNAME={abd:{t1:"3D spoiled GRE, breath-hold",t2:"2D TSE, breath-hold",dwi:"Single-shot EPI DWI, free-breathing"},pro:{t1:"3D spoiled GRE (DCE)",t2:"2D TSE (no fat suppression)",dwi:"Single-shot EPI DWI"}};
+function setupSliders(){const P=params(),r=RANGES[S.seq],f=FOVR[S.an];
+  const cfg={FOV:[f[0],f[1],f[2]],TR:r.TR,TE:r.TE,BW:r.BW};for(const k in cfg){const el=$(k);el.min=cfg[k][0];el.max=cfg[k][1];el.step=cfg[k][2];}
+  $("NzRow").hidden=S.seq!=="t1";$("FArow").hidden=S.seq!=="t1";$("ETLrow").hidden=S.seq!=="t2";$("brow").hidden=S.seq!=="dwi";$("FSrow").hidden=S.seq==="dwi";
+  const cs=$("coil");cs.innerHTML="";for(const k in COILS[S.an]){const o=document.createElement("option");o.value=k;o.textContent=COILS[S.an][k][0];cs.appendChild(o);}
+  if(!COILS[S.an][P.coil])P.coil="array";
+  // pro has no T1w... t1 for prostate = DCE
+}
+const FMT={FOV:v=>v+" mm",rect:v=>v+"%",Nx:v=>v,Ny:v=>v,thk:v=>(+v).toFixed(1)+" mm",Nz:v=>v,os:v=>v+"%",TR:v=>S.seq==="t1"?(+v).toFixed(1)+" ms":v+" ms",TE:v=>S.seq==="t1"?(+v).toFixed(1)+" ms":v+" ms",FA:v=>v+"°",ETL:v=>v,b:v=>v,BW:v=>v+" Hz/px"};
+function syncUI(){const P=params();for(const k in FMT){const el=$(k);if(!el||P[k]===undefined)continue;el.value=P[k];$(k+"o").textContent=FMT[k](P[k]);}
+  $("FS").checked=!!P.FS;$("coil").value=P.coil;
+  $$("#anat button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.an));$$("#seq button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.seq));
+  $$("#dir button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.dir));$$("#B0 button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.v===P.B0));
+  $$("#zoom button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.zoom));KN.forEach(k=>k.draw());$("seqName").textContent=SEQNAME[S.an][S.seq];}
+for(const k in FMT){const el=$(k);el.addEventListener("input",e=>{const P=params();P[k]=+e.target.value;$(k+"o").textContent=FMT[k](P[k]);custom();schedule();});}
+$("FS").onchange=e=>{params().FS=e.target.checked;custom();schedule();};
+$("coil").onchange=e=>{params().coil=e.target.value;custom();schedule();};
+$$("#dir button").forEach(b=>b.onclick=()=>{params().dir=b.dataset.v;custom();syncUI();schedule();});
+$$("#B0 button").forEach(b=>b.onclick=()=>{params().B0=+b.dataset.v;custom();syncUI();schedule();});
+$$("#zoom button").forEach(b=>b.onclick=()=>{S.zoom=b.dataset.v;syncUI();schedule(true);});
+$$("#anat button").forEach(b=>b.onclick=()=>{S.an=b.dataset.v;S.zoom=S.an==="pro"?"organ":"full";setScenarios();setupSliders();syncUI();schedule(false,true);});
+$$("#seq button").forEach(b=>b.onclick=()=>{S.seq=b.dataset.v;setScenarios();setupSliders();syncUI();schedule(false,true);});
+$("reset").onclick=()=>{delete S.P[S.an+S.seq];setScenarios();setupSliders();syncUI();schedule();};
+
+// knobs
+function Knob(id,key,vals,fmt){this.el=$(id);this.key=key;this.vals=vals;this.fmt=fmt;const NS="http://www.w3.org/2000/svg",el=this.el;
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);el.appendChild(e);return e;};
+  mk("circle",{r:40,fill:"var(--soft)",stroke:"var(--line)","stroke-width":2});this.ticks=[];
+  vals.forEach((v,i)=>{const an=this.ang(i);this.ticks.push(mk("line",{x1:44*Math.cos(an),y1:44*Math.sin(an),x2:49*Math.cos(an),y2:49*Math.sin(an),stroke:"var(--muted)","stroke-width":2}));});
+  this.ind=mk("line",{x1:0,y1:0,x2:0,y2:-30,stroke:"var(--amber)","stroke-width":6,"stroke-linecap":"round"});mk("circle",{r:6,fill:"var(--ink)"});
+  let drag=false,y0=0,i0=0;el.addEventListener("pointerdown",e=>{drag=true;y0=e.clientY;i0=this.idx();el.setPointerCapture(e.pointerId);});
+  el.addEventListener("pointermove",e=>{if(!drag)return;const d=Math.round((y0-e.clientY)/18);this.set(i0+d);});
+  el.addEventListener("pointerup",()=>drag=false);el.addEventListener("pointercancel",()=>drag=false);
+  el.addEventListener("wheel",e=>{e.preventDefault();this.set(this.idx()+(e.deltaY<0?1:-1));},{passive:false});
+  el.addEventListener("keydown",e=>{if(["ArrowUp","ArrowRight"].includes(e.key)){this.set(this.idx()+1);e.preventDefault();}if(["ArrowDown","ArrowLeft"].includes(e.key)){this.set(this.idx()-1);e.preventDefault();}});}
+Knob.prototype.ang=function(i){return (-225+270*i/(this.vals.length-1))*Math.PI/180;};
+Knob.prototype.idx=function(){const v=params()[this.key];let b=0,bd=1e9;this.vals.forEach((x,i)=>{if(Math.abs(x-v)<bd){bd=Math.abs(x-v);b=i;}});return b;};
+Knob.prototype.set=function(i){i=clamp(i,0,this.vals.length-1);const P=params();if(P[this.key]===this.vals[i])return;P[this.key]=this.vals[i];custom();this.draw();schedule();};
+Knob.prototype.draw=function(){const i=this.idx(),an=this.ang(i);this.ind.setAttribute("x2",30*Math.cos(an));this.ind.setAttribute("y2",30*Math.sin(an));
+  this.ticks.forEach((t,k)=>t.setAttribute("stroke",k===i?"var(--amber)":"var(--muted)"));$(this.el.id+"v").textContent=this.fmt(this.vals[i]);this.el.setAttribute("aria-valuetext",this.fmt(this.vals[i]));};
+const KN=[new Knob("kNEX","NEX",[1,2,3,4,6,8,10,12,16],v=>v),new Knob("kR","R",[1,2,3,4],v=>v===1?"off":"×"+v),new Knob("kPF","PF",[.625,.75,.875,1],v=>v===1?"full":(v*8)+"/8")];
+
+// ---------------- metrics, ledgers ----------------
+let RB=null;
+function fmtT(s){return s<60?s.toFixed(1)+" s":Math.floor(s/60)+" min "+Math.round(s%60)+" s";}
+function update(redrawOnly,newBase){
+  const P=params(),B=BASE[S.an][S.seq];
+  if(newBase||!RB||RB.key!==S.an+S.seq){RB=render(S.an,S.seq,B,1);RB.key=S.an+S.seq;RB.dir=B.dir;}
+  const RC=render(S.an,S.seq,P,2);RC.dir=P.dir;draw($("cBase"),RB);draw($("cCur"),RC);
+  const mb=RB.o,mc=RC.o;
+  $("capBase").textContent=`${mb.dx.toFixed(2)}×${mb.dy.toFixed(2)}×${B.thk} mm, ${fmtT(mb.time)}`;
+  $("capCur").textContent=`${mc.dx.toFixed(2)}×${mc.dy.toFixed(2)}×${P.thk} mm, ${fmtT(mc.time)}`;
+  const pct=(a,b)=>{const r=(a/b-1)*100;return `<span class="${r>=0?"up":"dn"}">${r>=0?"+":""}${r.toFixed(0)}%</span>`;};
+  const pctT=(a,b)=>{const r=(a/b-1)*100;return `<span class="${r<=0?"up":"dn"}">${r>=0?"+":""}${r.toFixed(0)}%</span>`;};
+  const org=TIS[S.an][A[S.an].organ].n;
+  $("metrics").innerHTML=`<div class="m"><div class="k">SNR (${org})</div><div class="v">${mc.snr.toFixed(1)}</div><div class="d">${pct(mc.snr,mb.snr)} vs ${mb.snr.toFixed(1)}</div></div>
+    <div class="m"><div class="k">CNR lesion</div><div class="v">${mc.cnr.toFixed(1)}</div><div class="d">${pct(mc.cnr,mb.cnr)} (PV at ${P.thk} mm)</div></div>
+    <div class="m"><div class="k">Scan time</div><div class="v">${fmtT(mc.time)}</div><div class="d">${pctT(mc.time,mb.time)}${S.an==="abd"&&S.seq!=="dwi"?`, ${Math.max(1,Math.ceil(mc.time/20))} breath-hold${Math.ceil(mc.time/20)>1?"s":""}`:""}</div></div>
+    <div class="m"><div class="k">Voxel</div><div class="v">${(mc.dx*mc.dy*P.thk).toFixed(2)} mm³</div><div class="d">${pctT(mc.dx*mc.dy*P.thk,mb.dx*mb.dy*B.thk).replace(/up|dn/,m=>m)} volume</div></div>
+    <div class="m"><div class="k">SNR efficiency</div><div class="v">${mc.eff.toFixed(1)}</div><div class="d">${pct(mc.eff,mb.eff)} per √min</div></div>
+    <div class="m"><div class="k">Coverage</div><div class="v">${mc.cover.toFixed(0)} mm</div><div class="d">${mc.slices} ${S.seq==="t1"?"partitions":"slices"}${mc.concat>1?`, ${mc.concat} concatenations`:""}</div></div>`;
+  // chips
+  const ch=[];const add=(t,c)=>ch.push(`<span class="chip ${c||""}">${t}</span>`);
+  add(`TE ${mc.TE.toFixed(S.seq==="t1"?1:0)} ms, TR ${mc.TR.toFixed(S.seq==="t1"?1:0)} ms`);
+  if(S.seq==="t1"&&P.TR<mc.TRmin)add(`TR raised to minimum ${mc.TRmin.toFixed(1)} ms`,"warn");
+  if(S.seq!=="t2"&&mc.TEmin&&P.TE<mc.TEmin)add(`TE raised to minimum ${mc.TEmin.toFixed(S.seq==="t1"?1:0)} ms`,"warn");
+  if(mc.wrap>2)add(`Wrap-around: anatomy exceeds the phase FOV by ${mc.wrap.toFixed(0)} mm per side`,"bad");else add("No wrap");
+  if(mc.fatPx>1&&S.seq!=="dwi")add(`Chemical shift ${mc.fatPx.toFixed(1)} px`,mc.fatPx>2?"bad":"warn");
+  if(mc.resp>0.01)add(`Breath-hold exceeded: breathing ghosts`,"bad");
+  if(mc.puls>0.03)add(`Pulsation ghosts along ${P.dir==="AP"?"A–P":"L–R"}`,"warn");
+  if(S.seq==="dwi")add(`EPI readout ${mc.readout.toFixed(0)} ms, distortion near gas ≈ ${mc.distort.toFixed(1)} mm`,mc.distort>6?"bad":mc.distort>3?"warn":"");
+  if(S.seq==="t2"&&mc.train>2*TIS[S.an][A[S.an].organ].T2[mc.Fi])add(`Echo train ${mc.train.toFixed(0)} ms ≫ T2: blurring`,"warn");
+  if(P.R>=3)add(`g-factor ${GF[P.R]}: noise amplified centrally`,"warn");
+  if(S.an==="pro"){const c=(ok,t)=>add((ok?"✓ ":"✗ ")+t,ok?"":"bad");
+    if(S.seq==="t2"){c(mc.dx<=0.4,`freq. ${mc.dx.toFixed(2)} ≤ 0.4 mm`);c(mc.dy<=0.7,`phase ${mc.dy.toFixed(2)} ≤ 0.7 mm`);c(P.thk<=3,`slice ${P.thk} ≤ 3 mm`);c(P.FOV>=120&&P.FOV<=200,`FOV 12–20 cm`);}
+    if(S.seq==="dwi"){c(mc.dx<=2.5&&mc.dy<=2.5,`in-plane ≤ 2.5 mm`);c(P.thk<=4,`slice ≤ 4 mm`);c(P.FOV>=160&&P.FOV<=220,`FOV 16–22 cm`);}
+    if(S.seq==="t1"){c(mc.dx<=2&&mc.dy<=2,`in-plane ≤ 2 mm`);c(P.thk<=3,`slice ≤ 3 mm`);c(mc.time<=15,`temporal resolution ${mc.time.toFixed(1)} ≤ 15 s`);}}
+  if(S.an==="abd"&&S.seq==="t1"){add((mc.time<=20?"✓ ":"✗ ")+`breath-hold ${mc.time.toFixed(1)} s ≤ 20 s`,mc.time<=20?"":"bad");}
+  $("chips").innerHTML=ch.join("");
+  // equation
+  $("eqLive").innerHTML=`Now: ${P.B0} T × ${COILS[S.an][P.coil][0].toLowerCase()} × (${mc.dx.toFixed(2)} × ${mc.dy.toFixed(2)} × ${P.thk} mm) × √(${mc.lines.toFixed(0)} lines × ${P.NEX} NEX${S.seq==="t1"?` × ${P.Nz} partitions`:""} / ${P.BW} Hz/px) / g ${GF[P.R]} × S(${S.seq==="t1"?`TR ${mc.TR.toFixed(1)}, TE ${mc.TE.toFixed(1)}, ${P.FA}°`:S.seq==="t2"?`TR ${P.TR}, TE ${mc.TE.toFixed(0)}`:`b ${P.b}, TE ${mc.TE.toFixed(0)}`})`;
+  ledgers(B,P,mb,mc);}
+function ledgers(B,P,mb,mc){
+  const cb=COILS[S.an][B.coil][1]*coilGainOrgan(S.an,B),cc=COILS[S.an][P.coil][1]*coilGainOrgan(S.an,P),org=A[S.an].organ;
+  const rows=[["Field strength",P.B0/B.B0],["Coil",cc/cb],["Voxel volume (FOV, matrix, slice)",(mc.dx*mc.dy*P.thk)/(mb.dx*mb.dy*B.thk)],["Phase-encode lines (matrix, phase FOV)",Math.sqrt(mc.Np/mb.Np)],
+    ["Phase oversampling",Math.sqrt((1+P.os/100)/(1+B.os/100))],["Partial Fourier",Math.sqrt(P.PF/B.PF)],["Parallel imaging (1/g√R)",(GF[B.R]*Math.sqrt(B.R))/(GF[P.R]*Math.sqrt(P.R))],
+    ["Averages (√NEX)",Math.sqrt(P.NEX/B.NEX)],["3D partitions (√Nz)",S.seq==="t1"?Math.sqrt(P.Nz/B.Nz):1],["Bandwidth (√1/BW)",Math.sqrt(B.BW/P.BW)],
+    ["Tissue signal (TR, TE, flip, b, field T1)",mc.sig[org][0]/mb.sig[org][0]]];
+  const tot=rows.reduce((p,r)=>p*r[1],1);rows.push(["Total SNR change",tot]);
+  bars($("ledSNR"),rows,false);
+  const tr=[["TR",mc.TR/mb.TR],["Phase lines (matrix, FOV, os, PF, R)",Math.ceil(mc.lines)/Math.ceil(mb.lines)],["Averages",P.NEX/B.NEX]];
+  if(S.seq==="t1")tr.push(["3D partitions",P.Nz/B.Nz]);
+  if(S.seq==="t2")tr.push(["Echo train and concatenations",(mc.time/(mc.TR*Math.ceil(mc.lines)*P.NEX))/(mb.time/(mb.TR*Math.ceil(mb.lines)*B.NEX))]);
+  if(S.seq==="dwi")tr.push(["Concatenations and lines-per-TR rule",(mc.concat/mb.concat)/(Math.ceil(mc.lines)/Math.ceil(mb.lines))]);
+  tr.push(["Total time change",mc.time/mb.time]);bars($("ledT"),tr,true);}
+function bars(cv,rows,inv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext("2d");c.scale(dpr,dpr);c.clearRect(0,0,w,h);
+  c.font="12.5px system-ui, sans-serif";const lw=Math.min(250,w*0.46),pr=58,rh=(h-22)/rows.length,x0=lw+8,x1=w-pr,mid=(x0+x1)/2,X=v=>mid+clamp(Math.log2(v)/2,-1,1)*(x1-x0)/2;
+  c.strokeStyle=css("--line");[0.25,0.5,1,2,4].forEach(v=>{c.beginPath();c.moveTo(X(v),4);c.lineTo(X(v),h-18);c.stroke();c.fillStyle=css("--muted");c.textAlign="center";c.fillText(v+"×",X(v),h-4);});
+  rows.forEach((r,i)=>{const y=6+i*rh,last=i===rows.length-1,v=r[1],good=inv?v<1:v>1,col=Math.abs(v-1)<0.005?css("--muted"):good?css("--gain"):css("--loss");
+    c.fillStyle=css("--ink");c.textAlign="right";c.font=(last?"700 ":"")+"12.5px system-ui, sans-serif";c.fillText(r[0],lw,y+rh*0.6);
+    c.fillStyle=col;c.globalAlpha=last?1:.8;const a=Math.min(X(1),X(v)),b=Math.max(X(1),X(v));c.fillRect(a,y+rh*0.18,Math.max(b-a,2),rh*0.64);c.globalAlpha=1;
+    c.textAlign="left";c.fillStyle=col;c.fillText("×"+v.toFixed(v<0.1?3:2),x1+6,y+rh*0.6);
+    if(last){c.strokeStyle=css("--ink");c.beginPath();c.moveTo(x0,y);c.lineTo(x1,y);c.stroke();}});}
+
+let raf=0,flags={};function schedule(redraw,newBase){if(newBase)flags.nb=true;if(!raf)raf=requestAnimationFrame(()=>{raf=0;const nb=flags.nb;flags={};update(false,nb);});}
+
+// ---------------- scenarios ----------------
+const SCN={
+ abd:[
+  {seq:"t1",label:"Halve the slice (3 → 1.5 mm)",set:{thk:1.5},note:"Thinner partitions halve voxel volume and SNR. The small liver lesion gains contrast because it no longer averages with surrounding liver, but coverage also halves; restoring it needs twice the partitions and breaks the breath hold."},
+  {seq:"t1",label:"Breath-hold too long",set:{Nz:96,R:1},note:"More partitions without parallel imaging: SNR rises (√Nz, √R) but the scan runs well past 20 s. The patient breathes, and breathing ghosts replicate the abdominal wall across the liver. Noise was never the real enemy here."},
+  {seq:"t1",label:"Narrow bandwidth",set:{BW:150},note:"Bandwidth from 450 to 150 Hz/px buys √3 in SNR, but the longer readout raises minimum TE and TR (longer breath hold) and fat now shifts several pixels along the frequency direction at every fat–water interface."},
+  {seq:"t2",label:"Phase left–right",set:{dir:"LR"},note:"With phase encoding left–right and a 75% phase FOV, the wide abdomen wraps in from both flanks, and aortic pulsation ghosts now run horizontally across the liver and kidneys. Anterior–posterior phase encoding is chosen for a reason."},
+  {seq:"t2",label:"Fix wrap with oversampling",set:{FOV:300,os:0},note:"A smaller FOV improves resolution but the abdomen wraps along the phase direction. Raise phase oversampling until the wrap disappears: SNR rises with the extra lines, and so does the time."},
+  {seq:"t2",label:"Double the averages",set:{NEX:2},note:"Two averages buy √2 in SNR and dampen motion ghosts, but double the time and the number of breath holds. SNR efficiency does not change at all."},
+  {seq:"dwi",label:"Parallel imaging R = 3",set:{R:3},note:"Shorter echo train: TE drops and distortion near bowel gas shrinks. The g-factor and √R cost SNR, partly repaid by the shorter TE. Try R = 1 for the opposite trade."},
+  {seq:"dwi",label:"3 T",set:{B0:3},note:"SNR roughly doubles, but T1 lengthens, T2 shortens slightly, and susceptibility distortion near bowel gas doubles. Raise R or bandwidth to tame it."},
+  {seq:"t1",label:"Body coil only",set:{coil:"body"},note:"Without the phased-array coil the image is three times noisier at the same time and resolution. The array is the single cheapest SNR gain available."}],
+ pro:[
+  {seq:"t2",label:"Endorectal coil",set:{coil:"erc",NEX:1},note:"Adding an endorectal coil roughly doubles SNR in the posterior peripheral zone, enough to drop to one average and halve the time. Signal falls off quickly with distance, so the anterior gland gains less."},
+  {seq:"t2",label:"No phase oversampling",set:{os:0},note:"The 18 cm FOV is smaller than the pelvis in the phase direction. Without oversampling, the buttocks and femoral region fold back over the image. Oversampling removes it at a time cost."},
+  {seq:"t2",label:"Phase left–right",set:{dir:"LR"},note:"The pelvis is much wider than it is deep: with left–right phase encoding the hips wrap even with 40% oversampling. Keep phase anterior–posterior on small-FOV prostate T2W, or add much more oversampling."},
+  {seq:"t2",label:"Faster, coarser T2W",set:{Nx:320,Ny:256,NEX:1},note:"A lower matrix and one average: SNR holds up because voxels are larger, and time drops, but the frequency resolution no longer meets PI-RADS (≤ 0.4 mm). The compliance chips turn red."},
+  {seq:"dwi",label:"More averages (6 → 12)",set:{NEX:12},note:"DWI is SNR-starved at b 1000. Doubling NEX buys √2 and steadier ADC, at double the time."},
+  {seq:"dwi",label:"1.5 T",set:{B0:1.5},note:"At 1.5 T SNR roughly halves but distortion near rectal gas halves too. Many sites compensate with more averages and wider bandwidth."},
+  {seq:"t1",label:"Higher-resolution DCE",set:{Ny:256,Nx:256,Nz:32},note:"Finer in-plane resolution and more partitions improve detail but push temporal resolution past 15 s, out of PI-RADS range, and cost SNR per voxel."}]
+};
+let active=null;
+function setScenarios(){const el=$("scen");el.innerHTML="";const list=SCN[S.an].filter(s=>s.seq===S.seq).concat(SCN[S.an].filter(s=>s.seq!==S.seq));
+  list.forEach(sc=>{const b=document.createElement("button");b.textContent=(sc.seq!==S.seq?{t1:"T1: ",t2:"T2: ",dwi:"DWI: "}[sc.seq]:"")+sc.label;b.onclick=()=>applyScen(sc);el.appendChild(b);b.dataset.l=sc.label;});
+  $("note").textContent=intro();active=null;}
+function intro(){return S.an==="abd"?"Baseline protocols are typical 1.5 T liver settings. Move any control, or pick a move above; the left image stays at baseline so you can compare.":"Baseline protocols are typical 3 T prostate settings that meet PI-RADS v2.1 minimums. Watch the compliance chips as you trade SNR, time and resolution.";}
+function applyScen(sc){S.seq=sc.seq;S.P[S.an+S.seq]=Object.assign(JSON.parse(JSON.stringify(BASE[S.an][S.seq])),sc.set);setScenarios();setupSliders();syncUI();
+  $$("#scen button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===sc.label));$("note").textContent=sc.note;active=sc.label;schedule(false,true);}
+function custom(){if(!active)return;active=null;$$("#scen button").forEach(b=>b.setAttribute("aria-pressed","false"));$("note").textContent="Custom protocol. Read the ledgers to see which factors you changed and what they cost.";}
+window.addEventListener("resize",()=>{if(RB){const P=params(),B=BASE[S.an][S.seq];ledgers(B,P,RB.o,metrics(S.an,S.seq,P));}});
+if(window.matchMedia){const mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",()=>schedule());}
+buildLabels("abd");buildLabels("pro");
+setScenarios();setupSliders();syncUI();update(false,true);
+})();
+</script>
+</body>
+</html>

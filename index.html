@@ -133,6 +133,13 @@ footer p{margin:.25rem 0;max-width:44rem}
 <script>
 /* ---------- Lesson catalog: add new lessons here ---------- */
 const GROUPS = [
+  { name: "Fundamentals", lessons: [
+    { title: "The SNR equation: knobs, costs and tradeoffs",
+      url: "lessons/snr-equation/",
+      desc: "Turn protocol knobs on a synthetic slice and see which factor bought or cost SNR, scan time and artifact against a baseline protocol.",
+      covers: "Voxel size, averages, bandwidth, parallel imaging g-factor, TR/TE, field strength, wrap, ghosting, chemical shift and EPI distortion",
+      glyph: "snr" }
+  ]},
   { name: "Contrast and subtraction", lessons: [
     { title: "Subtraction maps on body MRI",
       url: "lessons/subtraction-maps/",
@@ -171,6 +178,7 @@ const GROUPS = [
 
 /* Small monochrome thumbnails, drawn like tiny images */
 const G = {
+  snr: `<g fill="#8a8a8a"><rect x="12" y="12" width="22" height="22"/><rect x="38" y="38" width="22" height="22"/></g><g fill="#e6e6e6"><rect x="38" y="12" width="22" height="22" opacity=".55"/><rect x="12" y="38" width="22" height="22" opacity=".3"/></g>`,
   subtraction: `<circle cx="34" cy="38" r="17" fill="#8a8a8a"/><circle cx="40" cy="34" r="17" fill="none" stroke="#e6e6e6" stroke-width="2.5"/>`,
   dixon: `<path d="M36 18a18 18 0 0 0 0 36z" fill="#d9d9d9"/><path d="M36 18a18 18 0 0 1 0 36z" fill="#4a4a4a"/><circle cx="36" cy="36" r="18" fill="none" stroke="#999" stroke-width="1"/>`,
   dwi: `<path d="M10 14 C24 40 38 52 62 58" fill="none" stroke="#e6e6e6" stroke-width="2.5"/><path d="M10 14 C18 46 30 58 62 62" fill="none" stroke="#888" stroke-width="2"/><path d="M10 10V62H64" fill="none" stroke="#555" stroke-width="1.5"/>`,

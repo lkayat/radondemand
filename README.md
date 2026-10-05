@@ -14,6 +14,7 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 ## Lessons
 | Slug | Title | Original claude.ai artifact |
 |---|---|---|
+| snr-equation | The SNR equation: knobs, costs and tradeoffs in body MRI | https://claude.ai/artifact/TJSoQBAz32Cj5R7v9sZeaP |
 | subtraction-maps | Subtraction maps on body MRI | https://claude.ai/artifact/N9Vouah52TJh7K4jPnLuW5 |
 | dixon-fat-iron | In/opposed phase, multi-echo Dixon and fat–iron quantification | https://claude.ai/artifact/3TWbnECbK13PoTvuFk77c2 |
 | dwi-adc | DWI, ADC and calculated b-values | https://claude.ai/artifact/M8EaTBg2UEyHKDpasaGZQv |
