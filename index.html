@@ -17,7 +17,6 @@
   --muted:#56646F;
   --rule:#C3CDD4;
   --accent:#1D5C86;    /* contrast blue */
-  --phantom-bg:#000;
   --serif:"Newsreader", Georgia, "Times New Roman", serif;
   --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   box-sizing:border-box;
@@ -40,21 +39,11 @@ a:focus-visible,button:focus-visible,canvas:focus-visible{outline:2px solid var(
 .wrap{max-width:72rem;margin:0 auto;padding:0 1.5rem}
 
 /* Hero */
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,26rem);gap:3rem;align-items:center;padding:4.5rem 0 3.5rem}
+.hero{padding:4.5rem 0 3.5rem}
 .org{font-size:.9375rem;color:var(--muted);margin:0 0 1.75rem}
-h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.5rem,5.4vw,4.25rem);line-height:1.04;letter-spacing:-.015em;margin:0 0 1.5rem;max-width:12ch}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.5rem,5.4vw,4.25rem);line-height:1.04;letter-spacing:-.015em;margin:0 0 1.5rem;max-width:20ch}
 .lede{font-size:1.1875rem;max-width:34rem;margin:0 0 1rem}
 .lede-2{color:var(--muted);max-width:34rem;margin:0}
-
-.viewer{margin:0}
-.screen{position:relative;background:var(--phantom-bg);aspect-ratio:1/1;border-radius:3px;overflow:hidden;touch-action:none;cursor:crosshair}
-.screen canvas{display:block;width:100%;height:100%}
-.ov{position:absolute;color:#E8D27A;font:500 .8125rem/1.35 var(--sans);font-variant-numeric:tabular-nums;pointer-events:none;text-shadow:0 1px 2px #000}
-.ov.tl{top:.6rem;left:.75rem}
-.ov.br{bottom:.6rem;right:.75rem;text-align:right}
-.viewer figcaption{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-top:.85rem;font-size:.9375rem;color:var(--muted)}
-.viewer button{font:inherit;font-size:.875rem;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:3px;padding:.3rem .7rem;cursor:pointer;flex:none}
-.viewer button:hover{border-color:var(--ink)}
 
 /* Lessons */
 .lessons{border-top:1px solid var(--rule);padding:3rem 0 4rem}
@@ -78,8 +67,7 @@ footer{border-top:1px solid var(--rule);padding:2rem 0 3rem;color:var(--muted);f
 footer p{margin:.25rem 0;max-width:44rem}
 
 @media (max-width:860px){
-  .hero{grid-template-columns:1fr;gap:2.5rem;padding-top:3rem}
-  .viewer{max-width:28rem}
+  .hero{padding-top:3rem}
 }
 @media (max-width:560px){
   .lesson{grid-template-columns:3.5rem minmax(0,1fr);gap:1rem}
@@ -100,19 +88,6 @@ footer p{margin:.25rem 0;max-width:44rem}
       <p class="lede">Interactive phantoms and simulations for radiology residents. Each lesson runs in your browser: change a parameter and watch the image respond.</p>
       <p class="lede-2">Built around the questions that come up at the workstation — why a subtraction map lies, what an opposed-phase drop actually means, where an ADC number comes from.</p>
     </div>
-
-    <figure class="viewer">
-      <div class="screen" id="screen">
-        <canvas id="phantom" width="256" height="256" tabindex="0" role="img"
-          aria-label="Synthetic axial T1-weighted abdomen phantom. Drag to adjust window and level, or use the arrow keys."></canvas>
-        <div class="ov tl">Ax T1 phantom<br>Upper abdomen</div>
-        <div class="ov br" id="wl">W 900<br>L 450</div>
-      </div>
-      <figcaption>
-        <span>Drag on the image to window and level: sideways for width, up and down for level. Arrow keys work too.</span>
-        <button type="button" id="reset">Reset</button>
-      </figcaption>
-    </figure>
   </section>
 
   <section class="lessons" aria-labelledby="lessons-title">
@@ -218,85 +193,6 @@ const G = {
     list.appendChild(sec);
   }
   document.getElementById("count").textContent = `${n} lessons, more on the way`;
-})();
-
-/* ---------- Window/level phantom ---------- */
-(function phantom(){
-  const N = 256, cv = document.getElementById("phantom"), ctx = cv.getContext("2d");
-  const img = ctx.createImageData(N, N), base = new Float32Array(N*N);
-  const ss = (a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
-  function ell(x,y,cx,cy,rx,ry,rot=0){
-    const c=Math.cos(rot), s=Math.sin(rot), dx=x-cx, dy=y-cy;
-    const u=(dx*c+dy*s)/rx, v=(-dx*s+dy*c)/ry;
-    return 1-ss(.93,1.07,Math.sqrt(u*u+v*v));
-  }
-  // Seeded RNG so the phantom looks the same every visit
-  let seed = 7; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
-  const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
-
-  for (let y=0;y<N;y++) for (let x=0;x<N;x++){
-    let v = 0;
-    const body = ell(x,y,128,132,112,84);
-    v = 820*body;                                       // subcutaneous fat
-    const inner = ell(x,y,128,134,102,74);
-    v += (300-v)*ell(x,y,128,134,104,76)*(1-inner);     // abdominal wall muscle
-    v += (700-v)*inner;                                 // visceral fat
-    v += (300-v)*ell(x,y,100,186,22,15);                // paraspinal muscles
-    v += (300-v)*ell(x,y,156,186,22,15);
-    const liver = ell(x,y,84,112,54,44,-.3)*inner;
-    v += (420-v)*liver;
-    v += (215-v)*ell(x,y,70,98,10,9)*liver;             // focal lesion
-    v += (140-v)*ell(x,y,112,132,9,7)*inner;            // gallbladder
-    v += (250-v)*ell(x,y,166,92,24,17,.2)*inner;        // stomach
-    v += (370-v)*ell(x,y,198,132,15,28,.45)*inner;      // spleen
-    v += (460-v)*ell(x,y,142,130,24,6,-.2)*inner;       // pancreas
-    for (const [cx,cy] of [[150,108],[132,104],[176,112],[124,148]]) v += (380-v)*ell(x,y,cx,cy,7,6)*inner; // bowel
-    for (const kx of [80,176]){                         // kidneys
-      const k = ell(x,y,kx,164,14,18,kx<128?.35:-.35)*inner;
-      v += (470-v)*k; v += (320-v)*ell(x,y,kx,164,8,12,kx<128?.35:-.35)*k;
-    }
-    v += (60-v)*ell(x,y,138,150,9,9);                   // aorta, flow void
-    v += (210-v)*ell(x,y,110,148,10,7);                 // IVC
-    v += (70-v)*ell(x,y,128,172,19,18);                 // cortical bone
-    v += (520-v)*ell(x,y,128,172,16,15);                // vertebral marrow
-    v += (90-v)*ell(x,y,128,197,10,9);                  // posterior elements
-    v += (130-v)*ell(x,y,128,196,6,6);                  // canal
-    // Rician-ish noise
-    const nr = v + 16*gauss(), ni = 16*gauss();
-    base[y*N+x] = Math.sqrt(nr*nr+ni*ni);
-  }
-
-  const D = {W:900, L:450}; let W=D.W, L=D.L;
-  const wl = document.getElementById("wl");
-  function draw(){
-    const lo = L - W/2, d = img.data;
-    for (let i=0;i<N*N;i++){
-      let g = (base[i]-lo)/W*255; g = g<0?0:g>255?255:g;
-      d[i*4]=d[i*4+1]=d[i*4+2]=g; d[i*4+3]=255;
-    }
-    ctx.putImageData(img,0,0);
-    wl.innerHTML = `W ${Math.round(W)}<br>L ${Math.round(L)}`;
-  }
-  const set=(w,l)=>{W=Math.min(2000,Math.max(10,w)); L=Math.min(1200,Math.max(-200,l)); draw();};
-
-  const screen = document.getElementById("screen");
-  let drag=null;
-  screen.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,W,L};screen.setPointerCapture(e.pointerId)});
-  screen.addEventListener("pointermove",e=>{
-    if(!drag) return;
-    const k = 1000/screen.clientWidth*2;
-    set(drag.W+(e.clientX-drag.x)*k, drag.L-(e.clientY-drag.y)*k);
-  });
-  const end=()=>{drag=null};
-  screen.addEventListener("pointerup",end); screen.addEventListener("pointercancel",end);
-  screen.addEventListener("dblclick",()=>set(D.W,D.L));
-  cv.addEventListener("keydown",e=>{
-    const s = e.shiftKey?100:25;
-    const m = {ArrowRight:[s,0],ArrowLeft:[-s,0],ArrowUp:[0,s],ArrowDown:[0,-s]}[e.key];
-    if(m){e.preventDefault(); set(W+m[0], L+m[1]);}
-  });
-  document.getElementById("reset").addEventListener("click",()=>set(D.W,D.L));
-  draw();
 })();
 </script>
 </body>
