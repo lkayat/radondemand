@@ -164,6 +164,10 @@ body{overflow:hidden}
 .right{min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px}
 .right .fixed{flex:none;display:flex;flex-direction:column;gap:8px;max-height:62%;overflow-y:auto}
 .right .panel{margin:0;padding:9px 12px}
+.right .seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.right .seg button{font:inherit;font-size:12px;padding:3px 8px;border:0;background:var(--panel);color:var(--ink);cursor:pointer}
+.right .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.choices button{font:inherit;font-size:13px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}.choices button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .right summary{cursor:pointer;list-style:none}
 .right summary::-webkit-details-marker{display:none}
 .right summary h3{display:inline;font-size:14px}
@@ -233,9 +237,9 @@ body{overflow:hidden}
       <div class="mhead"><b>Measure</b><span id="mHint">Pick a tool; the image freezes for measuring.</span></div>
       <div class="mkeys" id="mkeys">
         <button class="key" data-t="dist">Distance</button><button class="key" data-t="vel">Velocity</button><button class="key" data-t="psed">PSV / EDV</button>
-        <button class="key" data-t="trace">Trace (PI)</button><button class="key" data-t="at">AT / slope</button><button class="key" data-t="hr">HR</button>
+        <button class="key" data-t="trace">Trace (PI)</button><button class="key" data-t="at">AT / slope</button><button class="key" data-t="hr">Δt / HR</button>
       </div>
-      <div class="mrow"><label>Label <select id="mLabel"><option>CCA</option><option>ICA</option><option>ECA</option><option>Proximal</option><option>Stenosis</option></select></label><button class="key" id="mSave">Save PSV</button><button class="key" id="mClear">Clear</button></div>
+      <div class="mrow"><label>Label <select id="mLabel"><option>CCA</option><option>ICA</option><option>ECA</option><option>Proximal</option><option>Stenosis</option><option>Aorta</option><option>SMA</option><option>Celiac</option><option>CIA</option><option>MRA</option><option>EIA</option><option>MRV</option><option>EIV</option></select></label><button class="key" id="mSave">Save PSV</button><button class="key" id="mClear">Clear</button></div>
       <div class="mres" id="mRes"></div>
     </div>
   </div>
@@ -244,7 +248,7 @@ body{overflow:hidden}
 
 <div class="right">
   <div class="fixed">
-    <details class="panel" open><summary><h3>Phantom (instructor controls)</h3></summary>
+    <details class="panel" open id="phPanel"><summary><h3>Phantom (instructor controls)</h3></summary>
       <div class="ctl"><label for="phTilt">Vessel angle</label><input type="range" id="phTilt" min="-40" max="40" step="1"><output id="phTilto"></output></div>
       <div class="ctl"><label for="phDepth">Depth</label><input type="range" id="phDepth" min="1" max="14" step="0.1"><output id="phDeptho"></output></div>
       <div class="ctl"><label for="phDiam">Diameter</label><input type="range" id="phDiam" min="2" max="14" step="0.5"><output id="phDiamo"></output></div>
@@ -253,6 +257,50 @@ body{overflow:hidden}
       <div class="ctl"><label for="phHR">Heart rate</label><input type="range" id="phHR" min="40" max="140" step="5"><output id="phHRo"></output></div>
       <div class="row"><label>Waveform <select id="phWave"><option value="steady">Steady, laminar (parabolic)</option><option value="plug">Steady, plug</option><option value="low">Low resistance</option><option value="high">High resistance (triphasic)</option><option value="tardus">Tardus–parvus</option><option value="venous">Venous, phasic</option></select></label></div>
       <div class="row"><label>Flow <select id="phDir"><option value="-1">Right → left</option><option value="1">Left → right</option></select></label><label><input type="checkbox" id="phVein"> Adjacent vein</label></div>
+    </details>
+    <details class="panel" open id="carPanel" hidden><summary><h3>Case (instructor controls)</h3></summary>
+      <div class="row"><span class="seg" id="cView"><button data-v="cca">CCA</button><button data-v="bulb">Bulb</button><button data-v="ica">ICA</button><button data-v="eca">ECA</button><button data-v="va">Vertebral</button></span></div>
+      <div class="row"><span class="seg" id="cSide"><button data-v="R">Right</button><button data-v="L">Left</button></span><button class="mini" id="cTap" hidden>Hold: temporal tap</button></div>
+      <div class="row"><label>Condition <select id="cCond"></select></label></div>
+      <div class="ctl"><label for="cTilt">Heel–toe</label><input type="range" id="cTilt" min="-20" max="20" step="1"><output id="cTilto"></output></div>
+      <div class="ctl"><label for="cHR">Heart rate</label><input type="range" id="cHR" min="40" max="120" step="5"><output id="cHRo"></output></div>
+      <div class="row"><label><input type="checkbox" id="cReveal"> Reveal case truth</label></div><div class="hint" id="cTruth"></div>
+    </details>
+    <details class="panel" open id="aoPanel" hidden><summary><h3>Case (instructor controls)</h3></summary>
+      <div class="row"><span class="seg" id="aView"><button data-v="prox">Prox + SMA</button><button data-v="mid">Mid sag</button><button data-v="trans">Transverse</button><button data-v="bif">Bif / iliacs</button></span></div>
+      <div class="row"><label>Condition <select id="aCond"></select></label></div>
+      <div class="ctl"><label for="aTilt">Probe rock</label><input type="range" id="aTilt" min="-25" max="25" step="1"><output id="aTilto"></output></div>
+      <div class="ctl" id="aDiamRow"><label for="aDiam">AAA diameter</label><input type="range" id="aDiam" min="3" max="7.5" step="0.1"><output id="aDiamo"></output></div>
+      <div class="row"><span class="seg" id="aFed"><button data-v="0">Fasting</button><button data-v="1">Fed</button></span><span class="seg" id="aResp"><button data-v="insp">Inspiration</button><button data-v="exp">Expiration</button></span></div>
+      <div class="row"><label><input type="checkbox" id="aGas"> Bowel gas</label></div>
+      <div class="ctl" id="aCompRow"><label for="aComp">Compression</label><input type="range" id="aComp" min="0" max="100" step="5"><output id="aCompo"></output></div>
+      <div class="ctl"><label for="aHR">Heart rate</label><input type="range" id="aHR" min="40" max="120" step="5"><output id="aHRo"></output></div>
+      <div class="row"><label><input type="checkbox" id="aReveal"> Reveal case truth</label></div><div class="hint" id="aTruth"></div>
+    </details>
+    <details class="panel" open id="rtPanel" hidden><summary><h3>Case (instructor controls)</h3></summary>
+      <div class="row"><span class="seg" id="rView"><button data-v="kid">Graft</button><button data-v="anas">Arterial anast.</button><button data-v="ven">Venous anast.</button><button data-v="hil">Hilum TRV</button></span></div>
+      <div class="row" id="rPoleRow"><span>Pole</span><span class="seg" id="rPole"><button data-v="upper">Upper</button><button data-v="mid">Mid</button><button data-v="lower">Lower</button></span></div>
+      <div class="row"><label>Condition <select id="rCond"></select></label></div>
+      <div class="ctl"><label for="rPress">Probe pressure</label><input type="range" id="rPress" min="0" max="100" step="5"><output id="rPresso"></output></div>
+      <div class="ctl"><label for="rTilt">Probe rock</label><input type="range" id="rTilt" min="-25" max="25" step="1"><output id="rTilto"></output></div>
+      <div class="ctl"><label for="rHR">Heart rate</label><input type="range" id="rHR" min="40" max="120" step="5"><output id="rHRo"></output></div>
+      <div class="row"><label><input type="checkbox" id="rReveal"> Reveal case truth</label></div><div class="hint" id="rTruth"></div>
+    </details>
+    <details class="panel" open id="laPanel" hidden><summary><h3>Case (instructor controls)</h3></summary>
+      <div class="row"><span class="seg" id="lView"><button data-v="cfa">CFA bif</button><button data-v="sfa">SFA</button><button data-v="pop">Popliteal</button><button data-v="tib">Tibial</button></span></div>
+      <div class="row"><label>Condition <select id="lCond"></select></label></div>
+      <div class="row"><span>Limb</span><span class="seg" id="lState"><button data-v="rest">Rest</button><button data-v="hyp">Hyperemic</button></span></div>
+      <div class="ctl"><label for="lTilt">Heel–toe</label><input type="range" id="lTilt" min="-20" max="20" step="1"><output id="lTilto"></output></div>
+      <div class="ctl"><label for="lHR">Heart rate</label><input type="range" id="lHR" min="40" max="120" step="5"><output id="lHRo"></output></div>
+      <div class="row"><label><input type="checkbox" id="lReveal"> Reveal case truth</label></div><div class="hint" id="lTruth"></div>
+    </details>
+    <details class="panel" open id="lvPanel" hidden><summary><h3>Case (instructor controls)</h3></summary>
+      <div class="row"><span class="seg" id="vView"><button data-v="cfv">CFV / SFJ</button><button data-v="fv">Femoral</button><button data-v="pop">Popliteal</button><button data-v="calf">Calf</button><button data-v="gsv">GSV</button></span></div>
+      <div class="row"><span class="seg" id="vPlane"><button data-v="trans">Transverse</button><button data-v="long">Longitudinal</button></span></div>
+      <div class="row"><label>Condition <select id="vCond"></select></label></div>
+      <div class="ctl"><label for="vComp">Compression</label><input type="range" id="vComp" min="0" max="100" step="5"><output id="vCompo"></output></div>
+      <div class="row"><button class="mini" id="vSqueeze">Hold: calf squeeze</button><button class="mini" id="vVals">Hold: Valsalva</button></div>
+      <div class="row"><label><input type="checkbox" id="vReveal"> Reveal case truth</label></div><div class="hint" id="vTruth"></div>
     </details>
     <details class="panel" open><summary><h3>Under the hood (live)</h3></summary><div class="hood" id="hood"></div></details>
   </div>
@@ -263,6 +311,27 @@ body{overflow:hidden}
     <p class="read">Each drill loads a broken setup. Use only the console to fix it, then press Check.</p>
     <div class="drills" id="drills"></div>
     <div class="task" id="task" hidden></div>
+    <div id="carCard" hidden><h2>Carotid criteria (SRU 2003 consensus)</h2>
+      <div class="card"><p>Grade the ICA with the <b>peak systolic velocity</b> and the <b>gray-scale and color estimate of plaque</b>; ICA/CCA PSV ratio and ICA EDV are secondary. Measure the highest velocity in the stenosis with the angle cursor parallel to the jet, θ ≤ 60°, and the CCA PSV 2–3 cm below the bulb.</p>
+      <p style="font-size:13px;font-family:var(--ui)">Normal: PSV &lt; 125 cm/s, no plaque, ratio &lt; 2.0, EDV &lt; 40.<br>&lt; 50%: PSV &lt; 125, plaque &lt; 50%, ratio &lt; 2.0, EDV &lt; 40.<br>50–69%: PSV 125–230, plaque ≥ 50%, ratio 2.0–4.0, EDV 40–100.<br>≥ 70% (not near-occlusion): PSV &gt; 230, ratio &gt; 4.0, EDV &gt; 100.<br>Near-occlusion: markedly narrowed lumen (string sign); velocities high, low or undetectable.<br>Occlusion: no detectable patent lumen, no flow.</p>
+      <p class="hint">Grant EG, et al. Carotid artery stenosis: gray-scale and Doppler US diagnosis. Society of Radiologists in Ultrasound consensus conference. Radiology. 2003;229:340–346.</p></div></div>
+    <div id="aoCard" hidden><h2>Aorta and mesenteric reference points</h2>
+      <div class="card"><p><b>AAA</b>: infrarenal aorta ≥ 3.0 cm (or ≥ 1.5 × normal). Measure outer wall to outer wall, perpendicular to the aortic axis, including mural thrombus; elective repair is usually considered at 5.5 cm in men and 5.0 cm in women, or with rapid growth. A common iliac artery aneurysm is generally ≥ 1.8–2.0 cm.</p>
+      <p><b>Mesenteric</b>: fasting SMA is high resistance with early diastolic reversal; after a meal it becomes low resistance. The celiac trunk is low resistance at all times. Velocity thresholds often cited for ≥ 70% stenosis: SMA PSV &gt; 275 cm/s, celiac PSV &gt; 200 cm/s. Median arcuate ligament compression raises celiac velocity in expiration, with improvement in inspiration.</p>
+      <p><b>After EVAR</b>: the excluded sac should be free of flow and stable or shrinking. Type I leaks arise at attachment sites, type II from branch backflow (lumbar or inferior mesenteric arteries, often to-and-fro), type III from graft defects or junctions, type IV from graft porosity, and type V is sac growth without visible leak (endotension).</p>
+      <p><b>Dissection</b>: an intimal flap divides a true lumen (usually smaller, expanding in systole, with brisk forward systolic flow) from a false lumen (larger, slower, delayed or reversed flow, may thrombose).</p></div></div>
+    <div id="rtCard" hidden><h2>Renal transplant reference points</h2><div class="card">
+      <p><b>Intrarenal resistive index</b> (interlobar or segmental arteries, upper, mid and lower poles): RI = (PSV − EDV) / PSV, normally about 0.6–0.8. RI above 0.8 is abnormal but non-specific: acute rejection, acute tubular necrosis, calcineurin-inhibitor toxicity, obstruction, perinephric compression, renal vein thrombosis, and excessive probe pressure all raise it. Trend it against prior studies.</p>
+      <p><b>Transplant renal artery stenosis</b>: anastomotic PSV &gt; 250 cm/s (some centers use &gt; 300), renal artery to external iliac PSV ratio &gt; 1.8 (some use &gt; 3), post-stenotic turbulence, and intrarenal tardus–parvus (acceleration time &gt; 0.1 s, acceleration &lt; 300 cm/s²). A kink can raise velocity focally with normal intrarenal waveforms. With two renal arteries, each anastomosis and the pole it supplies must be interrogated: a stenosis may show tardus–parvus in only one pole.</p>
+      <p><b>Veins</b>: renal vein thrombosis gives absent venous flow, an enlarged graft and reversed, plateau-like diastolic flow in intrarenal arteries. Renal vein stenosis: velocity ratio &gt; 3 across the anastomosis. <b>Post-biopsy AV fistula</b>: high-velocity low-resistance feeding artery, perivascular color vibration, arterialized draining vein. <b>Segmental infarct</b>: wedge-shaped perfusion defect on sensitive power Doppler.</p></div></div>
+    <div id="laCard" hidden><h2>Lower extremity arterial reference points</h2><div class="card">
+      <p><b>Waveforms</b>: normal resting limb arteries are triphasic or biphasic (high resistance). Monophasic flow means either low distal resistance (hyperemia: brisk upstroke, short acceleration time) or upstream disease (tardus–parvus: slow upstroke, prolonged acceleration time, low rounded peak).</p>
+      <p><b>Stenosis</b>: grade by the peak systolic velocity ratio (PSV in the stenosis ÷ PSV 1–4 cm upstream in a normal segment). Commonly used: ratio ≥ 2.0 for ≥ 50% and ≥ 4.0 for about ≥ 75% stenosis. Above an occlusion expect a high-resistance "thump"; below it, monophasic reconstituted flow fed by collaterals.</p>
+      <p><b>Popliteal aneurysm</b>: diameter ≥ 1.5 times the adjacent normal artery (often &gt; 1.5 cm); repair is usually considered at about 2 cm or with thrombus. About half are bilateral, and many patients also have an AAA. <b>Pseudoaneurysm</b>: yin-yang sac flow with to-and-fro flow in the neck. <b>AV fistula</b>: low-resistance high-velocity feeding artery, arterialized pulsatile vein, perivascular tissue vibration.</p></div></div>
+    <div id="lvCard" hidden><h2>Lower extremity venous reference points</h2><div class="card">
+      <p><b>Compression</b>: in transverse, apply enough pressure to deform the adjacent artery slightly; a normal vein coapts completely. Non-compressibility is the primary sign of DVT. Acute thrombus is hypoechoic and distends the vein; chronic post-thrombotic change is echogenic, the vein is small with thick walls, synechiae and often reflux.</p>
+      <p><b>Doppler</b>: normal CFV flow is spontaneous and phasic with respiration, augments with calf squeeze and stops with Valsalva. Continuous, non-phasic CFV flow suggests a more proximal (iliac or IVC) obstruction, especially if one-sided; pulsatile CFV flow suggests elevated right heart pressure or tricuspid regurgitation.</p>
+      <p><b>Reflux</b> (SVS/AVF 2011): abnormal if &gt; 0.5 s in superficial, deep femoral and calf veins, &gt; 1.0 s in the femoral and popliteal veins (and &gt; 0.35 s in perforators). <b>Superficial thrombophlebitis</b> within 3 cm of the saphenofemoral junction is generally managed like DVT. A <b>Baker cyst</b> lies between the medial gastrocnemius and semimembranosus tendons and has no flow.</p></div></div>
     <h2>Quick quiz</h2>
     <div class="quiz" id="quiz"></div>
     <h2>Concepts behind the knobs</h2>
@@ -307,15 +376,20 @@ const SVS=[0.5,1,1.5,2,3,4,5,6,8,10];
 const BASES=[-0.45,-0.4,-0.35,-0.3,-0.25,-0.2,-0.15,-0.1,-0.05,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45];
 const STEERS=[-20,-10,0,10,20];
 const EXAMS={phantom:{name:"Doppler fundamentals (flow phantom)",ready:true},
-  carotid:{name:"Carotid and vertebral",ready:false},aorta:{name:"Abdominal aorta",ready:false},lea:{name:"Lower extremity arterial",ready:false},
-  lev:{name:"Lower extremity venous",ready:false},renal:{name:"Renal (native)",ready:false},rtx:{name:"Renal transplant",ready:false},ltx:{name:"Liver transplant",ready:false}};
+  carotid:{name:"Carotid and vertebral",ready:true},aorta:{name:"Abdominal aorta and mesenteric",ready:true},lea:{name:"Lower extremity arterial",ready:true},
+  lev:{name:"Lower extremity venous",ready:true},renal:{name:"Renal (native)",ready:false},rtx:{name:"Renal transplant",ready:true},ltx:{name:"Liver transplant",ready:false}};
 
 const DEF={skin:"neutral",exam:"phantom",probe:"linear",bf:"gen",depth:4,focus:2.2,gainB:50,tgc:[50,50,50,50,50,50,50,50],
   color:false,power:false,pw:false,cw:false,simul:true,active:"b",
   c:{gain:55,prf:5000,base:0,wf:150,invert:false,box:{x:0.1,z:2.0,w:2.4,h:1.6}},
   p:{gain:55,prf:8000,base:0,wf:100,sv:1.5,gx:0,gz:2.0,angle:50,invert:false},
   steer:20,dF:5.0,units:"cms",sweep:100,vol:0.6,audio:false,frozen:false,trace:true,
-  ph:{tilt:20,depth:2.0,diam:6,vmax:80,wave:"low",dir:-1,sten:0,vein:true,hr:70}};
+  ph:{tilt:20,depth:2.0,diam:6,vmax:80,wave:"low",dir:-1,sten:0,vein:true,hr:70},
+  car:{view:"cca",side:"R",cond:"normal",tilt:0,tap:false,reveal:false},
+  ao:{view:"mid",cond:"normal",tilt:15,fed:false,resp:"exp",diam:5.4,gas:false,comp:0,reveal:false},
+  lea:{view:"cfa",cond:"normal",state:"rest",tilt:10,reveal:false},
+  lev:{view:"cfv",plane:"trans",cond:"normal",comp:0,tilt:0,squeeze:false,vals:false,augT0:-99,augT1:-99,valsT0:-99,valsT1:-99,reveal:false},
+  rtx:{view:"kid",pole:"mid",cond:"normal",press:0,tilt:0,reveal:false}};
 let S=JSON.parse(JSON.stringify(DEF));
 const PDEF={linear:{depth:4,focus:2.2,steer:20,dF:5.0,ph:{tilt:20,depth:2.0,diam:6,vmax:80},box:{x:0.1,z:2.0,w:2.4,h:1.6},gate:{gx:0,gz:2.0},angle:50,prfP:8000,prfC:5000},
   curved:{depth:12,focus:7,steer:0,dF:2.5,ph:{tilt:20,depth:7,diam:10,vmax:100},box:{x:0,z:7,w:4,h:3},gate:{gx:0,gz:7},angle:70,prfP:4000,prfC:2500}};
@@ -356,51 +430,122 @@ const dirV=a=>[Math.sin(a*D2R),Math.cos(a*D2R)];
 // ================= FLOW MODEL =================
 const WAVES={low:[[0,.32],[.04,.4],[.11,1],[.16,.9],[.27,.52],[.31,.44],[.36,.55],[.5,.45],[1,.32]],
   high:[[0,0],[.04,.05],[.1,1],[.16,.5],[.22,-.05],[.27,-.25],[.33,-.05],[.4,.12],[.48,.02],[1,0]],
-  tardus:[[0,.52],[.12,.62],[.3,.96],[.4,1],[.56,.8],[1,.52]]};
+  tardus:[[0,.52],[.12,.62],[.3,.96],[.4,1],[.56,.8],[1,.52]],
+  cca:[[0,.26],[.05,.32],[.1,1],[.16,.7],[.22,.42],[.26,.38],[.3,.5],[.38,.4],[.6,.32],[1,.26]],
+  ccaHR:[[0,.03],[.05,.08],[.1,1],[.16,.5],[.22,.12],[.27,.04],[.32,.1],[.4,.05],[1,.02]],
+  ica:[[0,.4],[.05,.46],[.11,1],[.17,.88],[.26,.62],[.3,.56],[.35,.64],[.55,.52],[1,.4]],
+  eca:[[0,.13],[.04,.18],[.1,1],[.17,.58],[.23,.16],[.27,.08],[.32,.24],[.4,.18],[.65,.14],[1,.12]],
+  ecaInt:[[0,.35],[.05,.42],[.1,1],[.17,.8],[.27,.55],[.32,.5],[.37,.58],[.6,.45],[1,.35]],
+  va:[[0,.36],[.05,.43],[.12,1],[.2,.82],[.29,.6],[.34,.58],[.4,.62],[.6,.47],[1,.36]],
+  vaS1:[[0,.36],[.05,.45],[.1,.95],[.14,.55],[.18,.5],[.23,.85],[.32,.6],[.6,.46],[1,.36]],
+  vaS2:[[0,.2],[.05,.1],[.1,-.65],[.15,-.45],[.21,.1],[.28,.38],[.4,.32],[.7,.24],[1,.2]],
+  vaS3:[[0,-.31],[.05,-.37],[.12,-.85],[.2,-.7],[.29,-.51],[.34,-.49],[.4,-.53],[.6,-.4],[1,-.31]],
+  tard:[[0,.55],[.1,.62],[.3,.95],[.4,1],[.55,.82],[1,.55]],
+  stump:[[0,0],[.05,.05],[.09,.7],[.14,-.55],[.2,.15],[.28,0],[1,0]],
+  aoSup:[[0,.1],[.05,.18],[.11,1],[.18,.55],[.25,.15],[.3,.07],[.38,.14],[.6,.11],[1,.09]],
+  aoInf:[[0,0],[.04,.05],[.1,1],[.16,.5],[.22,-.05],[.27,-.22],[.33,-.05],[.4,.1],[.48,.02],[1,0]],
+  celiac:[[0,.36],[.05,.42],[.11,1],[.18,.8],[.27,.55],[.32,.5],[.37,.56],[.6,.44],[1,.36]],
+  smaFast:[[0,.05],[.04,.1],[.1,1],[.17,.45],[.23,-.12],[.28,-.08],[.35,.12],[.5,.08],[1,.05]],
+  smaFed:[[0,.36],[.05,.42],[.11,1],[.18,.82],[.27,.56],[.32,.5],[.37,.56],[.6,.44],[1,.36]],
+  fl:[[0,.25],[.15,.3],[.3,.8],[.45,.5],[.6,.2],[.75,-.2],[.9,.1],[1,.25]],
+  leakII:[[0,0],[.1,.6],[.2,-.5],[.35,.3],[.5,-.2],[.7,.1],[1,0]],
+  pad:[[0,0],[.04,.05],[.1,1],[.16,.5],[.22,-.05],[.27,-.25],[.33,-.05],[.4,.12],[.48,.02],[1,0]],
+  hyp:[[0,.36],[.04,.5],[.09,1],[.16,.82],[.3,.58],[.5,.47],[1,.36]],
+  bi:[[0,.02],[.05,.1],[.11,1],[.18,.45],[.25,-.12],[.33,0],[1,0]],
+  thump:[[0,0],[.05,.05],[.09,1],[.14,.1],[.18,-.25],[.24,0],[1,0]],
+  avf:[[0,.55],[.06,.65],[.12,1],[.25,.8],[.5,.65],[1,.55]],
+  avfV:[[0,.45],[.08,.55],[.14,1],[.3,.7],[.6,.55],[1,.45]],
+  neck:[[0,-.2],[.06,.3],[.12,1],[.2,.4],[.28,-.6],[.45,-.4],[.7,-.25],[1,-.2]],
+  intra:[[0,.35],[.05,.42],[.11,1],[.18,.85],[.27,.6],[.32,.55],[.38,.58],[.6,.45],[1,.35]],
+  intraMid:[[0,.25],[.05,.32],[.11,1],[.18,.8],[.27,.5],[.33,.42],[.6,.32],[1,.25]],
+  intraHi:[[0,.15],[.05,.2],[.11,1],[.18,.7],[.27,.35],[.35,.25],[.6,.18],[1,.15]],
+  intraRev:[[0,-.2],[.05,-.1],[.1,1],[.17,.45],[.24,-.1],[.35,-.25],[.6,-.22],[1,-.2]],
+  intraRVT:[[0,-.3],[.05,-.25],[.09,1],[.14,.2],[.18,-.35],[.3,-.32],[.7,-.3],[1,-.3]],
+  intraTard:[[0,.55],[.12,.62],[.32,.95],[.42,1],[.58,.8],[1,.55]],
+  mra:[[0,.38],[.05,.45],[.11,1],[.18,.85],[.27,.6],[.32,.55],[.37,.6],[.6,.47],[1,.38]]};
 function wave(type,t){if(type==="steady"||type==="plug")return 1;const T=60/S.ph.hr;
   if(type==="venous")return 0.72+0.28*Math.sin(TAU*t/4.5)+0.07*Math.sin(TAU*t/T);
   const K=WAVES[type],x=((t%T)+T)%T/T;for(let i=1;i<K.length;i++){if(x<=K[i][0]){const a=K[i-1],b=K[i],u=(x-a[0])/(b[0]-a[0]),c=(1-Math.cos(Math.PI*u))/2;return a[1]+(b[1]-a[1])*c;}}return K[0][1];}
+function waveV(V,t){if(V.vmode)return vwave(V,t);let w=V.wb&&V.mix!=null?wave(V.wa,t)*(1-V.mix)+wave(V.wb,t)*V.mix:wave(V.wave,t);if(V.tap&&S.car.tap)w+=0.14*Math.sin(TAU*5.5*t);return w;}
 function prof(type,q){if(type==="plug")return 1-q**10;if(type==="high")return 1-q**4;if(type==="venous")return 1-q**6;return 1-q*q;}
-function vessels(){const p=S.ph,a=p.tilt*D2R,ux=Math.cos(a),uz=Math.sin(a),r=p.diam/20,V=[{cx:0,cz:p.depth,ux,uz,r,dir:p.dir,vmax:p.vmax,wave:p.wave,art:1,sten:p.sten/100}];
+let ANROT=0;let PIV=[0,2];let CAST=[],CASE={};
+function vessels(){CAST=[];CASE={};ANROT=0;if(S.exam==="carotid"){PIV=[0,2];return buildCarotid();}if(S.exam==="aorta"){PIV=[0,8];return buildAorta();}if(S.exam==="lea"){PIV=[0,2.5];return buildLea();}if(S.exam==="lev"){PIV=[0,2.5];return buildLev();}if(S.exam==="rtx"){PIV=[0,5];return buildRtx();}
+  const p=S.ph,a=p.tilt*D2R,ux=Math.cos(a),uz=Math.sin(a),r=p.diam/20,V=[{cx:0,cz:p.depth,ux,uz,r,dir:p.dir,vmax:p.vmax,wave:p.wave,art:1,sten:p.sten/100}];
   if(p.vein){const rv=r*1.25,off=r+rv+0.18;V.push({cx:-uz*off,cz:p.depth+ux*off,ux,uz,r:rv,dir:-p.dir,vmax:Math.max(12,Math.min(30,p.vmax*0.25)),wave:"venous",art:0,sten:0});}
   return V;}
-let VES=vessels();
-// returns {k:0 tissue,1 lumen,2 wall,3 plaque, vx,vz (cm/s), turb, V}
-function evalPt(x,z,t,noTurb){let best={k:0};
-  for(const V of VES){const dx=x-V.cx,dz=z-V.cz,al=dx*V.ux+dz*V.uz,rho=Math.abs(-dx*V.uz+dz*V.ux);
-    const bump=V.sten?Math.exp(-((al/0.3)**2)):0,rl=V.r*(1-V.sten*bump);
-    if(rho<rl){const amp=Math.min((V.r/rl)**2,8),vc=V.vmax*wave(V.wave,t)*amp*(V.art?1:1),v=vc*prof(V.wave,rho/rl);
-      let vx=V.dir*V.ux*v,vz=V.dir*V.uz*v,turb=0;
-      if(V.sten>0.4){const dn=al*V.dir;if(dn>0.25&&dn<1.8)turb=Math.min(1,(V.sten-0.4)/0.35)*Math.exp(-(dn-0.25)/0.7);}
-      if(turb&&!noTurb){const s=0.45*V.vmax*Math.min((1/(1-V.sten))**2,8)*turb*Math.max(wave(V.wave,t),0.2);vx+=gauss()*s;vz+=gauss()*s;}
-      return {k:1,vx,vz,turb,V,v};}
-    if(rho<V.r&&V.sten&&rho>=rl&&best.k<3)best={k:3,V};
-    else if(rho<Math.max(rl,V.r)+0.07&&best.k===0)best={k:2,V};}
+function mkTube(pts,o){const Sx=[0];for(let i=1;i<pts.length;i++)Sx.push(Sx[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  const R=pts.map(p=>o.rf(p[0],p[1])),VS=pts.map(p=>o.vsf?o.vsf(p[0],p[1]):1),MX=pts.map(p=>o.mixf?o.mixf(p[0],p[1]):null);
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;pts.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);});const rm=Math.max(...R)+0.12;
+  return Object.assign({type:"tube",P:pts,S:Sx,R,VS,MX,bb:[x0-rm,x1+rm,z0-rm,z1+rm],art:1},o);}
+function bez(p0,p1,p2,n){const o=[];for(let i=0;i<=n;i++){const t=i/n,a=(1-t)*(1-t),b=2*(1-t)*t,c=t*t;o.push([a*p0[0]+b*p1[0]+c*p2[0],a*p0[1]+b*p1[1]+c*p2[1]]);}return o;}
+function seg(p0,p1,n){const o=[];for(let i=0;i<=n;i++){const t=i/n;o.push([p0[0]+(p1[0]-p0[0])*t,p0[1]+(p1[1]-p0[1])*t]);}return o;}
+function sAtX(V,x){let b=0,bd=1e9;V.P.forEach((p,i)=>{const d=Math.abs(p[0]-x);if(d<bd){bd=d;b=i;}});return V.S[b];}
+function ptAtS(V,s){for(let i=0;i<V.P.length-1;i++){if(s<=V.S[i+1]){const u=(s-V.S[i])/(V.S[i+1]-V.S[i]),a=V.P[i],b=V.P[i+1],L=V.S[i+1]-V.S[i];return {x:a[0]+(b[0]-a[0])*u,z:a[1]+(b[1]-a[1])*u,tx:(b[0]-a[0])/L,tz:(b[1]-a[1])/L,r:V.R[i]};}}const n=V.P.length-1;return {x:V.P[n][0],z:V.P[n][1],tx:1,tz:0,r:V.R[n]};}
+function toAnat(x,z){if(!ANROT)return [x,z];const c=Math.cos(ANROT),s=Math.sin(ANROT),dx=x-PIV[0],dz=z-PIV[1];return [PIV[0]+dx*c+dz*s,PIV[1]-dx*s+dz*c];}
+function fromAnat(x,z){if(!ANROT)return [x,z];const c=Math.cos(ANROT),s=Math.sin(ANROT),dx=x-PIV[0],dz=z-PIV[1];return [PIV[0]+dx*c-dz*s,PIV[1]+dx*s+dz*c];}
+function vecW(vx,vz){if(!ANROT)return [vx,vz];const c=Math.cos(ANROT),s=Math.sin(ANROT);return [vx*c-vz*s,vx*s+vz*c];}
+function vecA(vx,vz){if(!ANROT)return [vx,vz];const c=Math.cos(ANROT),s=Math.sin(ANROT);return [vx*c+vz*s,-vx*s+vz*c];}
+function local(V,x,z){
+  if(V.type==="disk"||V.type==="vdisk"||V.type==="pocket"||V.type==="cyst"||V.type==="perf")return null;
+  if(V.type!=="tube"){const dx=x-V.cx,dz=z-V.cz;return {s:dx*V.ux+dz*V.uz,rho:-dx*V.uz+dz*V.ux,tx:V.ux*V.dir,tz:V.uz*V.dir,r0:V.r,nx:-V.uz,nz:V.ux,vs:1,mix:null};}
+  if(x<V.bb[0]||x>V.bb[1]||z<V.bb[2]||z>V.bb[3])return null;
+  const P=V.P;let best=1e9,bi=0,bu=0;
+  for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],ex=P[i+1][0]-ax,ez=P[i+1][1]-az,L2=ex*ex+ez*ez;let u=((x-ax)*ex+(z-az)*ez)/L2;u=u<0?0:u>1?1:u;const qx=ax+ex*u-x,qz=az+ez*u-z,d=qx*qx+qz*qz;if(d<best){best=d;bi=i;bu=u;}}
+  const ax=P[bi][0],az=P[bi][1],ex=P[bi+1][0]-ax,ez=P[bi+1][1]-az,L=Math.hypot(ex,ez),tx=ex/L,tz=ez/L;
+  if(bi===0&&bu===0&&((x-ax)*tx+(z-az)*tz)<-0.01)return null;
+  if(bi===P.length-2&&bu===1&&((x-P[bi+1][0])*tx+(z-P[bi+1][1])*tz)>0.01)return null;
+  const px=ax+ex*bu,pz=az+ez*bu,nx=-tz,nz=tx,lerp=a=>a[bi]+(a[bi+1]-a[bi])*bu;
+  return {s:V.S[bi]+bu*L,rho:(x-px)*nx+(z-pz)*nz,tx,tz,r0:lerp(V.R),nx,nz,px,pz,vs:lerp(V.VS),mix:V.MX[bi]==null?null:lerp(V.MX)};}
+function lumenOf(V,L){if(V.type!=="tube"){const bump=V.sten?Math.exp(-((L.s/0.3)**2)):0,rl=V.r*(1-V.sten*bump);return [-rl,rl,bump];}
+  let lo=-L.r0,hi=L.r0,bump=0;const st=V.sten;if(st){bump=Math.exp(-(((L.s-st.s0)/st.len)**2));const red=2*L.r0*st.pct*bump;if(st.side>0)hi-=red;else lo+=red;}return [lo,hi,bump];}
+function sepPhase(t){const T=60/S.ph.hr,x=((t%T)+T)%T/T;return 0.25+Math.exp(-(((x-0.2)/0.1)**2));}
+// returns {k:0 tissue,1 lumen,2 wall,3 plaque,4 thrombus, vx,vz (cm/s, world), tx,tz (flow tangent, world), turb, V}
+function evalPt(x,z,t,noTurb){let best={k:0};const A=toAnat(x,z),ax=A[0],az=A[1];
+  for(const V of VES){if(V.type==="disk"||V.type==="vdisk"||V.type==="pocket"||V.type==="cyst"||V.type==="perf"){const r=V.type==="disk"?evalDisk(V,ax,az,t,noTurb):V.type==="vdisk"?evalVDisk(V,ax,az,t,noTurb):V.type==="pocket"?evalPocket(V,ax,az,t):V.type==="perf"?evalPerf(V,ax,az,t):evalCyst(V,ax,az);if(r){if(r.k===1)return r;if(r.k>best.k)best=r;}continue;}
+    const L=local(V,ax,az);if(!L)continue;const rho=L.rho;
+    if(V.vt){const r=evalVTube(V,L,t,noTurb);if(r){if(r.k===1)return r;if(r.k>best.k)best=r;}continue;}
+    if(V.ao){const r=evalAoTube(V,L,t,noTurb,ax,az);if(r){if(r.k===1)return r;if(r.k>best.k)best=r;}continue;}
+    if(V.occl&&L.s>V.occl.s0&&L.s<(V.occl.s1||1e9)){if(Math.abs(rho)<L.r0){if(best.k<4)best={k:4,V};}else if(Math.abs(rho)<L.r0+0.07&&best.k===0)best={k:2,V};continue;}
+    const lu=lumenOf(V,L),lo=lu[0],hi=lu[1],bump=lu[2];
+    if(rho>lo&&rho<hi){const c=(lo+hi)/2,half=(hi-lo)/2,q=Math.abs(rho-c)/half;let vc,v,turb=0,tx=L.tx,tz=L.tz,sep=false,sd=0;
+      if(V.type!=="tube"){const amp=Math.min((V.r/half)**2,8);vc=V.vmax*wave(V.wave,t)*amp;v=vc*prof(V.wave,q);
+        if(V.sten>0.4){const dn=L.s*V.dir;if(dn>0.25&&dn<1.8)turb=Math.min(1,(V.sten-0.4)/0.35)*Math.exp(-(dn-0.25)/0.7);}
+        sd=0.45*V.vmax*Math.min((1/(1-V.sten))**2,8)*Math.max(wave(V.wave,t),0.2);}
+      else{const Vm=L.mix==null?V:{wa:V.wa,wb:V.wb,mix:L.mix,tap:V.tap,wave:V.wave};const amp=V.sten?Math.pow(V.sten.jet,bump):1;vc=V.psv*waveV(Vm,t)*L.vs*amp;v=vc*(1-q**2.4);
+        if(V.sep&&L.s>V.sep.s0&&L.s<V.sep.s1){const mid=(V.sep.s0+V.sep.s1)/2,hw=(V.sep.s1-V.sep.s0)/2,win=1-((L.s-mid)/hw)**2,edge=(rho-c)*V.sep.side/half;if(edge>1-0.62*win){v=-Math.abs(vc)*0.32*sepPhase(t)*Math.min(1,(edge-(1-0.62*win))*4);turb=0.12;sep=true;}}
+        if(V.sten&&V.sten.pct>0.45){const dn=L.s-V.sten.s0;if(dn>0.22&&dn<2.0)turb=Math.max(turb,Math.min(1,(V.sten.pct-0.45)/0.35)*Math.exp(-(dn-0.22)/0.8)*(V.sten.turbK||1));}
+        if(V.turbAlways)turb=Math.max(turb,V.turbAlways);sd=0.5*Math.abs(vc)+6;}
+      let vx=tx*v,vz=tz*v;if(turb&&!noTurb){vx+=gauss()*sd*turb;vz+=gauss()*sd*turb;}
+      const W=vecW(vx,vz),T=vecW(tx,tz);return {k:1,vx:W[0],vz:W[1],tx:T[0],tz:T[1],turb,V,v,sep,s:L.s,bump};}
+    if(rho>-L.r0&&rho<L.r0&&V.sten){if(best.k<3)best={k:3,V,s:L.s};}
+    else if(rho>-L.r0-0.07&&rho<L.r0+0.07&&best.k===0)best={k:2,V};}
   return best;}
+function shadowKind(x,z,bx,bz){if(!CAST.length)return null;const A=toAnat(x,z),u=vecA(-bx,-bz);
+  for(const C of CAST){const wx=C.x-A[0],wz=C.z-A[1],t=wx*u[0]+wz*u[1];if(t<=0)continue;if(wx*wx+wz*wz-t*t<C.r*C.r&&!(wx*wx+wz*wz<C.r*C.r))return C.kind||"calc";}return null;}
+function shadowed(x,z,bx,bz){const k=shadowKind(x,z,bx,bz);return !!k&&k!=="enh";}
+let VES=vessels();
+function inCaster(x,z){const A=toAnat(x,z);return CAST.some(C=>(A[0]-C.x)**2+(A[1]-C.z)**2<C.r*C.r);}
 
 // ================= DERIVED =================
 function D(){const P=PROBES[S.probe],o={};const f0=S.dF*1e6;o.f0=f0;
-  o.gd=depthAlong(S.p.gx,S.p.gz);o.ba=beamAng(S.p.gx,S.p.gz);const va=90-S.ph.tilt;
-  o.thTrue=Math.abs(((va-o.ba+90)%180+180)%180-90);o.cursorA=o.ba+S.p.angle;
-  o.mis=Math.abs(((o.cursorA-va+90)%180+180)%180-90);o.thC=Math.min(Math.abs(S.p.angle),80);
+  o.gd=depthAlong(S.p.gx,S.p.gz);o.ba=beamAng(S.p.gx,S.p.gz);const b=dirV(o.ba);
+  const e=evalPt(S.p.gx,S.p.gz,0,true);o.inLumen=e.k===1;o.gateV=e.k===1?e.V:null;o.sep=!!e.sep;
+  let va=90-S.ph.tilt;if(e.k===1)va=Math.atan2(e.tx,e.tz)/D2R;else if(VES[0]){const L=local(VES[0],...toAnat(S.p.gx,S.p.gz));if(L){const T=vecW(L.tx,L.tz);va=Math.atan2(T[0],T[1])/D2R;}}
+  const acute=(a,c)=>Math.abs(((a-c+90)%180+180)%180-90);o.va=va;
+  o.thTrue=acute(va,o.ba);o.cursorA=o.ba+S.p.angle;o.mis=acute(o.cursorA,va);o.thC=Math.min(Math.abs(S.p.angle),80);
   const tri=S.simul&&(S.color||S.power);o.prfMax=77000/Math.max(o.gd,0.3)*0.9*(tri?0.5:1);o.prf=S.p.prf;o.hprf=S.cw?1:Math.max(1,Math.ceil(o.prf/o.prfMax));
-  o.kV=CMS/(2*f0*Math.cos(o.thC*D2R)); // cm/s per Hz
-  o.lo=-o.prf*(0.5-S.p.base);o.hi=o.prf*(0.5+S.p.base);
-  // true peak shift at gate (artery, center)
-  const e=evalPt(S.p.gx,S.p.gz,0,true);o.inLumen=e.k===1;let peak=0,mn=1e9,V=VES[0];
-  const b=dirV(o.ba);
-  if(e.k===1){V=e.V;for(let i=0;i<60;i++){const t=i/60*(V.wave==="venous"?4.5:60/S.ph.hr);const w=wave(V.wave,t);peak=Math.max(peak,w);mn=Math.min(mn,w);}}
-  const c=e.k===1?(-V.dir*(V.ux*b[0]+V.uz*b[1])):0;o.cosDir=c;
-  const amp=e.k===1?Math.min((V.r/(V.r*(1-V.sten*Math.exp(-((((S.p.gx-V.cx)*V.ux+(S.p.gz-V.cz)*V.uz)/0.3)**2)))))**2,8):1;
-  o.vPeakTrue=e.k===1?V.vmax*peak*amp:0;o.vMinTrue=e.k===1?V.vmax*mn*amp:0;
-  o.fPeak=2*f0*(o.vPeakTrue/100)*c/1540;o.fMin=2*f0*(o.vMinTrue/100)*c/1540;
-  const fdisp=x=>S.p.invert?-x:x;const fs=[fdisp(o.fPeak),fdisp(o.fMin)];
-  o.alias=!S.cw&&e.k===1&&fs.some(f=>f>o.hi*0.98||f<o.lo*0.98);
+  o.kV=CMS/(2*f0*Math.cos(o.thC*D2R));o.lo=-o.prf*(0.5-S.p.base);o.hi=o.prf*(0.5+S.p.base);
+  let fHi=-1e12,fLo=1e12,vMax=0,samples=[];o.shadow=shadowed(S.p.gx,S.p.gz,b[0],b[1]);
+  if(e.k===1){const T=(e.V.wave==="venous"||e.V.vmode)?4.5:60/S.ph.hr;for(let i=0;i<90;i++){const q=evalPt(S.p.gx,S.p.gz,i/90*T,true);if(q.k!==1)continue;const f=2*f0*((q.vx*-b[0]+q.vz*-b[1])/100)/1540;samples.push(f);fHi=Math.max(fHi,f);fLo=Math.min(fLo,f);vMax=Math.max(vMax,Math.hypot(q.vx,q.vz));}}
+  if(!samples.length){fHi=0;fLo=0;}
+  o.fHi=fHi;o.fLo=fLo;o.fPeak=Math.abs(fHi)>=Math.abs(fLo)?fHi:fLo;const same=samples.filter(f=>Math.sign(f)===Math.sign(o.fPeak));o.fMin=same.length?same.reduce((a,f)=>Math.abs(f)<Math.abs(a)?f:a,same[0]):0;
+  o.vPeakTrue=vMax;o.vMinTrue=Math.abs(o.fMin)*CMS/(2*f0*Math.max(Math.abs(o.fPeak?Math.cos(o.thTrue*D2R):1),0.05));
+  const dh=S.p.invert?-fLo:fHi,dl=S.p.invert?-fHi:fLo;o.alias=!S.cw&&e.k===1&&(dh>o.hi*0.98||dl<o.lo*0.98);
   o.vMeasPeak=o.fPeak*o.kV;o.errPct=o.vPeakTrue?((Math.abs(o.vMeasPeak)/o.vPeakTrue)-1)*100:0;
   // color
-  const bx=S.c.box;o.cba=beamAng(bx.x,bx.z);o.thColor=Math.abs(((va-o.cba+90)%180+180)%180-90);
+  const bx=S.c.box;o.cba=beamAng(bx.x,bx.z);let vc=va;{const ec=evalPt(bx.x,bx.z,0,true);if(ec.k===1)vc=Math.atan2(ec.tx,ec.tz)/D2R;else if(VES[0]){const L=local(VES[0],...toAnat(bx.x,bx.z));if(L){const T=vecW(L.tx,L.tz);vc=Math.atan2(T[0],T[1])/D2R;}}}o.thColor=acute(vc,o.cba);
   const zmax=S.probe==="linear"?bx.z+bx.h/2:Math.hypot(bx.x,bx.z+P.R)-P.R+bx.h/2;o.cprfMax=77000/Math.max(zmax,0.3)*0.9;
-  const lines=S.probe==="linear"?bx.w/0.05:bx.w/Math.hypot(bx.x,bx.z+P.R)/0.012,E=7,Tb=192/(77000/S.depth);
+  const lines=S.probe==="linear"?bx.w/0.05:bx.w/Math.hypot(bx.x,bx.z+P.R)/0.018,E=7,Tb=192/(77000/S.depth);
   o.fps=(S.color||S.power)?1/(lines*E/Math.min(S.c.prf,o.cprfMax)+Tb):Math.min(60,1/Tb);if(S.pw&&S.simul&&(S.color||S.power))o.fps*=0.5;o.fps=Math.min(o.fps,60);
   o.vNyqC=Math.min(S.c.prf,o.cprfMax)/2*CMS/(2*f0)/1; // cm/s along beam (no angle correction)
   return o;}
@@ -416,12 +561,23 @@ function buildSpeckle(){const w=G.iw,h=G.ih,r=mul(77),n=w*h;const mk=(lat,ax)=>{
 function buildB(){if(spkDirty||!SPK)buildSpeckle();const w=G.iw,h=G.ih,img=new ImageData(w,h),d=img.data,P=PROBES[S.probe],f=P.bf[S.bf];
   const gain=(S.gainB-50)*0.5,DR=60;
   for(let py=0;py<h;py++)for(let px=0;px<w;px++){const [x,z]=s2w(px+G.ix+.5,py+G.iy+.5),o=(py*w+px)*4;d[o+3]=255;if(!inFOV(x,z)){d[o]=d[o+1]=d[o+2]=0;continue;}
-    const e=evalPt(x,z,0,true);let refl=e.k===1?0.025:e.k===2?1.9:e.k===3?1.25:0.5;
-    if(e.k===0){refl*=0.85+0.3*Math.sin(x*3.1+z*2.3)*Math.cos(z*4.1-x*1.7);}
+    const e=evalPt(x,z,0,true);let refl=reflAt(x,z,e);{const bb=S.probe==="curved"?dirV(beamAng(x,z)):[0,1],sk=shadowKind(x,z,bb[0],bb[1]);if(sk)refl*=sk==="enh"?1.7:sk==="gas"?(0.16+0.6*Math.max(0,Math.sin(z*6.5))**12):0.07;}
     const dep=depthAlong(x,z),fd=Math.abs(dep-S.focus),bw=Math.min(1,fd/(PROBES[S.probe].zR*1.2)),sp=SPK.fine[py*w+px]*(1-bw)+SPK.coarse[py*w+px]*bw;
     const att=-0.3*0.5*f*2*dep,tg=tgcAt(dep),foc=3*Math.exp(-(((dep-S.focus)/(P.zR*1.5))**2));
     const dB=20*Math.log10(Math.max(refl*sp,1e-6))+att+tg+gain+foc;const I=clamp((dB+DR-14)/DR,0,1)**1.15*255;d[o]=d[o+1]=d[o+2]=I;}
   BIMG=img;bDirty=false;}
+function reflAt(x,z,e){
+  if(S.exam==="phantom"){let r=e.k===1?0.025:e.k===2?1.9:e.k===3?1.25:0.5;if(e.k===0)r*=0.85+0.3*Math.sin(x*3.1+z*2.3)*Math.cos(z*4.1-x*1.7);return r;}
+  {const A=toAnat(x,z);for(const C of CAST){if(C.kind==="enh")continue;const d=Math.hypot(A[0]-C.x,A[1]-C.z);if(d<C.r){if(C.kind==="gas")return (A[1]<C.z&&C.r-d<0.12)?3.2:0.05;if(!CASE.bone&&C.kind!=="bone")return 2.6;return (A[1]<C.z&&C.r-d<(S.exam==="aorta"?0.15:0.08))?2.9:0.03;}}}
+  if(S.exam==="aorta")return reflAorta(x,z,e);
+  if(S.exam==="lea"||S.exam==="lev")return reflLeg(x,z,e);
+  if(S.exam==="rtx")return reflRtx(x,z,e);
+  if(e.k===1)return 0.02;if(e.k===2)return 1.6;if(e.k===4)return 0.3;
+  if(e.k===3){const pt=e.V.sten&&e.V.sten.plaque;return pt==="soft"?0.24:pt==="calc"?1.2:0.62*(0.7+0.6*Math.abs(Math.sin(x*37+z*29)));}
+  if(z<0.07)return 1.25;if(z<0.3)return 0.3*(0.8+0.4*Math.sin(x*9+z*13));
+  const scmB=0.95+0.12*Math.sin(x*1.3);if(z<scmB&&CASE.view!=="va")return 0.42*(0.65+0.7*Math.max(0,Math.sin(z*48+x*2.2+Math.sin(x*2.7)))**3);
+  if(CASE.view==="va"){if(z<1.7)return 0.42*(0.65+0.7*Math.max(0,Math.sin(z*44+x*2))**3);return 0.55*(0.85+0.3*Math.sin(x*3.3+z*2.1));}
+  return 0.5*(0.85+0.3*Math.sin(x*3.1+z*2.3)*Math.cos(z*4.1-x*1.7));}
 function tgcAt(dep){const u=clamp(dep/S.depth*7,0,7),i=Math.min(Math.floor(u),6),f=u-i;return ((S.tgc[i]*(1-f)+S.tgc[i+1]*f)-50)*0.3;}
 
 // ================= COLOR =================
@@ -437,10 +593,11 @@ function buildColor(t,o){const w=G.iw,h=G.ih,cell=4,img=new ImageData(w,h),d=img
   const fill=(px,py,c)=>{for(let yy=py;yy<Math.min(py+cell,h);yy++)for(let xx=px;xx<Math.min(px+cell,w);xx++){const q=(yy*w+xx)*4;d[q]=c[0];d[q+1]=c[1];d[q+2]=c[2];d[q+3]=255;}};
   for(let py=0;py<h;py+=cell)for(let px=0;px<w;px+=cell){const [x,z]=s2w(px+G.ix+cell/2,py+G.iy+cell/2);if(!inFOV(x,z)||!inBox(x,z))continue;
     let e=evalPt(x,z,t,false),bled=false;
-    if(e.k!==1&&bleed>0){for(const V of VES){const dx=x-V.cx,dz=z-V.cz,al=dx*V.ux+dz*V.uz,rp=-dx*V.uz+dz*V.ux;if(Math.abs(rp)<V.r+bleed){const s=Math.sign(rp)||1;const x2=V.cx+al*V.ux-s*(V.r*0.85)*V.uz,z2=V.cz+al*V.uz+s*(V.r*0.85)*V.ux;const e2=evalPt(x2,z2,t,false);if(e2.k===1){e=e2;bled=true;break;}}}}
+    if(e.k!==1&&bleed>0){const A=toAnat(x,z);for(const V of VES){const Lc=local(V,A[0],A[1]);if(!Lc)continue;if(Math.abs(Lc.rho)<Lc.r0+bleed){const sg=Math.sign(Lc.rho)||1,cx0=A[0]-Lc.rho*Lc.nx,cz0=A[1]-Lc.rho*Lc.nz,W=fromAnat(cx0+sg*Lc.r0*0.8*Lc.nx,cz0+sg*Lc.r0*0.8*Lc.nz);const e2=evalPt(W[0],W[1],t,false);if(e2.k===1){e=e2;bled=true;break;}}}}
     const dep=depthAlong(x,z),b=dirV(beamAng(x,z));
+    if(e.k!==1&&CASE.bruit&&!pow){const dx=x-CASE.bruit.x,dz=z-CASE.bruit.z;if(dx*dx+dz*dz<0.3&&wave("ica",t)>0.55&&rnd()<0.4){fill(px,py,colorMap((rnd()*2-1)*0.95));continue;}}
     if(e.k!==1){if(noiseP&&rnd()<noiseP){const u=(rnd()*2-1);fill(px,py,pow?powerMap(rnd()*.6):colorMap(u*0.7));}continue;}
-    const att=-0.6*0.5*S.dF*2*dep,foc=-6*(1-Math.exp(-(((dep-S.focus)/(P.zR*1.6))**2))),pwr=att+foc+gdb+(pow?6:0);
+    const att=-0.6*0.5*S.dF*2*dep,foc=-6*(1-Math.exp(-(((dep-S.focus)/(P.zR*1.6))**2))),pwr=att+foc+gdb+(pow?6:0)-(shadowed(x,z,b[0],b[1])?28:0)-(e.V&&e.V.weakDB||0);
     const thr=-22+(bled?4:0);if(pwr+gauss()*3<thr)continue;
     let f=2*f0*((e.vx*-b[0]+e.vz*-b[1])/100)/1540+gauss()*prf*0.02*(1+3*(e.turb||0));
     if(Math.abs(f)<S.c.wf)continue;
@@ -464,9 +621,9 @@ function spectralColumn(t,o){const H=SPH,Pw=new Float32Array(H),af=new Float32Ar
     const sb=Math.max(0.8,spread/span*H);for(let k=-2;k<=2;k++){const j=Math.round(bi+k*sb*0.6);if(j>=0&&j<H)Pw[j]+=w*Math.exp(-((k*0.6)**2)/2);}};
   for(const g of gates){const lat=gauss()*PROBES[S.probe].bw0*Math.sqrt(1+((depthAlong(g[0],g[1])-S.focus)/P.zR)**2);
     const x=g[0]+bp[0]*lat,z=g[1]+bp[1]*lat;M++;if(!inFOV(x,z))continue;const e=evalPt(x,z,t,false),dep=depthAlong(x,z);
-    const att=10**((-0.6*0.5*S.dF*2*dep)/10),foc=Math.exp(-(((dep-S.focus)/(P.zR*2))**2))*0.6+0.4,wb=att*foc*(-Math.log(Math.max(rnd(),1e-9)));
-    if(e.k===1){const vb=(e.vx*-b[0]+e.vz*-b[1]);let f=2*f0*(vb/100)/1540;const vabs=Math.hypot(e.vx,e.vz),sinT=Math.sqrt(Math.max(0,1-(vb/(vabs||1))**2));
-      const sig=0.012*Math.abs(f)+0.03*2*f0*(vabs/100)/1540*sinT+6;f+=gauss()*sig;add(f,wb,sig);}
+    const att=10**((-0.6*0.5*S.dF*2*dep)/10),foc=Math.exp(-(((dep-S.focus)/(P.zR*2))**2))*0.6+0.4,wb=att*foc*(-Math.log(Math.max(rnd(),1e-9)))*(shadowed(x,z,b[0],b[1])?0.03:1);
+    if(e.k===1){const wb2=e.V&&e.V.weakDB?wb*10**(-e.V.weakDB/10):wb;const vb=(e.vx*-b[0]+e.vz*-b[1]);let f=2*f0*(vb/100)/1540;const vabs=Math.hypot(e.vx,e.vz),sinT=Math.sqrt(Math.max(0,1-(vb/(vabs||1))**2));
+      const sig=0.012*Math.abs(f)+0.03*2*f0*(vabs/100)/1540*sinT+6;f+=gauss()*sig;add(f,wb2,sig);}
     else if(e.k===2||e.k===3){const wm=0.6*Math.sin(TAU*t*S.ph.hr/60)*(VES[0].art?1:0.2);add(2*f0*(wm/100)/1540+gauss()*6,wb*30,6);}
     else add(gauss()*4,wb*45,4);}
   const norm=S.cw?1/80:1/Math.max(M,1);
@@ -476,8 +633,9 @@ function spectralColumn(t,o){const H=SPH,Pw=new Float32Array(H),af=new Float32Ar
   // audio accumulate
   for(let k=0;k<AB;k++){AUD.fwd[k]=AUD.fwd[k]*0.55+af[k]*norm*0.45;AUD.rev[k]=AUD.rev[k]*0.55+ar[k]*norm*0.45;}
   return out;}
-function writeColumn(col){const H=SPH,G0=(S.p.gain-50)*0.6,img=SPIMG,d=img.data,w=SPW;let env=0,envN=0;const thrI=0.5;
+function writeColumn(col){const H=SPH,G0=(S.p.gain-50)*0.6,img=SPIMG,d=img.data,w=SPW;let env=0,envN=0;let thrI=0.5;
   const ints=new Float32Array(H);for(let j=0;j<H;j++){const p=col[j]+1.1e-4*(-Math.log(Math.max(rnd(),1e-9)));const db=10*Math.log10(p)+G0;ints[j]=clamp((db+31)/30,0,1);}
+  {const srt=Array.from(ints).sort((a,b)=>a-b);thrI=Math.max(0.3,Math.min(0.5,srt[Math.floor(H*0.5)]+0.22));}
   for(let j=0;j<H;j++){const y=H-1-j,q=(y*w+spX)*4,I=ints[j]**1.2*255;d[q]=d[q+1]=d[q+2]=I;d[q+3]=255;}
   for(let g=1;g<=10;g++){const x=(spX+g)%w;for(let y=0;y<H;y++){const q=(y*w+x)*4;d[q]=d[q+1]=d[q+2]=0;}}
   // envelope
@@ -507,7 +665,7 @@ function startAudio(){if(!rev)fftInit();if(!AC){AC=new (window.AudioContext||win
 
 // ================= RENDER =================
 const mon=$("monitor"),ctx=mon.getContext("2d");let DC=D();
-function frame(now){const dt=Math.min(0.1,(now-lastT)/1000);lastT=now;if(!S.frozen)tSim+=dt;
+function frame(now){const dt=Math.min(0.1,(now-lastT)/1000);lastT=now;if(!S.frozen)tSim+=dt;if(S.car&&S.car.tap&&S.pw&&DC.gateV&&DC.gateV.name==="ECA")tapFlag=true;if(S.exam==="aorta"&&S.pw&&DC.gateV&&DC.gateV.name==="Celiac")respSeen[S.ao.resp]=true;if(S.exam==="lev"){if(S.lev.plane==="trans")compMax=Math.max(compMax,S.lev.comp);if(S.pw&&DC.inLumen&&DC.gateV){if(S.lev.squeeze)augSeen[DC.gateV.name]=true;if(S.lev.vals)valsSeen=true;}}
   layout();if(bDirty)buildB();DC=D();const o=DC;
   if(G.spec&&(!SPIMG||SPIMG.height!==G.spH)){SPH=G.spH;SPIMG=new ImageData(SPW,SPH);spX=0;ENV=[];}
   // spectral columns
@@ -540,7 +698,7 @@ function draw(o){const sk=SKINS[S.skin].ann;ctx.setTransform(1,0,0,1,0,0);ctx.fi
   for(let dcm=0;dcm<=S.depth+1e-6;dcm+=1){const y=G.oy+dcm*G.sc;if(y<G.iy-1||y>G.iy+G.ih+1)continue;ctx.fillRect(xr,y,dcm%5===0?8:5,1);if(dcm%(S.depth>8?2:1)===0)ctx.fillText(dcm,xr+11,y+4);}
   const fy=G.oy+S.focus*G.sc;ctx.beginPath();ctx.moveTo(xr,fy);ctx.lineTo(xr-7,fy-5);ctx.lineTo(xr-7,fy+5);ctx.closePath();ctx.fill();
   // header
-  ctx.fillStyle=sk.col;ctx.font="13px ui-monospace, Menlo, Consolas, monospace";ctx.fillText(EXAMS[S.exam].name,10,18);
+  ctx.fillStyle=sk.col;ctx.font="13px ui-monospace, Menlo, Consolas, monospace";ctx.fillText(examLabel(),10,18);
   ctx.textAlign="right";ctx.fillText(`${PROBES[S.probe].name}   FR ${o.fps.toFixed(0)} Hz${S.frozen?"   FROZEN":""}`,990,18);ctx.textAlign="left";
   annotations(o,sk);
   if(S.color||S.power)colorBar(o,sk);
@@ -570,14 +728,14 @@ function drawSpectrum(o,sk){const x0=G.spX,y0=G.spY,H=SPH,W=SPW;const off=drawSp
   // axis
   const k=S.units==="cms"?o.kV:0.001,vmax=(lo+span)*k,vmin=lo*k,rng=vmax-vmin,step=niceStep(rng/6);ctx.fillStyle=sk.col;ctx.font="12px ui-monospace, Menlo, Consolas, monospace";
   for(let v=Math.ceil(vmin/step)*step;v<=vmax;v+=step){const y=yb-v/k/span*H;if(y<y0||y>y0+H)continue;ctx.fillRect(x0+W,y,6,1);ctx.fillText((S.units==="cms"?v.toFixed(0):v.toFixed(1)),x0+W+9,y+4);}
-  ctx.fillText(S.units==="cms"?"cm/s":"kHz",x0+W+9,y0+10);
+  ctx.fillText(S.units==="cms"?"cm/s":"kHz",x0+W-38,y0+14);
   // trace + measurements
   if(S.trace&&ENV.length>10){ctx.strokeStyle="#5CE65C";ctx.lineWidth=1.2;const recent=ENV.slice(-SPW+12);let up=0,dn=0;recent.forEach(e=>{up+=Math.abs(e.top);dn+=Math.abs(e.bot);});const useTop=up>=dn;
     ctx.beginPath();let pen=false,prevX=-9;for(const e of recent){const j=useTop?e.jt:e.jb;if(j<0||e.x<prevX){pen=false;prevX=e.x;continue;}const y=y0+H-1-j;if(!pen){ctx.moveTo(x0+e.x,y);pen=true;}else ctx.lineTo(x0+e.x,y);prevX=e.x;}ctx.stroke();
-    const T=(S.ph.wave==="venous"||(()=>{const e=evalPt(S.p.gx,S.p.gz,0,true);return e.k===1&&e.V.wave==="venous";})())?4.5:60/S.ph.hr,last=ENV.filter(e=>e.t>tSim-T*1.02),vals=last.map(e=>useTop?e.top:-e.bot);
+    const T=(S.ph.wave==="venous"||(()=>{const e=evalPt(S.p.gx,S.p.gz,0,true);return e.k===1&&(e.V.wave==="venous"||e.V.vmode);})())?4.5:60/S.ph.hr,last=ENV.filter(e=>e.t>tSim-T*1.02),vals=last.map(e=>useTop?e.top:-e.bot);
     if(vals.length>5){const psv=Math.max(...vals),edv=vals[vals.length-1]>0?Math.min(...vals.filter(v=>v>-1e9)):Math.min(...vals),mean=vals.reduce((a,b)=>a+b,0)/vals.length;
       const ri=psv>0?(psv-Math.max(edv,0))/psv:0,pi=mean>0?(psv-edv)/mean:0,u=S.units==="cms"?"cm/s":"kHz";const bx=G.ix+G.iw+40,by=S.color||S.power?G.iy+200:G.iy+12;
-      ctx.fillStyle="rgba(20,30,20,.0)";ctx.fillStyle=sk.col;ctx.font="12.5px ui-monospace, Menlo, Consolas, monospace";const ven=(()=>{const e=evalPt(S.p.gx,S.p.gz,0,true);return e.k===1&&e.V.wave==="venous";})();const lines=ven?[`Vmax ${fmtV(psv)} ${u}`,`Vmean ${fmtV(mean)} ${u}`,`Vmin ${fmtV(edv)} ${u}`,"Phasic flow"]:[
+      ctx.fillStyle="rgba(20,30,20,.0)";ctx.fillStyle=sk.col;ctx.font="12.5px ui-monospace, Menlo, Consolas, monospace";const ven=(()=>{const e=evalPt(S.p.gx,S.p.gz,0,true);return e.k===1&&(e.V.wave==="venous"||e.V.vmode);})();const lines=ven?[`Vmax ${fmtV(psv)} ${u}`,`Vmean ${fmtV(mean)} ${u}`,`Vmin ${fmtV(edv)} ${u}`,"Venous flow"]:[
         `${S.skin==="philips"?"PS":"PSV"} ${fmtV(psv)} ${u}`,`${S.skin==="philips"?"ED":"EDV"} ${fmtV(edv)} ${u}`,`RI ${ri.toFixed(2)}`,`PI ${pi.toFixed(2)}`,`HR ${S.ph.hr} bpm`];
       ctx.fillStyle="#5CE65C";ctx.fillText(L("trace"),bx,by);ctx.fillStyle=sk.col;lines.forEach((t,i)=>ctx.fillText(t,bx,by+17*(i+1)));}}
   // sweep marker
@@ -648,9 +806,9 @@ function keyPress(k){
   if(k==="auto")autoOpt();
   refreshKeys();refreshKnobs();bDirty=true;}
 function autoOpt(){const o=D();if(act()==="b"){S.gainB=50;S.tgc=[50,50,50,50,50,50,50,50];syncTGC();bDirty=true;tip(`<b>${L("auto")}</b> reset gain and TGC for an even B-mode image.`);return;}
-  if(act()==="color"){const v=VES[0].vmax*0.55,fd=Math.abs(2*o.f0*(v/100)*Math.cos(o.thColor*D2R)/1540),need=Math.max(fd*2.6,600);S.c.prf=PRFS.find(p=>p>=need)||PRFS[PRFS.length-1];S.c.base=0;S.c.wf=Math.min(WFS.find(w=>w>=need*0.04)||100,300);tip(`<b>${L("auto")}</b> fitted the color scale to the expected mean velocities.`);return;}
-  const fp=Math.abs(o.fPeak),fm=o.fMin*Math.sign(o.fPeak||1);const pos=Math.max(fp,0),neg=Math.max(-fm,0),need=(pos+neg)*1.25;S.p.prf=PRFS.find(p=>p>=need)||PRFS[PRFS.length-1];
-  const base=clamp(((pos-neg)/(pos+neg||1))/2*0.9,-0.4,0.4);S.p.base=BASES.reduce((a,b)=>Math.abs(b-base)<Math.abs(a-base)?b:a);if((o.fPeak<0)!==S.p.invert)S.p.base=-S.p.base;
+  if(act()==="color"){const v=(VES[0].vmax||VES[0].psv||60)*0.55,fd=Math.abs(2*o.f0*(v/100)*Math.cos(o.thColor*D2R)/1540),need=Math.max(fd*2.6,600);S.c.prf=PRFS.find(p=>p>=need)||PRFS[PRFS.length-1];S.c.base=0;S.c.wf=Math.min(WFS.find(w=>w>=need*0.04)||100,300);tip(`<b>${L("auto")}</b> fitted the color scale to the expected mean velocities.`);return;}
+  const dh=S.p.invert?-o.fLo:o.fHi,dl=S.p.invert?-o.fHi:o.fLo,pos=Math.max(dh,0),neg=Math.max(-dl,0),need=(pos+neg)*1.25+200;S.p.prf=PRFS.find(p=>p>=need)||PRFS[PRFS.length-1];
+  const base=clamp((pos-neg)/(2*(pos+neg||1)),-0.4,0.4);S.p.base=BASES.reduce((a,b)=>Math.abs(b-base)<Math.abs(a-base)?b:a);
   tip(`<b>${L("auto")}</b> sized the PW scale and baseline to the waveform. It cannot fix the angle for you.`);}
 
 // TGC
@@ -661,14 +819,14 @@ function syncTGC(){$$("#tgc input").forEach((e,i)=>e.value=S.tgc[i]);}
 // touch panel
 function mkTouch(){const ex=$("exam");ex.innerHTML="";for(const k in EXAMS){const o=document.createElement("option");o.value=k;o.textContent=EXAMS[k].name+(EXAMS[k].ready?"":" (pack in development)");o.disabled=!EXAMS[k].ready;ex.appendChild(o);}
   const sk=$("skin");sk.innerHTML="";for(const k in SKINS){const o=document.createElement("option");o.value=k;o.textContent=SKINS[k].name;sk.appendChild(o);}
-  sk.onchange=e=>{S.skin=e.target.value;applySkin();};$("probe").onchange=e=>setProbe(e.target.value);
+  sk.onchange=e=>{S.skin=e.target.value;applySkin();};ex.onchange=e=>loadExam(e.target.value);$("probe").onchange=e=>setProbe(e.target.value);
   $$("#bf button").forEach(b=>b.onclick=()=>{S.bf=b.dataset.v;bDirty=spkDirty=true;syncTouch();tip(`<b>${S.bf==="res"?"Resolution":S.bf==="gen"?"General":"Penetration"}</b>: ${S.bf==="res"?"higher frequency, finer detail, faster attenuation.":S.bf==="pen"?"lower frequency, coarser detail, deeper penetration.":"a balance."}`);});
   $$("#units button").forEach(b=>b.onclick=()=>{S.units=b.dataset.v;syncTouch();refreshKnobs();tip(S.units==="khz"?"<b>kHz</b>: the display shows the raw Doppler shift. Angle correction no longer affects the scale; this is what the scanner actually measures.":"<b>cm/s</b>: the shift is converted to velocity using the angle you set.");});
   $("sweep").onchange=e=>{S.sweep=+e.target.value;};$("dF").onchange=e=>{S.dF=+e.target.value;tip(`<b>Doppler frequency ${S.dF} MHz</b>: the shift scales with transmit frequency, so higher frequency aliases sooner but attenuates faster. Lower it for deep vessels.`);};
   $("boxW").addEventListener("input",e=>{S.c.box.w=+e.target.value;syncTouch();tip(`<b>${L("boxW")}</b>: wider boxes need more color lines per frame, so frame rate falls (now ${DC.fps.toFixed(0)} Hz).`);});
   $("boxH").addEventListener("input",e=>{S.c.box.h=+e.target.value;syncTouch();tip(`<b>${L("boxH")}</b>: a deeper box bottom lowers the maximum color PRF.`);});
   $("qa0").onclick=()=>{S.p.angle=0;refreshKnobs();tip(tipAngle());};$("qa60").onclick=()=>{S.p.angle=S.p.angle>=0?60:-60;refreshKnobs();tip(tipAngle());};
-  $("qaAlign").onclick=()=>{const o=D(),va=90-S.ph.tilt;let a=((va-o.ba+90)%180+180)%180-90;S.p.angle=clamp(Math.round(a/2)*2,-80,80);refreshKnobs();tip("<b>Align</b> (teaching helper) set the cursor parallel to the vessel. On a real scanner you rotate the angle knob until the cursor follows the vessel wall.");};}
+  $("qaAlign").onclick=()=>{const o=D(),va=o.va;let a=((va-o.ba+90)%180+180)%180-90;S.p.angle=clamp(Math.round(a/2)*2,-80,80);refreshKnobs();tip("<b>Align</b> (teaching helper) set the cursor parallel to the vessel. On a real scanner you rotate the angle knob until the cursor follows the vessel wall.");};}
 function syncTouch(){$("probe").value=S.probe;$("skin").value=S.skin;$("exam").value=S.exam;$$("#bf button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.bf));$$("#units button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.units));
   const df=$("dF");df.innerHTML="";PROBES[S.probe].dF.forEach(f=>{const o=document.createElement("option");o.value=f;o.textContent=f.toFixed(1);df.appendChild(o);});df.value=S.dF;$("sweep").value=S.sweep;
   $("boxW").value=S.c.box.w;$("boxWo").textContent=S.c.box.w.toFixed(1)+" cm";$("boxH").value=S.c.box.h;$("boxHo").textContent=S.c.box.h.toFixed(1)+" cm";$("boxW").max=S.probe==="linear"?4:10;$("boxH").max=S.probe==="linear"?6:12;}
@@ -698,7 +856,7 @@ mon.addEventListener("keydown",e=>{const st=0.05;let dx=0,dz=0;if(e.key==="Arrow
 // hood
 function hood(){const o=DC,v=x=>x.toFixed(0);const r=(a,b,c)=>`<div class="r"><span>${a}</span><span class="${c||""}">${b}</span></div>`;
   let h=`<h3>Under the hood (live)</h3><div class="eq">f<sub>D</sub> = 2 f<sub>0</sub> v cos θ / c</div>`;
-  if(S.pw||S.cw){h+=r("Transmit f₀",`${S.dF.toFixed(1)} MHz`)+r("Gate depth",`${o.gd.toFixed(1)} cm`)+r("True insonation angle θ",`${o.thTrue.toFixed(0)}°`,o.thTrue>60?"warnc":"")+r("Angle correction set",`${o.thC.toFixed(0)}° (cursor ${o.mis.toFixed(0)}° off axis)`,o.mis>5?"bad":"okc")+
+  if(S.pw||S.cw){h+=r("Vessel at gate",o.gateV?(o.gateV.name||"vessel"):"none")+(o.shadow?r("Acoustic shadow","yes","bad"):"")+r("Transmit f₀",`${S.dF.toFixed(1)} MHz`)+r("Gate depth",`${o.gd.toFixed(1)} cm`)+r("True insonation angle θ",`${o.thTrue.toFixed(0)}°`,o.thTrue>60?"warnc":"")+r("Angle correction set",`${o.thC.toFixed(0)}° (cursor ${o.mis.toFixed(0)}° off axis)`,o.mis>5?"bad":"okc")+
     r("True peak velocity",o.inLumen?`${v(o.vPeakTrue)} cm/s`:"gate not in lumen")+r("Peak Doppler shift",o.inLumen?`${(Math.abs(o.fPeak)/1000).toFixed(2)} kHz ${o.fPeak>=0?"(toward)":"(away)"}`:"–")+
     r("Displayed peak",o.inLumen?`${v(Math.abs(o.vMeasPeak))} cm/s (${o.errPct>=0?"+":""}${o.errPct.toFixed(0)}%)`:"–",Math.abs(o.errPct)>10?"bad":"okc");
     if(!S.cw)h+=r("PRF / Nyquist",`${(o.prf/1000).toFixed(1)} kHz / ±${v(o.prf/2*o.kV)} cm/s`)+r("Max PRF at this depth",`${(o.prfMax/1000).toFixed(1)} kHz${S.simul&&(S.color||S.power)?" (triplex halved)":""}`)+r("Aliasing",o.alias?"yes":"no",o.alias?"bad":"okc")+r("HPRF gates",o.hprf>1?o.hprf:"off",o.hprf>1?"warnc":"");
@@ -741,13 +899,14 @@ const DRILLS=[
 let drillActive=null;const done=new Set();
 function base(p){const keep={skin:S.skin,audio:S.audio,vol:S.vol,units:S.units,sweep:S.sweep};S=JSON.parse(JSON.stringify(DEF));Object.assign(S,keep);setProbeSilent(p);}
 function setProbeSilent(p){S.probe=p;const d=PDEF[p];Object.assign(S,{depth:d.depth,focus:d.focus,steer:d.steer,dF:d.dF});Object.assign(S.ph,d.ph);S.c.box=Object.assign({},d.box);S.p.gx=d.gate.gx;S.p.gz=d.gate.gz;S.p.angle=d.angle;S.p.prf=d.prfP;S.c.prf=d.prfC;}
-function mkDrills(){const host=$("drills");host.innerHTML="";DRILLS.forEach(dr=>{const b=document.createElement("button");b.className="drill"+(done.has(dr.id)?" done":"");b.innerHTML=`${dr.t}<small>${dr.s}${done.has(dr.id)?" · solved":""}</small>`;b.setAttribute("aria-pressed",drillActive===dr.id);b.onclick=()=>startDrill(dr.id);host.appendChild(b);});}
-function startDrill(id){const dr=DRILLS.find(d=>d.id===id);drillActive=id;dr.setup();VES=vessels();bDirty=spkDirty=true;CIMG=null;SPIMG=null;syncAll();
-  const t=$("task");t.hidden=false;t.innerHTML=`<b>${dr.t}.</b> ${dr.task}<div class="row" style="margin-top:8px"><button class="mini primary" id="chk">Check</button><button class="mini" id="hnt">Hint</button><button class="mini" id="ext">Exit drill</button></div><div id="fb"></div>`;
+function mkDrills(){const host=$("drills");host.innerHTML="";curDrills().forEach(dr=>{const b=document.createElement("button");b.className="drill"+(done.has(dr.id)?" done":"");b.innerHTML=`${dr.t}<small>${dr.s}${done.has(dr.id)?" · solved":""}</small>`;b.setAttribute("aria-pressed",drillActive===dr.id);b.onclick=()=>startDrill(dr.id);host.appendChild(b);});}
+function startDrill(id){const dr=curDrills().find(d=>d.id===id);drillActive=id;drillChoice=null;tapFlag=false;compMax=0;augSeen={};valsSeen=false;MS.lastAT=null;MS.lastDT=null;MS.lastDist=null;MS.riPoles={};MS.atPoles={};MS.lastRI=null;Object.assign(MS,{tool:null,pts:[],trace:[],tracing:false,res:[],saved:{},lastPSV:null,keep:null});dr.setup();VES=vessels();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];syncAll();measUI();
+  const t=$("task");t.hidden=false;t.innerHTML=`<b>${dr.t}.</b> ${dr.task}${dr.choices?`<div class="choices" id="chs">${dr.choices.map(c=>`<button data-c="${c}">${c}</button>`).join("")}</div>`:""}<div class="row" style="margin-top:8px"><button class="mini primary" id="chk">Check</button><button class="mini" id="hnt">Hint</button><button class="mini" id="ext">Exit drill</button></div><div id="fb"></div>`;
   $("chk").onclick=()=>{const [ok,msg]=dr.check(D());$("fb").innerHTML=`<div class="fb ${ok?"ok":"no"}">${ok?"Solved. ":""}${msg}</div>`;if(ok){done.add(id);mkDrills();}};
+  $$("#chs button").forEach(b=>b.onclick=()=>{drillChoice=b.dataset.c;$$("#chs button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
   $("hnt").onclick=()=>{$("fb").innerHTML=`<div class="fb no">${dr.hint}</div>`;};$("ext").onclick=()=>{resetAll("Drill closed; the console is back to the default fundamentals setup.");};
   mkDrills();$("task").scrollIntoView({behavior:"smooth",block:"nearest"});tip(`<b>Drill:</b> ${dr.task}`);}
-function syncAll(){syncTouch();syncPhantom();syncTGC();applySkin();refreshKeys();refreshKnobs();}
+function syncAll(){syncTouch();syncPhantom();syncTGC();applySkin();refreshKeys();refreshKnobs();syncCase();}
 
 // ================= QUIZ =================
 const QZ=[
@@ -761,14 +920,528 @@ const QZ=[
  {q:"On color Doppler, a red region borders a cyan region with yellow in between. This most likely represents:",o:["True flow reversal","Aliasing","Wall filter cutoff","Power Doppler"],a:1,e:"Aliasing jumps between the brightest colors at the Nyquist limit. True reversal passes through black (zero)."},
  {q:"Which mode cannot alias and has no range resolution?",o:["PW","Color","Power","CW"],a:3,e:"Continuous wave transmits and receives continuously: no PRF limit, but every vessel along the beam contributes."},
  {q:"Widening the color box will mostly:",o:["Increase the Nyquist limit","Lower the frame rate","Increase sensitivity","Correct the angle"],a:1,e:"More color lines per frame, each needing an ensemble of pulses, means fewer frames per second."}];
-function mkQuiz(){const host=$("quiz");host.innerHTML="";QZ.forEach((q,i)=>{const d=document.createElement("div");d.className="q";d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector(".opts");
+function mkQuiz(){const host=$("quiz");host.innerHTML="";curQuiz().forEach((q,i)=>{const d=document.createElement("div");d.className="q";d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector(".opts");
   q.o.forEach((t,j)=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>{op.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===q.a)x.classList.add("right");});if(j!==q.a)b.classList.add("wrong");const ex=d.querySelector(".ex");ex.hidden=false;ex.innerHTML=(j===q.a?"Correct. ":"Not quite. ")+q.e;};op.appendChild(b);});host.appendChild(d);});}
 
+// ================= CAROTID PACK =================
+const CVIEWS={cca:{label:"CCA MID",name:"Common carotid"},bulb:{label:"BULB / BIF",name:"Bulb and bifurcation"},ica:{label:"ICA PROX",name:"Internal carotid"},eca:{label:"ECA",name:"External carotid"},va:{label:"VERT V2",name:"Vertebral"}};
+const CCONDS={normal:"Normal",lt50:"ICA plaque, <50%",s5069:"ICA stenosis 50–69%",ge70:"ICA stenosis ≥70% (calcified plaque)",near:"ICA near-occlusion",occ:"ICA occlusion",prox:"Proximal CCA / innominate stenosis",st1:"Subclavian steal: early (systolic notch)",st2:"Subclavian steal: partial (bidirectional)",st3:"Subclavian steal: complete (reversed)"};
+const sigm=x=>1/(1+Math.exp(-x));
+const VIEW_TILT={cca:10,bulb:16,ica:15,eca:6,va:10};
+let drillChoice=null,tapFlag=false;
+function examLabel(){if(S.exam==="rtx")return `Renal transplant   RIF ${RVIEWS[S.rtx.view].label}${S.rtx.view==="kid"?" "+S.rtx.pole.toUpperCase():""}`;if(S.exam==="lea")return `LE arterial   RT ${LVIEWS[S.lea.view].label}`;if(S.exam==="lev")return `LE venous   RT ${VVIEWS[S.lev.view].label} ${S.lev.plane==="trans"?"TRV":"LONG"}${S.lev.comp>5?"  COMP":""}`;if(S.exam==="aorta")return `Abdominal aorta   ${AVIEWS[S.ao.view].label}`;if(S.exam==="carotid")return `Carotid and vertebral   ${S.car.side==="R"?"RT":"LT"} ${CVIEWS[S.car.view].label}`;return EXAMS[S.exam].name;}
+function condParams(c){const P={ccaW:"cca",icaW:"ica",ecaW:"eca",vaW:"va",ccaPSV:85,icaPSV:80,ecaPSV:85,vaPSV:50,sten:null,occ:false,near:false};
+  if(c==="lt50")P.sten={pct:0.35,jet:1.15,plaque:"mixed",side:-1};
+  if(c==="s5069")P.sten={pct:0.6,jet:2.2,plaque:"mixed",side:-1};
+  if(c==="ge70")P.sten={pct:0.8,jet:4.3,plaque:"calc",side:1};
+  if(c==="near"){P.sten={pct:0.9,jet:3.2,plaque:"mixed",side:-1,len:0.42,turbK:0.2};P.icaW="tard";P.icaPSV=14;P.near=true;P.ccaW="ccaHR";P.ccaPSV=75;}
+  if(c==="occ"){P.occ=true;P.ccaW="ccaHR";P.ccaPSV=70;P.ecaW="ecaInt";P.ecaPSV=105;}
+  if(c==="prox"){P.ccaW="tard";P.icaW="tard";P.ecaW="tard";P.ccaPSV=48;P.icaPSV=45;P.ecaPSV=45;P.vaPSV=32;P.vaW="tard";}
+  if(c==="st1")P.vaW="vaS1";if(c==="st2")P.vaW="vaS2";if(c==="st3")P.vaW="vaS3";return P;}
+function caseTruth(){const c=S.car.cond,P=condParams(c),jet=P.sten?P.sten.jet:1,ica=P.occ?0:P.icaPSV*jet,dmin={ica:.4,tard:.55}[P.icaW]||.4;
+  const grade={normal:"Normal",prox:"Normal",st1:"Normal",st2:"Normal",st3:"Normal",lt50:"<50%",s5069:"50–69%",ge70:"≥70%",near:"Near-occlusion",occ:"Occlusion"}[c];
+  const va={st1:"Antegrade with a systolic notch (early steal)",st2:"Bidirectional (partial steal)",st3:"Reversed (complete steal)"}[c]||"Antegrade (normal)";
+  return {icaPSV:ica,icaEDV:ica*dmin,ccaPSV:P.ccaPSV,ratio:ica/P.ccaPSV,grade,va};}
+function placeStenosis(tube,x,P){if(!P.sten)return;const s0=sAtX(tube,x);tube.sten=Object.assign({s0,len:P.sten.len||0.28},P.sten);const pt=ptAtS(tube,s0),nx=-pt.tz,nz=pt.tx,sd=P.sten.side;
+  if(P.sten.plaque==="calc")CAST.push({x:pt.x+nx*sd*pt.r*0.78,z:pt.z+nz*sd*pt.r*0.78,r:0.13});
+  if(S.car.cond==="ge70"){const W=fromAnat(pt.x-pt.tx*0.3,pt.z-pt.tz*0.3);CASE.bruit={x:W[0],z:W[1]};}CASE.jet={tube,s0};}
+function buildCarotid(){const C=S.car,P=condParams(C.cond),V=[];ANROT=C.tilt*D2R;CASE={view:C.view,P};
+  if(C.view==="cca"){V.push(mkTube(seg([2.7,2.0],[-2.7,1.88],54),{rf:()=>0.33,psv:P.ccaPSV,wave:P.ccaW,name:"CCA"}));
+    V.push(mkTube(seg([-2.7,1.05],[2.7,1.12],54),{rf:()=>0.45,psv:22,wave:"venous",art:0,name:"IJV"}));}
+  if(C.view==="bulb"){const pts=seg([2.7,2.02],[0.9,2.02],18).concat(bez([0.9,2.02],[-0.3,2.06],[-2.7,2.62],26).slice(1));
+    const o={rf:x=>0.28+0.05*sigm((x-0.7)/0.15)+0.16*Math.exp(-(((x-0.05)/0.5)**2)),vsf:x=>(1+(P.ccaPSV/P.icaPSV-1)*sigm((x-0.8)/0.15))*(1-0.5*Math.exp(-(((x-0.05)/0.4)**2))),mixf:x=>1-sigm((x-0.6)/0.2),wa:P.ccaW,wb:P.icaW,psv:P.icaPSV,wave:P.icaW,name:"ICA"};
+    if(P.occ){o.psv=P.ccaPSV;o.wb="stump";o.vsf=x=>sigm((x-0.6)/0.2)+(1-sigm((x-0.6)/0.2))*0.4;}
+    const ica=mkTube(pts,o);ica.sep={s0:sAtX(ica,0.45),s1:sAtX(ica,-0.55),side:-1};placeStenosis(ica,-0.95,P);if(P.occ)ica.occl={s0:sAtX(ica,-0.75)};V.push(ica);
+    V.push(mkTube(bez([0.35,1.88],[-0.6,1.55],[-2.7,1.28],26),{rf:()=>0.22,psv:P.ecaPSV,wave:P.ecaW,tap:true,name:"ECA"}));}
+  if(C.view==="ica"){const pts=seg([2.7,1.95],[1.1,1.98],16).concat(seg([1.1,1.98],[-2.7,2.32],38).slice(1));
+    const ica=mkTube(pts,{rf:x=>0.28-(P.near?0.11*sigm((-0.15-x)/0.08):0)+0.14*sigm((x-1.0)/0.22),vsf:x=>1-0.5*sigm((x-1.0)/0.2),psv:P.icaPSV,wave:P.icaW,name:"ICA"});
+    placeStenosis(ica,0.25,P);if(P.occ){ica.occl={s0:sAtX(ica,0.6)};ica.wave="stump";ica.psv=30;}V.push(ica);}
+  if(C.view==="eca"){V.push(mkTube(bez([2.7,1.78],[0,1.45],[-2.7,1.2],40),{rf:()=>0.22,psv:P.ecaPSV,wave:P.ecaW,tap:true,name:"ECA"}));
+    V.push(mkTube(seg([1.3,1.62],[2.5,1.02],14),{rf:()=>0.075,psv:35,wave:"eca",tap:true,name:"Superior thyroid a."}));}
+  if(C.view==="va"){V.push(mkTube(seg([2.7,3.05],[-2.7,2.95],54),{rf:()=>0.19,psv:P.vaPSV,wave:P.vaW,name:"VA"}));
+    V.push(mkTube(seg([-2.7,2.68],[2.7,2.72],54),{rf:()=>0.15,psv:12,wave:"venous",art:0,name:"Vertebral vein"}));
+    [[-1.75,2.48],[0,2.45],[1.75,2.48]].forEach(([x,z])=>CAST.push({x,z,r:0.42}));CASE.bone=true;}
+  return V;}
+function mainVessel(){if(S.exam==="rtx")return VES.find(v=>v.name===({kid:"Interlobar a. ("+S.rtx.pole+")",anas:"MRA",ven:"MRV",hil:"Renal artery"}[S.rtx.view]))||VES.find(v=>v.name&&v.name.startsWith("Interlobar a."))||VES[0];if(S.exam==="lea")return VES.find(v=>v.name===({cfa:"CFA",sfa:"SFA",pop:"Popliteal a.",tib:"PTA"}[S.lea.view]))||VES[0];if(S.exam==="lev")return VES.find(v=>v.name===({cfv:"CFV",fv:"FV",pop:"Popliteal v.",calf:"PT vein (left)",gsv:"GSV"}[S.lev.view]))||VES[0];if(S.exam==="aorta")return VES.find(v=>v.name===({prox:"Aorta",mid:"Aorta",trans:"Aorta",bif:"Left CIA"}[S.ao.view]))||VES[0];return VES.find(v=>v.name===({cca:"CCA",bulb:"ICA",ica:"ICA",eca:"ECA",va:"VA"}[S.car.view]))||VES[0];}
+function gateTo(V,x){const s=sAtX(V,x),p=ptAtS(V,s);let off=0;if(V.sten){const bump=Math.exp(-(((s-V.sten.s0)/V.sten.len)**2));off=-V.sten.side*p.r*V.sten.pct*bump;}
+  const W=fromAnat(p.x-p.tz*off,p.z+p.tx*off);S.p.gx=W[0];S.p.gz=W[1];}
+function alignAngle(){const o=D();let a=((o.va-o.ba+90)%180+180)%180-90;S.p.angle=clamp(Math.round(a/2)*2,-80,80);}
+function applyView(){VES=vessels();const C=S.car,cfg={cca:{d:4,gx:0.4,bx:0,w:2.8,h:1.3},bulb:{d:4,gx:0.1,bx:-0.3,w:3.4,h:2.0},ica:{d:4,gx:0.25,bx:0,w:3.0,h:1.4},eca:{d:4,gx:-0.4,bx:0,w:3.0,h:1.3},va:{d:5,gx:-0.85,bx:0,w:3.6,h:1.2}}[C.view];
+  S.depth=cfg.d;const M=mainVessel();gateTo(M,cfg.gx);const pb=ptAtS(M,sAtX(M,cfg.bx)),WB=fromAnat(pb.x,pb.z);S.c.box={x:WB[0],z:C.view==="bulb"?WB[1]-0.15:WB[1],w:cfg.w,h:cfg.h};
+  S.focus=Math.round(S.p.gz*4)/4;S.steer=20;DC=D();alignAngle();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];}
+function loadExam(ex,opts,silent){const exChanged=S.exam!==ex;const keep={skin:S.skin,audio:S.audio,vol:S.vol,units:S.units,sweep:S.sweep};S=JSON.parse(JSON.stringify(DEF));Object.assign(S,keep);S.exam=ex;setProbeSilent("linear");
+  Object.assign(MS,{tool:null,pts:[],trace:[],tracing:false,res:[],saved:{},lastPSV:null,keep:null});
+  if(ex==="carotid"){const vw=(opts&&opts.view)||"cca";S.car=Object.assign({view:vw,side:"R",cond:"normal",tilt:VIEW_TILT[vw],tap:false,reveal:false},opts||{});S.color=true;S.pw=true;S.active="pw";S.c.prf=6000;S.p.prf=8000;S.ph.hr=68;applyView();}
+  else{VES=vessels();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];}
+  if(ex==="aorta"){S.ao=Object.assign({view:"mid",cond:"normal",tilt:null,fed:false,resp:"exp",diam:5.4,gas:false,comp:0,reveal:false},opts||{});if(S.ao.tilt==null)S.ao.tilt=AVIEW_TILT[S.ao.view];setProbeSilent("curved");Object.assign(S,{color:true,pw:true,active:"pw",dF:2.5});S.c.prf=3000;S.c.wf=100;S.p.prf=3500;S.p.base=-0.25;S.p.gain=62;S.c.gain=60;S.ph.hr=70;applyAoView();}
+  if(ex==="lea"){S.lea=Object.assign({view:"cfa",cond:"normal",state:"rest",tilt:null,reveal:false},opts||{});if(S.lea.tilt==null)S.lea.tilt=LVIEW_TILT[S.lea.view];Object.assign(S,{color:true,pw:true,active:"pw"});S.c.prf=5000;S.p.prf=8000;S.ph.hr=70;applyLaView();}
+  if(ex==="lev"){S.lev=Object.assign({view:"cfv",plane:"trans",cond:"normal",comp:0,tilt:0,squeeze:false,vals:false,augT0:-99,augT1:-99,valsT0:-99,valsT1:-99,reveal:false},opts||{});Object.assign(S,{color:true});S.c.prf=2000;S.c.wf=50;S.p.prf=2000;S.p.wf=50;S.ph.hr=70;applyLvView();}
+  if(ex==="rtx"){S.rtx=Object.assign({view:"kid",pole:"mid",cond:"normal",press:0,tilt:0,reveal:false},opts||{});setProbeSilent("curved");Object.assign(S,{color:true,pw:true,active:"pw",dF:3.1});S.ph.hr=72;applyRtView();}
+  MS.riPoles={};MS.atPoles={};
+  syncAll();mkDrills();if(exChanged)mkQuiz();measUI();$("rtCard").hidden=ex!=="rtx";$("carCard").hidden=ex!=="carotid";$("aoCard").hidden=ex!=="aorta";$("laCard").hidden=ex!=="lea";$("lvCard").hidden=ex!=="lev";
+  if(!silent)tip(ex==="carotid"?"<b>Carotid and vertebral</b> preset: linear probe, color and PW, steer +20°, heel–toe 10°. Pick a view and a condition in the Case panel; flow toward the head runs right to left on screen.":"<b>Doppler fundamentals</b> preset loaded.");}
+function loadExamSilent(o){loadExam("carotid",o,true);}
+function syncCase(){$("rtPanel").hidden=S.exam!=="rtx";if(S.exam==="rtx")syncRt();$("laPanel").hidden=S.exam!=="lea";$("lvPanel").hidden=S.exam!=="lev";if(S.exam==="lea")syncLa();if(S.exam==="lev")syncLv();const car=S.exam==="carotid";$("carPanel").hidden=!car;$("phPanel").hidden=S.exam!=="phantom";$("aoPanel").hidden=S.exam!=="aorta";if(S.exam==="aorta")syncAo();if(!car)return;
+  $$("#cView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.car.view));$$("#cSide button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.car.side));
+  const cs=$("cCond");if(!cs.options.length)for(const k in CCONDS){const o=document.createElement("option");o.value=k;o.textContent=CCONDS[k];cs.appendChild(o);}cs.value=S.car.cond;
+  $("cTilt").value=S.car.tilt;$("cTilto").textContent=(S.car.tilt>0?"+":"")+S.car.tilt+"°";$("cHR").value=S.ph.hr;$("cHRo").textContent=S.ph.hr+" bpm";$("cReveal").checked=S.car.reveal;
+  $("cTap").hidden=false;truthText();}
+function truthText(){if(!S.car.reveal){$("cTruth").textContent="";return;}const T=caseTruth();
+  $("cTruth").innerHTML=S.car.view==="va"?`Vertebral flow: ${T.va}.`:`ICA PSV ${T.icaPSV.toFixed(0)} cm/s, EDV ${T.icaEDV.toFixed(0)}, CCA PSV ${T.ccaPSV}, ICA/CCA ${T.ratio.toFixed(1)}. Category: ${T.grade}.`;}
+$$("#cView button").forEach(b=>b.onclick=()=>{S.car.view=b.dataset.v;S.car.tilt=VIEW_TILT[S.car.view];applyView();syncAll();tip(`<b>${CVIEWS[S.car.view].name}</b> view. ${({cca:"Mid CCA with the jugular vein above it; the CCA waveform has moderate diastolic flow.",bulb:"The bulb widens and divides: ECA superficial, ICA deep. Look for normal flow separation along the outer bulb wall.",ica:"Proximal ICA beyond the bulb, where most atherosclerotic stenoses sit. Low-resistance flow.",eca:"ECA with a branch (superior thyroid artery): higher-resistance waveform; it transmits the temporal tap.",va:"Vertebral artery and vein between transverse processes, which cast acoustic shadows. Flow should go toward the head, like the CCA."})[S.car.view]}`);});
+$$("#cSide button").forEach(b=>b.onclick=()=>{S.car.side=b.dataset.v;syncCase();});
+$("cCond").onchange=e=>{S.car.cond=e.target.value;const gx=S.p.gx,gz=S.p.gz;applyView();syncAll();tip(`<b>${CCONDS[S.car.cond]}</b> loaded. Explore each view; the condition applies across views.`);};
+$("cTilt").addEventListener("input",e=>{S.car.tilt=+e.target.value;$("cTilto").textContent=(S.car.tilt>0?"+":"")+S.car.tilt+"°";const g=toAnatGate();VES=vessels();restoreGate(g);bDirty=true;CIMG=null;tip(`<b>Heel–toe</b> rocks the probe along the vessel, changing its angle to the beam: insonation angle now ${D().thTrue.toFixed(0)}°.`);});
+let GANAT=null;function toAnatGate(){ANROT=S.car.tilt*D2R;return null;}function restoreGate(){const M=mainVessel();const e=evalPt(S.p.gx,S.p.gz,0,true);if(e.k!==1){gateTo(M,0.25);}}
+$("cHR").addEventListener("input",e=>{S.ph.hr=+e.target.value;$("cHRo").textContent=S.ph.hr+" bpm";});
+$("cReveal").onchange=e=>{S.car.reveal=e.target.checked;truthText();};
+const tapOn=e=>{S.car.tap=true;e.preventDefault();const g=D().gateV,n=g&&g.name;tip(n&&g.tap?`<b>Temporal tap</b>: watch the ${n} spectrum: the taps travel back from the superficial temporal artery and appear as serrations, most visible in diastole. That identifies an ECA branch.`:`<b>Temporal tap</b>: ${n?`no serrations in the ${n}`:"the gate is not in a vessel"}. Only the ECA and its branches transmit the tap; try it with the gate in the ECA.`);},tapOff=()=>{S.car.tap=false;};
+$("cTap").addEventListener("pointerdown",tapOn);$("cTap").addEventListener("pointerup",tapOff);$("cTap").addEventListener("pointerleave",tapOff);$("cTap").addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter")tapOn(e);});$("cTap").addEventListener("keyup",tapOff);
+function gateInJet(r){const e=evalPt(S.p.gx,S.p.gz,0,true);return e.k===1&&CASE.jet&&e.V===CASE.jet.tube&&Math.abs(e.s-CASE.jet.s0)<(r||0.25);}
+const GRADES=["Normal","<50%","50–69%","≥70%","Near-occlusion","Occlusion"];
+const CDRILLS=[
+ {id:"c_angle",t:"Compliant Doppler angle",s:"steer and heel–toe",setup:()=>{loadExamSilent({view:"cca",tilt:0});S.steer=0;alignAngle();},task:"The CCA runs parallel to the probe face. Get a spectral angle of 60° or less, with the angle cursor parallel to flow, keeping the gate in the CCA.",
+  check:o=>o.inLumen&&o.gateV&&o.gateV.name==="CCA"&&o.thTrue<=60.5&&o.mis<=5?[1,`θ ${o.thTrue.toFixed(0)}° with the cursor ${o.mis.toFixed(0)}° off the flow axis.`]:[0,!(o.inLumen&&o.gateV&&o.gateV.name==="CCA")?"Put the gate back in the CCA lumen.":o.thTrue>60.5?`θ is ${o.thTrue.toFixed(0)}°. Steering alone reaches about 70° here; add heel–toe in the Case panel.`:`Align the cursor with the flow (${o.mis.toFixed(0)}° off).`],hint:"Steer the Doppler line 20° and heel–toe the probe about 10° (Case panel), then rotate the angle cursor parallel to the vessel."},
+ {id:"c_grade",t:"Grade an ICA stenosis",s:"measure, save, classify",choices:GRADES,setup:()=>{loadExamSilent({view:"ica",cond:"s5069"});},task:"Measure the peak ICA velocity in the stenosis and the CCA PSV (switch to the CCA view in the Case panel). Save each under its label (ICA, CCA) in the Measure panel, in cm/s, then choose the SRU category.",
+  check:o=>{const T=caseTruth(),sv=MS.saved,okI=sv.ICA&&Math.abs(sv.ICA-T.icaPSV)/T.icaPSV<=0.12,okC=sv.CCA&&Math.abs(sv.CCA-T.ccaPSV)/T.ccaPSV<=0.15,okG=drillChoice===T.grade;
+   return okI&&okC&&okG?[1,`ICA PSV ${sv.ICA.toFixed(0)} cm/s, ICA/CCA ${(sv.ICA/sv.CCA).toFixed(1)}: ${T.grade} stenosis.`]:[0,[S.units!=="cms"?"Measure in cm/s, not kHz.":"",!sv.ICA?"Save the ICA PSV.":!okI?`Saved ICA PSV ${sv.ICA.toFixed(0)} cm/s is off: find the highest velocity in the jet with the angle parallel to flow and no aliasing.`:"",!sv.CCA?"Save the CCA PSV.":!okC?`Saved CCA PSV ${sv.CCA.toFixed(0)} cm/s is off: measure the CCA itself, angle-corrected.`:"",drillChoice==null?"Choose a category.":!okG?"The category does not match the velocities.":""].filter(Boolean).join(" ")];},hint:"Gate at the narrowest point, angle cursor parallel to the jet, scale high enough not to alias. Use Velocity or PSV / EDV, then Save PSV under ICA. Repeat in the CCA view for CCA."},
+ {id:"c_alias",t:"Aliasing in a tight stenosis",s:"scale, baseline, update, CW",setup:()=>{loadExamSilent({view:"ica",cond:"ge70"});S.p.prf=6000;},task:"The ≥70% jet aliases badly. Display the full jet waveform without wrap, keeping the gate in the jet.",
+  check:o=>{const j=gateInJet(),fits=S.cw?(S.p.prf*(0.5+S.p.base)*o.kV>=o.vPeakTrue*Math.cos(o.thTrue*D2R)/Math.cos(o.thC*D2R)):!o.alias;return j&&fits?[1,`Full jet displayed (true peak about ${o.vPeakTrue.toFixed(0)} cm/s).`]:[0,!j?"Keep the gate at the narrowest point of the jet.":"Still wrapping or clipped."];},hint:"Triplex halves the PRF ceiling: switch Simul to Update, raise the scale, shift the baseline, or use CW and widen its scale."},
+ {id:"c_shadow",t:"Jet hidden by calcified plaque",s:"steer or slide past the shadow",setup:()=>{loadExamSilent({view:"ica",cond:"ge70"});S.steer=0;S.simul=false;S.p.prf=22000;alignAngle();},task:"A calcified plaque shadows the gate: the jet signal is weak and unreliable. Get a strong jet signal without leaving the stenosis.",
+  check:o=>o.inLumen&&!o.shadow&&gateInJet(0.5)?[1,"Gate out of the acoustic shadow and still in the jet."]:[0,o.shadow?"The gate is still in the shadow of the calcification.":!o.inLumen?"The gate is not in the lumen.":"Stay within about 5 mm of the narrowest point."],hint:"Steering tilts the Doppler line so it passes beside the calcification; you can also slide the gate just downstream, where the jet persists."},
+ {id:"c_sep",t:"Reversed flow in a normal bulb",s:"flow separation",setup:()=>{loadExamSilent({view:"bulb"});},task:"This normal bulb has a zone of reversed flow. Place the spectral gate in it.",
+  check:o=>o.sep?[1,"That is boundary-layer flow separation along the outer bulb wall: a normal finding, not plaque or dissection. It can disappear when plaque or wall stiffening alters the bulb."]:[0,"Not in the separation zone yet: look along the deep (outer) wall of the bulb, where color turns blue in systole."],hint:"Use color first: the separation zone appears as blue along the posterior bulb wall during systole."},
+ {id:"c_eca",t:"Which branch is the ECA?",s:"temporal tap, waveform",choices:["Superficial branch","Deep branch"],setup:()=>{loadExamSilent({view:"bulb"});},task:"Prove which branch is the ECA: put the PW gate in it and hold Temporal tap (Case panel). Then choose.",
+  check:()=>tapFlag&&drillChoice==="Superficial branch"?[1,"Temporal-tap serrations, a high-resistance waveform and branches identify the ECA, here the superficial branch."]:[0,!tapFlag?"Gate the branch you think is the ECA with PW running and hold Temporal tap.":"Look again at which branch showed the tap serrations."],hint:"The ECA has branches, a higher-resistance waveform and transmits the temporal tap; the ICA does not."},
+ {id:"c_near",t:"Occluded or near-occluded?",s:"color sensitivity",choices:["Occlusion","Near-occlusion"],setup:()=>{loadExamSilent({view:"ica",cond:"near"});S.c.prf=8000;S.c.wf=800;S.pw=false;S.active="color";},task:"The distal ICA looks nearly empty on color. Optimize color to search for a trickle of flow, then decide.",
+  check:()=>{const sens=S.power?S.c.wf<=150:(S.c.prf<=1500&&S.c.wf<=100);return sens&&drillChoice==="Near-occlusion"?[1,"With a low scale and filter a thin string of flow appears: near-occlusion. Velocities can be low here, so the string sign, not PSV, makes the diagnosis."]:[0,!sens?"Color is still set for fast flow: lower the scale and wall filter, or use power Doppler.":"Look again at the ICA with sensitive settings."];},hint:"Lower the color scale to about 1 kHz and the wall filter to its minimum, raise color gain, or switch to power Doppler."},
+ {id:"c_steal",t:"Vertebral flow direction",s:"compare with the CCA",choices:["Antegrade (normal)","Bidirectional (partial steal)","Reversed (complete steal)"],setup:()=>{loadExamSilent({view:"va",cond:"st2"});},task:"Interrogate the vertebral artery between the transverse processes and classify its flow.",
+  check:o=>o.inLumen&&o.gateV&&o.gateV.name==="VA"&&drillChoice==="Bidirectional (partial steal)"?[1,"Systolic reversal with antegrade diastolic flow: partial subclavian steal. Look for a stenosis of the ipsilateral subclavian or innominate artery and compare arm pressures."]:[0,!(o.inLumen&&o.gateV&&o.gateV.name==="VA")?"Put the PW gate in the vertebral artery (the deeper vessel), in a gap between the shadows.":"Compare systole and diastole with the direction of normal cranial flow."],hint:"In this view normal cranial flow runs right to left on screen, as in the CCA. Check the direction in systole and in diastole separately."},
+ {id:"c_va",t:"Find the vertebral artery",s:"acoustic shadows",setup:()=>{loadExamSilent({view:"va"});gateTo(mainVessel(),0);},task:"The gate sits under a transverse process. Get a clean vertebral artery signal.",
+  check:o=>o.inLumen&&o.gateV&&o.gateV.name==="VA"&&!o.shadow?[1,"Clean VA signal in a window between transverse processes."]:[0,o.shadow?"Still in a bony shadow: move to a gap between processes.":"Place the gate in the artery, not the vein."],hint:"Slide the gate into an echo-free window between the bright transverse processes; the artery is the deeper vessel."}];
+const CQZ=[
+ {q:"Which parameters are primary in the SRU consensus grading of ICA stenosis?",o:["EDV and ICA/CCA ratio","ICA PSV and the gray-scale/color plaque estimate","CCA PSV alone","Resistive index"],a:1,e:"ICA PSV and the estimated plaque/luminal narrowing are primary; ICA/CCA ratio and ICA EDV are secondary, useful when PSV is unreliable (for example with contralateral disease or cardiac changes)."},
+ {q:"ICA PSV 170 cm/s, EDV 60 cm/s, ICA/CCA ratio 2.6. Category?",o:["Normal","<50%","50–69%","≥70%"],a:2,e:"PSV 125–230, ratio 2–4 and EDV 40–100 fit 50–69%."},
+ {q:"Which feature best identifies the ECA?",o:["Larger caliber","Low-resistance waveform","Branches and temporal-tap serrations","Deeper position"],a:2,e:"The ECA has branches and a higher-resistance waveform, and transmits the temporal tap. Position varies and is not reliable."},
+ {q:"Reversed flow along the outer wall of the bulb in a young patient most likely represents:",o:["Dissection","Plaque ulceration","Normal flow separation","Aliasing"],a:2,e:"Boundary-layer separation is normal in the bulb; it can disappear with plaque or wall stiffening."},
+ {q:"The vertebral artery shows systolic reversal with antegrade diastolic flow. This indicates:",o:["Normal flow","Partial (bidirectional) subclavian steal","Complete steal","Vertebral occlusion"],a:1,e:"Steal progresses from a systolic notch to bidirectional to fully reversed flow; it points to proximal subclavian or innominate stenosis on that side."},
+ {q:"A CCA waveform with absent diastolic flow on one side suggests:",o:["Proximal CCA stenosis","Distal ICA occlusion or severe distal disease","Aortic regurgitation","Normal variant"],a:1,e:"Losing the low-resistance ICA bed makes the CCA high resistance; the ECA may 'internalize' with more diastolic flow."},
+ {q:"A tardus–parvus waveform in the ICA and CCA indicates:",o:["A downstream stenosis","An upstream (proximal) stenosis","ICA occlusion","Normal aging"],a:1,e:"Slow upstroke and rounded, low peaks occur distal to a significant proximal lesion: CCA origin, innominate, or aortic valve stenosis if bilateral."},
+ {q:"Where should the CCA PSV for the ICA/CCA ratio be measured?",o:["In the bulb","2–3 cm below the bulb in the distal CCA","At the CCA origin","In the ICA"],a:1,e:"The bulb has slower, disturbed flow; the CCA origin may be affected by proximal disease. Use the straight distal CCA."},
+ {q:"In near-occlusion of the ICA, peak velocities:",o:["Are always above 230 cm/s","Can be high, low or undetectable","Are always normal","Define the diagnosis"],a:1,e:"Flow through a string-like lumen may be slow. The diagnosis rests on the markedly narrowed lumen on color, power or contrast, not on PSV."},
+ {q:"How should the angle cursor be aligned in a stenotic jet?",o:["Perpendicular to the beam","Parallel to the vessel wall regardless of jet direction","Parallel to the direction of flow in the jet, θ ≤ 60°","At exactly 60° always"],a:2,e:"Align with the flow direction (usually the lumen axis; use the color jet if it is eccentric) and keep θ at 60° or less. Use the same angle for follow-up."}];
+function curDrills(){return {carotid:CDRILLS,aorta:ADRILLS,lea:LADRILLS,lev:LVDRILLS,rtx:RTDRILLS}[S.exam]||DRILLS;}
+function curQuiz(){return {carotid:CQZ,aorta:AQZ,lea:LAQZ,lev:LVQZ,rtx:RTQZ}[S.exam]||QZ;}
+// ================= AORTA PACK =================
+const AVIEWS={prox:{label:"PROX AO SAG",name:"Proximal aorta with celiac and SMA (sagittal)"},mid:{label:"MID AO SAG",name:"Mid and distal aorta (sagittal)"},trans:{label:"MID AO TRV",name:"Mid aorta (transverse)"},bif:{label:"BIF / CIA",name:"Bifurcation and common iliacs (coronal oblique)"}};
+const ACONDS={normal:"Normal",aaa:"Infrarenal AAA with mural thrombus",cia:"Common iliac artery aneurysm",diss:"Aortic dissection",evar0:"EVAR, no endoleak",evar2:"EVAR, type II endoleak",evar1:"EVAR, type I endoleak (proximal)",sma70:"SMA stenosis ≥70%",mal:"Median arcuate ligament compression"};
+const AVIEW_TILT={prox:14,mid:15,trans:0,bif:12};let respSeen={};
+function aoP(){const a=S.ao,c=a.cond,P={sac:null,flap:false,graft:false,leak:null,cia:null,smaW:a.fed?"smaFed":"smaFast",smaPSV:a.fed?180:130,celPSV:120,smaJet:1,celJet:1};
+  if(c==="aaa")P.sac={d:a.diam};if(c==="cia")P.cia={d:3.2};if(c==="diss")P.flap=true;
+  if(c.startsWith("evar")){P.sac={d:5.2,excluded:true};P.graft=true;P.leak=c==="evar2"?"II":c==="evar1"?"I":null;}
+  if(c==="sma70")P.smaJet=3.0;if(c==="mal")P.celJet=a.resp==="exp"?2.4:1.05;return P;}
+function aoTruth(){const P=aoP();return {aaa:P.sac?P.sac.d:2.0,res:P.sac?2*1.15:2.0,sma:P.smaPSV*P.smaJet,cel:P.celPSV*P.celJet,cia:P.cia?P.cia.d:1.1,leak:P.leak};}
+function sacInfo(V,s){const sc=V.sac;if(!sc)return null;const b=Math.exp(-(((s-sc.s0)/sc.len)**2));return {b,rRes:V.rref+(sc.rRes-V.rref)*b};}
+function aoLumenFlow(V,L,t,q,extra){const vc=V.psv*waveV(V,t)*L.vs*(extra||1);return vc;}
+function mkRes(V,L,v,tx,tz,turb,noTurb,flags){let vx=tx*v,vz=tz*v;if(turb&&!noTurb){const sd=0.5*Math.abs(v)+8;vx+=gauss()*sd*turb;vz+=gauss()*sd*turb;}const W=vecW(vx,vz),T=vecW(tx,tz);return Object.assign({k:1,vx:W[0],vz:W[1],tx:T[0],tz:T[1],turb,V,v,s:L.s},flags||{});}
+function evalAoTube(V,L,t,noTurb,ax,az){const r0=L.r0,rho=L.rho;if(Math.abs(rho)>r0+0.14)return null;if(Math.abs(rho)>r0)return {k:2,V};
+  // leaks (in excluded sac)
+  if(V.leaks)for(const lk of V.leaks){const u=((ax-lk.x)/lk.a)**2+((az-lk.z)/lk.b)**2;if(u<1){const vc=lk.psv*wave(lk.wave,t)*(1-u);return mkRes(V,L,vc,lk.dx,lk.dz,lk.type==="I"?0.25:0.15,noTurb,{leak:lk.type});}}
+  if(V.graft&&L.s>V.graft.s0&&L.s<V.graft.s1){const rg=Math.min(V.graft.rg,r0-0.06);if(Math.abs(rho)<rg-0.05){const q=Math.abs(rho)/rg;return mkRes(V,L,aoLumenFlow(V,L,t)*(1-q**4)*(V.rref/rg)**2*0.72,L.tx,L.tz,0,noTurb);}
+    if(Math.abs(rho)<rg+0.05)return {k:6,V,s:L.s};return {k:5,V,lam:Math.abs(rho)};}
+  if(V.flap){const fl=V.flap,ph=Math.max(0,wave("aoInf",t)),fp=fl.pos*r0+fl.amp*ph,inTear=Math.abs(L.s-fl.tear)<0.28;
+    if(Math.abs(rho-fp)<0.05&&!inTear)return {k:2,V,flap:true};
+    if(rho<fp){const half=(fp+r0)/2,c=(fp-r0)/2,q=Math.min(1,Math.abs(rho-c)/half);let v=V.psv*waveV(V,t)*1.25*(1-q**3);let tx=L.tx,tz=L.tz;
+      if(inTear&&rho>fp-0.35){const w=Math.max(0,wave("aoInf",t));return mkRes(V,L,140*w+10,L.nx*0.8+L.tx*0.6,L.nz*0.8+L.tz*0.6,0.4,noTurb,{TL:true,tear:true});}
+      return mkRes(V,L,v,tx,tz,0,noTurb,{TL:true});}
+    if(L.s>fl.thr)return {k:4,V};const half=(r0-fp)/2,c=(r0+fp)/2,q=Math.min(1,Math.abs(rho-c)/half);return mkRes(V,L,fl.psvF*wave("fl",t)*(1-q*q),L.tx,L.tz,0.1,noTurb,{FL:true});}
+  if(V.sac){const si=sacInfo(V,L.s);if(si&&si.b>0.02){const room=r0-si.rRes,c=V.sac.off*room,half=si.rRes;if(Math.abs(rho-c)>half)return {k:5,V,lam:Math.abs(rho)};
+      const q=Math.abs(rho-c)/half,vc=V.psv*waveV(V,t)*L.vs*(V.rref/half)**2;let v=vc*(1-q*q);let vort=false;
+      if(si.b>0.35&&q>0.42){v=Math.abs(vc)*0.4*(rho>c?-1:0.6)*(q-0.42)/0.58+v*0.3;vort=true;}return mkRes(V,L,v,L.tx,L.tz,vort?0.2:0,noTurb,{vortex:vort});}}
+  // plain lumen (with optional stenosis)
+  const lu=lumenOf(V,L),lo=lu[0],hi=lu[1],bump=lu[2];if(rho<=lo||rho>=hi){return V.sten?{k:3,V,s:L.s}:{k:2,V};}
+  const c=(lo+hi)/2,half=(hi-lo)/2,q=Math.abs(rho-c)/half,amp=V.sten?Math.pow(V.sten.jet,bump):1;let turb=0;
+  if(V.sten&&V.sten.jet>1.5){const dn=L.s-V.sten.s0;if(dn>0.22&&dn<2.5)turb=Math.min(1,(V.sten.jet-1.5)/1.5)*Math.exp(-(dn-0.22)/1.0);}
+  return mkRes(V,L,V.psv*waveV(V,t)*L.vs*amp*(1-q**2.4),L.tx,L.tz,turb,noTurb);}
+function evalDisk(V,ax,az,t,noTurb){const dx=ax-V.cx,dz=az-V.cz,d=Math.hypot(dx,dz);if(d>V.r0+0.14)return null;if(d>V.r0)return {k:2,V};
+  const res=(v,ox,oz,turb,fl)=>{const n=Math.hypot(ox,oz)||1;let vx=ox/n*v,vz=oz/n*v;if(turb&&!noTurb){vx+=gauss()*(0.5*Math.abs(v)+6)*turb;vz+=gauss()*(0.5*Math.abs(v)+6)*turb;}const W=vecW(vx,vz),T=vecW(ox/n,oz/n);return Object.assign({k:1,vx:W[0],vz:W[1],tx:T[0],tz:T[1],turb,V,v,s:0},fl||{});};
+  const w=waveV(V,t);
+  if(V.leaks)for(const lk of V.leaks){const u=((ax-lk.x)/lk.a)**2+((az-lk.z)/lk.b)**2;if(u<1)return res(lk.psv*wave(lk.wave,t)*(1-u),lk.dx,lk.dz,0.15,{leak:lk.type});}
+  if(V.graft){if(d<V.graft-0.05){const q=d/V.graft;return res(V.psv*w*V.ob*(1-q*q),V.obx,V.obz,0);}if(d<V.graft+0.05)return {k:6,V,s:Math.atan2(dz,dx)*2.5};return {k:5,V,lam:d};}
+  if(V.flap){const f=dx*V.flap.nx+dz*V.flap.nz-V.flap.pos*V.r0-0.06*Math.max(0,wave("aoInf",t));if(Math.abs(f)<0.05)return {k:2,V,flap:true};
+    if(f<0){const q=Math.min(1,d/V.r0);return res(V.psv*w*1.25*V.ob*(1-q*q)+5,V.obx,V.obz,0,{TL:true});}return res(25*wave("fl",t)*V.ob,V.obx,V.obz,0.1,{FL:true});}
+  if(V.sac){const lx=V.cx+V.sac.ox,lz=V.cz+V.sac.oz,ddx=ax-lx,ddz=az-lz,dd=Math.hypot(ddx,ddz);if(dd>V.sac.rRes)return {k:5,V,lam:d};
+    const q=dd/V.sac.rRes,vs=V.psv*w*0.35*q*(1-q),thr=V.psv*w*V.ob*(1-q*q);const vx=-ddz/(dd||1)*vs*2.2+V.obx*thr,vz=ddx/(dd||1)*vs*2.2+V.obz*thr;return res(Math.hypot(vx,vz)*Math.sign(vs+thr||1),vx,vz,0.1,{vortex:q>0.4});}
+  const q=d/V.r0;return res(V.psv*w*V.ob*(1-q*q),V.obx,V.obz,0);}
+function buildAorta(){const A=S.ao,P=aoP(),V=[];ANROT=A.tilt*D2R;CASE={view:A.view,P,bone:true};
+  const spineSag=()=>[[-5.3,11.9],[-1.75,11.8],[1.8,11.8],[5.3,11.9]].forEach(([x,z])=>CAST.push({x,z,r:1.45,kind:"bone"}));
+  if(A.gas){const G0=toAnat(1.0+A.comp*0.075,3.6);CAST.push({x:G0[0],z:G0[1],r:0.95,kind:"gas"});}
+  const aoTube=(pts,o)=>mkTube(pts,Object.assign({ao:true,rref:1.0,name:"Aorta"},o));
+  if(A.view==="prox"){const ao=aoTube(seg([-7,7.7],[7,8.3],70),{rf:()=>1.0,psv:100,wave:"aoSup"});V.push(ao);
+    const exp=A.resp==="exp"&&A.cond==="mal";const cel=mkTube(bez([-2.4,6.95],[exp?-2.2:-2.7,exp?5.7:6.1],[-3.8,5.5],26),{rf:()=>0.3,psv:P.celPSV,wave:"celiac",name:"Celiac"});
+    if(P.celJet>1.1){const s0=sAtX(cel,-2.45);cel.sten={s0:s0+0.25,len:0.3,pct:0.55,side:-1,jet:P.celJet,plaque:"soft"};}V.push(cel);
+    const sma=mkTube(bez([-0.9,7.0],[-0.3,6.0],[4.8,6.3],40),{rf:()=>0.33,psv:P.smaPSV,wave:P.smaW,name:"SMA"});if(P.smaJet>1){const s0=sAtX(sma,-0.55);sma.sten={s0,len:0.35,pct:0.68,side:1,jet:P.smaJet,plaque:"calc"};const pt=ptAtS(sma,s0);CAST.push({x:pt.x-pt.tz*0.26,z:pt.z+pt.tx*0.26,r:0.1,kind:"calc"});}
+    V.push(sma);CASE.sma=sma;CASE.liver=true;spineSag();}
+  if(A.view==="mid"){const sacR=P.sac?P.sac.d/2-0.12:1.0;const ao=aoTube(seg([-7,7.6],[7,8.6],70),{rf:x=>1.0+(sacR-1.0)*Math.exp(-(((x-0.5)/1.8)**2)),psv:90,wave:P.flap?"aoInf":"aoInf"});
+    if(P.sac){ao.sac={s0:sAtX(ao,0.5),len:1.8,rRes:1.15,off:-0.5};}
+    if(P.flap){ao.flap={pos:-0.25,amp:0.1,tear:sAtX(ao,-3),thr:sAtX(ao,4.5),psvF:25};ao.psv=95;}
+    if(P.graft){ao.graft={s0:sAtX(ao,-3.6),s1:999,rg:0.82};ao.leaks=[];
+      if(P.leak==="II"){ao.leaks.push({x:1.0,z:9.45,a:0.75,b:0.5,psv:35,wave:"leakII",dx:0.2,dz:-1,type:"II"});V.push(mkTube(seg([1.35,11.1],[1.05,9.9],12),{rf:()=>0.12,psv:30,wave:"leakII",name:"Lumbar artery"}));}
+      if(P.leak==="I")ao.leaks.push({x:-1.5,z:6.95,a:1.3,b:0.32,psv:150,wave:"aoInf",dx:1,dz:0.05,type:"I"});}
+    V.push(ao);spineSag();}
+  if(A.view==="trans"){const ob={ob:0.35,obx:0.6,obz:-0.8};const sacR=P.sac?P.sac.d/2-0.12:1.0;const ao=Object.assign({type:"disk",cx:0.6,cz:8.2,r0:sacR,psv:90,wave:"aoInf",name:"Aorta",art:1},ob);
+    if(P.sac&&!P.graft)ao.sac={rRes:1.15,ox:0,oz:-(sacR-1.15)*0.55};
+    if(P.flap)ao.flap={nx:0,nz:1,pos:-0.25};
+    if(P.graft){ao.graft=0.82;ao.leaks=[];if(P.leak==="II")ao.leaks.push({x:0.9,z:9.4,a:0.7,b:0.5,psv:35,wave:"leakII",dx:0.2,dz:-1,type:"II"});if(P.leak==="I")ao.leaks.push({x:0.6,z:7.1,a:0.9,b:0.3,psv:120,wave:"aoInf",dx:1,dz:0,type:"I"});}
+    V.push(ao);V.push({type:"disk",cx:-2.7,cz:8.4,r0:0.9,psv:20,wave:"venous",art:0,name:"IVC",ob:0.3,obx:-0.5,obz:0.8});CAST.push({x:0.3,z:12.2,r:2.0,kind:"bone"});}
+  if(A.view==="bif"){const ao=aoTube(seg([-7,6.6],[-0.6,7.0],40),{rf:()=>0.95,psv:90,wave:"aoInf"});if(P.graft){ao.graft={s0:-1,s1:999,rg:0.85};}V.push(ao);
+    const ciaR=P.cia?P.cia.d/2-0.08:0.55;const r=mkTube(bez([-0.7,6.95],[1.8,6.0],[6.8,4.5],40),{ao:true,rref:0.55,rf:x=>0.55+(ciaR-0.55)*Math.exp(-(((x-3.0)/1.1)**2)),psv:100,wave:"aoInf",name:"Right CIA"});
+    if(P.cia)r.sac={s0:sAtX(r,3.0),len:1.1,rRes:0.6,off:-0.4};if(P.graft)r.graft={s0:-1,s1:999,rg:0.5};V.push(r);
+    const l=mkTube(bez([-0.7,7.05],[1.8,8.2],[6.8,9.6],40),{ao:true,rref:0.55,rf:()=>0.55,psv:100,wave:"aoInf",name:"Left CIA"});if(P.graft)l.graft={s0:-1,s1:999,rg:0.5};V.push(l);
+    [[-4,11.6],[-0.5,11.5],[3,11.6]].forEach(([x,z])=>CAST.push({x,z,r:1.4,kind:"bone"}));}
+  return V;}
+function reflAorta(x,z,e){if(e.k===1)return 0.02;if(e.k===2)return e.flap?1.9:1.5;if(e.k===4)return 0.3;if(e.k===5)return 0.34*(0.85+0.22*Math.sin((e.lam||0)*7+x*0.9));if(e.k===6)return Math.sin((e.s||0)*14)>0.1?2.5:1.3;if(e.k===3)return 1.0;
+  if(z<0.15)return 1.2;if(z<1.6)return 0.3*(0.8+0.5*Math.abs(Math.sin(x*5.3+z*7.1)*Math.cos(z*4.3-x*2.2)));
+  if(z<2.6)return Math.abs(x)<0.35?0.55:0.42*(0.65+0.7*Math.max(0,Math.sin(z*30+x*1.5+Math.sin(x*1.9)))**3);if(z<3.0)return 0.65;
+  if(CASE.liver&&((x+3.2)/4.6)**2+((z-4.4)/1.5)**2<1)return 0.5*(0.92+0.16*Math.sin(x*11+z*13));
+  if(CASE.sma){const A=toAnat(x,z),L=local(CASE.sma,A[0],A[1]);if(L&&Math.abs(L.rho)<L.r0+0.5)return 0.95;}
+  return 0.5*(0.8+0.35*Math.sin(x*2.1+z*1.7)*Math.cos(z*2.9-x*1.3));}
+function applyAoView(){VES=vessels();const A=S.ao,cfg={prox:{gx:3.5,bx:0.5,w:7,h:4.2},mid:{gx:3.6,bx:0.8,w:6,h:6},trans:{gx:0.6,bx:0.6,w:6,h:6},bif:{gx:2.6,bx:2.2,w:6,h:6}}[A.view];
+  S.depth=14;const M=mainVessel();let gx,gz;if(M.type==="disk"){const W=fromAnat(M.cx,M.cz+(M.sac?M.sac.oz:0));gx=W[0];gz=W[1];}else{const p=ptAtS(M,sAtX(M,cfg.gx));const W=fromAnat(p.x,p.z);gx=W[0];gz=W[1];}
+  S.p.gx=gx;S.p.gz=gz;S.focus=Math.round(gz*2)/2;const PB=fromAnat(cfg.bx,M.type==="disk"?M.cz:8.1);S.c.box={x:PB[0],z:PB[1],w:cfg.w,h:cfg.h};S.pw=A.view!=="trans";if(!S.pw&&S.active==="pw")S.active="color";
+  DC=D();alignAngle();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];}
+function syncAo(){const A=S.ao;$$("#aView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.view));const cs=$("aCond");if(!cs.options.length)for(const k in ACONDS){const o=document.createElement("option");o.value=k;o.textContent=ACONDS[k];cs.appendChild(o);}cs.value=A.cond;
+  $("aTilt").value=A.tilt;$("aTilto").textContent=(A.tilt>0?"+":"")+A.tilt+"°";$("aDiam").value=A.diam;$("aDiamo").textContent=A.diam.toFixed(1)+" cm";$("aDiamRow").hidden=A.cond!=="aaa";
+  $$("#aFed button").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.v==="1")===A.fed));$$("#aResp button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.resp));
+  $("aGas").checked=A.gas;$("aCompRow").hidden=!A.gas;$("aComp").value=A.comp;$("aCompo").textContent=A.comp+"%";$("aHR").value=S.ph.hr;$("aHRo").textContent=S.ph.hr+" bpm";$("aReveal").checked=A.reveal;aoTruthText();}
+function aoTruthText(){if(!S.ao.reveal){$("aTruth").textContent="";return;}const T=aoTruth(),c=S.ao.cond;
+  $("aTruth").innerHTML={aaa:`AAA outer diameter ${T.aaa.toFixed(1)} cm; residual lumen about ${T.res.toFixed(1)} cm.`,cia:`Right CIA outer diameter ${T.cia.toFixed(1)} cm.`,sma70:`SMA peak velocity about ${T.sma.toFixed(0)} cm/s (fasting).`,mal:`Celiac PSV about ${T.cel.toFixed(0)} cm/s in ${S.ao.resp==="exp"?"expiration":"inspiration"}.`,evar2:"Type II endoleak from a lumbar artery: posterior sac, to-and-fro flow.",evar1:"Type I endoleak at the proximal seal zone: anterior jet along the graft.",evar0:"No endoleak: the sac is excluded.",diss:"True lumen anterior and smaller; entry tear near the left of the image; false lumen thrombosed distally."}[c]||`Normal aorta about 2.0 cm; SMA ${T.sma.toFixed(0)} cm/s, celiac ${T.cel.toFixed(0)} cm/s.`;}
+$$("#aView button").forEach(b=>b.onclick=()=>{S.ao.view=b.dataset.v;S.ao.tilt=AVIEW_TILT[S.ao.view];applyAoView();syncAll();tip(`<b>${AVIEWS[S.ao.view].name}</b>. ${({prox:"Celiac trunk and SMA arise from the anterior aorta; the SMA runs caudally in a sleeve of echogenic fat. Fasting SMA flow is high resistance.",mid:"Infrarenal aorta in long axis. With a curved probe the beam angle changes across the sector: sample where the aorta crosses the beams obliquely.",trans:"Transverse aorta: flow is mostly through the plane, so color is sparse. This is the view for outer-to-outer diameter.",bif:"Aortic bifurcation and both common iliac arteries in a coronal oblique plane through the flank."})[S.ao.view]}`);});
+$("aCond").onchange=e=>{S.ao.cond=e.target.value;applyAoView();syncAll();tip(`<b>${ACONDS[S.ao.cond]}</b> loaded. The condition applies across all views.`);};
+$("aTilt").addEventListener("input",e=>{S.ao.tilt=+e.target.value;VES=vessels();if(evalPt(S.p.gx,S.p.gz,0,true).k!==1)applyAoView();bDirty=true;CIMG=null;syncAo();tip(`<b>Probe rock</b> tilts the vessel relative to the sector: insonation angle now ${D().thTrue.toFixed(0)}°.`);});
+$("aDiam").addEventListener("input",e=>{S.ao.diam=+e.target.value;$("aDiamo").textContent=S.ao.diam.toFixed(1)+" cm";VES=vessels();bDirty=true;CIMG=null;aoTruthText();});
+$$("#aFed button").forEach(b=>b.onclick=()=>{S.ao.fed=b.dataset.v==="1";VES=vessels();syncAo();tip(S.ao.fed?"<b>Fed</b>: mesenteric vasodilation turns the SMA low resistance with high diastolic flow.":"<b>Fasting</b>: SMA is high resistance with early diastolic reversal.");});
+$$("#aResp button").forEach(b=>b.onclick=()=>{S.ao.resp=b.dataset.v;VES=vessels();bDirty=true;CIMG=null;syncAo();tip(`<b>${S.ao.resp==="exp"?"Expiration":"Inspiration"}</b>. ${S.ao.cond==="mal"?"Median arcuate ligament compression narrows the celiac origin in expiration and releases in inspiration.":"Respiration matters for the celiac trunk when the median arcuate ligament is low."}`);});
+$("aGas").onchange=e=>{S.ao.gas=e.target.checked;VES=vessels();bDirty=true;CIMG=null;syncAo();};
+$("aComp").addEventListener("input",e=>{S.ao.comp=+e.target.value;$("aCompo").textContent=S.ao.comp+"%";VES=vessels();bDirty=true;CIMG=null;tip("<b>Graded compression</b> with the probe displaces bowel gas from the beam path.");});
+$("aHR").addEventListener("input",e=>{S.ph.hr=+e.target.value;$("aHRo").textContent=S.ph.hr+" bpm";});
+$("aReveal").onchange=e=>{S.ao.reveal=e.target.checked;aoTruthText();};
+function loadAo(o){loadExam("aorta",o,true);}
+const AAA_CAT=["Normal (< 3.0 cm)","Aneurysm 3.0–5.4 cm","≥ 5.5 cm"];
+const ADRILLS=[
+ {id:"a_angle",t:"Doppler angle with a curved probe",s:"sector position and probe rock",setup:()=>{loadAo({view:"mid",tilt:0});const M=mainVessel(),p=ptAtS(M,sAtX(M,0));S.p.gx=p.x;S.p.gz=p.z;alignAngle();},task:"The gate sits in the center of the sector, where the beam meets the aorta at about 90°. Get a spectral angle of 60° or less with the cursor parallel to flow.",
+  check:o=>o.inLumen&&o.gateV&&o.gateV.name==="Aorta"&&o.thTrue<=60.5&&o.mis<=5?[1,`θ ${o.thTrue.toFixed(0)}°: beams diverge on a curved probe, so moving the gate laterally and rocking the probe both change the angle.`]:[0,!o.inLumen?"Keep the gate in the aortic lumen.":o.thTrue>60.5?`θ is ${o.thTrue.toFixed(0)}°. Move the gate toward the edge of the sector and rock the probe (Case panel).`:`Align the cursor with the flow (${o.mis.toFixed(0)}° off).`],hint:"On a curved probe the beam lines fan out. Sample toward one side of the image and rock the probe so the aorta crosses the beams obliquely."},
+ {id:"a_meas",t:"Measure the aneurysm",s:"outer to outer, transverse",choices:AAA_CAT,setup:()=>{loadAo({view:"trans",cond:"aaa",diam:5.1});},task:"Use the Distance tool to measure the maximal anteroposterior diameter of this aorta, then classify it.",
+  check:()=>{const T=aoTruth(),d=MS.lastDist,cat=T.aaa<3?AAA_CAT[0]:T.aaa<5.5?AAA_CAT[1]:AAA_CAT[2];if(d==null)return [0,"Measure with the Distance tool first."];const err=Math.abs(d/10-T.aaa);
+   if(Math.abs(d/10-T.res)<0.35&&err>0.4)return [0,`${(d/10).toFixed(1)} cm is the residual lumen. Include the mural thrombus: measure outer wall to outer wall.`];
+   return err<=0.3&&drillChoice===cat?[1,`${(d/10).toFixed(1)} cm outer-to-outer (true ${T.aaa.toFixed(1)}): ${cat}.`]:[0,err>0.3?`${(d/10).toFixed(1)} cm is off by ${(err*10).toFixed(0)} mm: place calipers on the outer edges of the wall, perpendicular to the aortic axis.`:"Choose the category that matches your measurement."];},hint:"Calipers on the outer edge of the anterior wall and the outer edge of the posterior wall. Mural thrombus is part of the aneurysm."},
+ {id:"a_vortex",t:"Swirl or flap?",s:"flow inside an aneurysm",choices:["Vortex flow in the sac","Dissection with two lumens"],setup:()=>{loadAo({view:"mid",cond:"aaa",diam:5.6});},task:"Red and blue swirl together inside this sac. Put the gate where flow reverses and decide what it is.",
+  check:o=>o.gateV&&DCx().vortex&&drillChoice==="Vortex flow in the sac"?[1,"Bidirectional, swirling flow in a dilated sac is expected and has no flap; it is not a dissection."]:[0,!DCx().vortex?"Place the gate in the periphery of the residual lumen inside the sac, where flow turns back.":"No intimal flap is present; reconsider."],hint:"Look at the B-mode first: is there a thin mobile line dividing the lumen?"},
+ {id:"a_tl",t:"Which is the true lumen?",s:"dissection",choices:["Smaller anterior lumen","Larger posterior lumen"],setup:()=>{loadAo({view:"mid",cond:"diss"});},task:"Sample both lumens of this dissection and identify the true lumen, leaving the gate in it.",
+  check:o=>DCx().TL&&drillChoice==="Smaller anterior lumen"?[1,"Brisk forward systolic flow, systolic expansion and the smaller caliber identify the true lumen; the false lumen has slow, delayed and partly reversed flow."]:[0,!DCx().TL?"Put the gate in the true lumen.":"Compare the two lumens again."],hint:"The true lumen expands in systole and carries the brisk systolic signal; the false lumen is larger and slower and may thrombose."},
+ {id:"a_leak",t:"Is there an endoleak?",s:"low-flow color settings",choices:["No endoleak","Type I (attachment site)","Type II (branch backflow)"],setup:()=>{loadAo({view:"mid",cond:"evar2"});S.c.prf=5000;S.c.wf=600;S.pw=false;S.active="color";},task:"Post-EVAR surveillance. The sac looks quiet on color. Optimize color for slow flow, look again, then classify.",
+  check:()=>{const sens=S.power?S.c.wf<=150:(S.c.prf<=1500&&S.c.wf<=150);return sens&&drillChoice==="Type II (branch backflow)"?[1,"Low-velocity to-and-fro flow in the posterior sac, fed by a lumbar artery: type II endoleak. Note sac size over time."]:[0,!sens?"Color is still set for fast flow: lower the scale and wall filter (or use power Doppler).":"Look at where the leak sits and what feeds it."];},hint:"Endoleak flow is slow. Lower the color scale to about 1 kHz and the wall filter, raise color gain, and follow any flow to its source."},
+ {id:"a_sma",t:"Grade the SMA",s:"deep, fast jet",choices:["Normal","≥ 70% stenosis"],setup:()=>{loadAo({view:"prox",cond:"sma70"});const M=VES.find(v=>v.name==="SMA");gateTo(M,0.4);alignAngle();},task:"Measure the peak SMA velocity at the origin (save it as SMA) and decide whether there is a significant stenosis.",
+  check:()=>{const T=aoTruth(),sv=MS.saved.SMA,ok=sv&&Math.abs(sv-T.sma)/T.sma<=0.12;return ok&&drillChoice==="≥ 70% stenosis"?[1,`SMA PSV ${sv.toFixed(0)} cm/s in a fasting patient: above 275 cm/s suggests ≥ 70% stenosis.`]:[0,!sv?"Save the SMA PSV.":!ok?`Saved ${sv.toFixed(0)} cm/s is off: gate at the origin jet, angle parallel to flow, and make sure it is not aliased (depth limits PRF: lower the Doppler frequency, use Update or baseline shift).`:"The category does not match the velocity."];},hint:"At this depth the PRF ceiling is low. Lower the Doppler frequency, switch Simul to Update, shift the baseline, and keep θ ≤ 60°."},
+ {id:"a_mal",t:"Breathing and the celiac trunk",s:"respiratory maneuver",choices:["Fixed celiac stenosis","Median arcuate ligament compression"],setup:()=>{loadAo({view:"prox",cond:"mal",resp:"exp"});const M=VES.find(v=>v.name==="Celiac");gateTo(M,-2.6);alignAngle();respSeen={};},task:"The celiac origin is fast. Sample it in both inspiration and expiration (Case panel), then decide.",
+  check:()=>respSeen.insp&&respSeen.exp&&drillChoice==="Median arcuate ligament compression"?[1,"High velocity in expiration that normalizes in inspiration, with an upward hooked origin: median arcuate ligament compression."]:[0,!(respSeen.insp&&respSeen.exp)?"Keep the gate in the celiac trunk and sample in both inspiration and expiration.":"Compare the two phases again."],hint:"Expiration raises the diaphragm and ligament, compressing the celiac origin; inspiration usually releases it."},
+ {id:"a_gas",t:"Bowel gas in the way",s:"graded compression",setup:()=>{loadAo({view:"mid",gas:true,comp:0});const M=mainVessel(),p=ptAtS(M,sAtX(M,1.6)),W=fromAnat(p.x,p.z);S.p.gx=W[0];S.p.gz=W[1];alignAngle();},task:"Bowel gas casts a dirty shadow over the aorta and the Doppler signal is lost. Get a clean aortic signal.",
+  check:o=>o.inLumen&&!o.shadow?[1,"The beam path is clear of gas: compression or a different window restores the signal."]:[0,o.shadow?"The beam still passes through gas.":"Keep the gate in the aorta."],hint:"Apply graded compression (Case panel) or move the gate to a window free of gas."}];
+function DCx(){return evalPt(S.p.gx,S.p.gz,0.12*60/S.ph.hr,true);}
+const AQZ=[
+ {q:"An abdominal aortic aneurysm is generally defined as an infrarenal diameter of at least:",o:["2.0 cm","2.5 cm","3.0 cm","4.0 cm"],a:2,e:"≥ 3.0 cm, or ≥ 1.5 times the expected normal diameter."},
+ {q:"How should an AAA be measured on ultrasound?",o:["Inner wall to inner wall of the residual lumen","Outer wall to outer wall, perpendicular to the aortic axis, including thrombus","Along the oblique long axis","Only in the sagittal plane"],a:1,e:"Outer-to-outer, perpendicular to the axis; measuring the flow lumen underestimates the aneurysm when there is mural thrombus."},
+ {q:"The normal fasting SMA waveform is:",o:["Low resistance with high diastolic flow","High resistance with early diastolic reversal","Monophasic venous","Absent in diastole only after meals"],a:1,e:"Fasting SMA is high resistance; after a meal mesenteric dilation makes it low resistance."},
+ {q:"The celiac trunk normally shows:",o:["High resistance","Low resistance with forward diastolic flow","Reversed flow","Tardus–parvus"],a:1,e:"It supplies the liver and spleen, low-resistance beds, so diastolic flow stays forward."},
+ {q:"A fasting SMA PSV often cited for ≥ 70% stenosis is:",o:["> 125 cm/s","> 200 cm/s","> 275 cm/s","> 400 cm/s"],a:2,e:"> 275 cm/s for the SMA; > 200 cm/s is commonly used for the celiac trunk."},
+ {q:"Celiac velocity is high in expiration and normal in inspiration. Most likely:",o:["Fixed atherosclerotic stenosis","Median arcuate ligament compression","Aortic dissection","Fed state"],a:1,e:"The ligament compresses the celiac origin in expiration; inspiration typically releases it."},
+ {q:"The most common endoleak after EVAR, often with to-and-fro flow from a lumbar or IMA branch, is:",o:["Type I","Type II","Type III","Type IV"],a:1,e:"Type II leaks arise from branch backflow; many are observed, while type I and III usually need treatment."},
+ {q:"In aortic dissection, the true lumen usually:",o:["Is larger with slow flow","Expands in systole with brisk forward systolic flow","Is always thrombosed","Shows continuous venous flow"],a:1,e:"The false lumen tends to be larger, slower, with delayed or reversed flow, and may thrombose."},
+ {q:"Why do deep abdominal vessels alias more easily?",o:["Blood is faster in the abdomen","The maximum PRF falls with depth","Curved probes have higher frequencies","Wall filters are stronger"],a:1,e:"PRF max ≈ c/(2 × depth). Lower transmit frequency, Update mode, baseline shift or a better angle help."},
+ {q:"Swirling red and blue color inside a fusiform aneurysm sac without a visible flap is:",o:["Dissection","Expected vortex flow","Type II endoleak","Aliasing only"],a:1,e:"Flow separates and recirculates in a dilated sac. A dissection needs an intimal flap with two lumens."}];
+// ================= LOWER EXTREMITY PACKS =================
+let compMax=0,augSeen={},valsSeen=false;
+function reflLeg(x,z,e){if(e.k===1)return 0.02;if(e.k===2)return 1.5;if(e.k===3)return 1.0;if(e.k===4)return 0.38*(0.85+0.3*Math.sin(x*9+z*7));if(e.k===5)return 0.34*(0.85+0.22*Math.sin((e.lam||0)*7+x*0.9));
+  if(e.k===6)return 2.0;if(e.k===7)return 0.13*(0.9+0.25*Math.sin(x*17+z*13));if(e.k===8)return 0.8*(0.65+0.7*Math.abs(Math.sin(x*23+z*31)));if(e.k===9)return 0.008;
+  const fat=CASE.fatD||0.8;if(z<0.08)return 1.25;if(z<fat-0.04)return 0.3*(0.8+0.5*Math.abs(Math.sin(x*6.1+z*8.3)*Math.cos(z*5.2-x*2.7)));if(z<fat+0.04)return 1.35;
+  if(CASE.eye&&z<1.35){if(Math.abs(z-0.42)<0.035||Math.abs(z-1.02)<0.035)return 1.4;return 0.32*(0.85+0.3*Math.sin(x*7+z*9));}
+  if(CASE.popFat&&z<3.6)return 0.62*(0.8+0.4*Math.abs(Math.sin(x*5+z*6)));
+  return 0.42*(0.65+0.7*Math.max(0,Math.sin(z*34+x*2.1+Math.sin(x*2.3)))**3);}
+function vdiskShape(V){const c=S.exam==="lev"?S.lev.comp/100:0;let rx=V.r,ry=V.r;
+  if(V.art){ry=V.r*(1-0.1*c);rx=V.r*(1+0.04*c);}else if(V.thr==="acute"){ry=V.r*(1-0.04*c);}else if(V.thr==="chronic"){ry=V.r*(1-0.5*c);rx=V.r*(1+0.15*c);}
+  else if(V.thr==="tail"){ry=Math.max(V.r*0.5,V.r*(1-0.97*c));rx=V.r*(1+0.25*c);}else if(V.cyst){ry=V.r*(1-0.15*c);}else{ry=Math.max(0.006,V.r*(1-1.15*c));rx=V.r*(1+0.35*c);}return [rx,ry];}
+function evalVDisk(V,ax,az,t,noTurb){const sh=vdiskShape(V),rx=sh[0],ry=sh[1],dx=ax-V.cx,dz=az-V.cz,d=Math.hypot(dx/rx,dz/ry),wt=V.art?0.05:0.03;if(Math.hypot(dx/(rx+wt),dz/(ry+wt))>1)return null;if(d>1)return {k:2,V};
+  if(V.thr==="acute")return {k:7,V};if(V.thr==="chronic"){if(d>0.62)return {k:8,V};if(Math.abs(dz-0.25*ry)<0.03&&Math.abs(dx)<rx*0.5)return {k:8,V};}
+  if(V.thr==="tail"&&Math.hypot(dx,dz)<V.r*0.42)return {k:7,V,tail:true};if(ry<0.04)return {k:2,V};
+  const q=Math.min(1,V.thr==="chronic"?d/0.62:d),v=V.psv*waveV(V,t)*V.ob*(1-q*q),n=Math.hypot(V.obx,V.obz);const W=vecW(V.obx/n*v,V.obz/n*v),T=vecW(V.obx/n,V.obz/n);return {k:1,vx:W[0],vz:W[1],tx:T[0],tz:T[1],turb:0,V,v,s:0};}
+function evalPocket(V,ax,az,t){const dx=ax-V.cx,dz=az-V.cz,d=Math.hypot(dx/V.rx,dz/V.rz);if(d>1.14)return null;if(d>1)return {k:2,V};
+  const m=V.psv*(0.25+Math.max(0,wave("hyp",t)))*d*(1-d)*4,n=Math.hypot(dx,dz)||1,W=vecW(-dz/n*m,dx/n*m),T=vecW(-dz/n,dx/n);return {k:1,vx:W[0],vz:W[1],tx:T[0],tz:T[1],turb:0.15,V,v:m,s:0,psa:true};}
+function evalCyst(V,ax,az){const d=Math.hypot((ax-V.cx)/V.rx,(az-V.cz)/V.rz);if(d>1.07)return null;if(d>1)return {k:2,V};return {k:9,V};}
+function evalVTube(V,L,t,noTurb){const c=S.exam==="lev"?S.lev.comp/100:0,th=V.thr,inT=th&&L.s>=th.s0&&L.s<=th.s1;let r;
+  if(inT&&th.type==="acute")r=L.r0;else if(inT&&th.type==="chronic")r=L.r0*(1-0.45*c);else if(inT&&th.type==="tail")r=L.r0*Math.max(0.5,1-0.97*c);else if(V.art)r=L.r0*(1-0.1*c);else r=L.r0*Math.max(0.01,1-1.15*c);
+  const rho=L.rho;if(Math.abs(rho)>r+0.035)return null;if(Math.abs(rho)>r)return {k:2,V};
+  if(inT){if(th.type==="acute")return {k:7,V};if(th.type==="chronic"){if(Math.abs(rho)>0.62*r)return {k:8,V};if(th.syn&&th.syn.some(s=>Math.abs(L.s-s)<0.045))return {k:8,V};}
+    if(th.type==="tail"){const f=(L.s-th.s0)/(th.s1-th.s0),rt=L.r0*0.45*Math.sqrt(Math.max(0,1-f)),off=0.06*f*Math.sin(TAU*t*0.7);if(Math.abs(rho-off)<rt)return {k:7,V,tail:true};}}
+  if(r<0.04)return {k:2,V};const q=Math.min(1,Math.abs(rho)/(inT&&th.type==="chronic"?0.62*r:r));return mkRes(V,L,V.psv*waveV(V,t)*(1-q**4),L.tx,L.tz,V.turbAlways||0,noTurb);}
+function vwave(V,t){const Lv=S.lev||{},resp=Math.sin(TAU*t/4.5);let b;
+  if(V.vmode==="cont")b=0.8+0.03*resp;else if(V.vmode==="puls"){const T=60/S.ph.hr,x=((t%T)+T)%T/T;b=0.5+0.9*Math.exp(-(((x-0.12)/0.08)**2))+0.55*Math.exp(-(((x-0.55)/0.1)**2))-0.85*Math.exp(-(((x-0.33)/0.05)**2));}else b=0.72+0.28*resp;
+  if(S.exam==="lev"){const k=V.augK==null?1:V.augK;
+    if(Lv.vals&&t>=Lv.valsT0){const tau=t-Lv.valsT0;b=V.refluxT?-0.9:V.vmode==="cont"?b*0.85:(tau<0.35?-0.25:0.03);}
+    else if(Lv.valsT1>0&&t>=Lv.valsT1&&t<Lv.valsT1+1.5&&V.vmode!=="cont")b+=1.4*Math.exp(-(((t-Lv.valsT1-0.3)/0.3)**2));
+    if(Lv.squeeze&&t>=Lv.augT0)b+=k*3.2*Math.exp(-(((t-Lv.augT0-0.35)/0.25)**2));
+    else if(Lv.augT1>Lv.augT0&&t>=Lv.augT1){const tau=t-Lv.augT1;if(V.refluxT&&tau<V.refluxT)b=-1.5*Math.sqrt(1-tau/V.refluxT)-0.05;else if(!V.refluxT&&tau<0.25)b-=0.5*k*(1-tau/0.25);}}
+  return b;}
+// ---- arterial ----
+const LVIEWS={cfa:{label:"CFA BIF",name:"Common femoral bifurcation"},sfa:{label:"SFA MID",name:"Superficial femoral artery, mid-thigh"},pop:{label:"POP A",name:"Popliteal artery"},tib:{label:"PTA ANKLE",name:"Posterior tibial artery at the ankle"}};
+const LCONDS={normal:"Normal",sten50:"SFA stenosis 50–74%",sten75:"SFA stenosis ≥75%",occl:"SFA occlusion with collaterals",inflow:"Inflow (aortoiliac) disease",popan:"Popliteal artery aneurysm",psa:"Femoral pseudoaneurysm",avf:"Femoral arteriovenous fistula",calc:"Calcified tibial arteries (diabetic)"};
+const LVIEW_TILT={cfa:-12,sfa:-12,pop:-12,tib:-12};
+function laP(){const a=S.lea,c=a.cond,hyp=a.state==="hyp",tri=hyp?"hyp":"pad";const P={w:{cfa:tri,sfa:tri,pop:tri,tib:tri,pfa:tri},psv:{cfa:110,sfa:90,pop:70,tib:50,pfa:80},k:hyp?1.3:1};
+  if(c==="sten50"){P.sten={pct:0.55,jet:2.6};if(!hyp){P.w.pop="bi";P.w.tib="bi";}}
+  if(c==="sten75"){P.sten={pct:0.8,jet:4.5};P.w.pop="tard";P.w.tib="tard";P.psv.pop=40;P.psv.tib=28;}
+  if(c==="occl"){P.occ=true;P.w.pop="tard";P.w.tib="tard";P.psv.pop=32;P.psv.tib=22;P.w.pfa="hyp";P.psv.pfa=120;}
+  if(c==="inflow"){for(const k in P.w)P.w[k]="tard";P.psv={cfa:55,sfa:45,pop:35,tib:25,pfa:45};P.k=1;}
+  if(c==="avf"){P.w.cfa="avf";P.psv.cfa=190;}if(c==="calc"&&!hyp)P.w.tib="bi";return P;}
+function laTruth(){const P=laP(),j=P.sten?P.sten.jet:1;return {prox:P.psv.sfa*P.k,sten:P.psv.sfa*P.k*j,ratio:j,grade:S.lea.cond==="occl"?"Occlusion":j>=4?"≥ 75%":j>=2?"50–74%":"< 50%",pop:2.6};}
+function stenAt(tube,x,spec){const s0=sAtX(tube,x);tube.sten=Object.assign({s0,len:0.3,side:-1,plaque:"mixed"},spec);}
+function buildLea(){const A=S.lea,P=laP(),V=[];ANROT=A.tilt*D2R;CASE={view:A.view,fatD:A.view==="tib"?0.35:0.8,popFat:A.view==="pop"};const k=P.k;
+  if(A.view==="cfa"){const pts=seg([-2.7,1.6],[0.2,1.65],29).concat(seg([0.2,1.65],[2.7,1.75],25).slice(1));
+    V.push(mkTube(pts,{rf:x=>0.3+0.08*sigm(-(x-0.2)/0.2),psv:P.psv.cfa*k,wave:P.w.cfa,wa:P.w.cfa,wb:P.w.sfa,mixf:x=>sigm((x-0.3)/0.2),vsf:x=>1-(1-P.psv.sfa/P.psv.cfa)*sigm((x-0.3)/0.2),name:"CFA"}));
+    V.push(mkTube(bez([0.1,1.85],[0.9,2.3],[2.7,2.9],26),{rf:()=>0.26,psv:P.psv.pfa*k,wave:P.w.pfa,name:"Profunda"}));
+    const cfv=mkTube(seg([2.7,2.75],[-2.7,2.6],54),{rf:()=>0.5,psv:22,wave:"venous",art:0,name:"CFV"});
+    if(A.cond==="avf"){cfv.wave="avfV";cfv.psv=70;cfv.art=1;cfv.turbAlways=0.3;V.push(mkTube(seg([-0.45,1.97],[-0.35,2.13],6),{rf:()=>0.07,psv:320,wave:"avf",turbAlways:0.8,name:"Fistula"}));const W=fromAnat(-0.4,2.05);CASE.bruit={x:W[0],z:W[1]};}
+    V.push(cfv);
+    if(A.cond==="psa"){V.push({type:"pocket",cx:-0.6,cz:0.72,rx:0.58,rz:0.38,psv:45,name:"Pseudoaneurysm",art:1});V.push(mkTube(seg([-0.6,1.24],[-0.6,1.08],6),{rf:()=>0.06,psv:170,wave:"neck",name:"PSA neck"}));}}
+  if(A.view==="sfa"){const o={rf:()=>0.3,psv:P.psv.sfa*k,wave:P.w.sfa,name:"SFA"};
+    if(P.occ){Object.assign(o,{wa:"thump",wb:"tard",mixf:x=>sigm((x-0.1)/0.1),vsf:x=>x<0.1?0.55:0.3});}
+    const sfa=mkTube(seg([-2.7,2.2],[2.7,2.4],54),o);if(P.sten)stenAt(sfa,0.3,{pct:P.sten.pct,jet:P.sten.jet});if(P.occ){sfa.occl={s0:sAtX(sfa,-0.8),s1:sAtX(sfa,1.0)};
+      V.push(mkTube(bez([-1.3,2.05],[0.0,1.25],[1.35,2.2],30),{rf:()=>0.055,psv:35,wave:"tard",name:"Collateral"}));}
+    V.push(sfa);V.push(mkTube(seg([2.7,2.95],[-2.7,2.8],54),{rf:()=>0.35,psv:18,wave:"venous",art:0,name:"FV"}));}
+  if(A.view==="pop"){if(A.cond==="popan"){const pa=mkTube(seg([-2.7,3.0],[2.7,3.2],54),{ao:true,rref:0.3,rf:x=>0.3+(1.18-0.3)*Math.exp(-(((x-0.2)/0.9)**2)),psv:P.psv.pop*k,wave:P.w.pop,name:"Popliteal a."});pa.sac={s0:sAtX(pa,0.2),len:0.9,rRes:0.42,off:-0.35};V.push(pa);}
+    else V.push(mkTube(seg([-2.7,3.0],[2.7,3.2],54),{rf:()=>0.3,psv:P.psv.pop*k,wave:P.w.pop,name:"Popliteal a."}));
+    V.push(mkTube(seg([2.7,2.2],[-2.7,2.1],54),{rf:()=>0.36,psv:15,wave:"venous",art:0,name:"Popliteal v."}));}
+  if(A.view==="tib"){V.push(mkTube(seg([-2.7,1.0],[2.7,1.1],54),{rf:()=>0.11,psv:P.psv.tib*k,wave:P.w.tib,name:"PTA"}));
+    V.push(mkTube(seg([2.7,0.76],[-2.7,0.72],54),{rf:()=>0.08,psv:6,wave:"venous",art:0,name:"PT vein"}));V.push(mkTube(seg([2.7,1.34],[-2.7,1.3],54),{rf:()=>0.08,psv:6,wave:"venous",art:0,name:"PT vein"}));
+    CAST.push({x:0,z:2.75,r:1.0,kind:"bone"});CASE.bone=true;if(A.cond==="calc")[-1.9,-0.6,0.7,1.9].forEach(x=>CAST.push({x,z:0.92+0.0185*x,r:0.065,kind:"calc"}));}
+  return V;}
+function applyLaView(){VES=vessels();const A=S.lea,cfg={cfa:{d:4,gx:-1.2},sfa:{d:4,gx:-1.2},pop:{d:A.cond==="popan"?5.5:4.5,gx:1.6},tib:{d:2.5,gx:0.15}}[A.view];S.depth=cfg.d;
+  const M=mainVessel();gateTo(M,cfg.gx);const pb=ptAtS(M,sAtX(M,0)),WB=fromAnat(pb.x,pb.z);S.c.box={x:WB[0],z:WB[1]-(A.cond==="psa"&&A.view==="cfa"?0.45:0),w:3.0,h:A.view==="pop"&&A.cond==="popan"?3.0:A.cond==="psa"&&A.view==="cfa"?2.2:1.4};
+  if(A.view==="tib"){S.c.box.h=1.0;S.p.prf=5000;S.c.prf=3000;}S.focus=Math.round(S.p.gz*4)/4;S.steer=-20;DC=D();alignAngle();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];}
+function syncLa(){const A=S.lea;$$("#lView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.view));const cs=$("lCond");if(!cs.options.length)for(const k in LCONDS){const o=document.createElement("option");o.value=k;o.textContent=LCONDS[k];cs.appendChild(o);}cs.value=A.cond;
+  $$("#lState button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.state));$("lTilt").value=A.tilt;$("lTilto").textContent=(A.tilt>0?"+":"")+A.tilt+"°";$("lHR").value=S.ph.hr;$("lHRo").textContent=S.ph.hr+" bpm";$("lReveal").checked=A.reveal;
+  const T=laTruth();$("lTruth").innerHTML=A.reveal?({sten50:`SFA PSV ${T.prox.toFixed(0)} → ${T.sten.toFixed(0)} cm/s, ratio ${T.ratio.toFixed(1)}: 50–74%.`,sten75:`SFA PSV ${T.prox.toFixed(0)} → ${T.sten.toFixed(0)} cm/s, ratio ${T.ratio.toFixed(1)}: ≥ 75%.`,occl:"SFA occluded from mid-thigh with collateral reconstitution; profunda low resistance (collateral supply).",inflow:"Iliac stenosis upstream: tardus–parvus at the groin and below.",popan:"Popliteal aneurysm 2.6 cm outer diameter with mural thrombus.",psa:"Pseudoaneurysm anterior to the CFA, neck about 3 mm long.",avf:"CFA–CFV fistula just above the bifurcation.",calc:"Medial calcification of the PTA with acoustic shadowing; flow between plaques."}[A.cond]||"Normal triphasic arterial flow."):"";}
+$$("#lView button").forEach(b=>b.onclick=()=>{S.lea.view=b.dataset.v;S.lea.tilt=LVIEW_TILT[S.lea.view];applyLaView();syncAll();tip(`<b>${LVIEWS[S.lea.view].name}</b>.`);});
+$("lCond").onchange=e=>{S.lea.cond=e.target.value;applyLaView();syncAll();tip(`<b>${LCONDS[S.lea.cond]}</b> loaded; it applies across the views.`);};
+$$("#lState button").forEach(b=>b.onclick=()=>{S.lea.state=b.dataset.v;VES=vessels();syncLa();tip(S.lea.state==="hyp"?"<b>Hyperemic limb</b> (after walking, warm or infected limb): distal resistance falls, so flow turns monophasic and low resistance, with a brisk upstroke and higher velocities. Not disease.":"<b>Resting limb</b>: high peripheral resistance gives triphasic flow.");});
+$("lTilt").addEventListener("input",e=>{S.lea.tilt=+e.target.value;VES=vessels();if(evalPt(S.p.gx,S.p.gz,0,true).k!==1)applyLaView();bDirty=true;CIMG=null;syncLa();tip(`<b>Heel–toe</b>: insonation angle now ${D().thTrue.toFixed(0)}°.`);});
+$("lHR").addEventListener("input",e=>{S.ph.hr=+e.target.value;$("lHRo").textContent=S.ph.hr+" bpm";});$("lReveal").onchange=e=>{S.lea.reveal=e.target.checked;syncLa();};
+const LGR=["< 50%","50–74%","≥ 75%","Occlusion"];function loadLa(o){loadExam("lea",o,true);}
+const LADRILLS=[
+ {id:"la_ratio",t:"Grade an SFA stenosis",s:"velocity ratio",choices:LGR,setup:()=>{loadLa({view:"sfa",cond:"sten75"});},task:"Measure the PSV in a normal segment upstream (save as Proximal) and the highest PSV in the stenosis (save as Stenosis), then grade it.",
+  check:()=>{const T=laTruth(),sv=MS.saved,r=sv.Proximal&&sv.Stenosis?sv.Stenosis/sv.Proximal:null,ok=r&&Math.abs(r-T.ratio)/T.ratio<=0.18;return ok&&drillChoice===T.grade?[1,`Ratio ${r.toFixed(1)}: ${T.grade}.`]:[0,!r?"Save both Proximal and Stenosis PSVs.":!ok?`Your ratio ${r.toFixed(1)} is off: measure upstream in normal artery, and the peak of the jet without aliasing.`:"The grade does not match your ratio."];},hint:"Upstream PSV 1–4 cm above the lesion; jet PSV at the narrowest point with the angle parallel to flow. Ratio ≥ 2 = ≥ 50%, ≥ 4 ≈ ≥ 75%."},
+ {id:"la_occl",t:"Stenosis or occlusion?",s:"low-flow color, collaterals",choices:["Focal stenosis","Occlusion with collateral reconstitution"],setup:()=>{loadLa({view:"sfa",cond:"occl"});S.c.prf=6000;S.c.wf=300;},task:"Part of the SFA shows no color. Optimize color for slow flow, examine above and below the gap, then decide.",
+  check:()=>{const sens=S.power?S.c.wf<=150:(S.c.prf<=2000&&S.c.wf<=100);return sens&&drillChoice==="Occlusion with collateral reconstitution"?[1,"No flow in the segment even with sensitive settings, a high-resistance thump above, collaterals leaving and re-entering, and monophasic reconstituted flow below: occlusion."]:[0,!sens?"Color is still set for fast flow: lower the scale and wall filter.":"Look again at flow inside the gap."];},hint:"Lower the color scale and wall filter; sample PW above the gap and in the reconstituted segment below."},
+ {id:"la_inflow",t:"Monophasic at the groin (1)",s:"acceleration time",choices:["Hyperemia","Inflow (aortoiliac) disease"],setup:()=>{loadLa({view:"cfa",cond:"inflow"});},task:"This CFA waveform is monophasic. Measure the acceleration time with AT / slope, then decide why.",
+  check:()=>MS.lastAT!=null&&MS.lastAT>=0.12&&drillChoice==="Inflow (aortoiliac) disease"?[1,`AT ${(MS.lastAT*1000).toFixed(0)} ms with a low, rounded peak: tardus–parvus from upstream iliac disease.`]:[0,MS.lastAT==null?"Measure the acceleration time first.":MS.lastAT<0.12?"That AT looks short; click the very start of the upstroke and the first peak.":"Reconsider: what does a prolonged upstroke mean?"],hint:"Inflow disease: slow upstroke, AT well above 100 ms. Hyperemia: brisk upstroke, short AT, high diastolic flow."},
+ {id:"la_hyp",t:"Monophasic at the groin (2)",s:"acceleration time",choices:["Hyperemia","Inflow (aortoiliac) disease"],setup:()=>{loadLa({view:"cfa",cond:"normal",state:"hyp"});},task:"This CFA waveform is also monophasic. Measure the acceleration time, then decide why.",
+  check:()=>MS.lastAT!=null&&MS.lastAT<0.12&&drillChoice==="Hyperemia"?[1,`AT ${(MS.lastAT*1000).toFixed(0)} ms with a brisk upstroke and high velocities: hyperemia (after walking, warm or infected limb), not disease.`]:[0,MS.lastAT==null?"Measure the acceleration time first.":"Reconsider: is the upstroke slow or brisk?"],hint:"Compare with drill 1: a short AT means the inflow is fine; the low resistance comes from the distal bed."},
+ {id:"la_pop",t:"Measure the popliteal aneurysm",s:"outer to outer",choices:["Not aneurysmal","Aneurysm < 2 cm","Aneurysm ≥ 2 cm"],setup:()=>{loadLa({view:"pop",cond:"popan"});S.pw=false;S.active="color";},task:"Measure the maximal outer diameter of the popliteal artery and classify it.",
+  check:()=>{const d=MS.lastDist,T=laTruth();if(d==null)return [0,"Measure with the Distance tool."];const err=Math.abs(d/10-T.pop);if(d/10<1.2&&err>0.4)return [0,"That looks like the flow lumen only: include the mural thrombus, outer wall to outer wall."];return err<=0.3&&drillChoice==="Aneurysm ≥ 2 cm"?[1,`${(d/10).toFixed(1)} cm with mural thrombus: repair is usually considered at about 2 cm. Scan the other knee and the aorta.`]:[0,err>0.3?`${(d/10).toFixed(1)} cm is off: outer edge to outer edge, perpendicular to the axis.`:"Pick the category that matches."];},hint:"Popliteal aneurysms are often bilateral and associated with AAA."},
+ {id:"la_psa",t:"Groin mass after catheterization",s:"neck flow",choices:["Hematoma","Pseudoaneurysm"],setup:()=>{loadLa({view:"cfa",cond:"psa"});},task:"Find the communication between the mass and the CFA, put the PW gate in it, then decide.",
+  check:o=>o.gateV&&o.gateV.name==="PSA neck"&&drillChoice==="Pseudoaneurysm"?[1,"To-and-fro flow in the neck (in during systole, out in diastole) with yin-yang flow in the sac: pseudoaneurysm. Report neck length and width; they guide thrombin injection or compression."]:[0,!(o.gateV&&o.gateV.name==="PSA neck")?"Put the gate in the narrow neck between the artery and the sac.":"Reconsider: a hematoma has no flow."],hint:"Use color with a moderate scale to see the jet entering the sac, then PW in the neck."},
+ {id:"la_avf",t:"Pulsatile femoral vein",s:"arterialized flow",choices:["Pseudoaneurysm","Arteriovenous fistula","Normal"],setup:()=>{loadLa({view:"cfa",cond:"avf"});},task:"Sample the common femoral vein and the artery above it, then decide.",
+  check:o=>o.gateV&&o.gateV.name==="CFV"&&drillChoice==="Arteriovenous fistula"?[1,"Arterialized pulsatile turbulent CFV flow, a low-resistance high-velocity feeding artery and perivascular color vibration: arteriovenous fistula."]:[0,!(o.gateV&&o.gateV.name==="CFV")?"Put the PW gate in the CFV.":"Reconsider the pattern."],hint:"Normal CFV flow is phasic with respiration. Arterial pulsatility in a vein points to a fistula."},
+ {id:"la_tib",t:"Calcified tibial artery",s:"shadows and low flow",setup:()=>{loadLa({view:"tib",cond:"calc"});const M=mainVessel();gateTo(M,-0.6);S.p.prf=12000;alignAngle();},task:"The gate sits under a calcified plaque and the scale is set for fast flow. Get a usable PTA waveform.",
+  check:o=>o.inLumen&&!o.shadow&&S.p.prf<=5000?[1,"Gate between calcifications with a scale matched to the slow tibial flow."]:[0,o.shadow?"The gate is in an acoustic shadow: move it between plaques.":!o.inLumen?"Put the gate in the artery lumen.":"Lower the PW scale to match the low velocities."],hint:"Move the gate into a gap between calcifications; reduce the scale (PRF) until the waveform fills about two thirds of the display."}];
+const LAQZ=[
+ {q:"A normal resting common femoral artery waveform is:",o:["Monophasic, low resistance","Triphasic or biphasic, high resistance","Continuous","Tardus–parvus"],a:1,e:"Resting limb muscle has high resistance, giving forward, brief reverse and sometimes late forward flow."},
+ {q:"Monophasic CFA flow with a brisk upstroke, high diastolic flow and short acceleration time most likely reflects:",o:["Iliac stenosis","Hyperemia (exercise, warmth, infection)","SFA occlusion","Normal resting flow"],a:1,e:"Low distal resistance; inflow is normal. Upstream disease slows the upstroke instead."},
+ {q:"Velocity ratio across an SFA stenosis of 4.5 indicates roughly:",o:["< 50%","50–74%","≥ 75%","Occlusion"],a:2,e:"Ratios ≥ 2 suggest ≥ 50%; ≥ 4 suggests about ≥ 75%."},
+ {q:"Proximal to an occlusion, the arterial waveform typically becomes:",o:["Low resistance","High resistance with a short 'thump'","Tardus–parvus","Normal"],a:1,e:"Outflow is blocked, so resistance rises sharply above the occlusion."},
+ {q:"Below an SFA occlusion fed by collaterals you expect:",o:["Triphasic flow","Monophasic, damped flow","No flow at all","Reversed flow"],a:1,e:"Reconstituted flow through collaterals is delayed and damped."},
+ {q:"A popliteal artery aneurysm should prompt:",o:["No further imaging","Scanning the other popliteal artery and the aorta","Venous study only","Carotid duplex"],a:1,e:"About half are bilateral and many coexist with AAA."},
+ {q:"To-and-fro flow in a narrow channel between the CFA and a pulsatile groin mass indicates:",o:["Hematoma","Pseudoaneurysm neck","AV fistula","Lymph node"],a:1,e:"Blood enters the sac in systole and leaves in diastole through the neck."},
+ {q:"Arterialized, pulsatile, turbulent flow in the CFV after a groin puncture suggests:",o:["DVT","AV fistula","Pseudoaneurysm","Venous insufficiency"],a:1,e:"Arterial blood shunts into the vein; the feeding artery shows low-resistance high-velocity flow."},
+ {q:"Why can an ankle-brachial index be falsely high in diabetics?",o:["Hyperemia","Medial calcification makes tibial arteries incompressible","Venous reflux","Low heart rate"],a:1,e:"Calcified arteries resist cuff compression; toe pressures or waveform analysis help."},
+ {q:"For accurate PSV measurement in a stenotic SFA you should:",o:["Use a 90° angle","Align the cursor with the flow jet and keep θ ≤ 60°","Use the widest gate","Measure only with color"],a:1,e:"Angle errors grow steeply above 60°; align with the flow direction in the jet."}];
+// ---- venous ----
+const VVIEWS={cfv:{label:"CFV / SFJ",name:"Common femoral vein and saphenofemoral junction"},fv:{label:"FV MID",name:"Femoral vein, mid-thigh"},pop:{label:"POP V",name:"Popliteal vein"},calf:{label:"CALF",name:"Calf veins (posterior tibial pair)"},gsv:{label:"GSV THIGH",name:"Great saphenous vein in the thigh"}};
+const VCONDS={normal:"Normal",dvtAcute:"Acute occlusive femoropopliteal DVT",tail:"Non-occlusive CFV thrombus with free-floating tail",calf:"Calf (posterior tibial) DVT",chronic:"Chronic post-thrombotic change",prox:"Proximal (iliac) obstruction",cardiac:"Pulsatile flow (right heart / TR)",stp:"GSV thrombophlebitis near the SFJ",reflux:"SFJ and GSV reflux",baker:"Baker cyst"};
+function lvP(){const c=S.lev.cond,P={mode:"phasic",aug:{cfv:1,fv:1,pop:1,calf:4,gsv:1},thr:{},refl:{}};if(c==="prox"){P.mode="cont";P.aug.cfv=0.3;}if(c==="cardiac")P.mode="puls";
+  if(c==="dvtAcute"){P.thr.fv="acute";P.thr.pop="acute";P.aug.cfv=0.25;}if(c==="tail")P.thr.cfv="tail";if(c==="calf"){P.thr.calf="acute";P.aug.pop=0.6;}
+  if(c==="chronic"){P.thr.fv="chronic";P.thr.pop="chronic";P.refl.pop=2.0;P.refl.fv=1.8;}if(c==="stp")P.thr.gsv="acute";if(c==="reflux"){P.refl.gsv=2.4;P.refl.cfv=0;P.refl.sfj=2.4;}return P;}
+function buildLev(){const A=S.lev,P=lvP(),V=[];if(A.view==="gsv")PIV=[0,0.7];ANROT=(A.view==="gsv"&&A.plane==="long"?-6:A.tilt)*D2R;CASE={view:A.view,fatD:A.view==="gsv"?1.4:A.view==="calf"?0.6:0.8,eye:A.view==="gsv",popFat:A.view==="pop"};const tr=A.plane==="trans";
+  const ob={ob:0.3,obx:0.6,obz:-0.8},vd=(o)=>Object.assign({type:"vdisk",psv:15,vmode:P.mode,art:0},ob,o),ad=(o)=>Object.assign({type:"vdisk",psv:90,wave:"pad",art:1},ob,o);
+  const vt=(pts,o)=>mkTube(pts,Object.assign({vt:true,art:0,vmode:P.mode},o)),thrFull=t=>t?{type:t,s0:-1,s1:999,syn:t==="chronic"?[1.2,2.6,3.9]:null}:null;
+  if(A.view==="cfv"){const stp=A.cond==="stp";
+    if(tr){V.push(ad({cx:-0.95,cz:1.95,r:0.4,psv:110,name:"CFA"}));V.push(vd({cx:0.25,cz:2.3,r:0.55,psv:25,augK:P.aug.cfv,thr:P.thr.cfv,name:"CFV"}));V.push(vd({cx:0.75,cz:1.25,r:0.25,psv:12,thr:stp?"acute":null,refluxT:P.refl.sfj,name:"GSV"}));}
+    else{const c=vt(seg([2.7,2.45],[-2.7,2.35],54),{rf:()=>0.55,psv:25,augK:P.aug.cfv,name:"CFV"});if(P.thr.cfv==="tail")c.thr={type:"tail",s0:sAtX(c,1.9),s1:sAtX(c,-0.6)};V.push(c);
+      const g=vt(bez([2.7,1.15],[0.6,1.2],[-0.45,1.9],30),{rf:()=>0.25,psv:12,refluxT:P.refl.sfj,name:"GSV"});if(stp){const Stot=g.S[g.S.length-1];let s1=Stot;for(let i=g.P.length-1;i>=0;i--){if(Math.hypot(g.P[i][0]+0.45,g.P[i][1]-1.9)>=2.2){s1=g.S[i];break;}}g.thr={type:"acute",s0:-1,s1};const tp=ptAtS(g,s1);CASE.stp=Math.hypot(tp.x+0.45,tp.z-1.9);}V.push(g);}}
+  if(A.view==="fv"){if(tr){V.push(ad({cx:-0.15,cz:2.35,r:0.3,name:"FA"}));V.push(vd({cx:0.2,cz:A.cond==="dvtAcute"?3.15:3.0,r:A.cond==="dvtAcute"?0.5:A.cond==="chronic"?0.3:0.38,psv:20,augK:P.aug.fv,thr:P.thr.fv,refluxT:P.refl.fv,name:"FV"}));}
+    else{V.push(mkTube(seg([-2.7,2.4],[2.7,2.5],54),{rf:()=>0.3,psv:90,wave:"pad",name:"FA"}));V.push(vt(seg([2.7,3.05],[-2.7,2.95],54),{rf:()=>A.cond==="dvtAcute"?0.5:A.cond==="chronic"?0.3:0.38,psv:20,augK:P.aug.fv,refluxT:P.refl.fv,thr:thrFull(P.thr.fv),name:"FV"}));}}
+  if(A.view==="pop"){const r=A.cond==="dvtAcute"?0.52:A.cond==="chronic"?0.32:0.4;
+    if(tr){V.push(vd({cx:0.1,cz:2.0,r,psv:15,augK:P.aug.pop,thr:P.thr.pop,refluxT:P.refl.pop,name:"Popliteal v."}));V.push(ad({cx:0.0,cz:2.8,r:0.3,psv:70,name:"Popliteal a."}));
+      if(A.cond==="baker"){V.push({type:"cyst",cx:-1.6,cz:1.45,rx:0.9,rz:0.55,name:"Baker cyst"});CAST.push({x:-1.6,z:1.45,r:0.55,kind:"enh"});}}
+    else{V.push(vt(seg([2.7,2.05],[-2.7,1.95],54),{rf:()=>r,psv:15,augK:P.aug.pop,refluxT:P.refl.pop,thr:thrFull(P.thr.pop),name:"Popliteal v."}));V.push(mkTube(seg([-2.7,2.85],[2.7,2.95],54),{rf:()=>0.3,psv:70,wave:"pad",name:"Popliteal a."}));
+      if(A.cond==="baker"){V.push({type:"cyst",cx:-1.3,cz:1.25,rx:1.2,rz:0.48,name:"Baker cyst"});CAST.push({x:-1.3,z:1.25,r:0.48,kind:"enh"});}}}
+  if(A.view==="calf"){const bad=P.thr.calf;
+    if(tr){V.push(ad({cx:0,cz:2.1,r:0.1,psv:45,name:"PTA"}));V.push(vd({cx:-0.33,cz:2.1,r:bad?0.22:0.15,psv:6,augK:4,thr:bad,name:"PT vein (left)"}));V.push(vd({cx:0.33,cz:2.1,r:0.15,psv:6,augK:4,name:"PT vein (right)"}));
+      V.push(ad({cx:0.55,cz:3.4,r:0.1,psv:40,name:"Peroneal a."}));V.push(vd({cx:0.22,cz:3.4,r:0.13,psv:5,augK:4,name:"Peroneal v."}));V.push(vd({cx:0.88,cz:3.4,r:0.13,psv:5,augK:4,name:"Peroneal v."}));}
+    else{V.push(vt(seg([2.7,1.85],[-2.7,1.8],54),{rf:()=>bad?0.22:0.15,psv:6,augK:4,thr:thrFull(bad),name:"PT vein (left)"}));V.push(mkTube(seg([-2.7,2.15],[2.7,2.2],54),{rf:()=>0.1,psv:45,wave:"pad",name:"PTA"}));}}
+  if(A.view==="gsv"){const th=P.thr.gsv;if(tr)V.push(vd({cx:0,cz:0.72,r:th?0.3:0.22,psv:10,thr:th,refluxT:P.refl.gsv,name:"GSV"}));else V.push(vt(seg([2.7,0.73],[-2.7,0.68],54),{rf:()=>th?0.3:0.22,psv:10,refluxT:P.refl.gsv,thr:thrFull(th),name:"GSV"}));}
+  return V;}
+function applyLvView(){S.lev.tilt=S.lev.plane==="long"?-12:0;VES=vessels();const A=S.lev,dep={cfv:4,fv:4.5,pop:4,calf:4.5,gsv:2.5}[A.view];S.depth=dep;const M=mainVessel();
+  if(M.type==="vdisk"){const W=fromAnat(M.cx,M.cz);S.p.gx=W[0];S.p.gz=W[1];S.c.box={x:W[0],z:W[1]-0.2,w:3.2,h:Math.min(2.6,dep-0.6)};}
+  else{gateTo(M,A.view==="cfv"?(A.cond==="tail"?-1.1:0.9):0.3);const pb=ptAtS(M,sAtX(M,0)),WB=fromAnat(pb.x,pb.z);S.c.box={x:WB[0],z:WB[1]-(A.view==="cfv"?0.4:0),w:3.0,h:A.view==="cfv"?2.2:1.3};}
+  const tr=A.plane==="trans";S.pw=!tr;S.steer=tr?0:-20;S.active=tr?"color":"pw";S.focus=Math.round(S.p.gz*4)/4;DC=D();if(!tr)alignAngle();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];}
+function syncLv(){const A=S.lev;$$("#vView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.view));$$("#vPlane button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.plane));
+  const cs=$("vCond");if(!cs.options.length)for(const k in VCONDS){const o=document.createElement("option");o.value=k;o.textContent=VCONDS[k];cs.appendChild(o);}cs.value=A.cond;$("vComp").value=A.comp;$("vCompo").textContent=A.comp+"%";$("vReveal").checked=A.reveal;
+  $("vTruth").innerHTML=A.reveal?({dvtAcute:"Acute occlusive thrombus in the femoral and popliteal veins; CFV patent with blunted augmentation.",tail:"Non-occlusive CFV thrombus attached distally with a free-floating tip.",calf:"Acute thrombus in the left-hand posterior tibial vein on screen.",chronic:"Chronic post-thrombotic femoral and popliteal veins with reflux.",prox:"Iliac obstruction: continuous non-phasic CFV flow, poor Valsalva response.",cardiac:"Pulsatile venous flow from elevated right heart pressure.",stp:`GSV thrombus tip ${(CASE.stp||2.2).toFixed(1)} cm from the SFJ.`,reflux:"SFJ and GSV reflux about 2.4 s after calf squeeze release or with Valsalva.",baker:"Baker cyst; popliteal vein normal and compressible."}[A.cond]||"Normal veins."):"";}
+$$("#vView button").forEach(b=>b.onclick=()=>{S.lev.view=b.dataset.v;S.lev.comp=0;applyLvView();syncAll();tip(`<b>${VVIEWS[S.lev.view].name}</b>, ${S.lev.plane==="trans"?"transverse: compress with the slider; the vein should close completely while the artery stays round":"longitudinal: assess spontaneous phasic flow, augmentation and Valsalva"}.`);});
+$$("#vPlane button").forEach(b=>b.onclick=()=>{S.lev.plane=b.dataset.v;S.lev.comp=0;applyLvView();syncAll();});
+$("vCond").onchange=e=>{S.lev.cond=e.target.value;S.lev.comp=0;applyLvView();syncAll();tip(`<b>${VCONDS[S.lev.cond]}</b> loaded.`);};
+$("vComp").addEventListener("input",e=>{S.lev.comp=+e.target.value;$("vCompo").textContent=S.lev.comp+"%";bDirty=true;CIMG=null;});
+$("vReveal").onchange=e=>{S.lev.reveal=e.target.checked;syncLv();};
+const holdBtn=(id,on,off)=>{const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();on();});["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>{off();}));b.addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&!e.repeat)on();});b.addEventListener("keyup",off);};
+holdBtn("vSqueeze",()=>{if(S.lev.squeeze)return;S.lev.squeeze=true;S.lev.augT0=tSim;tip("<b>Calf squeeze</b>: blood is pushed toward the heart, so flow should augment briskly. Release and watch for reversal (reflux).");},()=>{if(!S.lev.squeeze)return;S.lev.squeeze=false;S.lev.augT1=tSim;});
+holdBtn("vVals",()=>{if(S.lev.vals)return;S.lev.vals=true;S.lev.valsT0=tSim;tip("<b>Valsalva</b>: rising abdominal pressure should stop CFV flow. Reversal through the junction during the strain is reflux.");},()=>{if(!S.lev.vals)return;S.lev.vals=false;S.lev.valsT1=tSim;});
+function loadLv(o){loadExam("lev",o,true);}
+const LVDRILLS=[
+ {id:"lv_comp",t:"Compression test",s:"transverse, full pressure",choices:["Fully compressible","Non-compressible: DVT"],setup:()=>{loadLv({view:"fv",plane:"trans",cond:"dvtAcute"});},task:"Perform a compression test on the femoral vein in transverse and decide.",
+  check:()=>compMax>=70&&drillChoice==="Non-compressible: DVT"?[1,"The artery deforms slightly but the distended, hypoechoic vein does not coapt: acute DVT."]:[0,compMax<70?"Apply firm compression (at least 70%) in transverse: enough to deform the artery slightly.":"Reconsider what you saw under compression."],hint:"Use the Compression slider in the Case panel; a normal vein closes completely."},
+ {id:"lv_chronic",t:"Acute or chronic?",s:"echogenicity and size",choices:["Acute DVT","Chronic post-thrombotic change"],setup:()=>{loadLv({view:"pop",plane:"trans",cond:"chronic"});},task:"The popliteal vein is abnormal. Compress it, look at size and echogenicity, then classify.",
+  check:()=>compMax>=70&&drillChoice==="Chronic post-thrombotic change"?[1,"Small, partly compressible vein with thick echogenic walls, synechiae and a recanalized channel: chronic change. Acute thrombus is hypoechoic and distends the vein."]:[0,compMax<70?"Compress the vein first.":"Compare size and echogenicity with acute thrombus."],hint:"Acute: large vein, hypoechoic, non-compressible. Chronic: small vein, echogenic walls, partial compression, often reflux."},
+ {id:"lv_tail",t:"Occlusive or not?",s:"augmentation",choices:["Occlusive thrombus","Non-occlusive free-floating tail"],setup:()=>{loadLv({view:"cfv",plane:"long",cond:"tail"});},task:"There is thrombus in the CFV. With PW in the lumen beside it, augment with a calf squeeze, then decide.",
+  check:()=>augSeen.CFV&&drillChoice==="Non-occlusive free-floating tail"?[1,"Flow around the thrombus augments: it is non-occlusive, with a mobile tip. Report the extent and the free-floating segment."]:[0,!augSeen.CFV?"Put the PW gate in CFV flow and hold Calf squeeze.":"Reconsider: flow surrounds the thrombus."],hint:"Color around the thrombus and augmentation both show residual flow."},
+ {id:"lv_reflux",t:"Measure GSV reflux",s:"Δt after release",choices:["No reflux","Pathologic reflux (> 0.5 s)"],setup:()=>{loadLv({view:"gsv",plane:"long",cond:"reflux"});},task:"Hold Calf squeeze, release, then freeze and measure the duration of reversed flow with Δt / HR. Then classify.",
+  check:()=>{const d=MS.lastDT;if(d==null)return [0,"Measure the reflux duration with Δt / HR."];const ok=Math.abs(d-2.4)<=0.5;return ok&&drillChoice==="Pathologic reflux (> 0.5 s)"?[1,`Reflux ${(d*1000).toFixed(0)} ms in the GSV: abnormal (> 500 ms).`]:[0,!ok?`${(d*1000).toFixed(0)} ms: click where flow reverses after release and where it returns to baseline.`:"Compare with the 0.5 s threshold."];},hint:"Reflux starts as flow crosses below the baseline after release and ends when it returns to baseline."},
+ {id:"lv_cont",t:"CFV waveform: continuous",s:"phasicity and Valsalva",choices:["Normal phasic","Continuous: suspect proximal obstruction","Pulsatile: suspect right heart failure or TR"],setup:()=>{loadLv({view:"cfv",plane:"long",cond:"prox"});},task:"Sample the CFV, test with Valsalva, then interpret the waveform.",
+  check:()=>valsSeen&&drillChoice==="Continuous: suspect proximal obstruction"?[1,"Continuous, non-phasic flow that barely responds to Valsalva: the respiratory signal is not reaching this vein. Look for iliac or IVC obstruction, and compare with the other side."]:[0,!valsSeen?"Put the gate in the CFV and hold Valsalva.":"Reconsider the respiratory variation."],hint:"Normal CFV flow varies with respiration and stops with Valsalva."},
+ {id:"lv_puls",t:"CFV waveform: pulsatile",s:"cardiac pattern",choices:["Normal phasic","Continuous: suspect proximal obstruction","Pulsatile: suspect right heart failure or TR"],setup:()=>{loadLv({view:"cfv",plane:"long",cond:"cardiac"});},task:"Sample the CFV and interpret the waveform.",
+  check:o=>o.gateV&&o.gateV.name==="CFV"&&drillChoice==="Pulsatile: suspect right heart failure or TR"?[1,"Cardiac pulsatility with reversal transmitted to the femoral vein: elevated right atrial pressure or tricuspid regurgitation (also fluid overload)."]:[0,!(o.gateV&&o.gateV.name==="CFV")?"Put the gate in the CFV.":"Look at what drives the oscillations."],hint:"Count the oscillations against the heart rate."},
+ {id:"lv_stp",t:"Superficial thrombus near the junction",s:"distance to SFJ",choices:["More than 3 cm from the SFJ","Within 3 cm of the SFJ: manage as DVT"],setup:()=>{loadLv({view:"cfv",plane:"long",cond:"stp"});S.pw=false;S.active="color";},task:"Measure the distance from the tip of the GSV thrombus to the saphenofemoral junction, then classify.",
+  check:()=>{const d=MS.lastDist,T=CASE.stp||2.2;if(d==null)return [0,"Measure with the Distance tool from the thrombus tip to the junction."];const ok=Math.abs(d/10-T)<=0.35;return ok&&drillChoice==="Within 3 cm of the SFJ: manage as DVT"?[1,`${(d/10).toFixed(1)} cm: within 3 cm of the junction, generally treated like DVT.`]:[0,!ok?`${(d/10).toFixed(1)} cm is off: measure from the thrombus tip to where the GSV meets the CFV.`:"Compare with the 3 cm rule."];},hint:"The junction is where the GSV enters the CFV; the tip is the most central end of the echogenic material."},
+ {id:"lv_baker",t:"Painful swollen calf, popliteal mass",s:"compression and flow",choices:["Popliteal DVT","Baker cyst with a normal popliteal vein"],setup:()=>{loadLv({view:"pop",plane:"trans",cond:"baker"});},task:"Compress the popliteal vein and examine the mass, then decide.",
+  check:()=>compMax>=70&&drillChoice==="Baker cyst with a normal popliteal vein"?[1,"The vein coapts fully; the mass is anechoic with posterior enhancement and no flow: Baker cyst. A ruptured cyst can mimic DVT clinically."]:[0,compMax<70?"Compress the popliteal vein first.":"Reconsider: does the vein compress?"],hint:"Check the vein, then look for posterior acoustic enhancement and absent flow in the mass."},
+ {id:"lv_calf",t:"Which calf vein?",s:"paired veins",choices:["Left-hand vein on screen","Right-hand vein on screen","Both compress normally"],setup:()=>{loadLv({view:"calf",plane:"trans",cond:"calf"});},task:"Compress the paired posterior tibial veins and identify any thrombosed vein.",
+  check:()=>compMax>=70&&drillChoice==="Left-hand vein on screen"?[1,"One of the paired veins stays open and enlarged: isolated calf DVT. Each paired vein must be checked separately."]:[0,compMax<70?"Compress first.":"Look again at which vein stays open."],hint:"Paired tibial veins flank their artery; a thrombosed one is distended and does not close."}];
+const LVQZ=[
+ {q:"The primary sign of DVT on compression ultrasound is:",o:["Absent color flow","Non-compressibility of the vein","Venous reflux","Echogenic wall"],a:1,e:"A normal vein coapts completely with enough pressure to deform the artery slightly."},
+ {q:"Acute thrombus typically:",o:["Is echogenic and the vein small","Is hypoechoic and distends the vein","Shows thick calcified walls","Is fully compressible"],a:1,e:"Chronic change is echogenic, with small, thick-walled, partly compressible veins and synechiae."},
+ {q:"Continuous, non-phasic flow in one CFV with poor Valsalva response suggests:",o:["Normal","More proximal iliac or IVC obstruction","Right heart failure","Superficial reflux"],a:1,e:"The respiratory pressure changes are not transmitted past the obstruction; compare with the other side."},
+ {q:"Pulsatile flow in both CFVs suggests:",o:["Bilateral DVT","Elevated right heart pressure or tricuspid regurgitation","Arterial disease","Normal in the young"],a:1,e:"Cardiac pressure waves reach the femoral veins; fluid overload can do the same."},
+ {q:"Reflux in the femoral or popliteal vein is abnormal above:",o:["0.35 s","0.5 s","1.0 s","2.0 s"],a:2,e:"SVS/AVF: > 1.0 s in femoral and popliteal veins; > 0.5 s in superficial, deep femoral and calf veins."},
+ {q:"Superficial thrombophlebitis of the GSV within 3 cm of the SFJ is generally:",o:["Ignored","Managed like DVT","Treated with compression only","Followed in 6 months"],a:1,e:"Proximity to the deep system raises the risk of extension and embolism."},
+ {q:"Augmentation with calf squeeze is useful to:",o:["Measure arterial PSV","Show patency between the probe and the calf and reveal flow around non-occlusive thrombus","Grade stenosis","Detect aliasing"],a:1,e:"A brisk surge means the segment between is patent; blunted augmentation suggests obstruction in between."},
+ {q:"A Baker cyst is located:",o:["Lateral to the fibular head","Between the medial gastrocnemius and semimembranosus","In the adductor canal","Anterior to the knee"],a:1,e:"It communicates with the joint through the gastrocnemius–semimembranosus bursa; rupture can mimic DVT."},
+ {q:"Why must each paired calf vein be compressed separately?",o:["They have different flow directions","Thrombus may involve only one of the pair","Arteries obscure them","They are never compressible"],a:1,e:"Isolated thrombus in one of the paired veins is easy to miss if only one is checked."},
+ {q:"A large free-floating thrombus tail in the CFV should be:",o:["Ignored","Reported with its extent and mobility","Compressed hard to confirm","Called chronic"],a:1,e:"Avoid vigorous compression; report the extent and the mobile segment."}];
+// ================= RENAL TRANSPLANT PACK =================
+const RVIEWS={kid:{label:"GRAFT LONG",name:"Transplant kidney, longitudinal"},anas:{label:"ART ANAST",name:"Arterial anastomosis (renal artery to external iliac artery)"},ven:{label:"VEN ANAST",name:"Venous anastomosis (renal vein to external iliac vein)"},hil:{label:"HILUM TRV",name:"Renal hilum, transverse"}};
+const RCONDS={normal:"Normal",dual:"Two renal arteries (variant anatomy)",dualSten:"Two renal arteries: lower-pole artery stenosis",tras:"Anastomotic renal artery stenosis",kink:"Main renal artery kink",rat:"Renal artery thrombosis",rvt:"Renal vein thrombosis",rvs:"Renal vein stenosis",hiRI:"High intrarenal resistance (rejection / ATN pattern)",hydro:"Hydronephrosis",coll:"Perinephric lymphocele compressing the graft",avf:"Post-biopsy arteriovenous fistula",inf:"Segmental infarct (upper pole)"};
+const RIOF={intra:0.65,intraMid:0.75,intraHi:0.85,intraRev:1.2,intraRVT:1.3,intraTard:0.45};
+function rtP(){const c=S.rtx.cond,P={iw:{upper:"intra",mid:"intra",lower:"intra"},ipsv:28,mra:{psv:140,jet:1,kink:false,occl:false},dual:false,dual2:{jet:1},mrv:{thr:false,jet:1},veins:true,perf:true,infarct:false,hydro:false,coll:false,avf:false};
+  if(c==="dual")P.dual=true;if(c==="dualSten"){P.dual=true;P.dual2.jet=3.2;P.iw.lower="intraTard";}
+  if(c==="tras"){P.mra.jet=3.0;P.iw={upper:"intraTard",mid:"intraTard",lower:"intraTard"};P.ipsv=18;}
+  if(c==="kink"){P.mra.kink=true;P.mra.jet=2.2;}
+  if(c==="rat"){P.mra.occl=true;P.perf=false;P.iw=null;}
+  if(c==="rvt"){P.mrv.thr=true;P.veins=false;P.iw={upper:"intraRVT",mid:"intraRVT",lower:"intraRVT"};}
+  if(c==="rvs")P.mrv.jet=3.5;if(c==="hiRI")P.iw={upper:"intraHi",mid:"intraHi",lower:"intraHi"};
+  if(c==="hydro"){P.hydro=true;P.iw={upper:"intraMid",mid:"intraMid",lower:"intraMid"};}
+  if(c==="coll"){P.coll=true;P.iw={upper:"intraRev",mid:"intraRev",lower:"intraRev"};}
+  if(c==="avf")P.avf=true;if(c==="inf")P.infarct=true;return P;}
+function rtTruth(){const P=rtP(),press=S.rtx.press/100;const ri=w=>w?(RIOF[w]*(1-0.85*press)+1.15*0.85*press):null;
+  return {ri:P.iw?{upper:ri(P.iw.upper),mid:ri(P.iw.mid),lower:ri(P.iw.lower)}:null,mra:140*P.mra.jet,eia:120,mra2:110*P.dual2.jet,tardus:S.rtx.cond==="tras",mrv:25*P.mrv.jet};}
+const KID={cx:0,cz:4.6,rx:5.4,rz:2.5};
+function inKid(ax,az,K){return ((ax-K.cx)/K.rx)**2+((az-K.cz)/K.rz)**2;}
+function evalPerf(V,ax,az,t){const K=V.K,q=inKid(ax,az,K);if(q>0.93)return null;if(((ax-K.cx)/(K.rx*0.56))**2+((az-K.cz)/(K.rz*0.42))**2<1)return null;
+  if(q<0.36)return null;const ang=Math.atan2(az-K.cz,ax-K.cx),st=0.5+0.5*Math.sin(16*ang+4*Math.sqrt(q)+1.3*Math.sin(5*ang));if(st<0.5)return null;if(V.wedge&&Math.abs(((ang-V.wedge[0]+Math.PI)%TAU+TAU)%TAU-Math.PI)<V.wedge[1])return null;
+  const n=Math.hypot(ax-K.cx,az-K.cz)||1,v=V.psv*waveV(V,t)*(0.4+0.6*Math.sqrt(q));const W=vecW((ax-K.cx)/n*v,(az-K.cz)/n*v),T=vecW((ax-K.cx)/n,(az-K.cz)/n);return {k:1,perf:true,vx:W[0],vz:W[1],tx:T[0],tz:T[1],turb:0.25,V,v,s:0};}
+function reflRtx(x,z,e){if(e.k===1&&!e.perf)return 0.02;if(e.k===2)return e.V&&e.V.R&&e.V.R[0]<0.1?0.62:1.4;if(e.k===3)return 1.0;if(e.k===4)return 0.3;if(e.k===7)return 0.14;if(e.k===9)return 0.01;
+  if(z<0.1)return 1.2;if(z<0.9)return 0.3*(0.8+0.5*Math.abs(Math.sin(x*5.3+z*7.1)));if(z<1.7)return 0.42*(0.65+0.7*Math.max(0,Math.sin(z*30+x*1.5))**3);
+  const A=toAnat(x,z);for(const K of CASE.kids||[]){const q=inKid(A[0],A[1],K);if(q<1){if(q>0.955)return 1.3;
+      if(((A[0]-K.cx)/(K.rx*0.56))**2+((A[1]-K.cz)/(K.rz*0.42))**2<1)return 0.95*(0.8+0.35*Math.abs(Math.sin(A[0]*7+A[1]*9)));
+      const ang=Math.atan2(A[1]-K.cz,A[0]-K.cx),rr=Math.sqrt(q);for(let i=0;i<12;i++){const a=i/12*TAU;let da=((ang-a+Math.PI)%TAU+TAU)%TAU-Math.PI;if(Math.abs(da)<0.16&&rr>0.5&&rr<0.8)return 0.13;}
+      return (CASE.hiRI?0.5:0.42)*(0.9+0.2*Math.sin(A[0]*11+A[1]*13));}}
+  return 0.48*(0.8+0.35*Math.sin(x*2.1+z*1.7)*Math.cos(z*2.9-x*1.3));}
+function interlobar(K,angDeg,name,pole,o){const a=angDeg*D2R,p0=[K.cx+Math.cos(a)*K.rx*0.55,K.cz+Math.sin(a)*K.rz*0.44],p1=[K.cx+Math.cos(a)*K.rx*0.9,K.cz+Math.sin(a)*K.rz*0.9];return mkTube(seg(p0,p1,14),Object.assign({rf:()=>0.065,name,pole},o));}
+function buildRtx(){const A=S.rtx,P=rtP(),V=[];ANROT=A.tilt*D2R;CASE={view:A.view,kids:[],hiRI:A.cond==="hiRI"};const press=A.press/100;
+  const iwave=pole=>P.iw?{wave:P.iw[pole],wa:P.iw[pole],wb:"intraRev",mix:0.85*press}:null;
+  if(A.view==="kid"){const K=Object.assign({},KID);if(A.cond==="rvt"){K.rx=6.0;K.rz=2.9;}CASE.kids.push(K);
+    const poles={upper:[138,222],mid:[268,92],lower:[42,318]};
+    if(P.iw)for(const pole in poles){if(P.infarct&&pole==="upper")continue;poles[pole].forEach((ang,i)=>{const w=iwave(pole);V.push(interlobar(K,ang,i===0?`Interlobar a. (${pole})`:`Interlobar a. (${pole}) 2`,pole,Object.assign({psv:P.ipsv},w)));
+      if(P.veins){const a=(ang+9)*D2R,p1=[K.cx+Math.cos(a)*K.rx*0.88,K.cz+Math.sin(a)*K.rz*0.88],p0=[K.cx+Math.cos(a)*K.rx*0.56,K.cz+Math.sin(a)*K.rz*0.45];V.push(mkTube(seg(p1,p0,14),{rf:()=>0.075,psv:9,wave:"venous",art:0,name:"Interlobar vein"}));}});}
+    if(P.avf){const a=330*D2R,pa=[K.cx+Math.cos(a)*K.rx*0.55,K.cz+Math.sin(a)*K.rz*0.44],pb=[K.cx+Math.cos(a)*K.rx*0.85,K.cz+Math.sin(a)*K.rz*0.85];V.push(mkTube(seg(pa,pb,14),{rf:()=>0.08,psv:150,wave:"avf",turbAlways:0.5,name:"Feeding artery"}));
+      const a2=325*D2R;V.push(mkTube(seg([K.cx+Math.cos(a2)*K.rx*0.85,K.cz+Math.sin(a2)*K.rz*0.85],[K.cx+Math.cos(a2)*K.rx*0.55,K.cz+Math.sin(a2)*K.rz*0.44],14),{rf:()=>0.09,psv:60,wave:"avfV",turbAlways:0.4,name:"Draining vein"}));const W=fromAnat(pb[0],pb[1]);CASE.bruit={x:W[0],z:W[1]};}
+    if(P.hydro){V.push({type:"cyst",cx:0.3,cz:4.75,rx:2.2,rz:0.6,name:"Renal pelvis"});[[-2.2,4.0],[-1.8,5.5],[2.3,4.05],[2.1,5.45],[0,3.7]].forEach(([x,z])=>V.push({type:"cyst",cx:x,cz:z,rx:0.42,rz:0.3,name:"Dilated calyx"}));}
+    if(P.coll){V.push({type:"cyst",cx:-0.8,cz:1.75,rx:3.6,rz:0.75,name:"Lymphocele"});CAST.push({x:-0.8,z:1.75,r:0.75,kind:"enh"});}
+    if(P.perf)V.push({type:"perf",K,psv:10,wave:P.iw?P.iw.mid:"intra",wa:P.iw?P.iw.mid:"intra",wb:"intraRev",mix:0.85*press,weakDB:16,wedge:P.infarct?[Math.PI,0.55]:null,name:"Parenchyma"});}
+  if(A.view==="anas"){CASE.kids.push({cx:-7.2,cz:2.6,rx:3.2,rz:2.0});V.push(mkTube(seg([-6,6.0],[6,6.35],60),{rf:()=>0.42,psv:120,wave:"pad",name:"EIA"}));V.push(mkTube(seg([6,7.3],[-6,6.95],60),{rf:()=>0.55,psv:22,wave:"venous",art:0,name:"EIV"}));
+    const mpts=P.mra.kink?bez([-0.6,5.62],[1.2,4.1],[-1.6,3.9],24).concat(bez([-1.6,3.9],[-3.4,3.75],[-5.4,3.0],24).slice(1)):bez([-0.6,5.62],[-1.2,3.9],[-5.4,3.0],40);
+    const mra=mkTube(mpts,{rf:()=>0.26,psv:140,wave:"mra",name:"MRA"});if(P.mra.jet>1){const x=P.mra.kink?0.45:-0.75;mra.sten={s0:P.mra.kink?mra.S[24]:sAtX(mra,x),len:P.mra.kink?0.4:0.3,pct:P.mra.kink?0.05:0.7,side:-1,jet:P.mra.jet,plaque:P.mra.kink?"none":"mixed"};}
+    if(P.mra.occl){mra.occl={s0:-1,s1:1e9};}V.push(mra);
+    if(P.dual){const m2=mkTube(bez([2.2,5.75],[1.6,4.2],[-3.5,4.6],40),{rf:()=>0.2,psv:110,wave:"mra",name:"MRA 2 (lower pole)"});if(P.dual2.jet>1)m2.sten={s0:sAtX(m2,2.05),len:0.28,pct:0.7,side:-1,jet:P.dual2.jet,plaque:"mixed"};V.push(m2);}}
+  if(A.view==="ven"){CASE.kids.push({cx:-7.2,cz:2.6,rx:3.2,rz:2.0});V.push(mkTube(seg([6,6.5],[-6,6.15],60),{rf:()=>0.58,psv:25,wave:"venous",art:0,name:"EIV"}));V.push(mkTube(seg([-6,7.45],[6,7.8],60),{rf:()=>0.4,psv:120,wave:"pad",name:"EIA"}));
+    const mrv=mkTube(bez([-5.4,3.3],[-1.6,4.0],[0.6,5.75],40),{rf:()=>P.mrv.thr?0.48:0.36,psv:25,wave:"venous",art:0,name:"MRV",turbAlways:P.mrv.jet>1?0:0});
+    if(P.mrv.jet>1)mrv.sten={s0:sAtX(mrv,0.35),len:0.28,pct:0.6,side:1,jet:P.mrv.jet,plaque:"none",turbK:1.4};if(P.mrv.thr)mrv.occl={s0:-1,s1:1e9};V.push(mrv);}
+  if(A.view==="hil"){const K={cx:0,cz:4.6,rx:3.0,rz:2.4};CASE.kids.push(K);const ob={ob:0.5,obx:0.7,obz:-0.7};
+    V.push(Object.assign({type:"vdisk",cx:-0.9,cz:4.1,r:0.26,art:1,psv:140,wave:P.mra.occl?null:"mra",name:"Renal artery"},ob,P.mra.occl?{thr:"acute"}:{}));
+    V.push(Object.assign({type:"vdisk",cx:0.25,cz:4.25,r:P.mrv.thr?0.48:0.36,psv:20,vmode:P.mrv.thr?null:"phasic",wave:"venous",thr:P.mrv.thr?"acute":null,name:"Renal vein"},ob));
+    if(P.hydro)V.push({type:"cyst",cx:-0.2,cz:5.1,rx:1.3,rz:0.75,name:"Renal pelvis"});}
+  return V;}
+function applyRtView(){VES=vessels();const A=S.rtx;S.depth=A.view==="kid"?(A.cond==="rvt"?10:9):9;const M=mainVessel();
+  if(M.type==="vdisk"){const W=fromAnat(M.cx,M.cz);S.p.gx=W[0];S.p.gz=W[1];}else if(M.type==="tube"){const s=M.pole?M.S[M.S.length-1]*0.55:(A.view==="anas"?1.4:A.view==="ven"?sAtX(M,-0.4):0.5);const p=ptAtS(M,s),W=fromAnat(p.x,p.z);S.p.gx=W[0];S.p.gz=W[1];}
+  const bxz=A.view==="kid"?fromAnat(0,4.6):A.view==="hil"?fromAnat(0,4.4):fromAnat(-1.5,4.8);S.c.box={x:bxz[0],z:bxz[1],w:A.view==="kid"?7.5:6,h:A.view==="kid"?5.2:4.2};
+  if(A.view==="kid"||A.view==="hil"){S.c.prf=2000;S.c.wf=50;S.p.prf=2500;S.p.wf=50;}else{S.c.prf=3500;S.c.wf=100;S.p.prf=6000;S.p.wf=100;S.p.base=A.view==="anas"?0.3:0;}
+  S.pw=true;S.active="pw";S.focus=Math.round(S.p.gz*2)/2;DC=D();alignAngle();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];}
+function syncRt(){const A=S.rtx;$$("#rView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.view));$$("#rPole button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===A.pole));$("rPoleRow").hidden=A.view!=="kid";
+  const cs=$("rCond");if(!cs.options.length)for(const k in RCONDS){const o=document.createElement("option");o.value=k;o.textContent=RCONDS[k];cs.appendChild(o);}cs.value=A.cond;
+  $("rPress").value=A.press;$("rPresso").textContent=A.press+"%";$("rTilt").value=A.tilt;$("rTilto").textContent=(A.tilt>0?"+":"")+A.tilt+"°";$("rHR").value=S.ph.hr;$("rHRo").textContent=S.ph.hr+" bpm";$("rReveal").checked=A.reveal;
+  const T=rtTruth(),f=v=>v==null?"none":v.toFixed(2);$("rTruth").innerHTML=A.reveal?(T.ri?`RI upper ${f(T.ri.upper)}, mid ${f(T.ri.mid)}, lower ${f(T.ri.lower)}. `:"No intrarenal arterial flow. ")+`MRA PSV ${T.mra.toFixed(0)} cm/s, EIA ${T.eia}, ratio ${(T.mra/T.eia).toFixed(1)}.`+(rtP().dual?` Second (lower-pole) artery PSV ${T.mra2.toFixed(0)}.`:"")+(A.cond==="rvs"?` MRV jet about ${T.mrv.toFixed(0)} cm/s (ratio 3.5).`:""):"";}
+$$("#rView button").forEach(b=>b.onclick=()=>{S.rtx.view=b.dataset.v;applyRtView();syncAll();tip(`<b>${RVIEWS[S.rtx.view].name}</b>. ${({kid:"Sample interlobar arteries at the upper, mid and lower poles for RI; use power Doppler with a low scale to map cortical perfusion.",anas:"The main renal artery leaves the external iliac artery and runs to the hilum. Follow it with color and sample the anastomosis, any color-aliasing focus, and the iliac artery for the ratio.",ven:"The renal vein drains into the external iliac vein. Look for flow, a focal jet, or thrombus.",hil:"Artery, vein and collecting system side by side: color distinguishes a dilated pelvis from vessels."})[S.rtx.view]}`);});
+$$("#rPole button").forEach(b=>b.onclick=()=>{S.rtx.pole=b.dataset.v;applyRtView();syncAll();tip(`Gate moved to an interlobar artery in the <b>${S.rtx.pole} pole</b>.`);});
+$("rCond").onchange=e=>{S.rtx.cond=e.target.value;applyRtView();syncAll();tip(`<b>${RCONDS[S.rtx.cond]}</b> loaded; it applies across the views.`);};
+$("rPress").addEventListener("input",e=>{S.rtx.press=+e.target.value;$("rPresso").textContent=S.rtx.press+"%";VES=vessels();syncRt();tip("<b>Probe pressure</b> on a superficial graft compresses the parenchyma: diastolic flow falls and RI rises, even to diastolic reversal. Scan with the lightest pressure that gives a good window.");});
+$("rTilt").addEventListener("input",e=>{S.rtx.tilt=+e.target.value;$("rTilto").textContent=(S.rtx.tilt>0?"+":"")+S.rtx.tilt+"°";VES=vessels();if(evalPt(S.p.gx,S.p.gz,0,true).k!==1)applyRtView();bDirty=true;CIMG=null;});
+$("rHR").addEventListener("input",e=>{S.ph.hr=+e.target.value;$("rHRo").textContent=S.ph.hr+" bpm";});$("rReveal").onchange=e=>{S.rtx.reveal=e.target.checked;syncRt();};
+function loadRt(o){loadExam("rtx",o,true);}
+const RTDRILLS=[
+ {id:"rt_ri",t:"Intrarenal RI at three poles",s:"RI and its meaning",choices:["Normal (about 0.6–0.8)","Elevated (> 0.8)"],setup:()=>{loadRt({view:"kid",cond:"hiRI"});},task:"Measure the RI in interlobar arteries at the upper, mid and lower poles (Pole buttons, then PSV / EDV or Trace), then classify.",
+  check:()=>{const T=rtTruth(),m=MS.riPoles,poles=["upper","mid","lower"],have=poles.filter(p=>m[p]!=null);if(have.length<3)return [0,`Measured ${have.length} of 3 poles (${have.join(", ")||"none"}).`];const bad=poles.find(p=>Math.abs(m[p]-T.ri[p])>0.07);
+   return !bad&&drillChoice==="Elevated (> 0.8)"?[1,`RI ${poles.map(p=>m[p].toFixed(2)).join(" / ")}: elevated, but non-specific (rejection, ATN, drug toxicity, obstruction, compression). Compare with prior studies and correlate clinically.`]:[0,bad?`The ${bad}-pole RI (${m[bad].toFixed(2)}) is off: click the systolic peak and the end-diastolic point just before the next upstroke.`:"Classify against the normal range."];},hint:"RI = (PSV − EDV)/PSV; angle correction does not change it. Sample each pole."},
+ {id:"rt_tras",t:"Is there a renal artery stenosis?",s:"anastomotic jet, ratio, tardus–parvus",choices:["No significant stenosis","Transplant renal artery stenosis"],setup:()=>{loadRt({view:"anas",cond:"tras"});},task:"Save the peak MRA velocity at the anastomosis (as MRA) and the external iliac PSV (as EIA). Then measure an intrarenal acceleration time in the Graft view, and decide.",
+  check:()=>{const T=rtTruth(),sv=MS.saved,okM=sv.MRA&&Math.abs(sv.MRA-T.mra)/T.mra<=0.15,okE=sv.EIA&&Math.abs(sv.EIA-T.eia)/T.eia<=0.15,okA=MS.lastAT!=null&&MS.lastAT>0.1;
+   return okM&&okE&&okA&&drillChoice==="Transplant renal artery stenosis"?[1,`MRA ${sv.MRA.toFixed(0)} cm/s, ratio ${(sv.MRA/sv.EIA).toFixed(1)}, intrarenal AT ${(MS.lastAT*1000).toFixed(0)} ms: hemodynamically significant stenosis.`]:[0,[!sv.MRA?"Save the MRA jet PSV.":!okM?`Saved MRA ${sv.MRA.toFixed(0)} cm/s is off: this jet is fast and deep, so de-alias it (Update mode, baseline, lower frequency) and align the angle with the jet.`:"",!sv.EIA?"Save the EIA PSV.":!okE?"EIA PSV is off.":"",MS.lastAT==null?"Measure an intrarenal AT.":!okA?"That AT is short: click the very start of the upstroke and the first peak.":"",drillChoice!=="Transplant renal artery stenosis"&&okM&&okE&&okA?"Reconsider the diagnosis.":""].filter(Boolean).join(" ")];},hint:"PSV > 250 cm/s and ratio > 1.8 at the anastomosis, with intrarenal AT > 0.1 s, support significant stenosis."},
+ {id:"rt_kink",t:"Kink or stenosis?",s:"focal jet with normal distal waveforms",choices:["Significant stenosis","Kink without significant stenosis"],setup:()=>{loadRt({view:"anas",cond:"kink"});},task:"There is a focal velocity rise along a tortuous renal artery. Check the intrarenal waveform (measure AT in the Graft view), then decide.",
+  check:()=>MS.lastAT!=null&&MS.lastAT<0.1&&drillChoice==="Kink without significant stenosis"?[1,`Intrarenal AT ${(MS.lastAT*1000).toFixed(0)} ms with a brisk upstroke: the kink raises velocity locally but is not flow-limiting.`]:[0,MS.lastAT==null?"Measure an intrarenal acceleration time in the Graft view.":"Reconsider: is there tardus–parvus downstream?"],hint:"Downstream waveforms decide whether a focal jet matters. Align the angle cursor with the local flow direction in the bend."},
+ {id:"rt_rvt",t:"Reversed diastolic flow",s:"graft vein",choices:["Acute rejection","Renal vein thrombosis","Normal"],setup:()=>{loadRt({view:"kid",cond:"rvt"});},task:"Interrogate an interlobar artery and look for venous flow in the graft, then decide.",
+  check:o=>o.gateV&&o.gateV.pole&&drillChoice==="Renal vein thrombosis"?[1,"Reversed, plateau-like diastolic arterial flow with no venous signal in an enlarged graft: renal vein thrombosis. Confirm absent flow in the main renal vein."]:[0,!(o.gateV&&o.gateV.pole)?"Put the gate in an interlobar artery.":"Look again for venous flow; what explains the reversed diastole?"],hint:"Rejection can reverse diastole too, but venous flow persists; with thrombosis the veins are silent."},
+ {id:"rt_press",t:"RI that is too high",s:"probe pressure",setup:()=>{loadRt({view:"kid",cond:"normal",press:90});},task:"This RI looks alarming. Find the cause and obtain a true mid-pole RI.",
+  check:()=>{const T=rtTruth();return MS.lastRI!=null&&MS.lastRIpress<=20&&MS.riPoles.mid!=null&&Math.abs(MS.riPoles.mid-T.ri.mid)<=0.08?[1,`RI ${MS.riPoles.mid.toFixed(2)} with light pressure: the high value was compression of a superficial graft.`]:[0,S.rtx.press>20?"Something you are doing to the graft is raising RI (Case panel).":"Now measure the mid-pole RI again."];},hint:"Lighten the probe pressure, then remeasure."},
+ {id:"rt_hydro",t:"Dilated structure at the hilum",s:"color versus collecting system",choices:["Dilated renal vein","Hydronephrosis (dilated pelvis)"],setup:()=>{loadRt({view:"hil",cond:"hydro"});},task:"An anechoic structure sits in the hilum. Use color and PW to decide what it is.",
+  check:()=>{const e=evalPt(S.p.gx,S.p.gz,0,true);return e.k===9&&drillChoice==="Hydronephrosis (dilated pelvis)"?[1,"No color and no Doppler signal in the anechoic structure, with separate artery and vein: dilated collecting system."]:[0,e.k!==9?"Put the gate in the anechoic structure and check for flow.":"Reconsider: is there any flow in it?"];},hint:"Vessels fill with color at an appropriate scale; urine does not."},
+ {id:"rt_avf",t:"After the biopsy",s:"perivascular vibration",choices:["Pseudoaneurysm","Arteriovenous fistula","Normal"],setup:()=>{loadRt({view:"kid",cond:"avf",pole:"lower"});},task:"There is a color mosaic in the lower pole after a biopsy. Sample the feeding vessel and decide.",
+  check:o=>o.gateV&&o.gateV.name==="Feeding artery"&&drillChoice==="Arteriovenous fistula"?[1,"High-velocity, low-resistance feeding artery, perivascular color vibration and an arterialized draining vein: post-biopsy AV fistula. Most close spontaneously."]:[0,!(o.gateV&&o.gateV.name==="Feeding artery")?"Put the gate in the feeding artery of the mosaic.":"Reconsider the pattern."],hint:"A pseudoaneurysm shows yin-yang flow in a sac; a fistula shows high diastolic flow and an arterialized vein."},
+ {id:"rt_inf",t:"Perfusion defect",s:"power Doppler settings",choices:["Normal perfusion","Segmental infarct (upper pole)","Global hypoperfusion"],setup:()=>{loadRt({view:"kid",cond:"inf",pole:"mid"});S.c.prf=3500;S.c.wf=300;S.pw=false;S.active="color";},task:"Map cortical perfusion of the graft with settings sensitive to slow flow, then decide.",
+  check:()=>{const sens=S.power?S.c.wf<=100:(S.c.prf<=1000&&S.c.wf<=50);return sens&&drillChoice==="Segmental infarct (upper pole)"?[1,"A wedge-shaped region without cortical flow at the upper pole: segmental infarct. Consider a branch or accessory artery occlusion."]:[0,!sens?"Settings are not sensitive enough for parenchymal flow: switch to power Doppler or lower the scale and wall filter.":"Look again at the upper pole."];},hint:"Power Doppler, low scale, low wall filter and enough gain show cortical flow out to the capsule."},
+ {id:"rt_dual",t:"Two renal arteries",s:"pole-by-pole waveforms",choices:["Normal","Stenosis of the main (upper) artery","Stenosis of the lower-pole artery"],setup:()=>{loadRt({view:"kid",cond:"dualSten"});},task:"This graft has two renal arteries. Measure the acceleration time in an upper-pole and a lower-pole interlobar artery, then decide (you can also inspect both anastomoses).",
+  check:()=>{const a=MS.atPoles;return a.upper!=null&&a.lower!=null&&a.lower>0.1&&a.upper<0.1&&drillChoice==="Stenosis of the lower-pole artery"?[1,`AT upper ${(a.upper*1000).toFixed(0)} ms, lower ${(a.lower*1000).toFixed(0)} ms: tardus–parvus confined to the territory of the second artery. Each artery and its anastomosis must be checked.`]:[0,a.upper==null||a.lower==null?"Measure AT in both the upper and the lower pole.":"Compare the two poles again."];},hint:"Use the Pole buttons; measure with AT / slope in each pole."}];
+const RTQZ=[
+ {q:"A normal transplant interlobar RI is about:",o:["0.3–0.5","0.6–0.8","0.85–1.0","Above 1.0"],a:1,e:"RI above 0.8 is abnormal but non-specific."},
+ {q:"An RI of 0.9 in a transplant kidney most specifically indicates:",o:["Acute rejection","ATN","Nothing specific: many causes","Renal artery stenosis"],a:2,e:"Rejection, ATN, drug toxicity, obstruction, compression and renal vein thrombosis all raise RI; trends and clinical context matter."},
+ {q:"Which finding supports transplant renal artery stenosis?",o:["Anastomotic PSV 120 cm/s","Intrarenal acceleration time > 0.1 s with low acceleration","RI 0.7","Phasic renal vein flow"],a:1,e:"Tardus–parvus downstream, an anastomotic PSV > 250 cm/s and a renal-to-iliac ratio > 1.8 support it."},
+ {q:"A focal velocity rise at a tortuous renal artery segment with normal intrarenal waveforms suggests:",o:["Critical stenosis","Kink without hemodynamic significance","Renal vein stenosis","Rejection"],a:1,e:"Downstream waveforms show whether a focal jet limits flow."},
+ {q:"Reversed, plateau-like diastolic flow in intrarenal arteries with absent venous flow suggests:",o:["Renal vein thrombosis","Arterial stenosis","Hydronephrosis","Normal early post-operative graft"],a:0,e:"Outflow is blocked, so arterial blood bounces back in diastole."},
+ {q:"Why can probe pressure falsely raise RI in a transplant kidney?",o:["It increases PRF","It compresses the superficial graft and raises parenchymal resistance","It changes the Doppler angle","It filters diastolic flow"],a:1,e:"Use the lightest pressure that gives a good window."},
+ {q:"With two renal arteries, a stenosis of one may show:",o:["Global tardus–parvus","Tardus–parvus only in the pole it supplies","No change at all","Reversed flow everywhere"],a:1,e:"Interrogate each anastomosis and each pole separately."},
+ {q:"A post-biopsy AV fistula shows:",o:["Absent flow","High-velocity low-resistance feeding artery and perivascular color vibration","Yin-yang flow in a sac","Tardus–parvus"],a:1,e:"The draining vein is arterialized; a pseudoaneurysm instead shows yin-yang sac flow."},
+ {q:"The best way to show a segmental infarct is:",o:["High-PRF color","Power Doppler with low scale and filter","CW Doppler","B-mode only"],a:1,e:"Cortical perfusion is slow; sensitive settings reveal a wedge-shaped defect."},
+ {q:"A renal vein velocity ratio across the anastomosis greater than about 3 suggests:",o:["Renal vein stenosis","Normal","Arterial stenosis","Rejection"],a:0,e:"Focal venous acceleration with turbulence at the anastomosis indicates narrowing."}];
 // ================= MANUAL MEASUREMENTS =================
-const MS={tool:null,pts:[],trace:[],tracing:false,res:[],saved:{},lastPSV:null};
+const MS={tool:null,pts:[],trace:[],tracing:false,res:[],saved:{},lastPSV:null,riPoles:{},atPoles:{}};
+function poleRI(ri){MS.lastRI=ri;if(S.exam==="rtx"){MS.lastRIpress=S.rtx.press;if(DC.gateV&&DC.gateV.pole)MS.riPoles[DC.gateV.pole]=ri;}}
 const MTOOLS={dist:{n:"Distance",steps:["Click one wall (inner edge)","Click the opposite wall"],spec:false},vel:{n:"Velocity",steps:["Click any point on the spectrum"],spec:true},
   psed:{n:"PSV / EDV",steps:["Click the systolic peak","Click end diastole (just before the next upstroke)"],spec:true},trace:{n:"Trace (PI)",steps:["Drag along the envelope from one systolic upstroke to the next"],spec:true},
-  at:{n:"AT / slope",steps:["Click the start of the systolic upstroke","Click the early systolic peak"],spec:true},hr:{n:"HR",steps:["Click a systolic peak","Click the same point of the next cycle"],spec:true}};
+  at:{n:"AT / slope",steps:["Click the start of the systolic upstroke","Click the early systolic peak"],spec:true},hr:{n:"Δt / HR",steps:["Click the start of the interval (for HR, a systolic peak)","Click the end of the interval (for HR, the next peak)"],spec:true}};
 function inSpec(px,py){return G.spec&&px>=G.spX&&px<G.spX+SPW&&py>=G.spY&&py<G.spY+SPH;}
 function inImg(px,py){return px>=G.ix&&px<=G.ix+G.iw&&py>=G.iy&&py<=G.iy+G.ih;}
 function specV(j){const o=DC,lo=S.cw?-S.p.prf*(0.5-S.p.base):o.lo,span=S.p.prf;return (lo+(j+0.5)/SPH*span)*(S.units==="cms"?o.kV:0.001);}
@@ -776,7 +1449,7 @@ const uV=()=>S.units==="cms"?"cm/s":"kHz",f1=v=>S.units==="cms"?v.toFixed(1):v.t
 function measUI(){$$("#mkeys .key").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===MS.tool));
   $("mHint").textContent=MS.tool?MTOOLS[MS.tool].steps[Math.min(MS.pts.length,MTOOLS[MS.tool].steps.length-1)]:"Pick a tool; the image freezes for measuring.";
   const lines=MS.res.slice(-2).map(r=>r.txt);const sv=MS.saved,rat=[];
-  if(sv.ICA&&sv.CCA)rat.push(`IC/CC ${(sv.ICA/sv.CCA).toFixed(2)}`);if(sv.ECA&&sv.CCA)rat.push(`EC/CC ${(sv.ECA/sv.CCA).toFixed(2)}`);if(sv.Stenosis&&sv.Proximal)rat.push(`Sten/Prox ${(sv.Stenosis/sv.Proximal).toFixed(2)}`);
+  if(sv.ICA&&sv.CCA)rat.push(`IC/CC ${(sv.ICA/sv.CCA).toFixed(2)}`);if(sv.ECA&&sv.CCA)rat.push(`EC/CC ${(sv.ECA/sv.CCA).toFixed(2)}`);if(sv.Stenosis&&sv.Proximal)rat.push(`Sten/Prox ${(sv.Stenosis/sv.Proximal).toFixed(2)}`);if(sv.MRA&&sv.EIA)rat.push(`MRA/EIA ${(sv.MRA/sv.EIA).toFixed(2)}`);if(sv.MRV&&sv.EIV)rat.push(`MRV/EIV ${(sv.MRV/sv.EIV).toFixed(2)}`);
   const savedTxt=Object.keys(sv).length?"Saved PSV: "+Object.entries(sv).map(([k,v])=>`${k} ${f1(v)}`).join(", "):"";
   $("mRes").innerHTML=[...lines,savedTxt,rat.join("   ")].filter(Boolean).join("<br>")||"<span style='color:var(--s-label)'>No measurements yet.</span>";}
 function pushRes(txt,obj){MS.res.push(Object.assign({txt},obj||{}));if(MS.res.length>20)MS.res.shift();}
@@ -795,16 +1468,16 @@ function measDown(px,py,e){const T=MTOOLS[MS.tool];
 function measMove(px,py){if(!inSpec(px,py))return;const x=Math.round(px-G.spX),j=Math.round(SPH-1-(py-G.spY));const last=MS.trace[MS.trace.length-1];if(!last||x>last.x)MS.trace.push({x,j});else if(x===last.x)last.j=j;}
 function measUp(){MS.tracing=false;if(MS.trace.length<10){tip("Trace too short: drag along the envelope across one full cardiac cycle.");MS.trace=[];return;}finishMeas();}
 function finishMeas(){const t=MS.tool,P=MS.pts,sw=S.sweep;let txt="";
-  if(t==="dist"){const [a,b]=[P[0].w,P[1].w];const d=Math.hypot(a[0]-b[0],a[1]-b[1])*10;txt=`Dist ${d.toFixed(1)} mm`;pushRes(txt);tip(`Diameter ${d.toFixed(1)} mm (true phantom lumen ${S.ph.diam} mm). Measure perpendicular to the vessel axis, inner wall to inner wall.`);}
+  if(t==="dist"){const [a,b]=[P[0].w,P[1].w];const d=Math.hypot(a[0]-b[0],a[1]-b[1])*10;MS.lastDist=d;txt=`Dist ${d.toFixed(1)} mm`;pushRes(txt);tip(S.exam!=="phantom"?`Distance ${d.toFixed(1)} mm (${(d/10).toFixed(2)} cm). For aneurysms, measure outer wall to outer wall, perpendicular to the long axis, including mural thrombus.`:`Diameter ${d.toFixed(1)} mm (true phantom lumen ${S.ph.diam} mm). Measure perpendicular to the vessel axis, inner wall to inner wall.`);}
   if(t==="vel"){const v=specV(P[0].j);MS.lastPSV=v;txt=`V ${f1(v)} ${uV()}`;pushRes(txt);}
   if(t==="psed"){const ps=specV(P[0].j),ed=specV(P[1].j),a=Math.abs(ps),b=Math.abs(ed);MS.lastPSV=ps;const ri=(a-b)/a,sd=b>0?a/b:Infinity;
-    txt=`PSV ${f1(ps)}  EDV ${f1(ed)}  RI ${ri.toFixed(2)}  S/D ${isFinite(sd)?sd.toFixed(2):"∞"}`;pushRes(txt);tip(`<b>RI</b> = (PSV − EDV) / PSV = ${ri.toFixed(2)}; <b>S/D</b> = PSV / EDV = ${isFinite(sd)?sd.toFixed(2):"undefined (EDV 0)"}. Compare with the auto trace.`);}
+    poleRI(ri);txt=`PSV ${f1(ps)}  EDV ${f1(ed)}  RI ${ri.toFixed(2)}  S/D ${isFinite(sd)?sd.toFixed(2):"∞"}`;pushRes(txt);tip(`<b>RI</b> = (PSV − EDV) / PSV = ${ri.toFixed(2)}; <b>S/D</b> = PSV / EDV = ${isFinite(sd)?sd.toFixed(2):"undefined (EDV 0)"}. Compare with the auto trace.`);}
   if(t==="trace"){const tr=MS.trace,vs=[];for(let i=0;i<tr.length-1;i++){const a=tr[i],b=tr[i+1];for(let x=a.x;x<b.x;x++){const j=a.j+(b.j-a.j)*(x-a.x)/(b.x-a.x);vs.push(Math.abs(specV(j)));}}vs.push(Math.abs(specV(tr[tr.length-1].j)));
     const ps=Math.max(...vs),ed=vs[vs.length-1],tam=vs.reduce((s,v)=>s+v,0)/vs.length,pi=(ps-ed)/tam,ri=(ps-ed)/ps,dur=(tr[tr.length-1].x-tr[0].x)/sw;MS.lastPSV=ps;
-    txt=`PSV ${f1(ps)}  EDV ${f1(ed)}  TAMAX ${f1(tam)}  PI ${pi.toFixed(2)}  RI ${ri.toFixed(2)}`;pushRes(txt);tip(`<b>PI</b> = (PSV − EDV) / TAMAX = ${pi.toFixed(2)}, using the time-averaged maximum velocity over your trace (${(dur*1000).toFixed(0)} ms${Math.abs(dur-60/S.ph.hr)>0.15*60/S.ph.hr?"; one cycle here is "+(60/S.ph.hr*1000).toFixed(0)+" ms, so trace exactly one cycle":""}).`);}
+    poleRI(ri);txt=`PSV ${f1(ps)}  EDV ${f1(ed)}  TAMAX ${f1(tam)}  PI ${pi.toFixed(2)}  RI ${ri.toFixed(2)}`;pushRes(txt);tip(`<b>PI</b> = (PSV − EDV) / TAMAX = ${pi.toFixed(2)}, using the time-averaged maximum velocity over your trace (${(dur*1000).toFixed(0)} ms${Math.abs(dur-60/S.ph.hr)>0.15*60/S.ph.hr?"; one cycle here is "+(60/S.ph.hr*1000).toFixed(0)+" ms, so trace exactly one cycle":""}).`);}
   if(t==="at"){const v1=Math.abs(specV(P[0].j)),v2=Math.abs(specV(P[1].j)),at=(P[1].x-P[0].x)/sw;if(at<=0){tip("Click the upstroke first, then the peak to its right.");MS.pts=[];measUI();return;}const acc=(v2-v1)/at;
-    txt=`AT ${(at*1000).toFixed(0)} ms  Accel ${S.units==="cms"?acc.toFixed(0)+" cm/s²":acc.toFixed(1)+" kHz/s"}`;pushRes(txt);tip(`<b>Acceleration time</b> ${(at*1000).toFixed(0)} ms, <b>acceleration</b> (slope) ${S.units==="cms"?acc.toFixed(0)+" cm/s²":acc.toFixed(1)+" kHz/s"}. A prolonged AT with low acceleration is the tardus–parvus pattern; try the tardus–parvus waveform in the phantom.`);}
-  if(t==="hr"){const dt=Math.abs(P[1].x-P[0].x)/sw;if(dt<0.2){MS.pts=[];measUI();return;}txt=`HR ${(60/dt).toFixed(0)} bpm (cycle ${(dt*1000).toFixed(0)} ms)`;pushRes(txt);}
+    MS.lastAT=at;if(DC.gateV&&DC.gateV.pole)MS.atPoles[DC.gateV.pole]=at;txt=`AT ${(at*1000).toFixed(0)} ms  Accel ${S.units==="cms"?acc.toFixed(0)+" cm/s²":acc.toFixed(1)+" kHz/s"}`;pushRes(txt);tip(`<b>Acceleration time</b> ${(at*1000).toFixed(0)} ms, <b>acceleration</b> (slope) ${S.units==="cms"?acc.toFixed(0)+" cm/s²":acc.toFixed(1)+" kHz/s"}. A prolonged AT with low acceleration is the tardus–parvus pattern; try the tardus–parvus waveform in the phantom.`);}
+  if(t==="hr"){const dt=Math.abs(P[1].x-P[0].x)/sw;if(dt<0.03){MS.pts=[];measUI();return;}MS.lastDT=dt;txt=`Δt ${(dt*1000).toFixed(0)} ms  (as a cycle: HR ${(60/dt).toFixed(0)} bpm)`;pushRes(txt);tip(`<b>Δt</b> ${(dt*1000).toFixed(0)} ms. For reflux, click where reversed flow starts and where it ends; reflux is abnormal above 0.5 s in superficial and calf veins and above 1.0 s in the femoral and popliteal veins.`);}
   MS.pts=MS.pts.slice();MS.done=MS.tool;MS.keep={tool:t,pts:MS.pts.slice(),trace:MS.trace.slice()};MS.pts=[];MS.trace=[];measUI();}
 function drawMeas(o,sk){const marks=[];const k=MS.keep;
   const spXY=p=>[G.spX+p.x,G.spY+SPH-1-p.j],cross=(x,y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-6,y);ctx.lineTo(x+6,y);ctx.moveTo(x,y-6);ctx.lineTo(x,y+6);ctx.stroke();};
@@ -819,7 +1492,7 @@ function drawMeas(o,sk){const marks=[];const k=MS.keep;
   // result box on monitor
   if(MS.res.length){const lines=MS.res.slice(-3).map(r=>r.txt);ctx.font="12px ui-monospace, Menlo, Consolas, monospace";const x=G.ix+6,y=G.iy+G.ih-8-16*lines.length;ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(x-4,y-13,Math.max(...lines.map(l=>ctx.measureText(l).width))+10,16*lines.length+6);ctx.fillStyle=col;lines.forEach((l,i)=>ctx.fillText(l,x,y+16*i));}}
 // ================= RESET =================
-function resetAll(msg){const keep={skin:S.skin,audio:S.audio,vol:S.vol};S=JSON.parse(JSON.stringify(DEF));Object.assign(S,keep);drillActive=null;$("task").hidden=true;
+function resetAll(msg){if(S.exam!=="phantom"){drillActive=null;$("task").hidden=true;loadExam(S.exam,null,true);tip(msg||"<b>Reset</b>: this exam preset is back to its default settings.");return;}const keep={skin:S.skin,audio:S.audio,vol:S.vol};S=JSON.parse(JSON.stringify(DEF));Object.assign(S,keep);drillActive=null;$("task").hidden=true;
   Object.assign(MS,{tool:null,pts:[],trace:[],tracing:false,res:[],saved:{},lastPSV:null,keep:null});VES=vessels();bDirty=spkDirty=true;CIMG=null;SPIMG=null;ENV=[];syncAll();mkDrills();measUI();
   tip(msg||"<b>Reset</b>: the fundamentals preset is back to its default settings.");}
 $("resetBtn").onclick=()=>resetAll();
