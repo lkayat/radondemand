@@ -1,6 +1,6 @@
-# radondemand — Body MRI teaching library
+# radondemand — Abdominal radiology teaching library
 
-Static site of interactive body MRI lessons for radiology residents
+Static site of interactive abdominal radiology lessons (body MRI, Doppler ultrasound) for radiology residents
 (UH Cleveland / CWRU). Target: https://radondemand.vercel.app
 
 No build step, no dependencies. Every page is a single self-contained HTML file
