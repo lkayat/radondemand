@@ -37,3 +37,10 @@ There is no shared stylesheet; each lesson copies the same design system inline.
 - **Voice**: each lesson opens by telling the resident what they will do on the page, then explains the pitfall or QA step. Plain, clinically precise, no marketing language.
 
 Every lesson starts with a `<nav class="back">` link to `../../` ("← All lessons") above the h1, uses `.wrap` max-width 1240px, and ends with a `<p class="foot">` disclaimer that closes with "For teaching only; not for clinical use." Keep all three in new lessons.
+
+## Applying updated lessons
+When Leo hands over a revised lesson file (exported from claude.ai), re-apply these local adjustments before committing, because the export lacks them:
+- Back link `<nav class="back"><a href="../../">&larr; All lessons</a></nav>` and its `.back` styles. In `doppler-console` it is a 26px strip above `.app` (top-left of the frame), and `.app` height is `calc(100dvh - 26px)`.
+- Vercel Web Analytics snippet before `</head>` (the `window.va` stub plus `<script defer src="/_vercel/insights/script.js"></script>`), as on every page.
+- Footer disclaimer ends with "For teaching only; not for clinical use."
+- Doppler submodules are added inside `lessons/doppler-console/` (one catalog entry); no placeholder entries on the landing page.
