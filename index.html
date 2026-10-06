@@ -175,11 +175,19 @@ const GROUPS = [
       covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
       note: "Companion to MR Fingerprinting — start there.",
       glyph: "liver" }
+  ]},
+  { name: "Ultrasound", lessons: [
+    { title: "Doppler ultrasound console trainer",
+      url: "lessons/doppler-console/",
+      desc: "A working scanner on a flow phantom: B-mode, color box, spectral Doppler and audio generated live from a flow model and the Doppler equation.",
+      covers: "Console layouts, angle, gate and scale, gain and filters, aliasing, troubleshooting drills and a quiz",
+      glyph: "doppler" }
   ]}
 ];
 
 /* Small monochrome thumbnails, drawn like tiny images */
 const G = {
+  doppler: `<path d="M8 40 L16 40 C20 14 26 14 30 40 C33 52 38 52 40 40 C44 22 49 22 52 40 L64 40" fill="none" stroke="#e6e6e6" stroke-width="2.2"/><path d="M8 40H64" stroke="#555" stroke-width="1.2"/>`,
   snr: `<g fill="#8a8a8a"><rect x="12" y="12" width="22" height="22"/><rect x="38" y="38" width="22" height="22"/></g><g fill="#e6e6e6"><rect x="38" y="12" width="22" height="22" opacity=".55"/><rect x="12" y="38" width="22" height="22" opacity=".3"/></g>`,
   subtraction: `<circle cx="34" cy="38" r="17" fill="#8a8a8a"/><circle cx="40" cy="34" r="17" fill="none" stroke="#e6e6e6" stroke-width="2.5"/>`,
   dixon: `<path d="M36 18a18 18 0 0 0 0 36z" fill="#d9d9d9"/><path d="M36 18a18 18 0 0 1 0 36z" fill="#4a4a4a"/><circle cx="36" cy="36" r="18" fill="none" stroke="#999" stroke-width="1"/>`,

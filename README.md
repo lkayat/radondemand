@@ -20,6 +20,7 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 | dwi-adc | DWI, ADC and calculated b-values | https://claude.ai/artifact/M8EaTBg2UEyHKDpasaGZQv |
 | mr-fingerprinting | MR Fingerprinting | https://claude.ai/artifact/DX2qjbJr9tVyB55663ebZD |
 | liver-mrf | Liver MR Fingerprinting (companion to mr-fingerprinting) | https://claude.ai/artifact/FgGZevgD9W3se7WPvGxfC1 |
+| doppler-console | Doppler ultrasound console trainer | https://claude.ai/artifact/23ZrmYKrejfPzaBssxpawy |
 
 The repo copies are snapshots taken Oct 1, 2026. The claude.ai artifacts remain
 the originals if you want to regenerate a lesson in chat.
