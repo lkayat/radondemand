@@ -110,6 +110,13 @@ footer p{margin:.25rem 0;max-width:44rem}
 <script>
 /* ---------- Lesson catalog: add new lessons here ---------- */
 const GROUPS = [
+  { name: "Ultrasound", lessons: [
+    { title: "Doppler ultrasound console trainer",
+      url: "lessons/doppler-console/",
+      desc: "A working scanner on a flow phantom, then exam presets: B-mode, color box, spectral Doppler and audio generated live from a flow model and the Doppler equation.",
+      covers: "Console layouts, angle, gate and scale, aliasing, troubleshooting drills; carotid and vertebral, abdominal aorta and mesenteric, lower extremity arterial and venous, renal transplant",
+      glyph: "doppler" }
+  ]},
   { name: "Fundamentals", lessons: [
     { title: "The SNR equation: knobs, costs and tradeoffs",
       url: "lessons/snr-equation/",
@@ -150,13 +157,6 @@ const GROUPS = [
       covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
       note: "Companion to MR Fingerprinting — start there.",
       glyph: "liver" }
-  ]},
-  { name: "Ultrasound", lessons: [
-    { title: "Doppler ultrasound console trainer",
-      url: "lessons/doppler-console/",
-      desc: "A working scanner on a flow phantom, then exam presets: B-mode, color box, spectral Doppler and audio generated live from a flow model and the Doppler equation.",
-      covers: "Console layouts, angle, gate and scale, aliasing, troubleshooting drills; carotid and vertebral, abdominal aorta and mesenteric, lower extremity arterial and venous, renal transplant",
-      glyph: "doppler" }
   ]}
 ];
 
