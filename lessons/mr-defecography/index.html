@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MR defecography: pelvic floor weakness, step by step</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F1; --panel:#FFFFFF; --ink:#18222C; --muted:#5A6874; --line:#CFD6DB; --soft:#F5F7F8;
+  --amber:#C98A0C; --cyan:#1F7F95; --rose:#B0476A; --ok:#2F7D4F; --warn:#B8621B; --bad:#B3261E;
+  --chip-ok:#E3F1E8; --chip-warn:#FBEEDD; --chip-bad:#F8E1DF;
+  --ui:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --read:"Literata", Georgia, "Times New Roman", serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}}
+:root[data-theme="dark"]{--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1300px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px}
+h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}
+.lede{font-family:var(--read);font-size:18px;max-width:82ch;color:var(--muted)}
+.read{font-family:var(--read);max-width:82ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:16px 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:14px;font-weight:600;padding:6px 13px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg.sm button{font-size:13px;padding:4px 10px;font-weight:500}
+select{font:inherit;font-size:14px;padding:4px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);min-height:48px;max-width:100%}
+.stage{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:1000px){.stage{grid-template-columns:1fr}}
+.dark{background:#000;border-radius:10px;padding:10px}
+.imgwrap{position:relative;width:100%;aspect-ratio:410/430}
+.imgwrap canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:auto}
+#ov{cursor:crosshair}
+.cap{color:#C9D3DA;font-size:13px;margin-top:6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.cap b{color:#fff}
+.play{display:flex;align-items:center;gap:10px;margin-top:8px;color:#dfe6ea;font-size:13px}
+.play input[type=range]{flex:1;accent-color:var(--amber)}
+.play button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid #3a4652;background:#1b242d;color:#dfe6ea;cursor:pointer}
+.phases{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.phases button{font:inherit;font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid #3a4652;background:#1b242d;color:#dfe6ea;cursor:pointer}
+.phases button[aria-pressed="true"]{background:#dfe6ea;color:#000}
+.ovl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:#dfe6ea;font-size:13px}
+.ovl label{display:flex;gap:5px;align-items:center}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.grp{font-size:12.5px;color:var(--muted);margin:12px 0 4px;font-weight:700}
+.grp:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:128px 1fr 54px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}
+.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:14px;margin:6px 0}
+.tbl{overflow-x:auto}
+.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{font-size:12.5px;color:var(--muted);font-weight:600}
+.g0{color:var(--ok)}.g1{color:var(--warn)}.g2{color:var(--bad)}.g3{color:var(--bad);font-weight:700}
+canvas.plot{width:100%;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px}
+.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.report{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-family:var(--read);font-size:15px;line-height:1.6;white-space:pre-wrap}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.drills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.drill{font:inherit;text-align:left;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.drill[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.drill.done{background:var(--chip-ok)}
+.drill small{display:block;color:var(--muted);font-size:12px}
+.task{background:var(--panel);border-left:4px solid var(--amber);border-radius:4px;padding:12px 15px;margin-top:10px;font-family:var(--read)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.choices button{font:inherit;font-size:13.5px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.fb{font-size:14px;margin-top:8px;padding:8px 10px;border-radius:6px;font-family:var(--ui)}
+.fb.ok{background:var(--chip-ok)}.fb.no{background:var(--chip-warn)}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-bottom:10px}
+.quiz .q p{font-family:var(--read);margin-bottom:8px}
+.quiz .opts{display:flex;flex-direction:column;gap:6px}
+.quiz .opts button{font:inherit;font-size:14px;text-align:left;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.quiz .opts button.right{background:var(--chip-ok);border-color:var(--ok)}
+.quiz .opts button.wrong{background:var(--chip-bad);border-color:var(--bad)}
+.quiz .ex{font-size:14px;color:var(--muted);margin-top:8px}
+ol.refs{font-size:14px;color:var(--muted);padding-left:24px;max-width:96ch;line-height:1.55}
+ol.refs li{margin-bottom:6px}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:90ch}
+.hint{font-size:12.5px;color:var(--muted)}
+.lmk{font-size:13.5px;margin-top:8px}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>MR defecography for pelvic floor weakness</h1>
+<p class="lede">A synthetic midsagittal pelvis that moves like a real dynamic study: rest, squeeze, strain, evacuation and post-evacuation strain. Build a case from compartment findings, scrub the cine, watch the reference lines and measurements update frame by frame, grade with the ACR–SAR–SPR (PCL) system or with HMO and MPL, then turn the result into a structured report.</p>
+
+<div class="bar">
+  <label>Case preset <select id="preset"></select></label>
+  <span class="seg" id="sex" role="group" aria-label="Pelvis"><button data-v="F">Female</button><button data-v="M">Male</button></span>
+  <span class="seg" id="sys" role="group" aria-label="Grading system"><button data-v="acr">ACR (PCL)</button><button data-v="hmo">HMO</button><button data-v="mpl">MPL</button></span>
+  <span class="seg sm" id="seq" role="group" aria-label="Sequence"><button data-v="ssfse">Single-shot FSE</button><button data-v="bssfp">bSSFP</button></span>
+</div>
+<div class="note" id="note"></div>
+
+<div class="stage">
+  <div>
+    <div class="dark">
+      <div class="imgwrap"><canvas id="img" width="410" height="430" aria-label="Synthetic midsagittal MR image"></canvas><canvas id="ov" width="820" height="860" aria-label="Measurement overlay; click to place landmarks in landmark mode" tabindex="0"></canvas></div>
+      <div class="cap"><span><b id="phaseLbl">Rest</b> <span id="frameLbl"></span></span><span id="capRight"></span></div>
+      <div class="play"><button id="playBtn">Play cine</button><input type="range" id="frame" min="0" max="20" step="1" aria-label="Frame"><span id="speedLbl"></span></div>
+      <div class="phases" id="phases"></div>
+      <div class="ovl">
+        <label><input type="checkbox" id="oPCL" checked> PCL</label><label><input type="checkbox" id="oHM"> H and M lines</label><label><input type="checkbox" id="oMPL"> MPL</label>
+        <label><input type="checkbox" id="oARA" checked> Anorectal angle</label><label><input type="checkbox" id="oPts" checked> Organ points</label><label><input type="checkbox" id="oLab"> Labels</label>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:12px"><h3 id="plotTitle">Organ position across the study (cm below PCL)</h3><canvas class="plot" id="plot" style="height:210px" aria-label="Organ position versus frame"></canvas></div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="grp">Findings (build the case)</div>
+      <div id="femaleCtl">
+        <div class="ctl"><label for="cyst">Cystocele</label><input type="range" id="cyst" min="0" max="1" step="0.05"><output id="cysto"></output></div>
+        <div class="ctl"><label for="hm">Urethral hypermobility</label><input type="range" id="hm" min="0" max="1" step="0.05"><output id="hmo"></output></div>
+        <div class="ctl"><label for="ut">Uterine / vault prolapse</label><input type="range" id="ut" min="0" max="1" step="0.05"><output id="uto"></output></div>
+        <div class="row"><label><input type="checkbox" id="hyst"> Post-hysterectomy (vaginal vault)</label><label><input type="checkbox" id="vgel"> Vaginal gel</label></div>
+      </div>
+      <div class="ctl"><label for="rect">Anterior rectocele</label><input type="range" id="rect" min="0" max="1" step="0.05"><output id="recto"></output></div>
+      <div class="row"><label><input type="checkbox" id="trap"> Gel trapping in rectocele</label></div>
+      <div class="row"><label>Intussusception <select id="intus"><option value="none">None</option><option value="ir">Intrarectal</option><option value="ia">Intra-anal</option><option value="ext">External (rectal prolapse)</option></select></label></div>
+      <div class="ctl"><label for="ent">Peritoneocele</label><input type="range" id="ent" min="0" max="1" step="0.05"><output id="ento"></output></div>
+      <div class="row"><label>Sac content <select id="entType"><option value="sb">Small bowel (enterocele)</option><option value="sig">Sigmoid (sigmoidocele)</option><option value="fat">Fat only</option></select></label></div>
+      <div class="ctl"><label for="lax">Pelvic floor laxity</label><input type="range" id="lax" min="0" max="1" step="0.05"><output id="laxo"></output></div>
+      <div class="row"><label><input type="checkbox" id="dys"> Dyssynergic defecation</label></div>
+      <div class="grp">Technique</div>
+      <div class="ctl"><label for="effort">Patient effort</label><input type="range" id="effort" min="0.2" max="1" step="0.05"><output id="efforto"></output></div>
+      <div class="ctl"><label for="offset">Slice off midline</label><input type="range" id="offset" min="0" max="2.5" step="0.1"><output id="offseto"></output></div>
+      <div class="row"><span class="seg sm" id="bladder"><button data-v="empty">Bladder empty</button><button data-v="mod">Moderate</button><button data-v="full">Full</button></span></div>
+      <div class="row"><label><input type="checkbox" id="gel"> Rectal gel</label><label><input type="checkbox" id="upright"> Upright (open magnet)</label></div>
+    </div>
+    <div class="panel"><h3>Measurements</h3><div class="tbl" id="meas"></div></div>
+  </div>
+</div>
+
+<h2>Place the landmarks yourself</h2>
+<p class="read">Click Start, then click on the image in order: inferior margin of the pubic symphysis; the coccygeal landmark of the selected system (last coccygeal joint for ACR, junction of the first and second coccygeal elements for HMO); the posterior aspect of the puborectalis sling; bladder base; and (in women) the most distal cervix or vaginal vault. Your lines and distances are compared with the true ones on the current frame.</p>
+<div class="row"><button class="mini primary" id="lmStart">Start landmark mode</button><button class="mini" id="lmClear">Clear my landmarks</button><span class="hint" id="lmNext"></span></div>
+<div class="panel lmk" id="lmOut"><span class="hint">No landmarks placed yet.</span></div>
+
+<h2>Three ways to grade the same strain</h2>
+<div class="cards">
+  <div class="card"><h3>ACR–SAR–SPR consensus (PCL)</h3><p>The pubococcygeal line runs from the inferior margin of the pubic symphysis to the last coccygeal joint. Measure the bladder base, cervix or vaginal vault, and the peritoneal sac perpendicular to it at maximal descent, usually during evacuation. Rule of three: below the PCL by &lt; 3 cm mild, 3–6 cm moderate, &gt; 6 cm severe. Anorectal junction descent &gt; 3 cm below the PCL indicates excessive pelvic floor descent. Rectocele depth: &lt; 2 cm small, 2–4 cm moderate, &gt; 4 cm large.</p></div>
+  <div class="card"><h3>HMO system (Comiter)</h3><p>Three points: A, the inferior margin of the pubic symphysis; B, the posterior aspect of the puborectalis sling; C, the junction of the first and second coccygeal elements. The PCL runs from A to C. The H line (A to B) is the anteroposterior hiatal width (normal ≤ 6 cm); the M line is the shortest distance from B to the PCL and measures pelvic floor descent (normal ≤ 2 cm). Relaxation: H 6–8 / M 2–4 mild, 8–10 / 4–6 moderate, ≥ 10 / ≥ 6 severe. Organs are graded by how far they pass below the H line: 0–2 cm grade 1, 2–4 cm grade 2, &gt; 4 cm grade 3.</p></div>
+  <div class="card"><h3>Mid-pubic line (Singh)</h3><p>A line along the long axis of the pubic symphysis, extended caudally, approximates the hymenal plane used in clinical POP-Q staging. Distances perpendicular to it can be mapped onto POP-Q-like stages: more than 1 cm above (stage 1), within 1 cm (stage 2), more than 1 cm below (stage 3), complete eversion (stage 4). Useful when talking to urogynecologists.</p></div>
+</div>
+<p class="hint" style="margin-top:8px">The three systems use different reference lines, so the same organ can be "mild" in one and "moderate" in another. State which system you used in every report.</p>
+
+<h2>Structured report</h2>
+<p class="read">Generated from the current case at maximal descent, in the style of the ACR–SAR–SPR consensus template. The staging statements follow the grading system selected above.</p>
+<div class="row"><button class="mini" id="copyRep">Copy report</button><span class="hint" id="copyMsg"></span></div>
+<div class="report" id="report"></div>
+
+<h2>Protocol and patient preparation</h2>
+<div class="cards">
+  <div class="card"><h3>Indications</h3><p>Obstructed defecation, fecal incontinence, pelvic organ prolapse (especially multicompartment or recurrent after repair), pelvic pain or pressure, and pre-operative planning where clinical examination underestimates the posterior or peritoneal compartments.</p></div>
+  <div class="card"><h3>Preparation</h3><p>Explain and rehearse each maneuver; coaching drives the result. Fill the rectum with about 120–180 mL of ultrasound gel (optionally mixed with gadolinium for T1 imaging); vaginal gel (about 20 mL) helps outline the vagina. A moderately filled bladder: an empty bladder hides cystoceles, a very full one can mask posterior and peritoneal prolapse. Protect the table with absorbent pads; privacy matters for a real evacuation.</p></div>
+  <div class="card"><h3>Sequences</h3><p>Static T2-weighted FSE in three planes at rest for anatomy and the levator ani. Dynamic midsagittal imaging with single-shot FSE or balanced SSFP at roughly one image per second: rest, squeeze (Kegel), strain (Valsalva), then repeated evacuation until the rectum is empty, then post-evacuation strain. bSSFP gives high temporal resolution with dark fat–water boundaries (India-ink artifact); single-shot FSE is less sensitive to susceptibility but slightly blurrier.</p></div>
+  <div class="card"><h3>Position and pitfalls</h3><p>Supine closed-bore imaging is standard and adequate if evacuation is achieved; upright open-bore imaging is more physiologic. Pitfalls: poor strain effort, no evacuation phase (intussusception and enteroceles often appear only at the end of evacuation), no rectal gel, an off-midline slice that underestimates descent, and measuring on a frame that is not the worst one.</p></div>
+</div>
+
+<h2>Drills</h2>
+<p class="read">Each drill loads a case. Use the cine, the overlays and the measurement tools, then check your answer.</p>
+<div class="drills" id="drills"></div>
+<div class="task" id="task" hidden></div>
+
+<h2>Quick quiz</h2>
+<div class="quiz" id="quiz"></div>
+
+<h2>References</h2>
+<ol class="refs">
+  <li>Gurland BH, Khatri G, Ram R, et al. Consensus definitions and interpretation templates for magnetic resonance imaging of defecatory pelvic floor disorders: proceedings of the consensus meeting of the Pelvic Floor Disorders Consortium of the American Society of Colon and Rectal Surgeons, the Society of Abdominal Radiology, the International Continence Society, the American Urogynecologic Society, the International Urogynecological Association, and the Society of Gynecologic Surgeons. AJR Am J Roentgenol. 2021;217(4):800–812. (Published simultaneously in partner society journals.)</li>
+  <li>American College of Radiology. ACR–SAR–SPR Practice Parameter for the Performance of Magnetic Resonance (MR) Defecography. Reston, VA: ACR; current revision available at acr.org.</li>
+  <li>Lalwani N, Khatri G, El Sayed RF, et al. MR defecography technique: recommendations of the Society of Abdominal Radiology's Disease-Focused Panel on Pelvic Floor Imaging. Abdom Radiol. 2021;46(4):1351–1361.</li>
+  <li>Comiter CV, Vasavada SP, Barbaric ZL, Gousse AE, Raz S. Grading pelvic prolapse and pelvic floor relaxation using dynamic magnetic resonance imaging. Urology. 1999;54(3):454–457.</li>
+  <li>El Sayed RF, Alt CD, Maccioni F, et al. Magnetic resonance imaging of pelvic floor dysfunction: joint recommendations of the ESUR and ESGAR Pelvic Floor Working Group. Eur Radiol. 2017;27(5):2067–2085.</li>
+  <li>Yang A, Mostwin JL, Rosenshein NB, Zerhouni EA. Pelvic floor descent in women: dynamic evaluation with fast MR imaging and cinematic display. Radiology. 1991;179(1):25–33.</li>
+  <li>Singh K, Reid WM, Berger LA. Assessment and grading of pelvic organ prolapse by use of dynamic magnetic resonance imaging. Am J Obstet Gynecol. 2001;185(1):71–77.</li>
+  <li>Boyadzhyan L, Raman SS, Raz S. Role of static and dynamic MR imaging in surgical pelvic floor dysfunction. RadioGraphics. 2008;28(4):949–967. doi:10.1148/rg.284075139</li>
+  <li>Bump RC, Mattiasson A, Bø K, et al. The standardization of terminology of female pelvic organ prolapse and pelvic floor dysfunction. Am J Obstet Gynecol. 1996;175(1):10–17.</li>
+</ol>
+<p class="foot">Teaching simulation. The pelvis is a schematic, synthetic midsagittal model with simplified organ motion, contrast and noise; distances, angles and thresholds are representative and simplified. Grading thresholds and even landmark definitions vary between publications (for example, the coccygeal end of the PCL is the last coccygeal joint in the ACR–SAR–SPR template but the first–second coccygeal junction in the HMO illustration of Boyadzhyan et al.); follow your local template. Anorectal angle values in particular vary widely between studies, so this lesson emphasizes their change between phases rather than absolute numbers. For teaching only; not for clinical use.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const TAU=2*Math.PI,clamp=(v,a,b)=>v<a?a:(v>b?b:v),D2R=Math.PI/180;
+const $=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s),css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function mul(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+// ---------- geometry frame ----------
+const FOV={x0:-6,x1:14.5,y0:-15,y1:6.5},RES=0.05,GW=410,GH=430;
+const DP=[0.927,-0.375],NP=[0.375,0.927]; // PCL direction and caudal normal
+const I=[0,0],Cj=[8.9,-3.6],COCD=[0.369,-0.929],C12=[8.9+0.369*1.1,-3.6-0.929*1.1];
+const pt=(u,v)=>[u*DP[0]+v*NP[0],u*DP[1]+v*NP[1]];
+const uv=p=>[p[0]*DP[0]+p[1]*DP[1],p[0]*NP[0]+p[1]*NP[1]];
+const MPLD=[0.6,0.8],MPLN=[-0.8,0.6]; // MPL direction (caudal extension) and "below" normal
+const add=(a,b,k=1)=>[a[0]+b[0]*k,a[1]+b[1]*k],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],len=a=>Math.hypot(a[0],a[1]),nrm=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const rot=(a,deg)=>{const c=Math.cos(deg*D2R),s=Math.sin(deg*D2R);return [a[0]*c-a[1]*s,a[0]*s+a[1]*c];};
+const angBetween=(a,b)=>Math.acos(clamp((a[0]*b[0]+a[1]*b[1])/(len(a)*len(b)),-1,1))/D2R;
+// ---------- case ----------
+const DEF={sex:"F",hyst:false,cyst:0,hm:0,ut:0,rect:0,trap:false,intus:"none",ent:0,entType:"sb",lax:0,dys:false,effort:1,offset:0,bladder:"mod",gel:true,upright:false,vgel:false,seq:"ssfse"};
+let C=Object.assign({},DEF),SYS="acr";
+const PRESETS={
+ normal:{name:"Normal pelvic floor",set:{}},
+ cysto:{name:"Moderate cystocele",set:{cyst:0.5,hm:0.6}},
+ uterine:{name:"Uterine prolapse",set:{ut:0.6,cyst:0.2}},
+ vault:{name:"Vaginal vault prolapse after hysterectomy",set:{hyst:true,ut:0.55}},
+ rectocele:{name:"Large rectocele with trapping",set:{rect:0.95,trap:true}},
+ intusIR:{name:"Intrarectal intussusception",set:{intus:"ir",rect:0.3}},
+ intusIA:{name:"Intra-anal intussusception",set:{intus:"ia",rect:0.35}},
+ prolapse:{name:"External rectal prolapse",set:{intus:"ext",lax:0.5}},
+ entero:{name:"Enterocele (late, after evacuation)",set:{ent:0.7}},
+ sigmoido:{name:"Sigmoidocele",set:{ent:0.6,entType:"sig"}},
+ lax:{name:"Descending perineum (pelvic floor relaxation)",set:{lax:0.75}},
+ dys:{name:"Dyssynergic defecation",set:{dys:true}},
+ multi:{name:"Multicompartment prolapse",set:{cyst:0.55,ut:0.4,rect:0.6,ent:0.5,lax:0.6,hm:0.7}},
+ maleLax:{name:"Male: descending perineum",set:{sex:"M",lax:0.7}},
+ maleIntus:{name:"Male: intra-anal intussusception",set:{sex:"M",intus:"ia"}},
+ maleDys:{name:"Male: dyssynergic defecation",set:{sex:"M",dys:true}}};
+// ---------- frames ----------
+const FR=[];
+[["Rest",0,0,0]].forEach(()=>{});
+FR.push({ph:"Rest",q:0,s:0,e:0},{ph:"Rest",q:0,s:0,e:0});
+[0.6,1,1].forEach(q=>FR.push({ph:"Squeeze",q,s:0,e:0}));
+FR.push({ph:"Rest",q:0,s:0,e:0});
+[0.5,1,1,1].forEach(s=>FR.push({ph:"Strain",q:0,s,e:0}));
+FR.push({ph:"Rest",q:0,s:0,e:0});
+for(let i=1;i<=8;i++)FR.push({ph:"Evacuation",q:0,s:0,e:i/8});
+for(let i=0;i<3;i++)FR.push({ph:"Post-evacuation strain",q:0,s:1,e:1,post:true});
+let FI=0;
+// ---------- kinematics ----------
+function kin(f){const c=C,male=c.sex==="M",ev=f.ph==="Evacuation",post=!!f.post;
+  const eff=c.effort*(c.upright?1.15:1)*(1-0.36*Math.min(1,c.offset/2));
+  const S=eff*Math.max(f.s*(post?1.1:1),ev?0.9+0.2*f.e:0),q=f.q,E=ev?f.e:(post?1:0),Eop=ev?Math.min(1,f.e*2.5):(post?0.4:0),late=ev?f.e:(post?1:0);
+  const lax=c.lax,dys=c.dys,bf=c.bladder==="full"?0.55:c.bladder==="empty"?0.72:1;
+  let dB=male?(-0.4*q+(0.6+1.6*lax)*S):(-0.5*q+(0.9+7.2*c.cyst*bf+2.6*lax)*S);
+  const B=pt(2.2+0.15*dB,-1.5+dB);
+  const dN=male?(-0.4*q+(0.5+1.4*lax)*S):(-0.4*q+(0.6+2.6*c.hm+1.8*lax+1.2*c.cyst)*S);
+  const Nk=pt(1.8+0.38*dN,-1.2+0.5*dN),Mt=pt(0.3,2.6);
+  let dV=-0.5*q+(0.9+9.6*c.ut+2.2*lax)*S;const V=add(pt(5.6-0.18*dV,-3.4+dV),[-0.5,0]);
+  const dAs=(0.4+4.0*lax)*f.s*eff,dAe=(dys?0.32:1)*(0.6+4.3*lax)*Eop*eff;
+  const dA=-1.3*q+Math.max(dAs,(ev||post)?dAe+(post?0.2*eff:0):0);
+  const A=pt(3.95+0.32*dA,0.0+dA);
+  let ara=104-20*q+14*f.s*eff+((ev||post)?(dys?-11*Math.min(1,Eop*1.5):34*Eop):0)+lax*8*S;
+  const rhat=nrm([0.49-0.02*dA,-0.87]);let a=nrm(rot(rhat,ara));
+  if(a[1]<0)a=nrm(rot(rhat,-ara));
+  const canal=3.6-0.25*Eop,Av=add(A,a,canal);
+  const gel=c.gel?(1-(dys?0.15:0.88)*E):0;
+  const dP=((0.8+2*lax)*S+c.ent*(3.4*S+7.6*late))*(c.bladder==="full"?0.62:1);
+  const P0s=pt(7.1,-4.2),Vi0=add(pt(1.4,3.45),[-0.5,0]),sdir=nrm(sub(Vi0,P0s)),P=add(P0s,sdir,dP*1.0);
+  const rd=c.rect*4.8*eff*Math.max(0.55*S,ev?Math.min(1,f.e*1.7):(post?(c.trap?1:0.75):0));
+  const ip=c.intus!=="none"?eff*(ev?clamp((f.e-0.3)/0.45,0,1):(post?1:0)):0;
+  const post_=[rhat[1]*-1,rhat[0]];// rotate rhat -90
+  const pPost=nrm([0.87,0.49]),aR=nrm(rot(rhat,Math.min(ara,112))),aR2=aR[1]<0?nrm(rot(rhat,-Math.min(ara,112))):aR,pC=[aR2[1],-aR2[0]],prC=add(add(A,aR2,0.95),pC,0.75-0.22*q),prRk=0.42+0.12*q+(dys&&(ev||post)?0.15:0)-0.08*Eop*(dys?0:1),Hp=add(prC,nrm(prC),prRk),perpC=pC;
+  return {male,ev,post,S,q,E,Eop,B,Nk,Mt,V,A,ara,rhat,a,Av,canal,gel,P,dP,rd,ip,Hp,prC,perpC,dys,lax,f};}
+// ---------- measurements ----------
+function hlineDist(p,k){const d=nrm(k.Hp),n=[-d[1],d[0]];const s=p[0]*n[0]+p[1]*n[1];return n[1]>0?s:-s;}
+function meas(k){const vB=uv(k.B)[1],vV=uv(k.V)[1],vA=uv(k.A)[1],vP=uv(add(k.P,[0,1],1.0))[1]; // P = sac lowest point (offset)
+  const cd=nrm(C12),cn=[-cd[1],cd[0]],cnn=cn[1]>0?cn:[-cn[0],-cn[1]];const H=len(k.Hp),M=k.Hp[0]*cnn[0]+k.Hp[1]*cnn[1];const urA=Math.atan2(k.Mt[0]-k.Nk[0],k.Mt[1]-k.Nk[1])/D2R;
+  const mpl=p=>-(p[0]*MPLN[0]*-1+p[1]*MPLN[1]*-1)*-1;
+  const mplD=p=>p[0]*MPLN[0]+p[1]*MPLN[1];
+  return {B:vB,V:vV,A:vA,P:vP,H,M,ara:k.ara,ur:urA,rd:k.rd,gel:k.gel,
+    hB:hlineDist(k.B,k),hV:hlineDist(k.V,k),hA:hlineDist(k.A,k),hP:hlineDist(add(k.P,[0,1],1.0),k),
+    mB:mplD(k.B),mV:mplD(k.V),mA:mplD(k.A),mP:mplD(add(k.P,[0,1],1.0))};}
+let MEAS=[],KIN=[];
+function computeAll(){KIN=FR.map(kin);MEAS=KIN.map(meas);}
+// ---------- rendering ----------
+const T={AIR:0,FAT:1,MUS:2,URINE:3,GEL:4,MAR:5,CORT:6,MYO:7,ENDO:8,CXS:9,VW:10,RW:11,SPH:12,SB:13,BW:14,PROS:15,PZ:16,SV:17,BULB:18,SKIN:19,VGEL:20,FEC:21,MUC:22};
+const INT={ssfse:[0.02,0.66,0.22,0.95,0.92,0.48,0.04,0.42,0.82,0.15,0.3,0.27,0.18,0.82,0.3,0.4,0.62,0.78,0.6,0.5,0.9,0.35,0.5],
+ bssfp:[0.02,0.86,0.3,0.96,0.95,0.6,0.04,0.5,0.86,0.2,0.36,0.32,0.25,0.92,0.32,0.45,0.6,0.86,0.7,0.6,0.95,0.42,0.56]};
+const FATLIKE=new Set([T.FAT,T.MAR]);
+function segDist(px,py,a,b){const vx=b[0]-a[0],vy=b[1]-a[1],L2=vx*vx+vy*vy||1e-9;let t=((px-a[0])*vx+(py-a[1])*vy)/L2;t=t<0?0:t>1?1:t;return [Math.hypot(px-a[0]-vx*t,py-a[1]-vy*t),t];}
+function polyDist(px,py,P,R){let best=1e9,br=R[0],bt=0;for(let i=0;i<P.length-1;i++){const [d,t]=segDist(px,py,P[i],P[i+1]);const r=R[i]+(R[i+1]-R[i])*t;if(d-r<best){best=d-r;br=r;bt=(i+t)/(P.length-1);}}return [best,br,bt];}
+function bezier(p0,p1,p2,n){const o=[];for(let i=0;i<=n;i++){const t=i/n,a=(1-t)*(1-t),b=2*(1-t)*t,c=t*t;o.push([a*p0[0]+b*p1[0]+c*p2[0],a*p0[1]+b*p1[1]+c*p2[1]]);}return o;}
+function bbox(P,pad){let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;P.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);});return [x0-pad,x1+pad,y0-pad,y1+pad];}
+const inBB=(x,y,b)=>x>=b[0]&&x<=b[1]&&y>=b[2]&&y<=b[3];
+function bodyPoly(male){return male?[[-4.9,-15.5],[-4.7,-9],[-4.5,-4],[-4.1,-1.4],[-3.4,0.6],[-2.6,2.0],[-1.2,3.0],[0.4,3.8],[2.4,3.7],[4.6,3.0],[6.4,2.0],[7.6,1.35],[8.6,1.9],[10.5,2.6],[12.5,2.1],[13.7,0],[14.0,-6],[14.2,-15.5]]:
+  [[-4.9,-15.5],[-4.7,-9],[-4.5,-4],[-4.1,-1.4],[-3.4,0.8],[-2.2,2.4],[-0.4,3.3],[1.4,3.3],[2.7,3.0],[4.6,2.8],[6.4,2.0],[7.6,1.35],[8.6,1.9],[10.5,2.6],[12.5,2.1],[13.7,0],[14.0,-6],[14.2,-15.5]];}
+function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if(((a[1]>y)!==(b[1]>y))&&(x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]))c=!c;}return c;}
+const SACRUM=[[8.25,-2.5],[8.9,-3.6],[9.8,-6.4],[10.2,-9.5],[9.7,-12.6],[8.7,-15.5]],SACR=[0.45,0.6,1.1,1.5,1.8,1.9];
+const CACHE=new Map();let bodyMaskSex=null,bodyMask=null;
+function boxBlur(a,w,h,r){const t=new Float32Array(a.length),o=new Float32Array(a.length);for(let j=0;j<h;j++){let s=0,c=0;for(let i=-r;i<w;i++){if(i+r<w){s+=a[j*w+i+r];c++;}if(i-r-1>=0){s-=a[j*w+i-r-1];c--;}if(i>=0)t[j*w+i]=s/c;}}
+  for(let i=0;i<w;i++){let s=0,c=0;for(let j=-r;j<h;j++){if(j+r<h){s+=t[(j+r)*w+i];c++;}if(j-r-1>=0){s-=t[(j-r-1)*w+i];c--;}if(j>=0)o[j*w+i]=s/c;}}return o;}
+function normz(a){let m=0,v=0;for(const x of a)m+=x;m/=a.length;for(const x of a)v+=(x-m)**2;v=Math.sqrt(v/a.length)||1;for(let i=0;i<a.length;i++)a[i]=(a[i]-m)/v;return a;}
+const NZ=(()=>{const r=mul(99),n=GW*GH,a=new Float32Array(n),b=new Float32Array(n);for(let i=0;i<n;i++){a[i]=r()-0.5;b[i]=r()-0.5;}return {f:normz(boxBlur(a,GW,GH,1)),c:normz(boxBlur(boxBlur(b,GW,GH,4),GW,GH,3))};})();
+const SACL=[{dx:-0.35,dy:-0.3,r:0.3,fl:true},{dx:0.3,dy:-0.35,r:0.28,fl:true},{dx:-0.05,dy:0.28,r:0.32,fl:false},{dx:0.45,dy:0.25,r:0.24,fl:true},{dx:-0.5,dy:0.25,r:0.22,fl:true},{dx:0.05,dy:-0.7,r:0.2,fl:true}];
+const LOOPS=(()=>{const r=mul(7),L=[];let tries=0;while(L.length<26&&tries<900){tries++;const x=-3.6+r()*10.2,y=-15.2+r()*(4.6+Math.max(0,3-Math.abs(x-1.5))*0.25),rad=0.45+r()*0.6;if(L.every(o=>Math.hypot(o.x-x,o.y-y)>o.r+rad+0.08))L.push({x,y,r:rad,fl:r()<0.62,air:r()<0.2});}return L;})();
+function buildBodyMask(male){bodyMask=new Uint8Array(GW*GH);const P=bodyPoly(male);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const x=FOV.x0+(i+0.5)*RES,y=FOV.y0+(j+0.5)*RES;bodyMask[j*GW+i]=inPoly(x,y,P)?1:0;}bodyMaskSex=male;}
+function render(fi){const key=JSON.stringify(C)+"|"+fi;if(CACHE.has(key))return CACHE.get(key);const k=KIN[fi],c=C,male=k.male;if(bodyMaskSex!==male)buildBodyMask(male);
+  const cls=new Uint8Array(GW*GH),r=mul(17);
+  // shapes
+  const bscale=c.bladder==="full"?1.25:c.bladder==="empty"?0.55:1;const Bc=add(pt(2.2,-4.8),NP,0.25*Math.max(0,uv(k.B)[1]+1.5)*0.5),brx=3.0*bscale,bry=2.4*bscale;
+  const Bc2=[Bc[0],Bc[1]+(bscale<1?2.4*(1-bscale):0)],Bin=add(k.B,nrm(sub(k.B,Bc2)),-((male?0.9:1.0)*bscale+0.35));
+  const symAx=nrm([2.55,3.4]),sym0=add(I,symAx,-0.78),sym1=add(sym0,symAx,-4.1);
+  const urP=[k.Nk,k.Mt];
+  const Vi=add(pt(1.4,3.45),[-0.5,0]);const vCtrl=add(add([(Vi[0]+k.V[0])/2,(Vi[1]+k.V[1])/2],[1,0],0.6*c.cyst*k.S-0.5*k.rd/4.8),[0,1],0);
+  const vag=male?null:bezier(Vi,vCtrl,k.V,12);
+  const uDir=nrm([-0.55,-0.84]);const Vin=add(k.V,uDir,0.95),ut=(!male&&!c.hyst)?[Vin,add(Vin,uDir,2.0),add(Vin,uDir,4.3),add(Vin,uDir,6.0)]:null;
+  const Am=add(k.A,k.rhat,4.0),R2=[7.9,-7.6],R3=[8.15,-10.5],R4=[7.3,-12.6],R5=[5.4,-13.9];
+  const rectP=[k.A,add(k.A,k.rhat,1.6),Am,R2,R3,R4,R5],gF=c.gel?Math.max(0.12,k.gel):0;
+  const rectR=[0.35*gF+0.05,1.15*gF+0.08,1.55*gF+0.1,1.05*Math.max(0.35,gF)+0.05,0.7,0.6,0.55];
+  const pPost=nrm([0.87,0.49]),pAnt=nrm([-0.9,0.35]);
+  const prC=k.prC,prR=0.42+0.12*k.q+(k.dys&&(k.ev||k.post)?0.15:0)-0.08*k.Eop*(k.dys?0:1);
+  const lev0=add(prC,k.perpC,prR*0.6),lev=[lev0,add([(lev0[0]+8.4)/2,(lev0[1]-2.5)/2],[0,1],0.45+1.4*k.lax*k.S),[8.4,-2.6]];
+  const pb=male?null:[(Vi[0]+k.Av[0])/2-0.25,(Vi[1]+k.Av[1])/2-0.35];
+  const sacP0=pt(7.1,-4.2),sacOn=c.ent>0.02&&k.dP>0.6;const sacP1=k.P,sacR=0.6+1.1*clamp(k.dP/6,0,1);
+  const rcO=add(k.A,k.rhat,0.95),rcC=add(rcO,pAnt,k.rd*0.55),rcRx=k.rd*0.55+0.28,rcRy=0.75+0.25*c.rect;
+  const rcGel=c.gel?(c.trap?1:Math.max(0.15,k.gel)):0;
+  const canalOpen=c.gel&&(k.ev)&&!k.dys?0.42*Math.min(1,k.Eop*1.4):0;
+  const gelOut=c.gel&&!k.dys&&k.E>0.12?{c:add(k.Av,k.a,0.55+0.4*k.E),r:0.35+0.85*k.E}:null;
+  let intus=null;if(k.ip>0.02){const lead=c.intus==="ir"?add(k.A,k.rhat,1.4-0.6*k.ip):c.intus==="ia"?add(k.A,k.a,1.7*k.ip):add(k.Av,k.a,1.8*k.ip);const h=add(k.A,k.rhat,4.2),rr=1.2*Math.max(0.3,gF);
+    const perp=[-k.rhat[1],k.rhat[0]];intus={a:[add(h,perp,rr),lead],b:[add(h,perp,-rr),lead],lead,ext:c.intus==="ext"};}
+  const pros=male?{c:pt(1.55,0.25),rx:1.9,ry:1.5}:null,sv=male?{c:pt(3.7,-2.6),rx:1.5,ry:0.5}:null,bulb=male?{c:[1.4,3.1],rx:1.5,ry:0.75}:null;
+  const bbU=ut?bbox(ut,2.6):null,bbV=vag?bbox(vag,0.8):null,bbR=bbox(rectP,2.2),bbS=bbox(SACRUM,2.0),bbL=bbox(lev,0.6);
+  const smin=(a,b,kk)=>{const h=clamp(0.5+0.5*(b-a)/kk,0,1);return b+(a-b)*h-kk*h*(1-h);};
+  for(let j=0;j<GH;j++){const y=FOV.y0+(j+0.5)*RES;for(let i=0;i<GW;i++){const x=FOV.x0+(i+0.5)*RES,idx=j*GW+i;
+    const out=!bodyMask[idx];
+    if(out){let t=T.AIR;
+      if(gelOut&&Math.hypot(x-gelOut.c[0],y-gelOut.c[1])<gelOut.r)t=T.GEL;
+      if(intus&&intus.ext){const d=Math.hypot((x-intus.lead[0])/1.25,(y-intus.lead[1])/0.95);if(d<k.ip){t=d<k.ip*0.55?T.MUC:T.RW;}}
+      if(y>0&&y<6.5){// prolapse beyond the introitus
+        {const dx=(x-Bc2[0])/brx,dy=(y-Bc2[1])/bry,de=(Math.hypot(dx,dy)-1)*Math.min(brx,bry);const rr=(male?0.9:1.0)*bscale+0.35;const [dc]=segDist(x,y,Bc2,Bin);const d=smin(de,dc-rr,0.9);if(d<0)t=T.URINE;else if(d<0.14)t=T.VW;}
+        if(ut&&inBB(x,y,bbU)){const [d,rr2,tt]=polyDist(x,y,ut,[0.95,1.3,1.85,1.35]);if(d<0)t=tt<0.3?(d>-0.3?T.CXS:T.MYO):T.MYO;}
+        if(sacOn){const Pm=add(sacP1,[0,1],1.0),Sc=[Pm[0],Pm[1]-1.1*sacR];if(Math.hypot(x-Sc[0],(y-Sc[1])/1.1)<sacR)t=T.BW;}}
+      cls[idx]=t;continue;}
+    let t=T.FAT;
+    // skin
+    // anterior abdominal wall muscle and gluteus
+    if(x>-4.35&&x<-3.55&&y<-2.6)t=T.MUS;
+    if(((x-12.2)/2.1)**2+((y+2.2)/3.6)**2<1)t=T.MUS;
+    // sacrum and coccyx
+    if(inBB(x,y,bbS)){const [d,rr,bt]=polyDist(x,y,SACRUM,SACR);if(d<0){const seg=(bt*7.2)%1;t=d>-0.17?T.CORT:(seg<0.07&&bt>0.2&&bt<0.45?T.CORT:T.MAR);const bd=COCD;for(const [o,wd] of [[0,0.75],[0.55,0.8],[1.1,0.85],[1.75,1.0]]){const q=sub([x,y],add(Cj,bd,o));if(Math.abs(q[0]*bd[0]+q[1]*bd[1])<0.06&&Math.abs(-q[0]*bd[1]+q[1]*bd[0])<wd)t=T.CORT;}}}
+    // pubic symphysis
+    {const [d]=segDist(x,y,sym0,sym1);if(d<0.78)t=d>0.6?T.CORT:T.MAR;}
+    // levator plate and puborectalis
+    if(inBB(x,y,bbL)){const [d]=polyDist(x,y,lev,[0.34,0.3,0.26]);if(d<0)t=T.SPH;}
+    {const dd=sub([x,y],prC),al=dd[0]*k.a[0]+dd[1]*k.a[1],pe=dd[0]*k.perpC[0]+dd[1]*k.perpC[1];if((al/(prR*1.25))**2+(pe/prR)**2<1)t=T.SPH;}
+    if(pb&&((x-pb[0])/1.0)**2+((y-pb[1])/0.75)**2<1)t=T.MUS;
+    // bladder
+    {const dx=(x-Bc2[0])/brx,dy=(y-Bc2[1])/bry,de=(Math.hypot(dx,dy)-1)*Math.min(brx,bry);const rr=(male?0.9:1.0)*bscale+0.35;const [dc]=segDist(x,y,Bc2,Bin);const d=smin(de,dc-rr,0.9);if(d<0)t=T.URINE;else if(d<0.14)t=T.MUS;}
+    // prostate, seminal vesicles, bulb
+    if(pros){const d=((x-pros.c[0])/pros.rx)**2+((y-pros.c[1])/pros.ry)**2;if(d<1)t=d>0.55&&x>pros.c[0]-0.3?T.PZ:T.PROS;}
+    if(sv){const d=((x-sv.c[0])/sv.rx)**2+((y-sv.c[1])/sv.ry)**2;if(d<1)t=NZ.c[Math.min(GW*GH-1,((y-FOV.y0)/RES|0)*GW+((x-FOV.x0)/RES|0))]>-0.3?T.SV:T.BW;}
+    if(bulb){const d=((x-bulb.c[0])/bulb.rx)**2+((y-bulb.c[1])/bulb.ry)**2;if(d<1)t=T.BULB;}
+    // urethra
+    {const [d]=segDist(x,y,urP[0],urP[1]);if(d<0.32)t=d<0.07?T.MUC:T.MUS;}
+    // vagina
+    if(vag&&inBB(x,y,bbV)){const [d]=polyDist(x,y,vag,vag.map(()=>0.48));if(d<0)t=(c.vgel&&d<-0.3)?T.VGEL:T.VW;}
+    // uterus
+    if(ut&&inBB(x,y,bbU)){const [d,rr,tt]=polyDist(x,y,ut,[0.95,1.3,1.85,1.35]);if(d<0){const [de]=polyDist(x,y,ut.slice(1),[0.1,0.22,0.14]);t=tt<0.3?(d>-0.3?T.CXS:T.MYO):T.MYO;if(tt>0.2&&de<0.32)t=T.CXS;if(de<0&&tt>0.25)t=T.ENDO;}}
+    // peritoneal sac
+    if(sacOn){const Pm=add(sacP1,[0,1],1.0),Sc=[Pm[0],Pm[1]-1.1*sacR];const dB=Math.hypot(x-Sc[0],(y-Sc[1])/1.1),[dn]=segDist(x,y,sacP0,Sc);const inside=dB<sacR||dn<0.45;
+      if(inside){if(dB>sacR-0.08&&dn>0.37)t=T.BW;else if(c.entType==="sb"){let hit=false;for(const o of SACL){const lx=Sc[0]+o.dx*sacR,ly=Sc[1]+o.dy*sacR,rr=o.r*sacR,d=Math.hypot(x-lx,y-ly);if(d<rr){t=d>rr-0.13?T.BW:(o.fl?T.SB:T.FEC);hit=true;break;}}if(!hit)t=T.FAT;}
+        else if(c.entType==="sig"){const v=Math.hypot(x-Sc[0],y-Sc[1]);t=v<sacR*0.62?(NZ.c[Math.min(GW*GH-1,((y-FOV.y0)/RES|0)*GW+((x-FOV.x0)/RES|0))]>0.2?T.AIR:T.FEC):v<sacR*0.78?T.BW:T.FAT;}else t=T.FAT;}}
+    // rectum
+    if(inBB(x,y,bbR)){const [d,rr]=polyDist(x,y,rectP,rectR);if(d<0.27){if(d<0){t=c.gel?(rr>0.25?T.GEL:T.MUC):T.MUC;}else t=T.RW;}}
+    // rectocele
+    if(k.rd>0.3){const dd=sub([x,y],rcC),ax=dd[0]*pAnt[0]+dd[1]*pAnt[1],ay=-dd[0]*pAnt[1]+dd[1]*pAnt[0],d=Math.hypot(ax/rcRx,ay/rcRy);if(d<1.18){t=d<1?(rcGel>0.2?T.GEL:T.MUC):T.RW;}}
+    // anal canal and sphincters
+    {const [d]=segDist(x,y,k.A,k.Av);if(d<0.68){t=d<canalOpen?T.GEL:(d<0.12?T.MUC:T.SPH);}}
+    // intussusception
+    if(intus&&!intus.ext){for(const s of [intus.a,intus.b]){const [d]=segDist(x,y,s[0],s[1]);if(d<0.3)t=d<0.1?T.MUC:T.RW;}}
+    if(intus&&intus.ext){for(const s of [intus.a,intus.b]){const [d]=segDist(x,y,s[0],k.Av);if(d<0.3)t=d<0.1?T.MUC:T.RW;}}
+    // bowel above
+    if(y<-9.2&&x>-4.2&&x<7.2&&t===T.FAT){for(const o of LOOPS){const d=Math.hypot(x-o.x,y-o.y);if(d<o.r){t=d>o.r-0.16?T.BW:(o.air&&y<o.y-o.r*0.35?T.AIR:o.fl?T.SB:T.FEC);break;}}}
+    cls[idx]=t;}}
+  // intensity
+  const I0=INT[c.seq],img=new Float32Array(GW*GH),offB=c.offset/2.5;
+  const TEX=[0,0.1,0.14,0.02,0.03,0.16,0.05,0.09,0.08,0.08,0.1,0.1,0.12,0.1,0.1,0.1,0.12,0.12,0.1,0.08,0.03,0.25,0.12];
+  for(let idx=0;idx<cls.length;idx++){const t=cls[idx];const x=idx%GW,y=(idx/GW)|0;let v=I0[t]*(1+TEX[t]*(0.55*NZ.f[idx]+0.45*NZ.c[idx]));
+    v*=0.9+0.1*Math.min(1,Math.abs(x-150)/220)+0.06*(y/GH);img[idx]=v;}
+  if(c.seq==="bssfp"){const out=img.slice();for(let j=1;j<GH-1;j++)for(let i=1;i<GW-1;i++){const idx=j*GW+i,a=FATLIKE.has(cls[idx]),nb=[idx-1,idx+1,idx-GW,idx+GW];if(cls[idx]===T.AIR)continue;for(const n of nb){if(cls[n]===T.AIR)continue;if(FATLIKE.has(cls[n])!==a){out[idx]*=0.25;break;}}}img.set(out);}
+  // blur (single-shot blur and off-midline partial volume)
+  let a1=img;const passes=(c.seq==="ssfse"?2:1)+Math.round(offB*2);for(let p=0;p<passes;p++)a1=boxBlur(a1,GW,GH,1);
+  const rr=mul(31+fi);for(let idx=0;idx<a1.length;idx++){const n1=(rr()+rr()+rr()-1.5)*0.035,n2=(rr()+rr()+rr()-1.5)*0.035;a1[idx]=Math.hypot(a1[idx]+n1,n2);}
+  const imd=new ImageData(GW,GH);for(let idx=0;idx<a1.length;idx++){const g=clamp(a1[idx],0,1)**0.9*255;imd.data[idx*4]=imd.data[idx*4+1]=imd.data[idx*4+2]=g;imd.data[idx*4+3]=255;}
+  if(CACHE.size>120)CACHE.clear();CACHE.set(key,imd);return imd;}
+// ---------- overlay ----------
+const img=$("img"),ov=$("ov"),ictx=img.getContext("2d"),octx=ov.getContext("2d");const SC=2;
+const w2p=p=>[(p[0]-FOV.x0)/RES*SC,(p[1]-FOV.y0)/RES*SC],p2w=(px,py)=>[px/SC*RES+FOV.x0,py/SC*RES+FOV.y0];
+function line(a,b,col,wd,dash){const A=w2p(a),B=w2p(b);octx.strokeStyle=col;octx.lineWidth=wd||2;octx.setLineDash(dash||[]);octx.beginPath();octx.moveTo(A[0],A[1]);octx.lineTo(B[0],B[1]);octx.stroke();octx.setLineDash([]);}
+function dot(p,col,r){const A=w2p(p);octx.fillStyle=col;octx.beginPath();octx.arc(A[0],A[1],r||5,0,TAU);octx.fill();}
+function txt(p,s,col,dx,dy){const A=w2p(p);octx.font="600 20px system-ui, sans-serif";octx.lineWidth=4;octx.strokeStyle="rgba(0,0,0,.75)";octx.strokeText(s,A[0]+(dx||8),A[1]+(dy||-8));octx.fillStyle=col;octx.fillText(s,A[0]+(dx||8),A[1]+(dy||-8));}
+function drawOverlay(){const k=KIN[FI],m=MEAS[FI];octx.clearRect(0,0,ov.width,ov.height);const Y="#F2C14E",CY="#5ED3E6",RO="#F08AAE",GR="#7BE38C";
+  const ext=(p,d,l)=>add(p,d,l);
+  const Cs=SYS==="hmo"?C12:Cj,Dd=nrm(Cs);if($("oPCL").checked){line(ext(I,Dd,-1.2),ext(I,Dd,len(Cs)+1.4),Y,2.5);txt(Cs,"PCL",Y,14,-12);dot(I,Y,5);dot(Cs,Y,5);if(SYS==="hmo"){txt(I,"A","#fff",-26,30);txt(Cs,"C","#fff",14,24);}}
+  if($("oHM").checked){line(I,k.Hp,CY,2.5);const cd=nrm(C12),foot=add(I,cd,k.Hp[0]*cd[0]+k.Hp[1]*cd[1]);dot(k.Hp,CY,5);txt(k.Hp,"B","#fff",12,30);line(foot,k.Hp,CY,2.5,[8,6]);txt(add(I,k.Hp,0.35),`H ${m.H.toFixed(1)}`,CY,-30,34);txt(foot,`M ${m.M.toFixed(1)}`,CY,10,-10);}
+  if($("oMPL").checked){line(ext(I,MPLD,-4.5),ext(I,MPLD,8),RO,2.5,[10,6]);txt(ext(I,MPLD,6),"MPL",RO,10,0);}
+  if($("oARA").checked){const p1=add(k.A,k.rhat,2.6),p2=add(k.A,k.a,2.6);line(k.A,p1,GR,2.5);line(k.A,p2,GR,2.5);txt(k.A,`${m.ara.toFixed(0)}°`,GR,-70,-6);}
+  if($("oPts").checked){const lab=$("oLab").checked;dot(k.B,"#fff",6);if(lab)txt(k.B,"Bladder base","#fff",-150,6);if(!k.male){dot(k.V,"#fff",6);if(lab)txt(k.V,C.hyst?"Vault":"Cervix","#fff",-80,-12);}dot(k.A,"#fff",6);if(lab)txt(k.A,"ARJ","#fff",14,34);
+    if(C.ent>0.02&&k.dP>0.6){const lp=add(k.P,[0,1],1.0);dot(lp,"#fff",6);if(lab)txt(lp,"Sac","#fff",14,4);}
+    if(k.rd>0.5){const pAnt=nrm([-0.9,0.35]),o=add(k.A,k.rhat,0.95),tip=add(o,pAnt,k.rd*1.1+0.28);const base=add(o,pAnt,0.28);line(base,tip,"#fff",2,[5,4]);txt(tip,`Rectocele ${k.rd.toFixed(1)} cm`,"#fff",-190,22);}}
+  // student landmarks
+  if(LM.pts.length){LM.pts.forEach((p,i)=>{dot(p,"#FF6B6B",6);});if(LM.pts.length>=2)line(LM.pts[0],LM.pts[1],"#FF6B6B",2,[6,4]);}}
+// ---------- UI ----------
+function draw(){const imd=render(FI);ictx.putImageData(imd,0,0);drawOverlay();
+  const f=FR[FI];$("phaseLbl").textContent=f.ph;$("frameLbl").textContent=`frame ${FI+1} of ${FR.length}`;$("capRight").textContent=`${C.seq==="ssfse"?"Single-shot FSE":"bSSFP"}, ${C.upright?"upright":"supine"}${C.offset>0.05?`, ${C.offset.toFixed(1)} cm off midline`:""}`;
+  $("frame").value=FI;$$("#phases button").forEach(b=>b.setAttribute("aria-pressed",FR[FI].ph===b.dataset.p));seenPost=seenPost||FR[FI].post||(FR[FI].ph==="Evacuation"&&FR[FI].e>=1);
+  measTable();drawPlot();lmOut();}
+function worst(key){let b=-1e9,bi=0;MEAS.forEach((m,i)=>{if(m[key]>b){b=m[key];bi=i;}});return [b,bi];}
+const g3=(v,lo,hi)=>v<=0?["none","g0"]:v<lo?["mild","g1"]:v<=hi?["moderate","g2"]:["severe","g3"];
+function acrGrade(v){return v<=0?["above PCL","g0"]:v<3?["mild (< 3 cm)","g1"]:v<=6?["moderate (3–6 cm)","g2"]:["severe (> 6 cm)","g3"];}
+function hmoOrgan(v){return v<=0?["grade 0","g0"]:v<=2?["grade 1 (0–2 cm)","g1"]:v<=4?["grade 2 (2–4 cm)","g2"]:["grade 3 (> 4 cm)","g3"];}
+function mplStage(v){return v<-1?["stage 0–1 (> 1 cm above)","g0"]:v<=1?["stage 2 (within 1 cm)","g1"]:v<=4?["stage 3 (> 1 cm below)","g2"]:["stage 3–4 (> 4 cm below)","g3"];}
+function hGrade(H){return H<=6?["normal","g0"]:H<8?["mild","g1"]:H<10?["moderate","g2"]:["severe","g3"];}
+function mGrade(M){return M<=2?["normal","g0"]:M<4?["mild","g1"]:M<6?["moderate","g2"]:["severe","g3"];}
+function rcGrade(d){return d<0.5?["none","g0"]:d<2?["small (< 2 cm)","g1"]:d<=4?["moderate (2–4 cm)","g2"]:["large (> 4 cm)","g3"];}
+function organRows(){const male=C.sex==="M",rows=[["Bladder base","B","hB","mB"]];if(!male)rows.push([C.hyst?"Vaginal vault":"Cervix","V","hV","mV"]);rows.push(["Anorectal junction","A","hA","mA"]);if(C.ent>0.02)rows.push([({sb:"Enterocele",sig:"Sigmoidocele",fat:"Peritoneocele"})[C.entType],"P","hP","mP"]);return rows;}
+function gradeOrgan(key,hkey,mkey,fi){const m=MEAS[fi];if(SYS==="acr"){if(key==="A"){const v=m.A;return [v.toFixed(1),v>3?["excessive descent (> 3 cm)","g2"]:["within normal","g0"]];}return [m[key].toFixed(1),acrGrade(m[key])];}
+  if(SYS==="hmo"){const v=m[hkey];return [v.toFixed(1),hmoOrgan(v)];}const v=m[mkey];return [v.toFixed(1),mplStage(v)];}
+function measTable(){const fi=FI,ref=SYS==="acr"?"PCL":SYS==="hmo"?"H line":"MPL";
+  let h=`<table><thead><tr><th>Structure</th><th>Now (cm below ${ref})</th><th>Worst</th><th>Grade at worst (${SYS.toUpperCase()==="ACR"?"ACR":SYS.toUpperCase()})</th></tr></thead><tbody>`;
+  organRows().forEach(([n,k,hk,mk])=>{const key=SYS==="acr"?k:SYS==="hmo"?hk:mk;const [w,wi]=worst(key);const [now]=gradeOrgan(k,hk,mk,fi);const [ws,g]=gradeOrgan(k,hk,mk,wi);h+=`<tr><td>${n}</td><td>${now}</td><td>${ws} <span class="hint">(f${wi+1})</span></td><td class="${g[1]}">${g[0]}</td></tr>`;});
+  const [Hw]=worst("H"),[Mw]=worst("M"),m=MEAS[fi],hg=hGrade(Hw),mg=mGrade(Mw);
+  h+=`</tbody></table><table style="margin-top:8px"><tbody><tr><td>H line (hiatal width)</td><td>${m.H.toFixed(1)} cm now</td><td>worst ${Hw.toFixed(1)}</td><td class="${hg[1]}">${hg[0]}</td></tr><tr><td>M line (hiatal descent)</td><td>${m.M.toFixed(1)} cm now</td><td>worst ${Mw.toFixed(1)}</td><td class="${mg[1]}">${mg[0]}</td></tr>`;
+  const araRest=MEAS[0].ara,araSq=Math.min(...MEAS.filter((x,i)=>FR[i].ph==="Squeeze").map(x=>x.ara)),araEv=Math.max(...MEAS.filter((x,i)=>FR[i].ph==="Evacuation").map(x=>x.ara));
+  const dEv=araEv-araRest;h+=`<tr><td>Anorectal angle</td><td>${m.ara.toFixed(0)}° now</td><td>rest ${araRest.toFixed(0)}°, squeeze ${araSq.toFixed(0)}°, evacuation ${araEv.toFixed(0)}°</td><td class="${dEv<5?"g2":"g0"}">${dEv<5?"fails to open":"opens normally"}</td></tr>`;
+  if(C.sex==="F"){const urRest=MEAS[0].ur,urMax=Math.max(...MEAS.map(x=>Math.abs(x.ur-urRest)));h+=`<tr><td>Urethral axis change</td><td>${(m.ur-urRest).toFixed(0)}° now</td><td>max ${urMax.toFixed(0)}°</td><td class="${urMax>30?"g2":"g0"}">${urMax>30?"hypermobility (> 30°)":"normal"}</td></tr>`;}
+  const [rw]=worst("rd"),rg=rcGrade(rw);h+=`<tr><td>Anterior rectocele depth</td><td>${m.rd.toFixed(1)} cm now</td><td>worst ${rw.toFixed(1)}</td><td class="${rg[1]}">${rg[0]}${rw>=2&&C.trap?", gel trapping":""}</td></tr>`;
+  const evacPct=C.gel?Math.round((1-MEAS[MEAS.length-1].gel)*100):null;h+=`<tr><td>Evacuation</td><td colspan="2">${evacPct==null?"not assessable (no rectal gel)":evacPct+"% of gel expelled by the end"}</td><td class="${evacPct!=null&&evacPct<66?"g2":"g0"}">${evacPct==null?"":evacPct<66?"incomplete":"complete"}</td></tr>`;
+  h+=`<tr><td>Intussusception</td><td colspan="3">${({none:"none",ir:"intrarectal",ia:"intra-anal",ext:"external (rectal prolapse)"})[C.intus]}</td></tr></tbody></table>`;$("meas").innerHTML=h;}
+function drawPlot(){const cv=$("plot"),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;const cx=cv.getContext("2d");cx.scale(dpr,dpr);cx.clearRect(0,0,w,h);
+  const pl=42,pr=10,pt_=12,pb=26,n=FR.length;const sfx=SYS==="acr"?"":SYS==="hmo"?"h":"m";const keys=[["B","Bladder",css("--cyan")]];if(C.sex==="F")keys.push(["V",C.hyst?"Vault":"Cervix",css("--rose")]);keys.push(["A","ARJ",css("--amber")]);if(C.ent>0.02)keys.push(["P","Sac",css("--ok")]);
+  const key=k=>sfx?sfx+k:k;let mn=-6,mx=4;MEAS.forEach(m=>keys.forEach(([k])=>{mn=Math.min(mn,m[key(k)]);mx=Math.max(mx,m[key(k)]);}));mx=Math.ceil(mx+0.5);mn=Math.floor(mn-0.5);
+  const X=i=>pl+i/(n-1)*(w-pl-pr),Y=v=>pt_+(v-mn)/(mx-mn)*(h-pt_-pb);cx.font="11px system-ui, sans-serif";cx.fillStyle=css("--muted");cx.strokeStyle=css("--line");
+  for(let v=mn;v<=mx;v+=2){cx.beginPath();cx.moveTo(pl,Y(v));cx.lineTo(w-pr,Y(v));cx.stroke();cx.textAlign="right";cx.fillText(v>0?`+${v}`:`${v}`,pl-5,Y(v)+4);}
+  cx.strokeStyle=css("--ink");cx.lineWidth=1.2;cx.beginPath();cx.moveTo(pl,Y(0));cx.lineTo(w-pr,Y(0));cx.stroke();
+  {const th=SYS==="acr"?[3,6]:SYS==="hmo"?[2,4]:[-1,1];th.forEach(v=>{if(v<=mx&&v>=mn){cx.setLineDash([4,4]);cx.strokeStyle=css("--warn");cx.beginPath();cx.moveTo(pl,Y(v));cx.lineTo(w-pr,Y(v));cx.stroke();cx.setLineDash([]);cx.fillStyle=css("--warn");cx.textAlign="left";cx.fillText(SYS==="acr"?(v===3?"mild | moderate":"moderate | severe"):SYS==="hmo"?(v===2?"grade 1 | 2":"grade 2 | 3"):(v===-1?"stage 1 | 2":"stage 2 | 3"),pl+4,Y(v)-3);}});}
+  let lastPh="";FR.forEach((f,i)=>{if(f.ph!==lastPh){cx.fillStyle=css("--muted");cx.textAlign="left";cx.fillText(f.ph.replace("Post-evacuation strain","Post"),X(i)+2,h-8);lastPh=f.ph;}});
+  keys.forEach(([k,lab,col])=>{cx.strokeStyle=col;cx.lineWidth=2.2;cx.beginPath();MEAS.forEach((m,i)=>{const yy=Y(m[key(k)]);i?cx.lineTo(X(i),yy):cx.moveTo(X(i),yy);});cx.stroke();cx.fillStyle=col;cx.textAlign="left";cx.fillText(lab,X(n-1)-36,Y(MEAS[n-1][key(k)])-5);});
+  cx.strokeStyle=css("--ink");cx.globalAlpha=0.35;cx.beginPath();cx.moveTo(X(FI),pt_);cx.lineTo(X(FI),h-pb);cx.stroke();cx.globalAlpha=1;
+  $("plotTitle").textContent=`Organ position across the study (cm below ${SYS==="acr"?"PCL":SYS==="hmo"?"H line":"MPL"}; up is cranial)`;}
+// controls
+const SL=[["cyst","%"],["hm","%"],["ut","%"],["rect","%"],["ent","%"],["lax","%"],["effort","%"],["offset","cm"]];
+function syncUI(){SL.forEach(([id,u])=>{$(id).value=C[id];$(id+"o").textContent=u==="%"?Math.round(C[id]*100)+"%":C[id].toFixed(1)+" cm";});
+  ["hyst","trap","dys","gel","upright","vgel"].forEach(id=>$(id).checked=!!C[id]);$("intus").value=C.intus;$("entType").value=C.entType;
+  $$("#sex button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===C.sex));$$("#sys button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===SYS));$$("#seq button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===C.seq));$$("#bladder button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===C.bladder));
+  $("femaleCtl").hidden=C.sex==="M";}
+function changed(msg){computeAll();syncUI();draw();report();if(msg)note(msg);}
+function note(h){$("note").innerHTML=h;}
+SL.forEach(([id])=>$(id).addEventListener("input",e=>{C[id]=+e.target.value;changed();}));
+["hyst","trap","dys","gel","upright","vgel"].forEach(id=>$(id).addEventListener("change",e=>{C[id]=e.target.checked;changed(TIPS[id]&&TIPS[id](C[id]));}));
+$("intus").onchange=e=>{C.intus=e.target.value;changed("Intussusception appears during evacuation: scrub to the evacuation frames. Intrarectal stays above the anal canal, intra-anal enters it, external protrudes beyond the anal verge.");};
+$("entType").onchange=e=>{C.entType=e.target.value;changed();};
+$$("#sex button").forEach(b=>b.onclick=()=>{C=Object.assign({},DEF,{sex:b.dataset.v,seq:C.seq});CACHE.clear();changed(b.dataset.v==="M"?"<b>Male pelvis</b>: prostate and seminal vesicles take the place of the vagina and uterus. Posterior compartment and pelvic floor findings are assessed the same way; anterior and middle compartment grading does not apply.":"<b>Female pelvis</b>: three compartments plus the peritoneal sac.");});
+$$("#sys button").forEach(b=>b.onclick=()=>{SYS=b.dataset.v;$("oPCL").checked=SYS!=="mpl";$("oHM").checked=SYS==="hmo";$("oMPL").checked=SYS==="mpl";syncUI();draw();report();note({acr:"<b>ACR–SAR–SPR (PCL)</b>: distances perpendicular to the pubococcygeal line; rule of three for severity.",hmo:"<b>HMO</b>: A (inferior symphysis), B (posterior aspect of the puborectalis sling), C (first–second coccygeal junction). PCL = A–C, H = A–B (hiatal width), M = shortest distance from B to the PCL (descent). Organs are graded by how far they pass below the H line.",mpl:"<b>Mid-pubic line</b>: approximates the hymenal plane, so distances map onto POP-Q-like stages."}[SYS]);});
+$$("#seq button").forEach(b=>b.onclick=()=>{C.seq=b.dataset.v;changed(C.seq==="bssfp"?"<b>bSSFP</b>: bright fluid and fat with high temporal resolution; note the dark India-ink lines at fat–water boundaries.":"<b>Single-shot FSE</b>: T2 contrast, robust to susceptibility, slightly blurrier.");});
+$$("#bladder button").forEach(b=>b.onclick=()=>{C.bladder=b.dataset.v;changed(C.bladder==="full"?"<b>Full bladder</b>: it resists descent and can push the posterior compartment and peritoneal sac aside, hiding prolapse there.":C.bladder==="empty"?"<b>Empty bladder</b>: a cystocele can be underestimated.":"<b>Moderately filled bladder</b>: the recommended compromise.");});
+const TIPS={gel:v=>v?"Rectal gel restored: the rectum and anal canal are outlined and evacuation can be assessed.":"<b>No rectal gel</b>: the rectum is collapsed, rectoceles, intussusception and evacuation cannot be assessed properly.",upright:v=>v?"<b>Upright</b> imaging in an open magnet: gravity increases descent; more physiologic.":"Supine closed-bore imaging: standard; adequate when evacuation is achieved.",hyst:v=>v?"<b>Post-hysterectomy</b>: grade the vaginal vault instead of the cervix.":"",dys:v=>v?"<b>Dyssynergic defecation</b>: during evacuation the puborectalis contracts paradoxically, the anorectal angle fails to open, and gel is retained.":"",trap:v=>v?"<b>Trapping</b>: gel stays in the rectocele after evacuation; report it, as it supports a functional rectocele.":""};
+$("preset").innerHTML=Object.entries(PRESETS).map(([k,p])=>`<option value="${k}">${p.name}</option>`).join("");
+$("preset").onchange=e=>{const p=PRESETS[e.target.value];C=Object.assign({},DEF,{seq:C.seq},p.set);CACHE.clear();FI=0;changed(`<b>${p.name}</b> loaded. Play the cine or scrub to the strain and evacuation frames.`);};
+$("frame").max=FR.length-1;$("frame").addEventListener("input",e=>{FI=+e.target.value;draw();});
+const PH=["Rest","Squeeze","Strain","Evacuation","Post-evacuation strain"];$("phases").innerHTML=PH.map(p=>`<button data-p="${p}">${p}</button>`).join("");
+$$("#phases button").forEach(b=>b.onclick=()=>{const p=b.dataset.p;let idx=FR.findIndex(f=>f.ph===p);if(p==="Strain"||p==="Squeeze")idx=FR.map(f=>f.ph).lastIndexOf(p);if(p==="Evacuation")idx=FR.map(f=>f.ph).lastIndexOf(p);FI=idx;draw();});
+["oPCL","oHM","oMPL","oARA","oPts","oLab"].forEach(id=>$(id).addEventListener("change",drawOverlay));
+let playing=null;$("playBtn").onclick=()=>{if(playing){clearInterval(playing);playing=null;$("playBtn").textContent="Play cine";return;}$("playBtn").textContent="Pause";playing=setInterval(()=>{FI=(FI+1)%FR.length;draw();},650);};
+$("speedLbl").textContent="1 frame ≈ 1 s";
+// landmark mode
+const LM={active:false,pts:[]},LMN=()=>{const cc=SYS==="hmo"?"junction of the first and second coccygeal elements":"last coccygeal joint",L=["inferior margin of the pubic symphysis",cc,"posterior aspect of the puborectalis sling","bladder base"];if(C.sex!=="M")L.push(C.hyst?"vaginal vault":"most distal cervix");return L;};
+$("lmStart").onclick=()=>{LM.active=true;LM.pts=[];$("lmNext").textContent="Click: "+LMN()[0];drawOverlay();lmOut();};
+$("lmClear").onclick=()=>{LM.active=false;LM.pts=[];$("lmNext").textContent="";drawOverlay();lmOut();};
+ov.addEventListener("click",e=>{if(!LM.active)return;const r=ov.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*ov.width,py=(e.clientY-r.top)/r.height*ov.height;LM.pts.push(p2w(px,py));const L=LMN();if(LM.pts.length>=L.length){LM.active=false;$("lmNext").textContent="Done. Compare below.";}else $("lmNext").textContent="Click: "+L[LM.pts.length];drawOverlay();lmOut();});
+function lmOut(){const P=LM.pts,k=KIN[FI],m=MEAS[FI];if(!P.length){$("lmOut").innerHTML='<span class="hint">No landmarks placed yet.</span>';return;}
+  const truth=[I,SYS=="hmo"?C12:Cj,k.Hp,k.B,k.V],L=LMN();let h="<b>Landmark errors on this frame:</b> "+P.map((p,i)=>`${L[i]} ${(len(sub(p,truth[i]))*10).toFixed(0)} mm`).join("; ")+".";
+  if(P.length>=3){const d=nrm(sub(P[1],P[0])),n=[-d[1],d[0]].map((v,_,a)=>v),nn=n[1]>0?n:[-n[0],-n[1]];const dist=p=>(p[0]-P[0][0])*nn[0]+(p[1]-P[0][1])*nn[1];
+    const H=len(sub(P[2],P[0])),M=dist(P[2]);h+=`<br>Your H line ${H.toFixed(1)} cm (true ${m.H.toFixed(1)}); your M line ${M.toFixed(1)} cm (true ${m.M.toFixed(1)}).`;
+    if(P.length>=4)h+=` Your bladder base ${dist(P[3]).toFixed(1)} cm below your PCL (true ${m.B.toFixed(1)}).`;if(P.length>=5)h+=` Your ${L[4]} ${dist(P[4]).toFixed(1)} cm (true ${m.V.toFixed(1)}).`;}
+  $("lmOut").innerHTML=h;}
+// ---------- report ----------
+function report(){const male=C.sex==="M",fW=k=>worst(k),sysName={acr:"ACR–SAR–SPR consensus (pubococcygeal line, rule of three)",hmo:"HMO system (H and M lines)",mpl:"mid-pubic line (POP-Q-like staging)"}[SYS];
+  const org=(name,k,hk,mk)=>{const key=SYS==="acr"?k:SYS==="hmo"?hk:mk;const [w,wi]=worst(key);const g=SYS==="acr"?acrGrade(w):SYS==="hmo"?hmoOrgan(w):mplStage(w);const ref=SYS==="acr"?"the PCL":SYS==="hmo"?"the H line":"the MPL";
+    const ph=FR[wi].ph.toLowerCase();return w<=0&&SYS!=="mpl"?`${name}: remains above ${ref}; no prolapse.`:`${name}: ${Math.abs(w).toFixed(1)} cm ${w>0?"below":"above"} ${ref} at maximal descent (${ph}), ${g[0]}.`;};
+  const [Hw]=worst("H"),[Mw]=worst("M"),[Aw]=worst("A"),[rw]=worst("rd");const araRest=MEAS[0].ara,araEv=Math.max(...MEAS.filter((x,i)=>FR[i].ph==="Evacuation").map(x=>x.ara)),araSq=Math.min(...MEAS.filter((x,i)=>FR[i].ph==="Squeeze").map(x=>x.ara));
+  const evacPct=C.gel?Math.round((1-MEAS[MEAS.length-1].gel)*100):null,urMax=Math.max(...MEAS.map(x=>Math.abs(x.ur-MEAS[0].ur)));
+  const L=[];L.push("EXAMINATION: MR defecography.");
+  L.push(`TECHNIQUE: ${C.upright?"Upright open-magnet":"Supine closed-bore"} MRI. Static T2-weighted FSE images in three planes at rest. Dynamic midsagittal ${C.seq==="ssfse"?"single-shot FSE":"balanced SSFP"} imaging at rest, squeeze, strain, during evacuation and post-evacuation strain. ${C.gel?"Rectal ultrasound gel administered":"No rectal contrast administered (limits posterior compartment and evacuation assessment)"}${!male&&C.vgel?"; vaginal gel administered":""}. Grading system: ${sysName}.`);
+  L.push("FINDINGS:");
+  if(!male){L.push("Anterior compartment: "+org("Bladder base","B","hB","mB")+` Urethral axis rotation ${urMax.toFixed(0)}°${urMax>30?", consistent with urethral hypermobility":""}.`);
+    L.push("Middle compartment: "+org(C.hyst?"Vaginal vault":"Cervix","V","hV","mV"));}
+  else L.push("Anterior compartment: "+org("Bladder base","B","hB","mB"));
+  const rg=rcGrade(rw);L.push(`Posterior compartment: anorectal junction ${Aw.toFixed(1)} cm below the PCL at maximal descent${Aw>3?" (excessive pelvic floor descent)":""}. Anorectal angle ${araRest.toFixed(0)}° at rest, ${araSq.toFixed(0)}° with squeeze, up to ${araEv.toFixed(0)}° during evacuation${araEv-araRest<5?" (fails to open)":""}. ${rw>=0.5?`Anterior rectocele ${rw.toFixed(1)} cm deep (${rg[0].replace(/ \(.*\)/,"")})${C.trap&&rw>=2?" with gel trapping after evacuation":""}.`:"No rectocele."} ${({none:"No intussusception.",ir:"Intrarectal intussusception during evacuation.",ia:"Intra-anal intussusception during evacuation.",ext:"External rectal prolapse during evacuation."})[C.intus]} ${evacPct==null?"Evacuation not assessable.":`Evacuation ${evacPct<66?"incomplete":"complete"} (about ${evacPct}% of rectal gel expelled)`}${C.dys?", with paradoxical puborectalis contraction":""}.`);
+  if(C.ent>0.02){const nm=({sb:"Enterocele (small bowel)",sig:"Sigmoidocele",fat:"Peritoneocele (fat only)"})[C.entType];L.push("Peritoneal compartment: "+org(nm,"P","hP","mP")+" Most evident at the end of evacuation.");}else L.push("Peritoneal compartment: no peritoneocele.");
+  L.push(`Pelvic floor: H line ${Hw.toFixed(1)} cm (${hGrade(Hw)[0]}), M line ${Mw.toFixed(1)} cm (${mGrade(Mw)[0]}) at maximal strain or evacuation.`);
+  const imp=[];const gB=SYS==="acr"?acrGrade(worst("B")[0]):SYS==="hmo"?hmoOrgan(worst("hB")[0]):mplStage(worst("mB")[0]);
+  if((SYS==="acr"&&worst("B")[0]>0)||(SYS==="hmo"&&worst("hB")[0]>0)||(SYS==="mpl"&&worst("mB")[0]>-1))imp.push(`Cystocele, ${gB[0].replace(/ \(.*\)/,"")}.`);
+  if(!male){const vk=SYS==="acr"?"V":SYS==="hmo"?"hV":"mV",vw=worst(vk)[0],gV=SYS==="acr"?acrGrade(vw):SYS==="hmo"?hmoOrgan(vw):mplStage(vw);if((SYS!=="mpl"&&vw>0)||(SYS==="mpl"&&vw>-1))imp.push(`${C.hyst?"Vaginal vault":"Uterine"} prolapse, ${gV[0].replace(/ \(.*\)/,"")}.`);}
+  if(rw>=0.5)imp.push(`Anterior rectocele, ${rg[0].replace(/ \(.*\)/,"")}${C.trap&&rw>=2?", with trapping":""}.`);
+  if(C.intus!=="none")imp.push(({ir:"Intrarectal intussusception.",ia:"Intra-anal intussusception.",ext:"External rectal prolapse."})[C.intus]);
+  if(C.ent>0.02)imp.push(({sb:"Enterocele.",sig:"Sigmoidocele.",fat:"Peritoneocele."})[C.entType]);
+  if(Aw>3||Hw>6||Mw>2)imp.push("Pelvic floor relaxation (descending perineum).");if(C.dys)imp.push("Findings suggest dyssynergic defecation (paradoxical puborectalis contraction, non-opening anorectal angle, incomplete evacuation).");
+  if(!imp.length)imp.push("No pelvic floor dysfunction identified.");
+  L.push("IMPRESSION:\n"+imp.map((s,i)=>`${i+1}. ${s}`).join("\n"));$("report").textContent=L.join("\n\n");}
+$("copyRep").onclick=async()=>{try{await navigator.clipboard.writeText($("report").textContent);$("copyMsg").textContent="Copied.";}catch(e){$("copyMsg").textContent="Copy not allowed here; select the text instead.";}};
+// ---------- drills ----------
+let drillActive=null,choice=null,seenPost=false,markedFrame=null;const done=new Set();
+const DRILLS=[
+ {id:"pcl",t:"Draw the PCL",s:"landmarks",setup:()=>{load({});FI=0;},task:"On the rest frame, use landmark mode to place the inferior margin of the pubic symphysis and the last coccygeal joint.",
+  check:()=>{if(LM.pts.length<2)return [0,"Place at least the first two landmarks (Start landmark mode)."];const e1=len(sub(LM.pts[0],I)),e2=len(sub(LM.pts[1],Cj));return e1<0.5&&e2<0.5?[1,`Within ${(Math.max(e1,e2)*10).toFixed(0)} mm: that is the pubococcygeal line used by the ACR–SAR–SPR template.`]:[0,`Errors ${(e1*10).toFixed(0)} and ${(e2*10).toFixed(0)} mm: use the inferior (not central) margin of the symphysis, and the last coccygeal joint (not the tip).`];},hint:"The coccygeal landmark is the joint between the last two coccygeal segments."},
+ {id:"max",t:"Find the worst frame",s:"maximal descent",mark:true,setup:()=>{load({cyst:0.55});},task:"Scrub the cine and mark the frame where the bladder base is lowest.",
+  check:()=>{const [,wi]=worst("B");return markedFrame!=null&&Math.abs(markedFrame-wi)<=1?[1,`Frame ${markedFrame+1}: maximal descent is often during evacuation or post-evacuation strain, not during the first strain.`]:[0,markedFrame==null?"Mark a frame first.":"Not the lowest point yet. Check the evacuation and post-evacuation frames."];},hint:"The plot below the image shows the bladder curve across all frames."},
+ {id:"cyst",t:"Grade the cystocele twice",s:"ACR versus HMO",choices:["ACR mild, HMO grade 1","ACR moderate, HMO grade 2","ACR moderate, HMO grade 1","ACR severe, HMO grade 3"],setup:()=>{load({cyst:0.6});},task:"Grade the bladder base at maximal descent with the ACR (PCL) system and with HMO (relative to the H line).",
+  check:()=>{const a=acrGrade(worst("B")[0])[0].split(" ")[0],h=hmoOrgan(worst("hB")[0])[0].split(" ").slice(0,2).join(" ");const ans=`ACR ${a}, HMO ${h}`;return choice===ans?[1,`${ans}: the two systems use different reference lines, so grades can differ; state which you used.`]:[0,"Switch between ACR and HMO in the toolbar and read the worst values."];},hint:"Use the grading toggle at the top; the table shows the worst frame."},
+ {id:"rc",t:"Measure the rectocele",s:"depth and trapping",choices:["Small, no trapping","Moderate, with trapping","Large, with trapping","Large, no trapping"],setup:()=>{load({rect:0.95,trap:true});},task:"Measure the anterior rectocele at its deepest and check the post-evacuation frames.",
+  check:()=>choice==="Large, with trapping"?[1,"Depth > 4 cm beyond the expected anterior rectal wall, with gel retained after evacuation: large rectocele with trapping."]:[0,"Re-check the depth at the worst frame and whether gel remains after evacuation."],hint:"Depth is measured perpendicular to a line extended up from the anterior wall of the anal canal."},
+ {id:"intus",t:"What happens during evacuation?",s:"intussusception",choices:["None","Intrarectal","Intra-anal","External rectal prolapse"],setup:()=>{load({intus:"ia",rect:0.3});FI=10;},task:"Watch the evacuation frames and classify.",
+  check:()=>choice==="Intra-anal"?[1,"The infolding rectal wall enters the anal canal but stays inside the verge: intra-anal intussusception."]:[0,"Scrub through evacuation: where does the leading edge of the infolding end?"],hint:"Intrarectal stays above the anorectal junction; external passes beyond the anal verge."},
+ {id:"dys",t:"Rectum will not empty",s:"dyssynergia",choices:["Normal evacuation","Dyssynergic defecation","Descending perineum"],setup:()=>{load({dys:true});},task:"Assess the anorectal angle and the puborectalis through squeeze and evacuation, then decide.",
+  check:()=>choice==="Dyssynergic defecation"?[1,"The anorectal angle narrows instead of opening, the puborectalis impression persists, and gel is retained: dyssynergic defecation (correlate with manometry or balloon expulsion)."]:[0,"Compare the angle at rest and during evacuation, and the amount of gel left."],hint:"Normal evacuation opens the angle by 15–20° or more and empties most of the rectum."},
+ {id:"hidden",t:"The late finding",s:"peritoneal compartment",choices:["Cystocele only","Cystocele and enterocele"],setup:()=>{load({cyst:0.4,ent:0.7,bladder:"mod"});seenPost=false;},task:"Review the whole study, including the end, then decide.",
+  check:()=>seenPost&&choice==="Cystocele and enterocele"?[1,"The enterocele appears only once the rectum has emptied: never stop the study before the end of evacuation."]:[0,!seenPost?"You have not looked at the end of evacuation and the post-evacuation strain yet.":"Look again at the rectovaginal space at the end."],hint:"Peritoneal sacs often descend only after the rectum empties."},
+ {id:"off",t:"Too good to be true",s:"slice position",choices:["No uterine prolapse","Mild","Moderate","Severe"],setup:()=>{load({ut:0.7,offset:1.8});},task:"The cervix barely moves. Check the technique, fix it, and grade the uterine prolapse (ACR).",
+  check:()=>{const g=acrGrade(worst("V")[0])[0].split(" ")[0];const ans=g==="above"?"No uterine prolapse":g[0].toUpperCase()+g.slice(1);return C.offset<=0.3&&choice===ans?[1,`On the true midline the cervix descends ${worst("V")[0].toFixed(1)} cm: ${ans.toLowerCase()}. Off-midline slices underestimate descent.`]:[0,C.offset>0.3?"The dynamic slice is off midline: move it to the midline (Technique).":"Re-grade on the corrected images."];},hint:"Check the symphysis, urethra, vagina and anal canal are all in plane."},
+ {id:"male",t:"Male pelvis: pelvic floor",s:"H and M lines",choices:["Normal pelvic floor","Pelvic floor relaxation (descending perineum)","Rectocele"],setup:()=>{load({sex:"M",lax:0.7});},task:"Show the H and M lines and assess the pelvic floor during strain and evacuation.",
+  check:()=>choice==="Pelvic floor relaxation (descending perineum)"?[1,`H ${worst("H")[0].toFixed(1)} cm and M ${worst("M")[0].toFixed(1)} cm with the anorectal junction ${worst("A")[0].toFixed(1)} cm below the PCL: pelvic floor relaxation, in men as in women.`]:[0,"Read the worst H and M values and the anorectal junction descent."],hint:"Normal H ≤ 6 cm, M ≤ 2 cm, ARJ ≤ 3 cm below the PCL."}];
+function load(set){C=Object.assign({},DEF,{seq:C.seq},set);CACHE.clear();FI=0;LM.pts=[];LM.active=false;markedFrame=null;computeAll();syncUI();}
+function mkDrills(){$("drills").innerHTML="";DRILLS.forEach(d=>{const b=document.createElement("button");b.className="drill"+(done.has(d.id)?" done":"");b.innerHTML=`${d.t}<small>${d.s}${done.has(d.id)?" · solved":""}</small>`;b.setAttribute("aria-pressed",drillActive===d.id);b.onclick=()=>startDrill(d.id);$("drills").appendChild(b);});}
+function startDrill(id){const d=DRILLS.find(x=>x.id===id);drillActive=id;choice=null;d.setup();draw();report();
+  const t=$("task");t.hidden=false;t.innerHTML=`<b>${d.t}.</b> ${d.task}${d.choices?`<div class="choices" id="chs">${d.choices.map(c=>`<button data-c="${c}">${c}</button>`).join("")}</div>`:""}<div class="row" style="margin-top:8px">${d.mark?'<button class="mini" id="markBtn">Mark this frame</button>':""}<button class="mini primary" id="chk">Check</button><button class="mini" id="hnt">Hint</button><button class="mini" id="ext">Exit drill</button></div><div id="fb"></div>`;
+  $$("#chs button").forEach(b=>b.onclick=()=>{choice=b.dataset.c;$$("#chs button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+  if(d.mark)$("markBtn").onclick=()=>{markedFrame=FI;$("fb").innerHTML=`<div class="fb no">Marked frame ${FI+1}.</div>`;};
+  $("chk").onclick=()=>{const [ok,msg]=d.check();$("fb").innerHTML=`<div class="fb ${ok?"ok":"no"}">${ok?"Correct. ":""}${msg}</div>`;if(ok){done.add(id);mkDrills();}};
+  $("hnt").onclick=()=>{$("fb").innerHTML=`<div class="fb no">${d.hint}</div>`;};$("ext").onclick=()=>{drillActive=null;t.hidden=true;load({});draw();report();mkDrills();};
+  mkDrills();note(`<b>Drill:</b> ${d.task}`);$("note").scrollIntoView({behavior:"smooth",block:"start"});}
+// ---------- quiz ----------
+const QZ=[
+ {q:"The pubococcygeal line runs from:",o:["Top of the symphysis to the sacral promontory","Inferior margin of the pubic symphysis to the last coccygeal joint","Inferior symphysis to the coccygeal tip","Anal verge to the coccyx"],a:1,e:"It is the reference line for organ descent in the ACR–SAR–SPR template."},
+ {q:"Under the ACR–SAR–SPR rule of three, a cervix 4 cm below the PCL at maximal strain is:",o:["Mild","Moderate","Severe","Normal"],a:1,e:"< 3 cm mild, 3–6 cm moderate, > 6 cm severe."},
+ {q:"In the HMO system the H line measures:",o:["Hiatal descent","Width of the levator hiatus, from inferior pubis to posterior anorectal junction","Rectocele depth","The anorectal angle"],a:1,e:"Normal ≤ 6 cm; the M line (descent of the hiatus from the PCL) is normal ≤ 2 cm."},
+ {q:"Why must imaging continue through evacuation?",o:["To measure bladder volume","Intussusception and peritoneoceles often appear only during or after evacuation","To reduce motion","It is optional"],a:1,e:"Stopping at strain misses findings that change management."},
+ {q:"An anterior rectocele 3.2 cm deep is:",o:["Small","Moderate","Large","Not measurable"],a:1,e:"< 2 cm small, 2–4 cm moderate, > 4 cm large; also report trapping."},
+ {q:"Which pattern suggests dyssynergic defecation?",o:["ARA opens by 25° and the rectum empties","ARA narrows during evacuation with persistent puborectalis impression and retained gel","Bladder base below the PCL","Intra-anal intussusception"],a:1,e:"Paradoxical contraction of the puborectalis; correlate with anorectal manometry or balloon expulsion."},
+ {q:"Urethral hypermobility on dynamic MRI is suggested by a urethral axis rotation greater than about:",o:["10°","20°","30°","60°"],a:2,e:"Analogous to the clinical Q-tip test."},
+ {q:"What is the main effect of a very full bladder on MR defecography?",o:["Improves rectocele visibility","Can mask posterior and peritoneal prolapse","Increases the anorectal angle","None"],a:1,e:"A moderately filled bladder is recommended."},
+ {q:"The mid-pubic line approximates:",o:["The levator plate","The hymenal plane used in POP-Q","The pelvic inlet","The PCL"],a:1,e:"It allows MRI findings to be expressed in POP-Q-like stages."},
+ {q:"External rectal prolapse differs from intra-anal intussusception because:",o:["It involves only mucosa","The intussusceptum passes beyond the anal verge","It occurs at rest","It is anterior"],a:1,e:"Intrarectal stays in the rectum, intra-anal enters the canal, external passes the verge."}];
+function mkQuiz(){const h=$("quiz");h.innerHTML="";QZ.forEach((q,i)=>{const d=document.createElement("div");d.className="q";d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector(".opts");q.o.forEach((t,j)=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>{op.querySelectorAll("button").forEach((x,kk)=>{x.disabled=true;if(kk===q.a)x.classList.add("right");});if(j!==q.a)b.classList.add("wrong");const ex=d.querySelector(".ex");ex.hidden=false;ex.textContent=(j===q.a?"Correct. ":"Not quite. ")+q.e;};op.appendChild(b);});h.appendChild(d);});}
+// init
+window.addEventListener("resize",drawPlot);
+computeAll();syncUI();mkDrills();mkQuiz();draw();report();note("Choose a preset or build a case, then play the cine. The image is a schematic MR model of the midsagittal pelvis; the table and plot follow the selected grading system.");
+})();
+</script>
+</body>
+</html>

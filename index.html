@@ -157,11 +157,19 @@ const GROUPS = [
       covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
       note: "Companion to MR Fingerprinting — start there.",
       glyph: "liver" }
+  ]},
+  { name: "Clinical tutorials", lessons: [
+    { title: "MR defecography for pelvic floor weakness",
+      url: "lessons/mr-defecography/",
+      desc: "A synthetic midsagittal pelvis that moves like a dynamic study: rest, squeeze, strain, evacuation and post-evacuation strain, with live reference lines and measurements.",
+      covers: "Cystocele, vaginal vault and uterine prolapse, rectocele, intussusception, peritoneocele, descending perineum, ACR–SAR–SPR (PCL), HMO and MPL grading, structured report",
+      glyph: "defec" }
   ]}
 ];
 
 /* Small monochrome thumbnails, drawn like tiny images */
 const G = {
+  defec: `<path d="M16 8C24 18 22 30 30 40S52 52 56 64" fill="none" stroke="#e6e6e6" stroke-width="2.4"/><path d="M12 20C24 24 34 28 46 24" fill="none" stroke="#888" stroke-width="2"/><circle cx="30" cy="40" r="4" fill="#9a9a9a"/><path d="M8 54L62 18" stroke="#555" stroke-width="1.5" stroke-dasharray="4 3"/>`,
   doppler: `<path d="M8 40 L16 40 C20 14 26 14 30 40 C33 52 38 52 40 40 C44 22 49 22 52 40 L64 40" fill="none" stroke="#e6e6e6" stroke-width="2.2"/><path d="M8 40H64" stroke="#555" stroke-width="1.2"/>`,
   snr: `<g fill="#8a8a8a"><rect x="12" y="12" width="22" height="22"/><rect x="38" y="38" width="22" height="22"/></g><g fill="#e6e6e6"><rect x="38" y="12" width="22" height="22" opacity=".55"/><rect x="12" y="38" width="22" height="22" opacity=".3"/></g>`,
   subtraction: `<circle cx="34" cy="38" r="17" fill="#8a8a8a"/><circle cx="40" cy="34" r="17" fill="none" stroke="#e6e6e6" stroke-width="2.5"/>`,
