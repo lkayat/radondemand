@@ -122,9 +122,7 @@ const GROUPS = [
       url: "lessons/snr-equation/",
       desc: "Turn protocol knobs on a synthetic slice and see which factor bought or cost SNR, scan time and artifact against a baseline protocol.",
       covers: "Voxel size, averages, bandwidth, parallel imaging g-factor, TR/TE, field strength, wrap, ghosting, chemical shift and EPI distortion",
-      glyph: "snr" }
-  ]},
-  { name: "Contrast and subtraction", lessons: [
+      glyph: "snr" },
     { title: "Subtraction maps on body MRI",
       url: "lessons/subtraction-maps/",
       desc: "Build a pre/post-contrast subtraction from a phantom, then break it with misregistration and signal mismatch.",
@@ -145,6 +143,18 @@ const GROUPS = [
       covers: "Upper-abdomen slice, prostate with a peripheral-zone lesion, PI-RADS v2.1 calculated b1400 and b2000",
       glyph: "dwi" }
   ]},
+  { name: "Clinical tutorials", lessons: [
+    { title: "MR defecography for pelvic floor weakness",
+      url: "lessons/mr-defecography/",
+      desc: "A synthetic midsagittal pelvis that moves like a dynamic study: rest, squeeze, strain, evacuation and post-evacuation strain, with live reference lines and measurements.",
+      covers: "Cystocele, vaginal vault and uterine prolapse, rectocele, intussusception, peritoneocele, descending perineum, ACR–SAR–SPR (PCL), HMO and MPL grading, structured report",
+      glyph: "defec" },
+    { title: "MRI of fistula-in-ano: anatomy, classification and reporting",
+      url: "lessons/mri-fistula-in-ano/",
+      desc: "A 3D model of the anal canal and pelvic floor, sliced in axial-oblique, coronal-oblique and sagittal planes. Build a fistula from its internal opening outward and switch sequences.",
+      covers: "Parks and St James's classification, sphincter involvement, abscess and horseshoe extension, Crohn's activity scoring (MAGNIFI-CD, Van Assche), structured report",
+      glyph: "fistula" }
+  ]},
   { name: "Quantitative MRI", lessons: [
     { title: "MR Fingerprinting",
       url: "lessons/mr-fingerprinting/",
@@ -157,18 +167,6 @@ const GROUPS = [
       covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
       note: "Companion to MR Fingerprinting — start there.",
       glyph: "liver" }
-  ]},
-  { name: "Clinical tutorials", lessons: [
-    { title: "MR defecography for pelvic floor weakness",
-      url: "lessons/mr-defecography/",
-      desc: "A synthetic midsagittal pelvis that moves like a dynamic study: rest, squeeze, strain, evacuation and post-evacuation strain, with live reference lines and measurements.",
-      covers: "Cystocele, vaginal vault and uterine prolapse, rectocele, intussusception, peritoneocele, descending perineum, ACR–SAR–SPR (PCL), HMO and MPL grading, structured report",
-      glyph: "defec" },
-    { title: "MRI of fistula-in-ano: anatomy, classification and reporting",
-      url: "lessons/mri-fistula-in-ano/",
-      desc: "A 3D model of the anal canal and pelvic floor, sliced in axial-oblique, coronal-oblique and sagittal planes. Build a fistula from its internal opening outward and switch sequences.",
-      covers: "Parks and St James's classification, sphincter involvement, abscess and horseshoe extension, Crohn's activity scoring (MAGNIFI-CD, Van Assche), structured report",
-      glyph: "fistula" }
   ]}
 ];
 
