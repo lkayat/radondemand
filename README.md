@@ -22,6 +22,7 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 | liver-mrf | Liver MR Fingerprinting (companion to mr-fingerprinting) | https://claude.ai/artifact/FgGZevgD9W3se7WPvGxfC1 |
 | doppler-console | Doppler ultrasound console trainer | https://claude.ai/artifact/23ZrmYKrejfPzaBssxpawy |
 | mr-defecography | MR defecography for pelvic floor weakness | https://claude.ai/artifact/E7kUTeVnJvGz8vixKjKhNV |
+| mri-fistula-in-ano | MRI of fistula-in-ano: anatomy, classification and reporting | https://claude.ai/artifact/J1ScdgcjmVJjAsu4FZvjd8 |
 
 The repo copies are snapshots taken Oct 1, 2026. The claude.ai artifacts remain
 the originals if you want to regenerate a lesson in chat.

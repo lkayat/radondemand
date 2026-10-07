@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MRI of fistula-in-ano: anatomy, classification and reporting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F1;--panel:#FFFFFF;--ink:#18222C;--muted:#5A6874;--line:#CFD6DB;--soft:#F5F7F8;--amber:#C98A0C;--cyan:#1F7F95;--rose:#B0476A;--ok:#2F7D4F;--warn:#B8621B;--bad:#B3261E;--chip-ok:#E3F1E8;--chip-warn:#FBEEDD;--chip-bad:#F8E1DF;
+  --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--read:"Literata",Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}}
+:root[data-theme="dark"]{--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}*,*::before,*::after{box-sizing:inherit}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px}h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}.lede{font-family:var(--read);font-size:18px;max-width:84ch;color:var(--muted)}.read{font-family:var(--read);max-width:84ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:16px 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}.seg.sm button{font-size:13px;padding:4px 10px;font-weight:500}
+select{font:inherit;font-size:14px;padding:4px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);min-height:48px}
+.stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(340px,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:1050px){.stage{grid-template-columns:1fr}}
+.views{background:#000;border-radius:10px;padding:10px;display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+@media (max-width:640px){.views{grid-template-columns:1fr}}
+.view{position:relative}.view .cv{position:relative;width:100%}
+.view canvas{display:block;width:100%;height:auto;image-rendering:auto;cursor:crosshair}
+.view .ov{position:absolute;inset:0;pointer-events:none}
+.vlab{color:#dfe6ea;font-size:13px;display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-variant-numeric:tabular-nums}
+.vlab input[type=range]{flex:1;accent-color:var(--amber)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.ovl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:#dfe6ea;font-size:13px;grid-column:1/-1}.ovl label{display:flex;gap:5px;align-items:center}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.grp{font-size:12.5px;color:var(--muted);margin:12px 0 4px;font-weight:700}.grp:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:132px 1fr 60px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:14px;margin:6px 0}
+.tbl{overflow-x:auto}.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tbl th{font-size:12.5px;color:var(--muted);font-weight:600}
+.big{font-family:var(--read);font-size:22px;font-weight:600}
+.g0{color:var(--ok)}.g1{color:var(--warn)}.g2{color:var(--bad)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px}.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.report{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-family:var(--read);font-size:15px;line-height:1.6;white-space:pre-wrap}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.drills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.drill{font:inherit;text-align:left;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.drill[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}.drill.done{background:var(--chip-ok)}.drill small{display:block;color:var(--muted);font-size:12px}
+.task{background:var(--panel);border-left:4px solid var(--amber);border-radius:4px;padding:12px 15px;margin-top:10px;font-family:var(--read)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.choices button{font:inherit;font-size:13.5px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.fb{font-size:14px;margin-top:8px;padding:8px 10px;border-radius:6px;font-family:var(--ui)}.fb.ok{background:var(--chip-ok)}.fb.no{background:var(--chip-warn)}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-bottom:10px}.quiz .q p{font-family:var(--read);margin-bottom:8px}
+.quiz .opts{display:flex;flex-direction:column;gap:6px}.quiz .opts button{font:inherit;font-size:14px;text-align:left;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.quiz .opts button.right{background:var(--chip-ok);border-color:var(--ok)}.quiz .opts button.wrong{background:var(--chip-bad);border-color:var(--bad)}.quiz .ex{font-size:14px;color:var(--muted);margin-top:8px}
+ol.refs{font-size:14px;color:var(--muted);padding-left:24px;max-width:98ch;line-height:1.55}ol.refs li{margin-bottom:6px}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:92ch}.hint{font-size:12.5px;color:var(--muted)}
+.sc select{font-size:13px;max-width:100%}
+.back{font-size:14px;margin:0 0 16px}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--ink);text-decoration:underline}
+.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>MRI of fistula-in-ano</h1>
+<p class="lede">A 3D model of the anal canal and pelvic floor, sliced like a real study in axial-oblique, coronal-oblique and sagittal planes. Build a fistula from its internal opening outward, switch sequences to see what each one shows, and let the lesson classify it (Parks, St James's), estimate sphincter involvement, score Crohn's activity (MAGNIFI-CD, Van Assche) and draft the report.</p>
+
+<div class="bar">
+  <label>Case <select id="preset"></select></label>
+  <span class="seg" id="sex"><button data-v="F">Female</button><button data-v="M">Male</button></span>
+  <span class="seg" id="seq"><button data-v="t2">T2</button><button data-v="t2fs">T2 fat-sat</button><button data-v="t1c">T1 fat-sat + contrast</button><button data-v="dwi">DWI</button></span>
+</div>
+<div class="note" id="note"></div>
+
+<div class="stage">
+  <div>
+    <div class="views">
+      <div class="view"><div class="cv"><canvas id="cAx" width="240" height="240" aria-label="Axial oblique slice"></canvas><canvas class="ov" id="oAx" width="720" height="720"></canvas></div>
+        <div class="vlab"><span>Axial oblique</span><input type="range" id="zAx" min="-0.8" max="8" step="0.1" aria-label="Axial level"><span id="zAxL"></span></div>
+        <div class="vlab"><span>Plane tilt</span><input type="range" id="tilt" min="-25" max="25" step="1" aria-label="Axial plane tilt"><span id="tiltL"></span></div></div>
+      <div class="stack">
+        <div class="view"><div class="cv"><canvas id="cCo" width="240" height="220" aria-label="Coronal oblique slice"></canvas><canvas class="ov" id="oCo" width="720" height="660"></canvas></div>
+          <div class="vlab"><span>Coronal oblique</span><input type="range" id="yCo" min="-4" max="4" step="0.1" aria-label="Coronal position"><span id="yCoL"></span></div></div>
+        <div class="view"><div class="cv"><canvas id="cSa" width="240" height="220" aria-label="Sagittal slice"></canvas><canvas class="ov" id="oSa" width="720" height="660"></canvas></div>
+          <div class="vlab"><span>Sagittal</span><input type="range" id="xSa" min="-4" max="4" step="0.1" aria-label="Sagittal position"><span id="xSaL"></span></div></div>
+      </div>
+      <div class="ovl"><label><input type="checkbox" id="oClock" checked> Clock face</label><label><input type="checkbox" id="oLab"> Anatomy labels</label><label><input type="checkbox" id="oX" checked> Crosshair</label><span class="hint" style="color:#9fb0bb">Click any view to move the other two planes there.</span></div>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <div class="grp">Primary tract</div>
+      <div class="row"><label>Course <select id="type"><option value="none">No fistula</option><option value="inter">Intersphincteric</option><option value="trans">Transsphincteric</option><option value="supra">Suprasphincteric</option><option value="extra">Extrasphincteric</option><option value="superficial">Superficial (submucosal/subcutaneous)</option></select></label></div>
+      <div class="ctl"><label for="clock">Internal opening</label><input type="range" id="clock" min="0" max="11.5" step="0.5"><output id="clocko"></output></div>
+      <div class="ctl" id="zcRow"><label for="zc">EAS crossing level</label><input type="range" id="zc" min="0.3" max="2.5" step="0.1"><output id="zco"></output></div>
+      <div class="ctl"><label for="ext">External opening</label><input type="range" id="ext" min="0" max="11.5" step="0.5"><output id="exto"></output></div>
+      <div class="grp">Extensions and collections</div>
+      <div class="row"><label><input type="checkbox" id="horse"> Horseshoe (deep postanal space)</label><label><input type="checkbox" id="supraExt"> Supralevator extension</label><label><input type="checkbox" id="blind"> Blind-ending branch</label></div>
+      <div class="row"><label>Abscess <select id="abs"><option value="none">None</option><option value="inter">Intersphincteric</option><option value="ischio">Ischioanal</option><option value="postanal">Deep postanal space</option><option value="supra">Supralevator</option></select></label></div>
+      <div class="ctl"><label for="absSize">Abscess size</label><input type="range" id="absSize" min="0.5" max="4" step="0.1"><output id="absSizeo"></output></div>
+      <div class="grp">Activity and Crohn's features</div>
+      <div class="row"><span class="seg sm" id="act"><button data-v="active">Active (fluid)</button><button data-v="gran">Granulation</button><button data-v="fib">Fibrotic (healed)</button></span></div>
+      <div class="row"><label><input type="checkbox" id="seton"> Seton</label><label><input type="checkbox" id="second"> Second tract</label><label><input type="checkbox" id="proct"> Proctitis</label><label id="rvfL"><input type="checkbox" id="rvf"> Rectovaginal fistula</label></div>
+    </div>
+    <div class="panel"><h3>Classification</h3><div class="tbl" id="cls"></div></div>
+  </div>
+</div>
+
+<h2>Anatomy that decides the classification</h2>
+<div class="cards">
+  <div class="card"><h3>Two sphincters, one plane between</h3><p>The internal sphincter is the thickened circular smooth muscle of the bowel wall, intermediate signal on T2. The external sphincter is striated, dark on T2, and continues upward into the puborectalis and levator ani. The intersphincteric space between them is a thin fat plane: the highway for intersphincteric tracts and abscesses.</p></div>
+  <div class="card"><h3>Where fistulas start</h3><p>Most fistulas are cryptoglandular: an anal gland at the dentate line (mid anal canal) becomes infected, and the infection tracks outward through the internal sphincter into the intersphincteric space. Locate the internal opening by its clock position and its level relative to the dentate line.</p></div>
+  <div class="card"><h3>Clock face</h3><p>This lesson uses the anatomical clock on axial images: 12 o'clock anterior, 6 o'clock posterior, 3 o'clock patient left, 9 o'clock patient right. Surgeons may use the lithotomy position, where the same picture is described differently; state the convention in the report to avoid wrong-side surgery.</p></div>
+  <div class="card"><h3>Plane planning</h3><p>Coronal-oblique images are angled parallel to the anal canal and axial-oblique images perpendicular to it. Off-axis axial images cut the sphincter ring obliquely, so a tract can appear to cross at the wrong level. Try the plane-tilt slider.</p></div>
+</div>
+
+<h2>Scores</h2>
+<p class="read">Both indices are prefilled from the case; change any item to see the effect. The MAGNIFI-CD item definitions are condensed here; use the original publication for formal scoring.</p>
+<div class="cards">
+  <div class="card sc"><h3>MAGNIFI-CD (0–25)</h3><div id="mag"></div></div>
+  <div class="card sc"><h3>Van Assche index (0–22)</h3><div id="vai"></div></div>
+</div>
+
+<h2>Structured report</h2>
+<div class="row"><button class="mini" id="copyRep">Copy report</button><span class="hint" id="copyMsg"></span></div>
+<div class="report" id="report"></div>
+
+<h2>Protocol</h2>
+<div class="cards">
+  <div class="card"><h3>Sequences</h3><p>Small field of view, high-resolution T2-weighted imaging without fat suppression in sagittal, coronal-oblique and axial-oblique planes for anatomy; fat-suppressed T2 or STIR for tract and abscess conspicuity; fat-suppressed T1-weighted images after contrast for activity and to separate abscess from inflamed tissue; DWI as an adjunct. Plan oblique planes on the sagittal images along the anal canal.</p></div>
+  <div class="card"><h3>What the surgeon needs</h3><p>Internal opening (clock and level), primary tract course and its relation to the sphincters and levator, how much external sphincter would be divided by a fistulotomy, secondary tracts and horseshoe spread, abscesses that need drainage, supralevator extension, and in Crohn's disease activity and proctitis.</p></div>
+  <div class="card"><h3>Reading signal</h3><p>Active tracts contain fluid or pus (bright on fat-suppressed T2, high on DWI) with enhancing granulation walls. Healing tracts become thin and dark on T2 with little enhancement. An abscess is a collection with a rim and no central enhancement; an inflamed tract without a collection enhances throughout.</p></div>
+</div>
+
+<h2>Drills</h2>
+<div class="drills" id="drills"></div>
+<div class="task" id="task" hidden></div>
+
+<h2>Quick quiz</h2>
+<div class="quiz" id="quiz"></div>
+
+<h2>References</h2>
+<ol class="refs">
+  <li>Parks AG, Gordon PH, Hardcastle JD. A classification of fistula-in-ano. Br J Surg. 1976;63(1):1–12.</li>
+  <li>Morris J, Spencer JA, Ambrose NS. MR imaging classification of perianal fistulas and its implications for patient management. RadioGraphics. 2000;20(3):623–635.</li>
+  <li>Halligan S, Stoker J. Imaging of fistula in ano. Radiology. 2006;239(1):18–33.</li>
+  <li>Halligan S, Tolan D, Amitai MM, et al. ESGAR consensus statement on the imaging of fistula-in-ano and other causes of anal sepsis. Eur Radiol. 2020;30(9):4734–4740. doi:10.1007/s00330-020-06826-5</li>
+  <li>Van Assche G, Vanbeckevoort D, Bielen D, et al. Magnetic resonance imaging of the effects of infliximab on perianal fistulizing Crohn's disease. Am J Gastroenterol. 2003;98(2):332–339.</li>
+  <li>Samaan MA, Puylaert CAJ, Levesque BG, et al. The development of a magnetic resonance imaging index for fistulising Crohn's disease. Aliment Pharmacol Ther. 2017;46(5):516–528.</li>
+  <li>Hindryckx P, Jairath V, Zou G, et al. Development and validation of a magnetic resonance index for assessing fistulas in patients with Crohn's disease. Gastroenterology. 2019;157(5):1233–1244.e5. doi:10.1053/j.gastro.2019.07.027</li>
+  <li>Beek KJ, Mulders LGM, van Rijn KL, et al. External validation of the MAGNIFI-CD index in patients with complex perianal fistulising Crohn's disease. Eur Radiol. 2025;35(3):1428–1439. doi:10.1007/s00330-024-11029-3</li>
+  <li>Sandborn WJ, Fazio VW, Feagan BG, Hanauer SB. AGA technical review on perianal Crohn's disease. Gastroenterology. 2003;125(5):1508–1530.</li>
+</ol>
+<p class="foot">Teaching simulation. The anal canal and pelvic floor are a simplified geometric model; dimensions, signal intensities and tract paths are representative. The St James's grade, sphincter involvement and simple/complex labels are computed from the model with simplified rules; MAGNIFI-CD and Van Assche items are condensed. Remission (MAGNIFI-CD ≤ 6) and response (fall of ≥ 2 points) cut-offs are from the external validation study and are research thresholds. For teaching only; not for clinical use.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const TAU=2*Math.PI,clamp=(v,a,b)=>v<a?a:v>b?b:v,$=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s);
+function mul(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+// ---------- case ----------
+const DEF={sex:"M",type:"none",clock:6,zc:1.2,ext:6,horse:false,supraExt:false,blind:false,abs:"none",absSize:1.8,act:"active",seton:false,second:false,proct:false,rvf:false};
+let F=Object.assign({},DEF),SEQ="t2fs",TILT=0,ZA=1.6,YC=0,XS=0;
+const PRESETS={
+ normal:{n:"Normal anatomy",s:{}},
+ inter:{n:"Simple intersphincteric (St James's 1)",s:{type:"inter",clock:6,ext:6}},
+ interAbs:{n:"Intersphincteric with abscess (St James's 2)",s:{type:"inter",clock:5,ext:5,abs:"inter",absSize:1.6}},
+ transLow:{n:"Low transsphincteric (St James's 3)",s:{type:"trans",clock:7,zc:0.7,ext:7.5}},
+ transHigh:{n:"High transsphincteric with ischioanal abscess (4)",s:{type:"trans",clock:5,zc:2.1,ext:4.5,abs:"ischio",absSize:2.6}},
+ horse:{n:"Posterior horseshoe via deep postanal space (4)",s:{type:"trans",clock:6,zc:1.5,ext:4,horse:true,abs:"postanal",absSize:1.6}},
+ supra:{n:"Suprasphincteric (St James's 5)",s:{type:"supra",clock:7,ext:8}},
+ extra:{n:"Extrasphincteric (St James's 5)",s:{type:"extra",clock:4,ext:3.5}},
+ supraExt:{n:"Transsphincteric with supralevator extension (5)",s:{type:"trans",clock:8,zc:1.6,ext:8,supraExt:true}},
+ superficial:{n:"Superficial fistula",s:{type:"superficial",clock:1,ext:1.5}},
+ healed:{n:"Healed (fibrotic) tract",s:{type:"trans",clock:7,zc:1.0,ext:7.5,act:"fib"}},
+ crohn:{n:"Crohn's: complex, seton, proctitis",s:{type:"trans",clock:5,zc:1.8,ext:4,second:true,seton:true,proct:true,act:"active",abs:"ischio",absSize:1.4,blind:true}},
+ rvf:{n:"Crohn's: rectovaginal fistula",s:{sex:"F",type:"none",rvf:true,proct:true}}};
+// ---------- geometry (cm): x patient left(+)/right(-), y posterior(+)/anterior(-), z up from anal verge ----------
+const P=(r,c,z)=>{const p=c/12*TAU;return [r*Math.sin(p),-r*Math.cos(p),z];};
+const ZD=1.6; // dentate line
+const zskin=(x,y)=>-0.25-0.22*Math.max(0,Math.abs(x)-1.4)-0.05*Math.max(0,y-1);
+function tracts(){const T=[],c=F.clock,ce=F.ext,R=F.act==="fib"?0.11:F.act==="gran"?0.17:0.2;const sk=(r,cc)=>{const q=P(r,cc,0);return P(r,cc,zskin(q[0],q[1]));};
+  let main=null,cross=null;
+  if(F.type==="inter"){main=[P(0.45,c,ZD),P(0.95,c,ZD),P(0.95,c,0.6),P(1.65,(c+ce)/2,-0.12),sk(2.3,ce)];cross=P(0.95,c,1.0);}
+  if(F.type==="trans"){const zc=F.zc;main=[P(0.45,c,ZD),P(0.95,c,ZD),P(0.95,c,zc),P(1.8,c,zc),P(2.9,(c*2+ce)/3,zc-0.45),P(3.3,ce,Math.min(zc-0.6,0.6)),sk(3.5,ce)];cross=P(2.6,c,zc-0.2);}
+  if(F.type==="supra"){main=[P(0.45,c,ZD),P(0.95,c,ZD),P(0.95,c,3.75),P(1.9,c,4.15),P(2.75,c,3.6),P(3.1,(c+ce)/2,1.8),P(3.3,ce,0.5),sk(3.5,ce)];cross=P(3.0,c,2.4);}
+  if(F.type==="extra"){main=[P(0.6,c,5.3),P(1.5,c,5.1),P(2.6,c,4.4),P(3.15,c,3.4),P(3.3,(c+ce)/2,1.6),sk(3.6,ce)];cross=P(3.2,c,2.4);}
+  if(F.type==="superficial"){main=[P(0.42,c,0.35),P(1.0,c,0.05),P(1.7,(c+ce)/2,-0.15),sk(2.4,ce)];cross=P(1.2,c,0.0);}
+  if(main)T.push({pts:main,r:R,main:true});
+  if(main&&F.horse){const pa=P(2.25,6,2.2);T.push({pts:[cross,pa],r:R*0.9});T.push({pts:[pa,P(2.8,4.4,1.8),P(3.3,3.4,1.1)],r:R*0.85});T.push({pts:[pa,P(2.8,7.6,1.8),P(3.3,8.6,1.1)],r:R*0.85});}
+  if(main&&F.supraExt){T.push({pts:[cross,P(2.75,c,3.7),P(2.9,c,5.1),P(2.6,c+0.4,6.1)],r:R*0.85});}
+  if(main&&F.blind){T.push({pts:[cross,P(3.3,c+1.6,cross[2]+0.9),P(3.6,c+2.4,cross[2]+1.3)],r:R*0.8});}
+  if(main&&F.second){const c2=(c+4.5)%12;T.push({pts:[P(0.45,c2,ZD),P(0.95,c2,ZD),P(0.95,c2,0.9),P(1.8,c2,0.9),P(2.8,c2,0.4),sk(3.1,c2)],r:R*0.9});}
+  if(F.rvf&&F.sex==="F")T.push({pts:[P(0.45,0,2.6),P(0.95,0,2.65),P(1.6,0,2.75),[0,-2.15,2.9]],r:0.15});
+  return T;}
+function abscess(){if(F.abs==="none"||F.type==="none")return null;const s=F.absSize,c=F.clock;
+  if(F.abs==="inter"){const p=P(0.97,c,2.0),t=[Math.cos(c/12*TAU),Math.sin(c/12*TAU),0];return {c:p,ax:[[t[0],t[1],0],[Math.sin(c/12*TAU),-Math.cos(c/12*TAU),0],[0,0,1]],r:[s*0.45,0.28,s*0.42]};}
+  if(F.abs==="ischio")return {c:P(3.0,c,1.5),ax:null,r:[s/2,s/2,s/2*0.9]};
+  if(F.abs==="postanal")return {c:P(2.25,6,2.25),ax:null,r:[s/2,s/2.6,s/3]};
+  return {c:P(2.6,c,5.2),ax:null,r:[s/2,s/2,s/2]};}
+let TR=[],AB=null;
+function rebuild(){TR=tracts();AB=abscess();CACHE.clear();}
+function segD(p,a,b){const vx=b[0]-a[0],vy=b[1]-a[1],vz=b[2]-a[2],L=vx*vx+vy*vy+vz*vz||1e-9;let t=((p[0]-a[0])*vx+(p[1]-a[1])*vy+(p[2]-a[2])*vz)/L;t=t<0?0:t>1?1:t;return Math.hypot(p[0]-a[0]-vx*t,p[1]-a[1]-vy*t,p[2]-a[2]-vz*t);}
+function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]);return s;}
+// tissue classes
+const K={AIR:0,FAT:1,MUS:2,EAS:3,IAS:4,SUBM:5,MUC:6,LEV:7,PR:8,LIG:9,RW:10,MAR:11,CORT:12,VW:13,VL:14,PROS:15,BULB:16,SKIN:17,FLUID:18,TWALL:19,GRAN:20,FIB:21,PUS:22,RIM:23,EDEMA:24,SETON:25,RWA:26,FASC:27};
+const INT={t2:[0.02,0.84,0.22,0.17,0.5,0.62,0.42,0.2,0.18,0.14,0.32,0.55,0.04,0.3,0.55,0.45,0.65,0.6,0.96,0.66,0.7,0.13,0.94,0.5,0.86,0.02,0.52,0.45],
+ t2fs:[0.02,0.1,0.27,0.25,0.42,0.5,0.4,0.26,0.25,0.15,0.38,0.14,0.04,0.4,0.6,0.5,0.75,0.35,1.0,0.75,0.74,0.13,1.0,0.6,0.32,0.02,0.66,0.12],
+ t1c:[0.02,0.08,0.3,0.3,0.48,0.42,0.62,0.3,0.3,0.2,0.5,0.12,0.04,0.55,0.25,0.45,0.55,0.35,0.12,0.92,0.84,0.24,0.1,0.92,0.28,0.02,0.86,0.15],
+ dwi:[0.01,0.05,0.12,0.12,0.15,0.18,0.22,0.12,0.12,0.06,0.2,0.06,0.03,0.2,0.25,0.3,0.3,0.1,0.74,0.42,0.38,0.06,0.96,0.35,0.15,0.03,0.45,0.05]};
+function anat(x,y,z){const r=Math.hypot(x,y),th=Math.atan2(x,-y);const male=F.sex==="M";
+  if(z<zskin(x,y))return K.AIR;if(z<zskin(x,y)+0.12)return K.SKIN;
+  // coccyx and gluteus
+  if(y>4.3&&y<5.15&&Math.abs(x)<0.62&&z>3.4&&z<8.5){return (y<4.45||y>5.0||Math.abs(x)>0.48)?K.CORT:K.MAR;}
+  for(const sx of [-1,1]){if(((x-sx*3.9)/2.1)**2+((y-4.3)/1.9)**2<1&&z<7)return K.MUS;}
+  if(Math.abs(x)>5.3&&Math.abs(x)<6.2&&z>-0.3)return K.MUS; // obturator internus
+  // anterior organs
+  if(!male){if(((x)/1.25)**2+((y+2.2)/0.36)**2<1&&z>0.2)return Math.abs(y+2.2)<0.06&&Math.abs(x)<1.0?K.VL:K.VW;if(z<2.4&&((x)/0.95)**2+((y+1.3)/0.42)**2<1)return K.MUS;}
+  else{if(z>3.6&&((x)/1.7)**2+((y+2.6)/1.3)**2+((z-5.2)/1.6)**2<1)return K.PROS;if(z<1.6&&((x)/1.0)**2+((y+2.5)/0.8)**2<1)return K.BULB;if(z<2.4&&((x)/0.9)**2+((y+1.25)/0.38)**2<1)return K.MUS;}
+  // levator ani funnel and puborectalis
+  const sm=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t);};
+  // levator ani: continues from the top of the puborectalis and flares outward
+  const Rl=1.7+Math.max(0,z-3.35)*1.5+0.18*(y>0?1:0);
+  if(z>3.25&&z<7.3&&Math.abs(r-Rl)<0.2+0.04*(z-3.3)&&Rl<5.7&&!(y<-1.3&&Math.abs(x)<1.6))return K.LEV;
+  // rectal wall/IAS continuous; rectum widens into the ampulla
+  const rIn=z<3.6?0.56:0.56+0.5*sm(3.6,6.5,z),rIAS=(z<3.6?0.82+0.03*z:rIn+0.32+0.1*sm(3.6,6,z));
+  if(z>=-0.1){const rm=(z<3.6?0.32:0.32+0.45*sm(3.6,6.5,z))*(1+0.18*Math.sin(6*th));if(r<rm)return K.MUC;
+    if(r<rIn)return z<3.6?K.SUBM:(F.proct?K.RWA:K.SUBM);
+    if(r<rIAS&&z>0.5)return z<3.6?K.IAS:(F.proct?K.RWA:K.RW);}
+  // puborectalis sling (posterior and lateral), blending into the deep external sphincter
+  const prO=1.62+0.25*sm(2.3,3.0,z)*(y>0?1:0.6)-0.25*sm(3.3,3.6,z);
+  if(z>=2.25&&z<=3.6&&r>rIAS+0.12&&r<prO&&(y>-0.35||Math.abs(x)>1.0))return K.PR;
+  // external sphincter: subcutaneous (thin, low), superficial and deep parts
+  const easO=1.08+0.48*sm(-0.1,0.9,z)*(1-0.15*sm(2.0,2.5,z));
+  if(z>=-0.1&&z<2.5&&r>=Math.max(0.98,rIAS+0.12)&&r<easO)return K.EAS;
+  if(y>1.5&&y<4.4&&Math.abs(x)<0.14){const zl=1.9+(y-1.5)*0.6;if(Math.abs(z-zl)<0.12)return K.LIG;}
+  if(z>4.6&&Math.abs(r-3.0)<0.05&&y>-1.5)return K.FASC;
+  return K.FAT;}
+function tissue(x,y,z){const p=[x,y,z],a0=anat(x,y,z);
+  for(const t of TR){let d=1e9;for(let i=1;i<t.pts.length;i++)d=Math.min(d,segD(p,t.pts[i-1],t.pts[i]));
+    if(d<t.r+0.32){if(F.seton&&t.main&&d<0.05)return K.SETON;
+      if(F.act==="fib"){if(d<t.r)return K.FIB;}
+      else if(F.act==="gran"){if(d<t.r)return K.GRAN;if(d<t.r+0.25&&a0===K.FAT)return K.EDEMA;}
+      else{if(d<t.r*0.55)return K.FLUID;if(d<t.r)return K.TWALL;if(a0===K.FAT)return K.EDEMA;}}}
+  if(AB){const dx=x-AB.c[0],dy=y-AB.c[1],dz=z-AB.c[2];let u=[dx,dy,dz];if(AB.ax)u=AB.ax.map(v=>v[0]*dx+v[1]*dy+v[2]*dz);const q=Math.hypot(u[0]/AB.r[0],u[1]/AB.r[1],u[2]/AB.r[2]);
+    if(q<1)return q<0.78?K.PUS:K.RIM;if(q<1.18&&(a0===K.FAT))return K.EDEMA;}
+  return a0;}
+// ---------- noise & render ----------
+const CACHE=new Map();
+function boxBlur(a,w,h,r){const t=new Float32Array(a.length),o=new Float32Array(a.length);for(let j=0;j<h;j++){let s=0,c=0;for(let i=-r;i<w;i++){if(i+r<w){s+=a[j*w+i+r];c++;}if(i-r-1>=0){s-=a[j*w+i-r-1];c--;}if(i>=0)t[j*w+i]=s/c;}}
+  for(let i=0;i<w;i++){let s=0,c=0;for(let j=-r;j<h;j++){if(j+r<h){s+=t[(j+r)*w+i];c++;}if(j-r-1>=0){s-=t[(j-r-1)*w+i];c--;}if(j>=0)o[j*w+i]=s/c;}}return o;}
+const TEX=[0,0.08,0.12,0.1,0.07,0.06,0.08,0.1,0.1,0.08,0.08,0.15,0.04,0.08,0.05,0.1,0.1,0.06,0.03,0.08,0.08,0.1,0.04,0.06,0.15,0,0.07,0.05];
+const NZ=(()=>{const r=mul(5),n=240*240,a=new Float32Array(n),b=new Float32Array(n);for(let i=0;i<n;i++){a[i]=r()-0.5;b[i]=r()-0.5;}const f=boxBlur(a,240,240,1),c=boxBlur(boxBlur(b,240,240,3),240,240,2);const nz=v=>{let m=0,s=0;for(const x of v)m+=x;m/=v.length;for(const x of v)s+=(x-m)**2;s=Math.sqrt(s/v.length)||1;return v.map(x=>(x-m)/s);};return {f:nz(f),c:nz(c)};})();
+function renderView(kind,W,H){const key=kind+"|"+JSON.stringify(F)+SEQ+TILT+ZA+YC+XS;if(CACHE.has(key))return CACHE.get(key);
+  const I0=INT[SEQ],img=new Float32Array(W*H),cls=new Uint8Array(W*H),res=0.05,tt=Math.tan(TILT*Math.PI/180);
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){let x,y,z;
+    if(kind==="ax"){x=-6+(i+0.5)*res;y=-6+(j+0.5)*res;z=ZA+tt*y;}
+    else if(kind==="co"){x=-6+(i+0.5)*res;z=9.5-(j+0.5)*res;y=YC;}
+    else{y=-6+(i+0.5)*res;z=9.5-(j+0.5)*res;x=XS;}
+    cls[j*W+i]=tissue(x,y,z);}
+  for(let k=0;k<cls.length;k++){const t=cls[k];const n=k%57600;img[k]=I0[t]*(1+TEX[t]*(0.55*NZ.f[n]+0.45*NZ.c[n]));}
+  let a=boxBlur(img,W,H,1);if(SEQ==="dwi")a=boxBlur(boxBlur(a,W,H,2),W,H,1);
+  const r=mul(13+W+H);const sg=SEQ==="dwi"?0.04:0.025;for(let k=0;k<a.length;k++){const n1=(r()+r()+r()-1.5)*sg,n2=(r()+r()+r()-1.5)*sg;a[k]=Math.hypot(a[k]+n1,n2);}
+  const imd=new ImageData(W,H);for(let k=0;k<a.length;k++){const g=clamp(a[k],0,1)**0.9*255;imd.data[k*4]=imd.data[k*4+1]=imd.data[k*4+2]=g;imd.data[k*4+3]=255;}
+  if(CACHE.size>60)CACHE.clear();CACHE.set(key,imd);return imd;}
+const VIEWS={ax:{c:$("cAx"),o:$("oAx"),W:240,H:240},co:{c:$("cCo"),o:$("oCo"),W:240,H:220},sa:{c:$("cSa"),o:$("oSa"),W:240,H:220}};
+function toPx(kind,a,b){const V=VIEWS[kind],sx=V.o.width/V.W;if(kind==="ax")return [((a+6)/0.05)*sx,((b+6)/0.05)*sx];if(kind==="co")return [((a+6)/0.05)*sx,((9.5-b)/0.05)*sx];return [((a+6)/0.05)*sx,((9.5-b)/0.05)*sx];}
+function draw(){for(const k in VIEWS){const V=VIEWS[k];V.c.getContext("2d").putImageData(renderView(k,V.W,V.H),0,0);}overlays();labels();}
+function txt(cx,s,x,y,col,al){cx.font="600 26px system-ui, sans-serif";cx.textAlign=al||"left";cx.lineWidth=5;cx.strokeStyle="rgba(0,0,0,.8)";cx.strokeText(s,x,y);cx.fillStyle=col;cx.fillText(s,x,y);}
+function overlays(){const Y="#F2C14E",CY="#5ED3E6";
+  for(const k in VIEWS){const o=VIEWS[k].o,cx=o.getContext("2d");cx.clearRect(0,0,o.width,o.height);}
+  const ax=VIEWS.ax.o.getContext("2d");
+  if($("oClock").checked){const c=toPx("ax",0,0),R=toPx("ax",2.4,0)[0]-c[0];ax.strokeStyle="rgba(242,193,78,.55)";ax.lineWidth=2;ax.setLineDash([6,6]);ax.beginPath();ax.arc(c[0],c[1],R,0,TAU);ax.stroke();ax.setLineDash([]);
+    for(let h=0;h<12;h++){const p=P(2.4,h,0),q=P(2.6,h,0),A=toPx("ax",p[0],p[1]),B=toPx("ax",q[0],q[1]);ax.strokeStyle=Y;ax.beginPath();ax.moveTo(A[0],A[1]);ax.lineTo(B[0],B[1]);ax.stroke();}
+    [[12,0],[3,3],[6,6],[9,9]].forEach(([l,h])=>{const p=P(3.0,h,0),A=toPx("ax",p[0],p[1]);txt(ax,String(l),A[0],A[1]+9,Y,"center");});
+    txt(ax,"Anterior",toPx("ax",0,-5.6)[0],toPx("ax",0,-5.6)[1],"#cfd8de","center");txt(ax,"Pt right",toPx("ax",-5.9,0)[0],toPx("ax",-5.9,0)[1],"#cfd8de","left");txt(ax,"Pt left",toPx("ax",5.9,0)[0],toPx("ax",5.9,0)[1],"#cfd8de","right");}
+  if($("oX").checked){const line=(k,a,b,c2,d,col)=>{const cx=VIEWS[k].o.getContext("2d"),A=toPx(k,a,b),B=toPx(k,c2,d);cx.strokeStyle=col;cx.lineWidth=1.5;cx.setLineDash([5,5]);cx.beginPath();cx.moveTo(A[0],A[1]);cx.lineTo(B[0],B[1]);cx.stroke();cx.setLineDash([]);};
+    line("ax",-6,YC,6,YC,CY);line("ax",XS,-6,XS,6,"#F08AAE");
+    const tt=Math.tan(TILT*Math.PI/180);line("co",-6,ZA+tt*YC,6,ZA+tt*YC,Y);line("co",XS,-1.5,XS,9.5,"#F08AAE");
+    line("sa",-6,ZA-6*tt,6,ZA+6*tt,Y);line("sa",YC,-1.5,YC,9.5,CY);}
+  const co=VIEWS.co.o.getContext("2d"),sa=VIEWS.sa.o.getContext("2d");txt(co,"R",14,30,"#cfd8de");txt(co,"L",VIEWS.co.o.width-30,30,"#cfd8de");txt(sa,"Ant",14,30,"#cfd8de");txt(sa,"Post",VIEWS.sa.o.width-70,30,"#cfd8de");
+  const dl=(k)=>{const cx=VIEWS[k].o.getContext("2d"),A=toPx(k,-6,ZD),B=toPx(k,-4.6,ZD);cx.strokeStyle="rgba(200,220,230,.6)";cx.lineWidth=2;cx.beginPath();cx.moveTo(A[0],A[1]);cx.lineTo(B[0],B[1]);cx.stroke();txt(cx,"dentate level",B[0]+6,B[1]+8,"#cfd8de");};dl("co");dl("sa");}
+function labels(){if(!$("oLab").checked)return;const W="#ffffff";const ax=VIEWS.ax.o.getContext("2d"),co=VIEWS.co.o.getContext("2d"),sa=VIEWS.sa.o.getContext("2d");
+  const L=(cx,k,a,b,s)=>{const A=toPx(k,a,b),right=A[0]>cx.canvas.width*0.55;cx.fillStyle="#fff";cx.beginPath();cx.arc(A[0],A[1],4,0,TAU);cx.fill();txt(cx,s,A[0]+(right?-8:8),A[1]-6,W,right?"right":"left");};
+  if(ZA<2.5){L(ax,"ax",0.72,-0.45,"IAS");L(ax,"ax",-0.0,0.97,"");L(ax,"ax",-1.3,-0.2,"EAS");L(ax,"ax",-0.66,0.66,"Intersphincteric");L(ax,"ax",3.4,1.2,"Ischioanal fossa");}
+  else if(ZA<3.6){L(ax,"ax",0,1.45,"Puborectalis");L(ax,"ax",0.7,-0.45,"IAS");L(ax,"ax",3.4,1.2,"Ischioanal fossa");}
+  else{L(ax,"ax",0,1.0,"Rectal wall");L(ax,"ax",1.75+(ZA-3.5)*1.45,0.0,"Levator ani");L(ax,"ax",2.6,-1.0,"Supralevator fat");}
+  L(co,"co",0.72,1.8,"IAS");L(co,"co",1.3,1.2,"EAS");L(co,"co",1.4,3.0,"Puborectalis");L(co,"co",3.1,5.4,"Levator ani");L(co,"co",3.4,1.0,"Ischioanal fossa");L(co,"co",0.0,6.4,"Rectum");
+  L(sa,"sa",0.0,4.9,"Rectum");L(sa,"sa",4.7,5.6,"Coccyx");L(sa,"sa",2.6,3.55,"Anococcygeal lig.");L(sa,"sa",1.35,3.0,"Puborectalis");}
+// ---------- classification ----------
+function parks(){return {none:"No fistula",inter:"Intersphincteric",trans:"Transsphincteric",supra:"Suprasphincteric",extra:"Extrasphincteric",superficial:"Superficial (outside the Parks groups)"}[F.type];}
+function sjuh(){if(F.type==="none")return F.rvf?"n/a":"n/a";if(F.type==="superficial")return "not graded (superficial)";
+  if(F.type==="supra"||F.type==="extra"||F.supraExt||F.abs==="supra")return "Grade 5 (supralevator / translevator)";
+  const sec=F.horse||F.blind||F.second;if(F.type==="inter")return (sec||F.abs==="inter"||F.abs==="postanal"||F.abs==="ischio")?"Grade 2 (intersphincteric with abscess or secondary tract)":"Grade 1 (simple linear intersphincteric)";
+  return (sec||F.abs==="ischio"||F.abs==="postanal"||F.abs==="inter")?"Grade 4 (transsphincteric with abscess or secondary tract in the ischioanal or ischiorectal fossa)":"Grade 3 (transsphincteric)";}
+function eas(){if(F.type!=="trans")return null;const pct=Math.round(clamp(F.zc/2.5,0,1)*100);return {pct,high:pct>33};}
+function complex(){const e=eas();const r=[];if(F.type==="supra"||F.type==="extra")r.push("supra- or extrasphincteric");if(e&&e.high)r.push("high transsphincteric");if(F.horse||F.blind||F.second||F.supraExt)r.push("multiple or branched tracts");if(F.abs!=="none"&&F.type!=="none")r.push("abscess");if(F.rvf&&F.sex==="F")r.push("rectovaginal fistula");if(F.proct)r.push("active proctitis");return r;}
+function mainLen(){const m=TR.find(t=>t.main);return m?plen(m.pts):0;}
+// ---------- scores ----------
+let MAGO={},VAIO={};
+function magAuto(){const active=F.act!=="fib"&&(F.type!=="none"||F.rvf);const n=(F.type!=="none"?1:0)+(F.second?1:0)+(F.rvf&&F.sex==="F"?1:0);const branched=F.horse||F.blind||F.supraExt;
+  const L=mainLen();const s=F.absSize;const coll=F.abs!=="none"&&F.type!=="none"?(s>2?5:s>1?4:s>=0.3?3:0):0;
+  return {tracts:!active||n===0?0:(n>1||branched)?2:1,t1:active&&F.act!=="fib"?1:0,dom:!active?0:F.act==="active"?2:1,len:!active?0:L>5?2:L>=2.5?1:0,ext:!active?0:F.horse?2:(F.supraExt||F.blind)?1:0,mass:!active?0:coll?coll:(F.act==="active"?(F.proct||F.second?2:1):0)};}
+function vaiAuto(){const n=(F.type!=="none"?1:0)+(F.second?1:0)+(F.rvf&&F.sex==="F"?1:0);const br=F.horse||F.blind||F.supraExt;
+  return {tracts:n===0?0:n>1?3:br?2:1,loc:F.type==="trans"?2:F.type==="supra"?3:(n?1:0),ext:n===0?0:(F.supraExt||F.type==="supra"||F.type==="extra"||F.abs==="supra")?2:1,t2:F.act==="fib"||n===0?0:F.act==="gran"?4:8,coll:F.abs!=="none"&&F.type!=="none"?4:0,rw:F.proct?2:0};}
+const MAGI=[["tracts","Number of (active) fistula tracts",3,[["0","None"],["1","Single, unbranched"],["2","Complex (multiple or branched)"]]],["t1","Primary tract hyperintensity on post-contrast T1",2,[["0","Absent or mild"],["1","Pronounced"]]],["dom","Dominant feature of the primary tract",2,[["0","Fibrous"],["1","Granulation tissue"],["2","Fluid or pus"]]],["len","Fistula length",2,[["0","< 2.5 cm"],["1","2.5–5 cm"],["2","> 5 cm"]]],["ext","Extension (most severe)",2,[["0","Absent"],["1","Present, not horseshoe"],["2","Horseshoe"]]],["mass","Inflammatory mass",1,[["0","Absent"],["1","Focal"],["2","Diffuse"],["3","Collection 3–10 mm"],["4","Collection 11–20 mm"],["5","Collection > 20 mm"]]]];
+const VAII=[["tracts","Number of fistula tracts",[["0","None"],["1","Single, unbranched"],["2","Single, branched"],["3","Multiple"]]],["loc","Location",[["0","None"],["1","Extra- or intersphincteric"],["2","Transsphincteric"],["3","Suprasphincteric"]]],["ext","Extension",[["0","None"],["1","Infralevatoric"],["2","Supralevatoric"]]],["t2","Hyperintensity on T2-weighted images",[["0","Absent"],["4","Mild"],["8","Pronounced"]]],["coll","Collections (cavities > 3 mm)",[["0","Absent"],["4","Present"]]],["rw","Rectal wall involvement",[["0","Normal"],["2","Thickened"]]]];
+function scores(reset){if(reset){MAGO=magAuto();VAIO=vaiAuto();}
+  let h="",tot=0;MAGI.forEach(([k,lab,w,opts])=>{tot+=w*(+MAGO[k]);h+=`<div class="row"><label style="flex:1">${lab} <span class="hint">×${w}</span></label><select data-m="${k}">${opts.map(([v,t])=>`<option value="${v}"${+v===+MAGO[k]?" selected":""}>${t} (${v})</option>`).join("")}</select></div>`;});
+  h+=`<p class="big">${tot} <span class="hint">${tot<=6?"at or below the remission cut-off (≤ 6) used in the external validation":"above the remission cut-off; response is a fall of ≥ 2 points on follow-up"}</span></p>`;$("mag").innerHTML=h;
+  let h2="",t2=0;VAII.forEach(([k,lab,opts])=>{t2+=+VAIO[k];h2+=`<div class="row"><label style="flex:1">${lab}</label><select data-v="${k}">${opts.map(([v,t])=>`<option value="${v}"${+v===+VAIO[k]?" selected":""}>${t} (${v})</option>`).join("")}</select></div>`;});
+  h2+=`<p class="big">${t2}</p><p class="hint">The modified Van Assche index (Samaan et al.) replaced some items with dominant feature and inflammatory mass; MAGNIFI-CD later outperformed both.</p>`;$("vai").innerHTML=h2;
+  $$("#mag select").forEach(s=>s.onchange=e=>{MAGO[s.dataset.m]=+e.target.value;scores(false);report();});$$("#vai select").forEach(s=>s.onchange=e=>{VAIO[s.dataset.v]=+e.target.value;scores(false);report();});
+  return {mag:tot,vai:t2};}
+function clsTable(){const e=eas(),cx=complex(),L=mainLen();let h=`<table><tbody><tr><td>Parks</td><td><b>${parks()}</b></td></tr><tr><td>St James's University Hospital</td><td><b>${sjuh()}</b></td></tr>`;
+  if(F.type!=="none"&&F.type!=="extra")h+=`<tr><td>Internal opening</td><td>${clk(F.clock)} o'clock${F.type==="superficial"?", low in the canal":", at the dentate line"}</td></tr>`;
+  if(F.type==="extra")h+=`<tr><td>Internal opening</td><td>Rectum above the levator, ${clk(F.clock)} o'clock</td></tr>`;
+  if(e)h+=`<tr><td>External sphincter crossed</td><td class="${e.high?"g2":"g0"}">about ${e.pct}% of its length from below: ${e.high?"high (fistulotomy risks continence)":"low"}</td></tr>`;
+  if(F.type!=="none")h+=`<tr><td>Primary tract length</td><td>${L.toFixed(1)} cm, external opening ${clk(F.ext)} o'clock</td></tr>`;
+  h+=`<tr><td>Simple or complex (AGA)</td><td class="${cx.length?"g2":"g0"}">${F.type==="none"&&!F.rvf?"n/a":cx.length?"Complex: "+cx.join(", "):"Simple"}</td></tr>`;
+  h+=`<tr><td>Activity</td><td>${F.type==="none"&&!F.rvf?"n/a":{active:"Active: fluid/pus, enhancing wall, restricted diffusion",gran:"Active: granulation tissue",fib:"Healed: fibrotic, no fluid, little enhancement"}[F.act]}</td></tr></tbody></table>`;$("cls").innerHTML=h;}
+const clk=h=>{const v=((h%12)+12)%12;const H=Math.floor(v)||12;return v%1?`${H}:30`:`${H}`;};
+// ---------- report ----------
+function report(){const s=scores(false),e=eas(),cx=complex(),Ls=[];const L=mainLen();
+  Ls.push("EXAMINATION: MRI pelvis (fistula protocol).");Ls.push("TECHNIQUE: Small-FOV T2-weighted images in sagittal, coronal-oblique and axial-oblique planes (angled to the anal canal), fat-suppressed T2, fat-suppressed T1 before and after gadolinium, and DWI. Clock positions are anatomical (12 o'clock anterior, patient supine).");
+  Ls.push("FINDINGS:");
+  if(F.type==="none"&&!F.rvf)Ls.push("No fistula or perianal collection.");
+  if(F.type!=="none"){const io=F.type==="extra"?`in the rectum above the levator plate at ${clk(F.clock)} o'clock`:`at ${clk(F.clock)} o'clock${F.type==="superficial"?" in the low anal canal":" at the level of the dentate line"}`;
+    Ls.push(`Primary tract: ${parks().toLowerCase()} fistula, internal opening ${io}.`+(F.type==="trans"?` It crosses the external sphincter about ${e.pct}% of the way up its length (${e.high?"high":"low"}).`:"")+(F.type==="inter"?" It runs in the intersphincteric space without crossing the external sphincter.":"")+(F.type==="supra"?" It ascends in the intersphincteric space above the puborectalis and descends through the levator ani into the ischioanal fossa.":"")+(F.type==="extra"?" It passes through the levator ani outside the sphincter complex.":"")+` External opening at ${clk(F.ext)} o'clock on the perianal skin. Length about ${L.toFixed(1)} cm.`);
+    const sec=[];if(F.horse)sec.push("posterior horseshoe extension through the deep postanal space into both ischioanal fossae");if(F.supraExt)sec.push("supralevator extension");if(F.blind)sec.push("a blind-ending secondary branch");if(F.second)sec.push("a second separate fistula tract");Ls.push("Secondary tracts: "+(sec.length?sec.join("; ")+".":"none."));
+    Ls.push("Collections: "+(F.abs==="none"?"none.":`${({inter:"intersphincteric",ischio:"ischioanal",postanal:"deep postanal space",supra:"supralevator"})[F.abs]} abscess measuring about ${F.absSize.toFixed(1)} cm, with rim enhancement.`));
+    Ls.push("Activity: "+({active:"active, with fluid/pus in the tract, enhancing wall, restricted diffusion and surrounding inflammation.",gran:"active granulation tissue with enhancement, little fluid.",fib:"no active inflammation; the tract is fibrotic (low T2 signal, minimal enhancement)."})[F.act]+(F.seton?" A seton is in place.":""));}
+  if(F.rvf&&F.sex==="F")Ls.push("Rectovaginal fistula from the anterior anorectal junction (12 o'clock) to the posterior vaginal wall.");
+  Ls.push("Rectum: "+(F.proct?"mural thickening, hyperintensity and enhancement in keeping with active proctitis.":"no proctitis."));
+  if(F.type!=="none"||F.rvf)Ls.push(`Crohn's activity scores (if applicable): MAGNIFI-CD ${s.mag}; Van Assche ${s.vai}.`);
+  const imp=[];if(F.type!=="none")imp.push(`${parks()} fistula-in-ano, internal opening ${clk(F.clock)} o'clock (${sjuh().replace(/ \(.*\)/,"").replace("Grade","St James's grade")}).`);if(e)imp.push(`${e.high?"High":"Low"} transsphincteric course (about ${e.pct}% of the external sphincter).`);
+  if(F.abs!=="none"&&F.type!=="none")imp.push(`${({inter:"Intersphincteric",ischio:"Ischioanal",postanal:"Deep postanal",supra:"Supralevator"})[F.abs]} abscess, ${F.absSize.toFixed(1)} cm.`);if(F.horse)imp.push("Horseshoe extension.");if(F.supraExt||F.type==="supra"||F.type==="extra")imp.push("Supralevator / translevator disease.");
+  if(F.rvf&&F.sex==="F")imp.push("Rectovaginal fistula.");if(F.type!=="none")imp.push(F.act==="fib"?"No active fistula; healed tract.":"Active disease.");if(cx.length)imp.push("Complex fistula ("+cx.join(", ")+").");if(!imp.length)imp.push("No perianal fistula or abscess.");
+  Ls.push("IMPRESSION:\n"+imp.map((x,i)=>`${i+1}. ${x}`).join("\n"));$("report").textContent=Ls.join("\n\n");}
+$("copyRep").onclick=async()=>{try{await navigator.clipboard.writeText($("report").textContent);$("copyMsg").textContent="Copied.";}catch(e){$("copyMsg").textContent="Copy not allowed here; select the text instead.";}};
+// ---------- UI ----------
+function note(h){$("note").innerHTML=h;}
+function sync(){$("type").value=F.type;$("clock").value=F.clock;$("clocko").textContent=clk(F.clock)+" o'clock";$("zc").value=F.zc;$("zco").textContent=F.zc.toFixed(1)+" cm";$("ext").value=F.ext;$("exto").textContent=clk(F.ext)+" o'clock";
+  ["horse","supraExt","blind","seton","second","proct","rvf"].forEach(k=>$(k).checked=!!F[k]);$("abs").value=F.abs;$("absSize").value=F.absSize;$("absSizeo").textContent=F.absSize.toFixed(1)+" cm";$("zcRow").hidden=F.type!=="trans";$("rvfL").hidden=F.sex!=="F";
+  $$("#act button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===F.act));$$("#sex button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===F.sex));$$("#seq button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===SEQ));
+  $("zAx").value=ZA;$("zAxL").textContent=`${ZA.toFixed(1)} cm`;$("tilt").value=TILT;$("tiltL").textContent=`${TILT}°`;$("yCo").value=YC;$("yCoL").textContent=YC<0?`${(-YC).toFixed(1)} ant`:`${YC.toFixed(1)} post`;$("xSa").value=XS;$("xSaL").textContent=XS<0?`${(-XS).toFixed(1)} R`:`${XS.toFixed(1)} L`;}
+function changed(resetScores,msg){rebuild();sync();draw();clsTable();scores(resetScores!==false);report();if(msg)note(msg);}
+function focusTract(){if(F.type==="none"){ZA=1.6;YC=0;XS=0;return;}const p=F.type==="extra"?P(2.6,F.clock,4.4):F.type==="trans"?P(1.4,F.clock,F.zc):F.type==="supra"?P(1.9,F.clock,4.1):P(0.95,F.clock,ZD-0.4);ZA=Math.round(p[2]*10)/10;YC=Math.round(clamp(p[1],-4,4)*10)/10;XS=Math.round(clamp(p[0],-4,4)*10)/10;}
+$("type").onchange=e=>{F.type=e.target.value;focusTract();changed(true,{none:"No fistula: scroll through the anatomy.",inter:"<b>Intersphincteric</b>: through the internal sphincter into the intersphincteric space, then down to the perianal skin without crossing the external sphincter.",trans:"<b>Transsphincteric</b>: crosses the external sphincter into the ischioanal fossa. The crossing level decides how much sphincter a fistulotomy would divide.",supra:"<b>Suprasphincteric</b>: climbs the intersphincteric space above the puborectalis, then descends through the levator into the ischioanal fossa.",extra:"<b>Extrasphincteric</b>: from the rectum through the levator, outside the sphincter complex (often iatrogenic, traumatic or Crohn's).",superficial:"<b>Superficial</b>: low, below the sphincters; not part of the Parks groups."}[F.type]);};
+["clock","zc","ext","absSize"].forEach(k=>$(k).addEventListener("input",e=>{F[k]=+e.target.value;if(k!=="absSize"&&k!=="ext")focusTract();changed(true);}));
+["horse","supraExt","blind","seton","second","proct","rvf"].forEach(k=>$(k).addEventListener("change",e=>{F[k]=e.target.checked;changed(true);}));
+$("abs").onchange=e=>{F.abs=e.target.value;changed(true,F.abs==="none"?"":"An abscess is a rim-enhancing collection without central enhancement; compare T2 fat-sat and post-contrast T1.");};
+$$("#act button").forEach(b=>b.onclick=()=>{F.act=b.dataset.v;changed(true,{active:"Active: bright fluid on fat-suppressed T2, enhancing wall, high DWI signal.",gran:"Granulation: intermediate T2 signal, avid enhancement, less fluid.",fib:"Fibrotic: dark on T2, minimal enhancement, no DWI signal. Compare the sequences."}[F.act]);});
+$$("#sex button").forEach(b=>b.onclick=()=>{F.sex=b.dataset.v;if(F.sex==="M")F.rvf=false;changed(true);});
+$$("#seq button").forEach(b=>b.onclick=()=>{SEQ=b.dataset.v;seqSeen.add(SEQ);sync();draw();note({t2:"<b>T2 without fat suppression</b>: best for sphincter anatomy (dark external sphincter, intermediate internal sphincter, bright fat). Fluid tracts are bright but less conspicuous against fat.",t2fs:"<b>Fat-suppressed T2</b>: fluid-filled tracts and abscesses stand out against dark fat; edema shows activity.",t1c:"<b>Fat-suppressed T1 after contrast</b>: granulation walls enhance; abscesses show rim enhancement with a non-enhancing center; fibrotic tracts barely enhance.",dwi:"<b>DWI</b>: pus restricts diffusion; useful for abscesses and activity, but low resolution."}[SEQ]);});
+$("zAx").addEventListener("input",e=>{ZA=+e.target.value;sync();draw();});$("tilt").addEventListener("input",e=>{TILT=+e.target.value;sync();draw();});
+$("yCo").addEventListener("input",e=>{YC=+e.target.value;sync();draw();});$("xSa").addEventListener("input",e=>{XS=+e.target.value;sync();draw();});
+["oClock","oLab","oX"].forEach(id=>$(id).addEventListener("change",()=>{overlays();labels();}));
+function clickView(kind,ev){const V=VIEWS[kind],r=V.c.getBoundingClientRect(),u=(ev.clientX-r.left)/r.width*V.W*0.05,v=(ev.clientY-r.top)/r.height*V.H*0.05;
+  if(kind==="ax"){XS=clamp(Math.round((u-6)*10)/10,-4,4);YC=clamp(Math.round((v-6)*10)/10,-4,4);}
+  if(kind==="co"){XS=clamp(Math.round((u-6)*10)/10,-4,4);ZA=clamp(Math.round((9.5-v)*10)/10,-0.8,8);}
+  if(kind==="sa"){YC=clamp(Math.round((u-6)*10)/10,-4,4);ZA=clamp(Math.round((9.5-v)*10)/10,-0.8,8);}sync();draw();}
+for(const k in VIEWS)VIEWS[k].c.addEventListener("click",e=>clickView(k,e));
+$("preset").innerHTML=Object.entries(PRESETS).map(([k,p])=>`<option value="${k}">${p.n}</option>`).join("");
+$("preset").onchange=e=>loadPreset(e.target.value);
+function loadPreset(k){const p=PRESETS[k];F=Object.assign({},DEF,{sex:F.sex},p.s);focusTract();changed(true,`<b>${p.n}</b> loaded. Scroll the axial-oblique level and click the views to follow the tract.`);}
+// ---------- drills ----------
+let drillActive=null,choice=null,seqSeen=new Set(["t2fs"]);const done=new Set();
+const DR=[
+ {id:"clock",t:"Name the internal opening",s:"clock face",setup:()=>{loadPreset("transLow");F.clock=8;F.ext=9;focusTract();ZA=ZD;changed(true);$("oClock").checked=false;overlays();},choices:["5 o'clock","7 o'clock","8 o'clock","4 o'clock"],task:"The clock overlay is off. Find where the tract breaches the internal sphincter on the axial-oblique images and name its clock position (anatomical convention).",
+  check:()=>choice==="8 o'clock"?[1,"8 o'clock: posterior and to the patient's right. Turn the overlay back on to confirm; posterior openings are the most common."]:[0,"Remember: 12 anterior, 3 patient left (image right), 6 posterior, 9 patient right (image left)."]},
+ {id:"parks",t:"Classify by Parks",s:"sphincter relation",setup:()=>loadPreset("transHigh"),choices:["Intersphincteric","Transsphincteric","Suprasphincteric","Extrasphincteric"],task:"Follow the tract on the coronal-oblique images: does it cross the external sphincter, pass over the puborectalis, or bypass the sphincters entirely?",
+  check:()=>choice==="Transsphincteric"?[1,"It crosses the external sphincter into the ischioanal fossa: transsphincteric. Now report how high it crosses."]:[0,"Follow the tract relative to the dark external sphincter on the coronal-oblique view."]},
+ {id:"supra",t:"Over the top?",s:"puborectalis",setup:()=>loadPreset("supra"),choices:["High transsphincteric","Suprasphincteric","Extrasphincteric"],task:"The tract enters the ischioanal fossa high. Decide whether it crosses through the external sphincter/puborectalis or passes above them.",
+  check:()=>choice==="Suprasphincteric"?[1,"It ascends in the intersphincteric space above the puborectalis and descends through the levator: suprasphincteric (St James's 5)."]:[0,"Scroll the coronal-oblique view: where does it turn laterally relative to the puborectalis?"]},
+ {id:"horse",t:"Posterior collection",s:"horseshoe",setup:()=>loadPreset("horse"),choices:["Two separate fistulas","Horseshoe via the deep postanal space","Supralevator abscess"],task:"There are tracts in both ischioanal fossae. Find what connects them.",
+  check:()=>choice==="Horseshoe via the deep postanal space"?[1,"Both limbs join behind the anal canal in the deep postanal space: horseshoe spread. It must be drained or it causes recurrence."]:[0,"Look behind the anal canal below the anococcygeal ligament on axial and sagittal images."]},
+ {id:"abs",t:"Abscess or inflamed tract?",s:"post-contrast T1",setup:()=>{loadPreset("transHigh");seqSeen=new Set([SEQ]);},choices:["Inflamed tract only","Abscess > 2 cm needing drainage"],task:"There is a bright area beside the tract on fat-suppressed T2. Check the post-contrast images, then decide.",
+  check:()=>seqSeen.has("t1c")&&choice==="Abscess > 2 cm needing drainage"?[1,"Rim enhancement with a non-enhancing center about 2.6 cm: abscess. Inflamed tissue enhances throughout."]:[0,!seqSeen.has("t1c")?"Look at the T1 fat-sat post-contrast images first.":"Reconsider the enhancement pattern."]},
+ {id:"act",t:"Follow-up after treatment",s:"activity",setup:()=>{loadPreset("healed");seqSeen=new Set([SEQ]);},choices:["Active fistula","Healed, fibrotic tract"],task:"This is the follow-up study. Decide whether the tract is still active; look at more than one sequence.",
+  check:()=>seqSeen.size>=2&&choice==="Healed, fibrotic tract"?[1,"Thin, dark on T2, no fluid, minimal enhancement and no diffusion restriction: healed fibrotic tract (MAGNIFI-CD 0 for active items)."]:[0,seqSeen.size<2?"Compare at least two sequences.":"Reconsider: is there fluid or enhancement?"]},
+ {id:"tilt",t:"The tilted axial",s:"planning",setup:()=>{loadPreset("transLow");TILT=22;changed(true);},choices:["Low transsphincteric","High transsphincteric","Suprasphincteric"],task:"The axial images were not planned perpendicular to the anal canal. Fix the plane, then classify the tract.",
+  check:()=>Math.abs(TILT)<=4&&choice==="Low transsphincteric"?[1,"With the plane perpendicular to the canal the tract crosses the lower external sphincter. Oblique axial images mix levels and can mislead."]:[0,Math.abs(TILT)>4?"The axial plane is still tilted (set the plane tilt close to 0°).":"Reassess the crossing level."]},
+ {id:"sj",t:"Grade it",s:"St James's",setup:()=>loadPreset("transHigh"),choices:["Grade 2","Grade 3","Grade 4","Grade 5"],task:"Grade this fistula using the St James's University Hospital classification.",
+  check:()=>choice==="Grade 4"?[1,"Transsphincteric with an abscess in the ischioanal fossa: grade 4."]:[0,"Grade 3 is transsphincteric alone; 4 adds an abscess or secondary tract in the ischioanal fossa; 5 is supralevator or translevator."]},
+ {id:"mag",t:"Score a Crohn's case",s:"MAGNIFI-CD",setup:()=>loadPreset("crohn"),choices:["≤ 6 (remission range)","7–15","> 15"],task:"Review the scores section (prefilled from the images) and check each item, then choose the MAGNIFI-CD range.",
+  check:()=>{const s=scores(false).mag;const r=s<=6?"≤ 6 (remission range)":s<=15?"7–15":"> 15";return choice===r?[1,`MAGNIFI-CD ${s}: active complex disease.`]:[0,"Add the weighted items in the scores section."];}}];
+function mkDrills(){$("drills").innerHTML="";DR.forEach(d=>{const b=document.createElement("button");b.className="drill"+(done.has(d.id)?" done":"");b.innerHTML=`${d.t}<small>${d.s}${done.has(d.id)?" · solved":""}</small>`;b.setAttribute("aria-pressed",drillActive===d.id);b.onclick=()=>startDrill(d.id);$("drills").appendChild(b);});}
+function startDrill(id){const d=DR.find(x=>x.id===id);drillActive=id;choice=null;d.setup();const t=$("task");t.hidden=false;
+  t.innerHTML=`<b>${d.t}.</b> ${d.task}<div class="choices" id="chs">${d.choices.map(c=>`<button data-c="${c}">${c}</button>`).join("")}</div><div class="row" style="margin-top:8px"><button class="mini primary" id="chk">Check</button><button class="mini" id="ext2">Exit drill</button></div><div id="fb"></div>`;
+  $$("#chs button").forEach(b=>b.onclick=()=>{choice=b.dataset.c;$$("#chs button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+  $("chk").onclick=()=>{const [ok,msg]=d.check();$("fb").innerHTML=`<div class="fb ${ok?"ok":"no"}">${ok?"Correct. ":""}${msg}</div>`;if(ok){done.add(id);mkDrills();}};
+  $("ext2").onclick=()=>{drillActive=null;t.hidden=true;$("oClock").checked=true;TILT=0;loadPreset("normal");mkDrills();};mkDrills();note(`<b>Drill:</b> ${d.task}`);$("note").scrollIntoView({behavior:"smooth",block:"start"});}
+// ---------- quiz ----------
+const QZ=[
+ {q:"Most fistulas-in-ano arise from:",o:["Pilonidal disease","Infected anal glands at the dentate line","Rectal cancer","Hemorrhoids"],a:1,e:"The cryptoglandular theory: glands open at the dentate line and drain into the intersphincteric space."},
+ {q:"On T2 without fat suppression the external sphincter is:",o:["Bright","Dark (striated muscle)","Same as fat","Invisible"],a:1,e:"The internal sphincter is intermediate; the intersphincteric fat between them is bright."},
+ {q:"A tract that crosses the external sphincter into the ischioanal fossa is:",o:["Intersphincteric","Transsphincteric","Suprasphincteric","Superficial"],a:1,e:"Report the level of crossing; it decides how much sphincter a fistulotomy divides."},
+ {q:"Suprasphincteric fistulas:",o:["Cross the lower external sphincter","Pass above the puborectalis and then through the levator","Start in the rectum","Stay intersphincteric"],a:1,e:"St James's grade 5, like extrasphincteric and supralevator disease."},
+ {q:"St James's grade 4 is:",o:["Simple intersphincteric","Transsphincteric","Transsphincteric with abscess or secondary tract in the ischioanal fossa","Supralevator"],a:2,e:"Grades 2 and 4 add complications to grades 1 and 3."},
+ {q:"The horseshoe pattern posteriorly spreads through:",o:["The supralevator space","The deep postanal space","The rectovaginal septum","The obturator canal"],a:1,e:"From there it extends into both ischioanal fossae; missed limbs cause recurrence."},
+ {q:"Which sequence best shows sphincter anatomy?",o:["DWI","Fat-suppressed T1","High-resolution T2 without fat suppression","Fat-suppressed T2"],a:2,e:"Fat-suppressed T2 or STIR and post-contrast T1 show tracts and activity."},
+ {q:"An abscess on post-contrast T1 typically shows:",o:["Uniform enhancement","Rim enhancement around a non-enhancing center","No enhancement anywhere","Signal void"],a:1,e:"Inflamed tissue without a collection enhances throughout."},
+ {q:"Why must axial images be planned perpendicular to the anal canal?",o:["To reduce scan time","Oblique slices cut the sphincters at mixed levels and misrepresent crossing height","For better fat suppression","It is not needed"],a:1,e:"Plan both oblique planes on the sagittal images."},
+ {q:"In the external validation of MAGNIFI-CD, remission was best indicated by:",o:["MAGNIFI-CD ≤ 6","MAGNIFI-CD ≤ 15","Any fall in score","A Van Assche index of 0"],a:0,e:"A fall of ≥ 2 points indicated response; these are research thresholds."}];
+function mkQuiz(){const h=$("quiz");h.innerHTML="";QZ.forEach((q,i)=>{const d=document.createElement("div");d.className="q";d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector(".opts");q.o.forEach((t,j)=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>{op.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===q.a)x.classList.add("right");});if(j!==q.a)b.classList.add("wrong");const ex=d.querySelector(".ex");ex.hidden=false;ex.textContent=(j===q.a?"Correct. ":"Not quite. ")+q.e;};op.appendChild(b);});h.appendChild(d);});}
+window.__F={get F(){return F},startDrill,setChoice:c=>{choice=c},DR,scores,get TILT(){return TILT},setSeq:s=>{SEQ=s;seqSeen.add(s);},loadPreset,sjuh,parks,eas,mainLen};
+loadPreset("inter");mkDrills();mkQuiz();note("Choose a case or build a tract. Scroll the axial-oblique level, click any view to re-center the others, and switch sequences.");
+})();
+</script>
+</body>
+</html>
