@@ -153,7 +153,12 @@ const GROUPS = [
       url: "lessons/mri-fistula-in-ano/",
       desc: "A 3D model of the anal canal and pelvic floor, sliced in axial-oblique, coronal-oblique and sagittal planes. Build a fistula from its internal opening outward and switch sequences.",
       covers: "Parks and St James's classification, sphincter involvement, abscess and horseshoe extension, Crohn's activity scoring (MAGNIFI-CD, Van Assche), structured report",
-      glyph: "fistula" }
+      glyph: "fistula" },
+    { title: "Prostate anatomy on MRI: zones, measurements, BPH and treatment changes",
+      url: "lessons/prostate-mri-anatomy/",
+      desc: "A 3D prostate and its neighbors sliced in axial, sagittal and coronal planes on T2, ADC, DWI, DCE and T1. Click any point to name its zone, measure the gland, grow BPH and see what treatment leaves behind.",
+      covers: "McNeal zones, PI-RADS v2.1 sectors, straight versus oblique axial planes, volume and PSA density, BPH, TURP, HoLEP, UroLift, radiation, fiducials",
+      glyph: "prostate" }
   ]},
   { name: "Quantitative MRI", lessons: [
     { title: "MR Fingerprinting",
@@ -172,6 +177,7 @@ const GROUPS = [
 
 /* Small monochrome thumbnails, drawn like tiny images */
 const G = {
+  prostate: `<ellipse cx="36" cy="38" rx="22" ry="17" fill="#8a8a8a"/><ellipse cx="36" cy="36" rx="11" ry="9" fill="#d9d9d9"/><ellipse cx="36" cy="38" rx="3" ry="4" fill="#222"/>`,
   fistula: `<circle cx="36" cy="38" r="9" fill="none" stroke="#e6e6e6" stroke-width="2.4"/><circle cx="36" cy="38" r="17" fill="none" stroke="#777" stroke-width="2"/><path d="M42 31 C52 24 56 18 62 12" fill="none" stroke="#e6e6e6" stroke-width="2.4"/>`,
   defec: `<path d="M16 8C24 18 22 30 30 40S52 52 56 64" fill="none" stroke="#e6e6e6" stroke-width="2.4"/><path d="M12 20C24 24 34 28 46 24" fill="none" stroke="#888" stroke-width="2"/><circle cx="30" cy="40" r="4" fill="#9a9a9a"/><path d="M8 54L62 18" stroke="#555" stroke-width="1.5" stroke-dasharray="4 3"/>`,
   doppler: `<path d="M8 40 L16 40 C20 14 26 14 30 40 C33 52 38 52 40 40 C44 22 49 22 52 40 L64 40" fill="none" stroke="#e6e6e6" stroke-width="2.2"/><path d="M8 40H64" stroke="#555" stroke-width="1.2"/>`,

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prostate anatomy on MRI: zones, measurements, BPH and treatment changes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F1;--panel:#FFFFFF;--ink:#18222C;--muted:#5A6874;--line:#CFD6DB;--soft:#F5F7F8;--amber:#C98A0C;--cyan:#1F7F95;--rose:#B0476A;--ok:#2F7D4F;--warn:#B8621B;--bad:#B3261E;--chip-ok:#E3F1E8;--chip-warn:#FBEEDD;--chip-bad:#F8E1DF;
+  --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--read:"Literata",Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}}
+:root[data-theme="dark"]{--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}*,*::before,*::after{box-sizing:inherit}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px}h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}.lede{font-family:var(--read);font-size:18px;max-width:84ch;color:var(--muted)}.read{font-family:var(--read);max-width:84ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:16px 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}.seg.sm button{font-size:13px;padding:4px 10px;font-weight:500}
+select{font:inherit;font-size:14px;padding:4px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);min-height:48px}
+.stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(340px,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:1050px){.stage{grid-template-columns:1fr}}
+.views{background:#000;border-radius:10px;padding:10px;display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+@media (max-width:640px){.views{grid-template-columns:1fr}}
+.view{position:relative}.view .cv{position:relative;width:100%}
+.view canvas{display:block;width:100%;height:auto;image-rendering:auto;cursor:crosshair}
+.view .ov{position:absolute;inset:0;pointer-events:none}
+.vlab{color:#dfe6ea;font-size:13px;display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-variant-numeric:tabular-nums}
+.vlab input[type=range]{flex:1;accent-color:var(--amber)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.ovl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:#dfe6ea;font-size:13px;grid-column:1/-1}.ovl label{display:flex;gap:5px;align-items:center}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.grp{font-size:12.5px;color:var(--muted);margin:12px 0 4px;font-weight:700}.grp:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:132px 1fr 60px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:14px;margin:6px 0}
+.tbl{overflow-x:auto}.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tbl th{font-size:12.5px;color:var(--muted);font-weight:600}
+.big{font-family:var(--read);font-size:22px;font-weight:600}
+.g0{color:var(--ok)}.g1{color:var(--warn)}.g2{color:var(--bad)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px}.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.report{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-family:var(--read);font-size:15px;line-height:1.6;white-space:pre-wrap}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.drills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.drill{font:inherit;text-align:left;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.drill[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}.drill.done{background:var(--chip-ok)}.drill small{display:block;color:var(--muted);font-size:12px}
+.task{background:var(--panel);border-left:4px solid var(--amber);border-radius:4px;padding:12px 15px;margin-top:10px;font-family:var(--read)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.choices button{font:inherit;font-size:13.5px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.fb{font-size:14px;margin-top:8px;padding:8px 10px;border-radius:6px;font-family:var(--ui)}.fb.ok{background:var(--chip-ok)}.fb.no{background:var(--chip-warn)}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-bottom:10px}.quiz .q p{font-family:var(--read);margin-bottom:8px}
+.quiz .opts{display:flex;flex-direction:column;gap:6px}.quiz .opts button{font:inherit;font-size:14px;text-align:left;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.quiz .opts button.right{background:var(--chip-ok);border-color:var(--ok)}.quiz .opts button.wrong{background:var(--chip-bad);border-color:var(--bad)}.quiz .ex{font-size:14px;color:var(--muted);margin-top:8px}
+ol.refs{font-size:14px;color:var(--muted);padding-left:24px;max-width:98ch;line-height:1.55}ol.refs li{margin-bottom:6px}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:92ch}.hint{font-size:12.5px;color:var(--muted)}
+.sc select{font-size:13px;max-width:100%}
+</style>
+<style>.view canvas.zo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.views{grid-template-columns:1fr 1fr}#insp b{color:#fff}</style>
+<style>.back{font-size:14px;margin:0 0 16px}.back a{color:var(--muted);text-decoration:none}.back a:hover{color:var(--ink);text-decoration:underline}.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>Prostate anatomy on MRI</h1>
+<p class="lede">A 3D prostate and its neighbors, sliced in axial, sagittal and coronal planes and rendered as T2, ADC, high-b DWI, dynamic contrast and T1 images. Click any point to name its zone and PI-RADS v2.1 sector, measure the gland and PSA density, grow benign prostatic hyperplasia until the peripheral zone is effaced, and see what TURP, HoLEP, UroLift, radiation and fiducials leave behind.</p>
+
+<div class="bar">
+  <label>Case <select id="preset"></select></label>
+  <span class="seg" id="seq"><button data-v="t2">T2</button><button data-v="adc">ADC</button><button data-v="dwi">DWI high b</button><button data-v="dce1">DCE early</button><button data-v="dce2">DCE late</button><button data-v="t1">T1</button></span>
+</div>
+<div class="note" id="note"></div>
+
+<div class="stage">
+  <div>
+    <div class="views">
+      <div class="view"><div class="cv"><canvas id="cAx" width="240" height="240" aria-label="Axial slice"></canvas><canvas class="ov zo" id="zAxO" width="240" height="240"></canvas><canvas class="ov" id="oAx" width="720" height="720"></canvas></div>
+        <div class="vlab"><span>Axial</span><input type="range" id="zAx" min="-6" max="7" step="0.1" aria-label="Axial level"><span id="zAxL"></span></div>
+        <div class="vlab"><span class="seg sm" id="lvl"><button data-v="base">Base</button><button data-v="mid">Mid</button><button data-v="apex">Apex</button><button data-v="sv">SV</button></span></div>
+        <div style="margin-top:12px;background:#121a21;border:1px solid #2c3843;border-radius:8px;padding:10px 12px;color:#dfe6ea"><div style="font-size:13px;font-weight:700;color:#9fb0bb;margin-bottom:4px">Point inspector</div><div id="insp" style="font-size:14px;line-height:1.5"><span style="color:#9fb0bb">Click any view.</span></div></div></div>
+      <div class="stack">
+        <div class="view"><div class="cv"><canvas id="cSa" width="240" height="240" aria-label="Sagittal slice"></canvas><canvas class="ov zo" id="zSaO" width="240" height="240"></canvas><canvas class="ov" id="oSa" width="720" height="720"></canvas></div>
+          <div class="vlab"><span>Sagittal</span><input type="range" id="xSa" min="-4" max="4" step="0.1" aria-label="Sagittal position"><span id="xSaL"></span></div></div>
+        <div class="view"><div class="cv"><canvas id="cCo" width="240" height="240" aria-label="Coronal slice"></canvas><canvas class="ov zo" id="zCoO" width="240" height="240"></canvas><canvas class="ov" id="oCo" width="720" height="720"></canvas></div>
+          <div class="vlab"><span>Coronal</span><input type="range" id="yCo" min="-5" max="5" step="0.1" aria-label="Coronal position"><span id="yCoL"></span></div></div>
+      </div>
+      <div class="ovl"><label><input type="checkbox" id="oZone"> Zone colors</label><label><input type="checkbox" id="oLab"> Labels</label><label><input type="checkbox" id="oLev" checked> Base / mid / apex</label><label><input type="checkbox" id="oX" checked> Crosshair</label><span class="hint" style="color:#9fb0bb">Click a view to inspect that point and move the other planes there.</span></div>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <div class="grp">Gland tilt and imaging planes</div>
+      <div class="ctl"><label for="tilt">Prostate tilt</label><input type="range" id="tilt" min="0" max="55" step="1"><output id="tilto"></output></div>
+      <div class="ctl"><label for="aob">Axial obliquity</label><input type="range" id="aob" min="0" max="60" step="1"><output id="aobo"></output></div>
+      <div class="row"><button class="mini" id="axStraight">Straight axial</button><button class="mini" id="axObl">Oblique axial (⟂ gland)</button></div>
+      <div class="ctl"><label for="cob">Coronal obliquity</label><input type="range" id="cob" min="0" max="60" step="1"><output id="cobo"></output></div>
+      <div class="row"><button class="mini" id="coStraight">Straight coronal</button><button class="mini" id="coObl">Oblique coronal (∥ gland)</button></div>
+      <div class="grp">Benign prostatic hyperplasia</div>
+      <div class="ctl"><label for="bph">BPH</label><input type="range" id="bph" min="0" max="1" step="0.05"><output id="bpho"></output></div>
+      <div class="row"><label><input type="checkbox" id="median"> Median lobe</label><label><input type="checkbox" id="ectopic"> Ectopic BPH nodule in PZ</label></div>
+      <div class="grp">Treatment and procedures</div>
+      <div class="row"><span class="seg sm" id="tx"><button data-v="none">None</button><button data-v="turp">TURP</button><button data-v="holep">HoLEP</button><button data-v="urolift">UroLift</button><button data-v="ebrt">EBRT</button></span></div>
+      <div class="row"><label><input type="checkbox" id="fid"> Gold fiducials</label><label><input type="checkbox" id="hem"> Post-biopsy hemorrhage</label><label><input type="checkbox" id="pros"> Prostatitis</label></div>
+    </div>
+    <div class="panel">
+      <h3>Measure the gland</h3>
+      <div class="row"><span class="seg sm" id="mtool"><button data-v="TR">TR (axial)</button><button data-v="AP">AP (sagittal)</button><button data-v="CC">CC (sagittal)</button><button data-v="MUL">MUL (sagittal)</button></span></div>
+      <div class="row"><label>PSA <input type="number" id="psa" min="0" step="0.1" style="width:72px;font:inherit;font-size:14px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)"> ng/mL</label><button class="mini" id="mclear">Clear</button><label><input type="checkbox" id="mreveal"> Show true values</label></div>
+      <div class="tbl" id="mtab"></div>
+      <p class="hint" id="mhint">Pick a measurement, then click its two ends on the matching view.</p>
+    </div>
+  </div>
+</div>
+
+<h2>Zones and signal</h2>
+<div class="cards">
+  <div class="card"><h3>Peripheral zone</h3><p>Posterior and lateral, wrapping around to the apex; about 70% of the glandular tissue in a young man. Bright on T2 because of its loose glandular stroma, high on ADC. The anterior horns reach forward around the transition zone. Most cancers (about 70%) arise here.</p></div>
+  <div class="card"><h3>Transition zone</h3><p>Two small lobes beside the proximal urethra, about 5% of the young gland, and the site of BPH. Heterogeneous: stromal nodules are dark on T2 and lower on ADC, glandular nodules bright, both usually encapsulated. A dark surgical pseudocapsule separates it from the peripheral zone.</p></div>
+  <div class="card"><h3>Central zone</h3><p>A cone at the posterior base around the ejaculatory ducts, apex at the verumontanum. Dense stroma makes it symmetric and dark on T2, lower on ADC, without early enhancement: a classic mimic of cancer. Fewer cancers start here, but they tend to be aggressive.</p></div>
+  <div class="card"><h3>Anterior fibromuscular stroma</h3><p>Non-glandular smooth muscle and fibrous tissue on the anterior surface, thickest toward the apex. Dark on T2 and ADC with low, late enhancement. Symmetric and crescentic; asymmetric thickening or mass effect suggests an anterior tumor.</p></div>
+  <div class="card"><h3>Capsule and surroundings</h3><p>The capsule is a thin fibromuscular band, not a true capsule, absent at the apex and anteriorly. Neurovascular bundles run posterolaterally at about 5 and 7 o'clock. Periprostatic veins (Santorini plexus anteriorly) are bright on T2 and enhance. Denonvilliers fascia separates the gland from the rectum.</p></div>
+  <div class="card"><h3>Seminal vesicles and ducts</h3><p>Seminal vesicles are coiled fluid-filled sacs, bright on T2 with thin dark walls, above the base and behind the bladder. Each joins its vas deferens (ampulla) to form an ejaculatory duct that runs through the central zone to the verumontanum.</p></div>
+</div>
+
+<h2>Straight versus oblique axial</h2>
+<div class="cards">
+  <div class="card"><h3>Why the plane matters</h3><p>The long axis of the prostate is tilted relative to the scanner, running from the base (posterosuperior, at the bladder neck) to the apex (anteroinferior). A straight axial slice therefore crosses the apex anteriorly and the base posteriorly at the same time, so zones and PI-RADS levels mix within one image.</p></div>
+  <div class="card"><h3>Oblique planes</h3><p>Prescribing the axial plane perpendicular to the gland's long axis on the sagittal image (and the coronal plane parallel to it) gives uniform sampling: each axial slice belongs to one level, the central zone appears as a symmetric band at the base, and measurements and sector assignments are consistent between studies. Keep DWI and DCE in the same plane as T2 for side-by-side reading.</p></div>
+  <div class="card"><h3>Try it</h3><p>Set the axial plane to straight and watch the Apex / Mid / Base bands appear across a single axial image, while the yellow line on the sagittal view shows the plane cutting obliquely through the gland. Then press "Oblique axial (⟂ gland)". Change the prostate tilt to see how the effect grows with the angle.</p></div>
+</div>
+
+<h2>Measurements</h2>
+<div class="cards">
+  <div class="card"><h3>Volume (PI-RADS v2.1)</h3><p>Ellipsoid formula: AP × TR × CC × 0.52. Measure AP and CC on the midsagittal T2 image (maximum dimensions) and TR at the widest axial level. PSA density = PSA / volume; values ≥ 0.15 ng/mL² are commonly used as a threshold for biopsy decisions, though cut-offs vary.</p></div>
+  <div class="card"><h3>Ellipsoid versus true volume</h3><p>The ellipsoid formula assumes a smooth gland. Large, lobulated BPH, a median lobe or a post-TURP/HoLEP cavity make it less accurate; the table compares your ellipsoid estimate with the model's true tissue volume.</p></div>
+  <div class="card"><h3>Membranous urethral length</h3><p>From the prostatic apex to the entry of the urethra into the penile bulb on the midsagittal image. A longer membranous urethra is associated with better continence after radical prostatectomy.</p></div>
+</div>
+
+<h2>BPH and the vanishing peripheral zone</h2>
+<p class="read">As the transition zone enlarges it pushes the peripheral zone posterolaterally and compresses it against the capsule. In marked BPH the peripheral zone is a thin rim, and at the extreme it is effaced to the pseudocapsule. Cancers then arise in a peripheral zone you can barely see, and transition-zone nodules can bulge into territory that used to be peripheral zone. Move the BPH slider and watch the posterior rim.</p>
+
+<h2>After treatment</h2>
+<div class="cards">
+  <div class="card"><h3>TURP</h3><p>A funnel-shaped defect of the proximal (supramontanal) urethra, widest at the bladder neck, filled with urine and continuous with the bladder. Residual transition zone remains laterally; the peripheral zone is preserved.</p></div>
+  <div class="card"><h3>HoLEP</h3><p>The adenoma is enucleated to the surgical capsule, leaving a large fluid-filled fossa surrounded by a thin rim of compressed peripheral zone. The gland volume falls dramatically; the ellipsoid formula then overestimates the tissue.</p></div>
+  <div class="card"><h3>UroLift</h3><p>Implants hold the lateral lobes apart. The nitinol capsular tabs cause little artifact; the stainless-steel urethral end pieces produce blooming in the posterior transition zone, about 8 mm on T2, 10 mm on DCE and nearly 3 cm on DWI in one series, which can hide adjacent tissue.</p></div>
+  <div class="card"><h3>External-beam radiation</h3><p>The gland shrinks and becomes diffusely low on T2 with loss of zonal differentiation; ADC falls and enhancement decreases. Seminal vesicles atrophy and the rectal wall may thicken. Recurrence is sought as focal early enhancement and restricted diffusion, often near the original tumor site.</p></div>
+  <div class="card"><h3>Gold fiducials</h3><p>Small seeds placed for radiation targeting: tiny signal voids on T2 that bloom on gradient-echo and much more on EPI diffusion. Do not mistake them for calcifications or call the blooming tissue abnormal.</p></div>
+  <div class="card"><h3>Hemorrhage and prostatitis</h3><p>Post-biopsy hemorrhage is low on T2 and bright on T1; tumor tends to spare it (hemorrhage exclusion sign). Prostatitis gives band-like or wedge-shaped, mildly low T2 signal with mild ADC reduction, without a discrete mass.</p></div>
+</div>
+
+<h2>Where cancers arise</h2>
+<p class="read">About 70% of cancers arise in the peripheral zone, 20–25% in the transition zone, and about 5% in the central zone (often more aggressive). PI-RADS v2.1 uses T2 as the dominant sequence for the transition zone and DWI for the peripheral zone; the lesion is assigned to the zone it arises from, so knowing the anatomy above is the first step in scoring. Lesion scoring itself is a separate lesson.</p>
+
+<h2>Drills</h2>
+<div class="drills" id="drills"></div>
+<div class="task" id="task" hidden></div>
+
+<h2>Quick quiz</h2>
+<div class="quiz" id="quiz"></div>
+
+<h2>References</h2>
+<ol class="refs">
+  <li>McNeal JE. The zonal anatomy of the prostate. Prostate. 1981;2(1):35–49.</li>
+  <li>McNeal JE, Redwine EA, Freiha FS, Stamey TA. Zonal distribution of prostatic adenocarcinoma: correlation with histologic pattern and direction of spread. Am J Surg Pathol. 1988;12(12):897–906.</li>
+  <li>Coakley FV, Hricak H. Radiologic anatomy of the prostate gland: a clinical approach. Radiol Clin North Am. 2000;38(1):15–30.</li>
+  <li>Turkbey B, Rosenkrantz AB, Haider MA, et al. Prostate Imaging Reporting and Data System version 2.1: 2019 update of Prostate Imaging Reporting and Data System version 2. Eur Urol. 2019;76(3):340–351.</li>
+  <li>Rosenkrantz AB, Taneja SS. Radiologist, be aware: ten pitfalls that confound the interpretation of multiparametric prostate MRI. AJR Am J Roentgenol. 2014;202(1):109–120.</li>
+  <li>Kitzing YX, Prando A, Varol C, Karczmar GS, Maclean F, Oto A. Benign conditions that mimic prostate carcinoma: MR imaging features with histopathologic correlation. RadioGraphics. 2016;36(1):162–175.</li>
+  <li>Patel P, Mathew MS, Trilisky I, Oto A. Multiparametric MR imaging of the prostate after treatment of prostate cancer. RadioGraphics. 2018;38(2):437–449. doi:10.1148/rg.2018170147</li>
+  <li>Parkin CJ, Jyoti R, Chin P. Multiparametric-magnetic resonance imaging (mp-MRI) of the prostate and Urolift: identifying artefact size, location and clinical implications. BJUI Compass. 2024;5(8):770–775. doi:10.1002/bco2.392</li>
+</ol>
+<p class="foot">Teaching simulation. The gland and its neighbors are a simplified geometric model; dimensions, signal intensities and treatment changes are representative. The zone, sector and measurement truths are computed from the model. Follow PI-RADS v2.1 and your local protocol in practice. For teaching only; not for clinical use.</p>
+</div>
+<script>
+(function(){
+"use strict";
+const TAU=2*Math.PI,clamp=(v,a,b)=>v<a?a:v>b?b:v,$=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s);
+function mul(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const NAMES=['AIR','FAT','MUS','CORT','MAR','URINE','BWALL','PZ','TZ','TZNS','TZNG','NCAP','CZ','AFMS','CAPS','URE','PUR','ED','SV','SVW','VAS','NVB','VEN','RMUC','RMUS','RGAS','DENO','SPH','BULB','CAV','PZH','PZI','PZR','SVR','ART','ECT','SYM','ARTR','LEV'];
+const K={};NAMES.forEach((n,i)=>K[n]=i);
+const RAW={
+ t2:  {AIR:.02,FAT:.86,MUS:.2,CORT:.04,MAR:.62,URINE:.95,BWALL:.22,PZ:.68,TZ:.44,TZNS:.27,TZNG:.7,NCAP:.13,CZ:.27,AFMS:.19,CAPS:.14,URE:.38,PUR:.3,ED:.2,SV:.92,SVW:.24,VAS:.25,NVB:.38,VEN:.86,RMUC:.5,RMUS:.18,RGAS:.02,DENO:.12,SPH:.18,BULB:.8,CAV:.95,PZH:.5,PZI:.5,PZR:.3,SVR:.34,ART:0,ECT:.38,SYM:.3,ARTR:.5},
+ adc: {AIR:.02,FAT:.1,MUS:.32,CORT:.05,MAR:.14,URINE:.98,BWALL:.3,PZ:.74,TZ:.5,TZNS:.37,TZNG:.64,NCAP:.35,CZ:.36,AFMS:.3,CAPS:.32,URE:.55,PUR:.4,ED:.45,SV:.86,SVW:.4,VAS:.4,NVB:.45,VEN:.72,RMUC:.36,RMUS:.3,RGAS:.04,DENO:.3,SPH:.3,BULB:.7,CAV:.98,PZH:.56,PZI:.52,PZR:.42,SVR:.52,ART:0,ECT:.45,SYM:.3,ARTR:.12},
+ dwi: {AIR:.02,FAT:.03,MUS:.18,CORT:.03,MAR:.1,URINE:.07,BWALL:.2,PZ:.22,TZ:.3,TZNS:.38,TZNG:.25,NCAP:.28,CZ:.34,AFMS:.2,CAPS:.2,URE:.2,PUR:.28,ED:.2,SV:.1,SVW:.2,VAS:.24,NVB:.25,VEN:.08,RMUC:.46,RMUS:.2,RGAS:.02,DENO:.15,SPH:.2,BULB:.25,CAV:.07,PZH:.26,PZI:.32,PZR:.3,SVR:.2,ART:0,ECT:.33,SYM:.15,ARTR:.42},
+ dce1:{AIR:.02,FAT:.08,MUS:.3,CORT:.05,MAR:.18,URINE:.1,BWALL:.45,PZ:.33,TZ:.55,TZNS:.52,TZNG:.78,NCAP:.4,CZ:.26,AFMS:.2,CAPS:.35,URE:.3,PUR:.55,ED:.3,SV:.1,SVW:.6,VAS:.45,NVB:.92,VEN:.75,RMUC:.75,RMUS:.4,RGAS:.02,DENO:.3,SPH:.4,BULB:.85,CAV:.1,PZH:.3,PZI:.62,PZR:.24,SVR:.38,ART:0,ECT:.72,SYM:.2,ARTR:.5},
+ dce2:{AIR:.02,FAT:.08,MUS:.4,CORT:.05,MAR:.25,URINE:.22,BWALL:.5,PZ:.5,TZ:.55,TZNS:.52,TZNG:.6,NCAP:.5,CZ:.42,AFMS:.34,CAPS:.45,URE:.4,PUR:.5,ED:.4,SV:.12,SVW:.55,VAS:.5,NVB:.7,VEN:.75,RMUC:.6,RMUS:.45,RGAS:.02,DENO:.4,SPH:.45,BULB:.8,CAV:.26,PZH:.45,PZI:.6,PZR:.34,SVR:.45,ART:0,ECT:.6,SYM:.3,ARTR:.5},
+ t1:  {AIR:.02,FAT:.92,MUS:.38,CORT:.05,MAR:.8,URINE:.12,BWALL:.35,PZ:.38,TZ:.38,TZNS:.37,TZNG:.39,NCAP:.34,CZ:.37,AFMS:.36,CAPS:.33,URE:.35,PUR:.37,ED:.35,SV:.32,SVW:.35,VAS:.35,NVB:.4,VEN:.25,RMUC:.38,RMUS:.35,RGAS:.02,DENO:.33,SPH:.38,BULB:.36,CAV:.12,PZH:.86,PZI:.38,PZR:.36,SVR:.32,ART:0,ECT:.38,SYM:.3,ARTR:.5}};
+const INT={};for(const s in RAW)INT[s]=NAMES.map(n=>RAW[s][n]!=null?RAW[s][n]:RAW[s].MUS);
+const TEX=NAMES.map(n=>({FAT:.1,MUS:.12,LEV:.12,MAR:.15,PZ:.06,TZ:.2,TZNS:.12,TZNG:.16,CZ:.08,AFMS:.1,SV:.04,RMUC:.1,BULB:.1,PZH:.25,PZI:.12,PZR:.12})[n]||.05);
+const GLANDSET=new Set([K.PZ,K.TZ,K.TZNS,K.TZNG,K.CZ,K.PZH,K.PZI,K.ECT,K.CAPS,K.AFMS,K.NCAP]);
+// ---------- case ----------
+const DEF={bph:0.1,median:false,ectopic:false,tx:"none",fid:false,hem:false,pros:false};
+let C=Object.assign({},DEF),SEQ="t2",ZA=0,XS=0,YC=0.2,INSP=null,seqSeen=new Set(["t2"]),TILT=40,AOB=40,COB=40,AXLOCK=true,COLOCK=true;
+const DEG=Math.PI/180;function rx(p,deg){const a=deg*DEG,c=Math.cos(a),s=Math.sin(a);return [p[0],p[1]*c-p[2]*s,p[1]*s+p[2]*c];}
+const toAnat=p=>rx(p,TILT),toBody=p=>rx(p,-TILT),dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const PRESETS={
+ normal:{n:"Normal adult gland",s:{bph:0.1}},
+ young:{n:"Young man (no BPH)",s:{bph:0}},
+ mild:{n:"Mild BPH",s:{bph:0.3}},
+ moderate:{n:"Moderate BPH (PZ thinned)",s:{bph:0.55}},
+ marked:{n:"Marked BPH",s:{bph:0.78}},
+ severe:{n:"Severe BPH, PZ effaced, median lobe",s:{bph:1,median:true}},
+ ectopic:{n:"Ectopic BPH nodule in the PZ",s:{bph:0.4,ectopic:true}},
+ turp:{n:"After TURP",s:{bph:0.45,tx:"turp"}},
+ holep:{n:"After HoLEP",s:{bph:0.6,tx:"holep"}},
+ urolift:{n:"After UroLift",s:{bph:0.4,tx:"urolift"}},
+ ebrt:{n:"After external-beam radiation, fiducials",s:{bph:0.25,tx:"ebrt",fid:true}},
+ hem:{n:"Post-biopsy hemorrhage",s:{bph:0.2,hem:true}},
+ pros:{n:"Prostatitis (left PZ)",s:{bph:0.2,pros:true}}};
+// ---------- geometry ----------
+const segD=(p,a,b)=>{const vx=b[0]-a[0],vy=b[1]-a[1],vz=b[2]-a[2],L=vx*vx+vy*vy+vz*vz||1e-9;let t=((p[0]-a[0])*vx+(p[1]-a[1])*vy+(p[2]-a[2])*vz)/L;t=t<0?0:t>1?1:t;return Math.hypot(p[0]-a[0]-vx*t,p[1]-a[1]-vy*t,p[2]-a[2]-vz*t);};
+const segT=(p,a,b)=>{const vx=b[0]-a[0],vy=b[1]-a[1],vz=b[2]-a[2],L=vx*vx+vy*vy+vz*vz||1e-9;return ((p[0]-a[0])*vx+(p[1]-a[1])*vy+(p[2]-a[2])*vz)/L;};
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+function sTap(z){return 0.6+0.4*Math.pow(clamp((z+1.9)/3.8,0,1),0.6);}
+function dE0(p){const s=sTap(p[2]);const q=Math.hypot(p[0]/(2.15*s),(p[1]-0.1)/(1.45*s),p[2]/1.9);return (q-1)*Math.min(1.45*s,1.9)*0.95;}
+function dEll(p,L){const q=Math.hypot((p[0]-L.c[0])/L.a[0],(p[1]-L.c[1])/L.a[1],(p[2]-L.c[2])/L.a[2]);return (q-1)*Math.min(L.a[0],L.a[1],L.a[2]);}
+function smin(a,b,k){const h=clamp(0.5+0.5*(b-a)/k,0,1);return b+(a-b)*h-k*h*(1-h);}
+const G={};
+function gd(q){const dE=dE0(q),dT=smin(dEll(q,G.L[0]),dEll(q,G.L[1]),0.35),dM=C.median?dEll(q,G.ML):1e9;return {dE,dT,dM,dG:Math.min(dE,dT-G.t,dM-0.04)};}
+function inGland(p){return gd([p[0]/G.g,p[1]/G.g,p[2]/G.g]).dG<0;}
+function yU(z){if(z<=G.V[2]){const t=clamp((z-G.A0[2])/(G.V[2]-G.A0[2]),0,1);return G.A0[1]+(G.V[1]-G.A0[1])*t;}const t=clamp((z-G.V[2])/(G.BN[2]-G.V[2]),0,1);return G.V[1]+(G.BN[1]-G.V[1])*t;}
+function uDist(q){return Math.min(segD(q,G.A0,G.V),segD(q,G.V,G.BN));}
+function noise3(p){return Math.sin(p[0]*3.1+Math.sin(p[2]*2.3))*Math.cos(p[1]*2.7-p[2]*1.9)+0.5*Math.sin(p[0]*7.3-p[1]*5.1+p[2]*4.4);}
+const NODSEED=(()=>{const r=mul(42),o=[];for(let i=0;i<18;i++)o.push({l:i%2,u:(r()-0.5)*1.15,v:(r()-0.5)*1.1,w:(r()-0.5)*1.25,rn:0.2+r()*0.16,st:r()<0.5});return o;})();
+const zi=z=>Math.round((z+5.5)*10),NZT=126;
+function rebuild(){const b=C.bph,bf=1+2.9*Math.pow(b,1.1);
+  G.b=b;G.bf=bf;G.g=C.tx==="ebrt"?0.8:1;G.t=0.07+0.25*(1-b);
+  G.L=[-1,1].map(s=>({c:[s*(0.55+0.24*(bf-1)),-0.45+0.17*(bf-1),0.7+0.14*(bf-1)],a:[0.62*bf,0.6*bf,0.95*Math.pow(bf,0.85)]}));
+  let zt=1.9;for(const L of G.L){const r=L.c[0]/L.a[0];if(Math.abs(r)<1)zt=Math.max(zt,L.c[2]+L.a[2]*Math.sqrt(1-r*r)*0.92+G.t);}
+  G.ZtopU=zt;G.V=[0,-0.12,-0.2];G.A0=[0,0.08,-1.8];G.BN=[0,-0.55+0.15*(bf-1),zt-0.05];
+  G.ML={c:[0,G.BN[1]+0.45,zt-0.25+0.3*b],a:[0.5+0.4*b,0.5+0.35*b,0.75+0.55*b]};
+  G.afW=1.15*(1+0.25*(bf-1));
+  const vis=Math.round(18*Math.pow(clamp((b-0.1)/0.9,0,1),0.8));
+  G.NOD=NODSEED.slice(0,vis).map(n=>{const L=G.L[n.l];return {c:[L.c[0]+n.u*L.a[0],L.c[1]+n.v*L.a[1],L.c[2]+n.w*L.a[2]],r:n.rn*Math.min(L.a[0],L.a[1],L.a[2]),st:n.st};});
+  if(C.median&&b>0.3){const M=G.ML;G.NOD.push({c:[0.1,M.c[1],M.c[2]+0.1],r:0.3*Math.min(...M.a),st:true},{c:[-0.15,M.c[1]-0.1,M.c[2]-0.25],r:0.25*Math.min(...M.a),st:false});}
+  // midline scans and boundary tables (physical coordinates)
+  const T={yant:[],ypost:[],wlat:[],nvb:[[],[]]};let Zb=99,Zt=-99,YpM=-99,YaM=99,AP=0;
+  for(let i=0;i<NZT;i++){const z=-5.5+i*0.1;let ya=NaN,yp=NaN;for(let y=-4.5;y<=4.5;y+=0.05){if(inGland([0,y,z])){if(isNaN(ya))ya=y;yp=y;}}
+    T.yant[i]=ya;T.ypost[i]=yp;if(!isNaN(ya)){Zb=Math.min(Zb,z);Zt=Math.max(Zt,z);YpM=Math.max(YpM,yp);YaM=Math.min(YaM,ya);AP=Math.max(AP,yp-ya+0.05);}
+    let w=NaN;const yc=isNaN(ya)?0:(ya+yp)/2;if(inGland([0,yc,z])){w=0;while(w<6&&inGland([w+0.05,yc,z]))w+=0.05;}T.wlat[i]=w;
+    for(const [k,s] of [[0,-1],[1,1]]){const y0=isNaN(ya)?NaN:G.g*yU(z/G.g);if(isNaN(y0)||!inGland([0,y0,z])){T.nvb[k][i]=null;continue;}const d=[s*0.62,0.78];let r=0;while(r<6&&inGland([d[0]*r,y0+d[1]*r,z]))r+=0.05;T.nvb[k][i]=[d[0]*(r+0.3),y0+d[1]*(r+0.3)];}}
+  G.T=T;G.Zbot=Zb;G.Ztop=Zt;G.YpM=YpM;G.YaM=YaM;
+  const g=G.g;
+  // ejaculatory ducts and central zone (gland coords)
+  const ypBase=(()=>{const v=T.ypost[zi(g*(G.ZtopU-0.35))];return isNaN(v)?1.4:v/g;})();
+  G.ED=[-1,1].map(s=>[[s*0.22,ypBase-0.5,G.ZtopU-0.3],[s*0.05,G.V[1]+0.1,G.V[2]+0.05]]);
+  G.CZa=[0,G.V[1]+0.08,G.V[2]];G.CZb=[0,ypBase-0.5,G.ZtopU-0.2];
+  G.ect={c:[0.95,(()=>{const v=T.ypost[zi(-0.2*g)];return isNaN(v)?1.2:v/g-0.5;})(),-0.2],r:0.42};
+  // neighbours (physical)
+  G.uy=G.A0[1]*g;G.bulbTop=Zb-1.55;G.bulb={c:[0,G.uy-0.25,Zb-2.45],a:[1.05,0.9,0.9]};
+  {const bnB=toBody([0,G.BN[1]*g,G.BN[2]*g]);G.blad={c:toAnat([0,bnB[1]-0.35,bnB[2]+1.9+(C.median?0.35+0.4*b:0)]),a:[2.8,2.0,1.9]};}
+  G.rec={y:YpM+1.4,ax:1.6,ay:1.2};
+  const Yb=YpM*0.72+0.35,Zs=G.BN[2]*g;G.SV=[-1,1].map(s=>{const P0=[s*0.45,Yb,Zs+0.3],P1=[s*2.9,Yb+0.25,Zs+1.25],pts=[];for(let i=0;i<=40;i++){const t=i/40,p=lerp(P0,P1,t);p[2]+=0.34*Math.sin(t*TAU*3.6);p[1]+=0.22*Math.cos(t*TAU*3.6);p[0]+=s*0.12*Math.sin(t*TAU*7.2);pts.push(p);}return pts;});
+  G.svBB=[-3.5,3.5,Yb-0.7,Yb+0.9,Zs-0.25,Zs+1.9];G.svR=C.tx==="ebrt"?0.22:0.4;
+  G.VAS=[-1,1].map(s=>[[s*0.2,Yb-0.25,Zs+0.1],[s*0.55,Yb-0.45,Zs+2.0]]);
+  G.pub={y:Math.min(-2.55,YaM-0.85)-0.95,z:Zb+0.9};
+  // artifacts
+  const A=[];
+  if(C.tx==="urolift"){for(const f of [0.35,0.75]){const zg=G.V[2]+f*(G.BN[2]-G.V[2]),yg=yU(zg);for(const s of [-1,1])A.push({c:[s*0.3*g,(yg+0.2)*g,zg*g],r:{t2:.39,dce1:.5,dce2:.5,dwi:1.4,adc:1.4,t1:.45}});}}
+  if(C.fid){for(const f of [[-0.85,0.75,-0.6],[0.9,0.7,0.1],[0.05,0.9,0.8]]){const c=f.map(v=>v*g);A.push({c,seg:[[c[0],c[1],c[2]-0.15],[c[0],c[1],c[2]+0.15]],r:{t2:.1,t1:.22,dce1:.22,dce2:.22,dwi:.55,adc:.55}});}}
+  G.ART=A;
+  computeTruth();setFOV();CACHE.clear();}
+function cavAt(q){if(C.tx==="turp"&&q[2]>G.V[2]+0.1){const tt=(q[2]-G.V[2])/(G.BN[2]-G.V[2]),rc=0.2+1.0*Math.pow(clamp(tt,0,1.2),1.3);if(segD(q,G.V,[G.BN[0],G.BN[1],G.BN[2]+0.8])<rc)return true;}
+  if(C.tx==="holep"&&q[2]>G.V[2]-0.05){const d=gd(q);if(d.dT<-0.02||(C.median&&d.dM<0)||segD(q,G.V,G.BN)<0.3)return true;}
+  if(C.tx==="urolift"&&q[2]>G.V[2]&&segD(q,G.V,G.BN)<0.14)return true;return false;}
+function glandClass(q,dd){
+  if(cavAt(q))return K.CAV;const u=uDist(q);if(u<0.085)return K.URE;if(u<0.16)return K.PUR;
+  for(const e of G.ED)if(segD(q,e[0],e[1])<0.075)return K.ED;
+  if(dd.dT<0||(C.median&&dd.dM<0)){for(const n of G.NOD){const d=dist(q,n.c)/n.r;if(d<1)return d>0.86?K.NCAP:(n.st?K.TZNS:K.TZNG);}return K.TZ;}
+  if(G.b>0.12&&dd.dT<0.06)return K.NCAP;
+  if(C.ectopic){const d=dist(q,G.ect.c)/G.ect.r;if(d<1)return d>0.86?K.NCAP:K.ECT;}
+  const yu=yU(q[2]);
+  {const tt=clamp(segT(q,G.CZa,G.CZb),0,1),w=(0.12+0.68*tt)*(1-0.5*G.b);if(tt>0.02&&segD(q,G.CZa,G.CZb)<w&&q[1]>yu-0.05)return K.CZ;}
+  if(q[1]<yu-0.42&&Math.abs(q[0])<G.afW*sTap(q[2])&&q[2]<G.BN[2]-0.2)return K.AFMS;
+  if(dd.dG>-0.055)return K.CAPS;
+  if(C.hem&&q[0]<-0.2&&q[2]>-1.3&&q[2]<1.1&&noise3(q)>-0.35)return K.PZH;
+  if(C.pros&&q[0]>0.25&&q[2]>-1.2&&q[2]<1.2&&Math.sin(Math.atan2(q[0],q[1]-yu)*8+q[2]*1.3)>0.35)return K.PZI;
+  return K.PZ;}
+function outside(p){const [x,y,z]=p,g=G.g;
+  if(z<G.Zbot+0.08&&z>G.bulbTop){const r=Math.hypot(x,y-G.uy);if(r<0.07)return K.URE;if(r<0.55)return K.SPH;}
+  {const B=G.bulb,e=Math.hypot((x-B.c[0])/B.a[0],(y-B.c[1])/B.a[1],(z-B.c[2])/B.a[2]);if(e<1)return Math.hypot(x,y-G.uy)<0.07?K.URE:K.BULB;}
+  const bb=G.svBB;if(x>bb[0]&&x<bb[1]&&y>bb[2]&&y<bb[3]&&z>bb[4]&&z<bb[5]){
+    for(const pts of G.SV){let dA=1e9,dB=1e9;for(let i=1;i<pts.length;i++){const d=segD(p,pts[i-1],pts[i]);if(((i/6)|0)%2)dA=Math.min(dA,d);else dB=Math.min(dB,d);}const d=Math.min(dA,dB);
+      if(d<G.svR){if(C.tx==="ebrt")return K.SVR;if(d>G.svR-0.065)return K.SVW;if(Math.abs(dA-dB)<0.045)return K.SVW;return K.SV;}}
+    for(const v of G.VAS){const d=segD(p,v[0],v[1]);if(d<0.16)return d<0.05?K.SV:K.VAS;}}
+  {const B=G.blad,e=Math.hypot((x-B.c[0])/B.a[0],(y-B.c[1])/B.a[1],(z-B.c[2])/B.a[2]);if(e<1)return K.URINE;if((e-1)*1.9<0.17)return K.BWALL;}
+  {const R=G.rec,an=z<G.Zbot-1.4,ax=an?1.0:R.ax+(C.tx==="ebrt"?0.12:0),ay=an?0.95:R.ay+(C.tx==="ebrt"?0.12:0),cy=R.y+0.04*z+0.1*Math.max(0,z-G.Ztop+0.5)**2-(an?0.35*Math.min(1.5,G.Zbot-1.4-z):0),e=Math.hypot(x/ax,(y-cy)/ay);
+    if(e<1&&z<G.Ztop+3.5){if(e<0.24*Math.max(0,Math.sin(z*1.9+0.6))&&z>G.Zbot-1)return K.RGAS;if(e<0.12)return K.RMUC;if(e<(C.tx==="ebrt"?0.62:0.55))return K.RMUC;return K.RMUS;}}
+  const iz=zi(z);
+  if(iz>=0&&iz<NZT){for(const k of [0,1]){const c=G.T.nvb[k][iz];if(c){const s=k?1:-1;for(const o of [[0,0],[0.16*s,0.08],[-0.08*s,0.17]])if(Math.hypot(x-c[0]-o[0],y-c[1]-o[1])<0.075)return K.NVB;}}
+    const ya=G.T.yant[iz],yp=G.T.ypost[iz],w=G.T.wlat[iz];
+    if(!isNaN(ya)&&z<G.Ztop-0.3){const yv=ya-0.3-0.08*Math.cos(x*2.2);if(Math.abs(x)<1.8&&Math.abs(y-yv)<0.09&&Math.sin(x*4.1+z*3.3)>-0.3)return K.VEN;
+      if(!isNaN(w)&&Math.abs(Math.abs(x)-(w+0.2))<0.07&&y>ya*0.5&&y<yp*0.4&&Math.sin(y*5+z*4)>0)return K.VEN;
+      if(Math.abs(y-(yp+0.16-0.22*x*x))<0.035&&Math.abs(x)<1.3)return K.DENO;}
+    if(z>G.Zbot-1.5&&z<G.Zbot+0.55*(G.Ztop-G.Zbot)){const xi=((isNaN(w)?1.0:w)+0.45)+0.12*(z-G.Zbot);if(Math.abs(Math.abs(x)-(xi+0.17))<0.17&&y>(isNaN(ya)?-1.4:ya)-0.2&&y<G.YpM+1.2)return K.LEV;}}
+  {const P=G.pub,e=Math.hypot((y-P.y-0.16*x*x)/0.85,(z-P.z)/2.0);if(e<1&&Math.abs(x)<4.2){if(Math.abs(x)<0.13)return K.SYM;return (e>0.86||Math.abs(x)>4.05)?K.CORT:K.MAR;}}
+  if(z<3.5&&y>-2.4&&y<3.8){const ax_=Math.abs(x),xin=4.0+0.1*(y-0.6)**2;if(ax_>xin&&ax_<xin+1.15)return K.MUS;if(ax_>=xin+1.15)return ax_<xin+1.3?K.CORT:K.MAR;}
+  return K.FAT;}
+let IGNORE_ART=false;
+function tissue(x,y,z){const p=[x,y,z];
+  if(!IGNORE_ART)for(const a of G.ART){const d=a.seg&&SEQ==="t2"?segD(p,a.seg[0],a.seg[1]):dist(p,a.c),r=a.r[SEQ];if(d<r)return K.ART;if((SEQ==="dwi"||SEQ==="adc")&&d<r+0.09)return K.ARTR;}
+  const g=G.g,q=[x/g,y/g,z/g],dd=gd(q);if(dd.dG<0)return glandClass(q,dd);return outside(p);}
+// ---------- truth ----------
+function computeTruth(){let n=0,tr=0;for(let z=G.Zbot;z<=G.Ztop+0.001;z+=0.1)for(let y=G.YaM-0.1;y<=G.YpM+0.1;y+=0.1)for(let x=-5;x<=5;x+=0.1){const q=[x/G.g,y/G.g,z/G.g];if(gd(q).dG<0){tr=Math.max(tr,Math.abs(x));if(!cavAt(q))n++;}}
+  let ap=0;for(let i=0;i<NZT;i++){const a=G.T.yant[i],p=G.T.ypost[i];if(!isNaN(a))ap=Math.max(ap,p-a+0.05);}
+  G.TRUE={TR:2*tr+0.1,AP:ap,CC:G.Ztop-G.Zbot+0.1,MUL:G.Zbot-G.bulbTop,vol:n*0.001};G.TRUE.ell=G.TRUE.TR*G.TRUE.AP*G.TRUE.CC*0.52;
+  // PZ thickness at the TZ centre level, posterior midline
+  const zc=G.L[0].c[2]*G.g,iz=zi(zc);let yTZ=NaN;for(let y=0;y<4.5;y+=0.02){const q=[0,y/G.g,zc/G.g];if(gd(q).dT<0)yTZ=y;}
+  const yp=G.T.ypost[iz];G.pzThick=isNaN(yTZ)?(yp-0.2):Math.max(0,yp-yTZ);}
+// ---------- render ----------
+const CACHE=new Map();
+function boxBlur(a,w,h,r){const t=new Float32Array(a.length),o=new Float32Array(a.length);for(let j=0;j<h;j++){let s=0,c=0;for(let i=-r;i<w;i++){if(i+r<w){s+=a[j*w+i+r];c++;}if(i-r-1>=0){s-=a[j*w+i-r-1];c--;}if(i>=0)t[j*w+i]=s/c;}}
+  for(let i=0;i<w;i++){let s=0,c=0;for(let j=-r;j<h;j++){if(j+r<h){s+=t[(j+r)*w+i];c++;}if(j-r-1>=0){s-=t[(j-r-1)*w+i];c--;}if(j>=0)o[j*w+i]=s/c;}}return o;}
+const NZ=(()=>{const r=mul(5),n=240*240,a=new Float32Array(n),b=new Float32Array(n);for(let i=0;i<n;i++){a[i]=r()-0.5;b[i]=r()-0.5;}const f=boxBlur(a,240,240,1),c=boxBlur(boxBlur(b,240,240,3),240,240,2);const nz=v=>{let m=0,s=0;for(const x of v)m+=x;m/=v.length;for(const x of v)s+=(x-m)**2;s=Math.sqrt(s/v.length)||1;return v.map(x=>(x-m)/s);};return {f:nz(f),c:nz(c)};})();
+const W=240,H=240;let RES=0.05,X0=-6,Y0=-5.2,Z0=6.5;
+let FOV=10;function setFOV(){const T=G.TRUE;FOV=clamp(Math.max(T.TR,T.CC+1.2)+4.4,8,13);RES=FOV/240;X0=-FOV/2;}
+function gcA(){return [0,(G.YaM+G.YpM)/2+0.35,(G.Zbot+G.Ztop)/2];}
+function PL(kind){const gc=toBody(gcA()),a=AOB*DEG,b=COB*DEG;
+  if(kind==="ax"){const n=[0,Math.sin(a),Math.cos(a)],e2=[0,Math.cos(a),-Math.sin(a)];return {n,c:n.map(v=>v*ZA),e1:[1,0,0],e2,u0:X0,v0:dot(gc,e2)-FOV/2+0.4,down:true};}
+  if(kind==="co"){const n=[0,Math.cos(b),-Math.sin(b)],e2=[0,Math.sin(b),Math.cos(b)];return {n,c:n.map(v=>v*YC),e1:[1,0,0],e2,u0:X0,v0:dot(gc,e2)+0.58*FOV,down:false};}
+  return {n:[1,0,0],c:[XS,0,0],e1:[0,1,0],e2:[0,0,1],u0:gc[1]-FOV/2+0.4,v0:gc[2]+0.55*FOV,down:false};}
+function coord(kind,i,j,P){P=P||PL(kind);const u=P.u0+(i+0.5)*RES,v=P.down?P.v0+(j+0.5)*RES:P.v0-(j+0.5)*RES;return [P.c[0]+u*P.e1[0]+v*P.e2[0],P.c[1]+u*P.e1[1]+v*P.e2[1],P.c[2]+u*P.e1[2]+v*P.e2[2]];}
+function crossPoint(){const a=AOB*DEG,b=COB*DEG,s1=Math.sin(a),c1=Math.cos(a),s2=Math.cos(b),c2=-Math.sin(b),det=s1*c2-c1*s2;return [XS,(ZA*c2-c1*YC)/det,(s1*YC-s2*ZA)/det];}
+function planesThrough(pb){ZA=dot(pb,PL("ax").n);YC=dot(pb,PL("co").n);XS=pb[0];}
+function renderView(kind){const key=kind+"|"+JSON.stringify(C)+SEQ+TILT+"|"+(kind==="ax"?ZA+"/"+AOB:kind==="sa"?XS:YC+"/"+COB);if(CACHE.has(key))return CACHE.get(key);
+  const cls=new Uint8Array(W*H),lev=new Uint8Array(W*H),P=PL(kind),h3=(G.Ztop-G.Zbot)/3;for(let j=0;j<H;j++)for(let i=0;i<W;i++){const q=toAnat(coord(kind,i,j,P));cls[j*W+i]=tissue(q[0],q[1],q[2]);lev[j*W+i]=q[2]<G.Zbot+h3?1:q[2]<G.Zbot+2*h3?2:3;}
+  const I0=INT[SEQ],img=new Float32Array(W*H),ebrt=C.tx==="ebrt",pzr=I0[K.PZR];
+  for(let k=0;k<cls.length;k++){const t=cls[k];let v=I0[t];if(ebrt&&GLANDSET.has(t))v=0.3*v+0.7*pzr;if(t===K.TZNG&&SEQ==="t2"&&NZ.c[k]>1.0)v=Math.min(1,v+0.15);img[k]=v*(1+TEX[t]*(0.55*NZ.f[k]+0.45*NZ.c[k]));}
+  let a=boxBlur(img,W,H,1);if(SEQ==="dwi"||SEQ==="adc")a=boxBlur(boxBlur(a,W,H,2),W,H,1);if(SEQ==="dce1"||SEQ==="dce2")a=boxBlur(a,W,H,1);
+  const r=mul(13+(kind==="ax"?1:kind==="sa"?2:3)),sg={t2:.022,adc:.03,dwi:.035,dce1:.025,dce2:.025,t1:.022}[SEQ];
+  for(let k=0;k<a.length;k++){const n1=(r()+r()+r()-1.5)*sg,n2=(r()+r()+r()-1.5)*sg;a[k]=Math.hypot(a[k]+n1,n2);}
+  const imd=new ImageData(W,H);for(let k=0;k<a.length;k++){const gv=clamp(a[k],0,1)**0.9*255;imd.data[k*4]=imd.data[k*4+1]=imd.data[k*4+2]=gv;imd.data[k*4+3]=255;}
+  const out={imd,cls,lev};if(CACHE.size>60)CACHE.clear();CACHE.set(key,out);return out;}
+// zones & labels
+const ZG=[["PZ","Peripheral zone",[K.PZ,K.PZH,K.PZI,K.PZR,K.ECT,K.CAPS],[224,111,150]],["TZ","Transition zone",[K.TZ,K.TZNS,K.TZNG,K.NCAP],[79,182,204]],["CZ","Central zone",[K.CZ,K.ED],[232,178,58]],["AFMS","Ant. fibromuscular stroma",[K.AFMS],[150,120,220]],
+  ["URE","Urethra",[K.URE,K.PUR],[235,235,235]],["CAV","Cavity",[K.CAV],[60,120,240]],["SV","Seminal vesicle",[K.SV,K.SVW,K.SVR,K.VAS],[108,192,141]],["NVB","NVB",[K.NVB],[240,120,60]],["VEN","Venous plexus",[K.VEN],[100,150,255]],
+  ["BLAD","Bladder",[K.URINE,K.BWALL],null],["REC","Rectum",[K.RMUC,K.RMUS,K.RGAS],null],["LEV","Levator ani",[K.LEV],null],["SPH","Ext. sphincter",[K.SPH],null],["BULB","Penile bulb",[K.BULB],null],["PUB","Bone",[K.MAR,K.SYM],null]];
+const CLS2Z={};ZG.forEach(z=>z[2].forEach(c=>CLS2Z[c]=z[0]));
+const VIEWS={ax:{c:$("cAx"),z:$("zAxO"),o:$("oAx")},sa:{c:$("cSa"),z:$("zSaO"),o:$("oSa")},co:{c:$("cCo"),z:$("zCoO"),o:$("oCo")}};
+const SC=3;
+function toPx(kind,p){const P=PL(kind),d=[p[0]-P.c[0],p[1]-P.c[1],p[2]-P.c[2]],u=dot(d,P.e1),v=dot(d,P.e2);return [(u-P.u0)/RES*SC,(P.down?v-P.v0:P.v0-v)/RES*SC];}
+const INGL=new Set(["PZ","TZ","CZ","AFMS","URE","CAV"]);
+function txt(cx,s,x,y,col,al){cx.font="600 24px system-ui, sans-serif";cx.textAlign=al||"left";cx.lineWidth=5;cx.strokeStyle="rgba(0,0,0,.85)";cx.strokeText(s,x,y);cx.fillStyle=col;cx.fillText(s,x,y);}
+const RENDERS={};
+function draw(){for(const k in VIEWS){const V=VIEWS[k],R=renderView(k);RENDERS[k]=R;V.c.getContext("2d").putImageData(R.imd,0,0);drawZones(k);}overlays();}
+function drawZones(k){const V=VIEWS[k],cx=V.z.getContext("2d");cx.clearRect(0,0,W,H);if(!$("oZone").checked)return;const R=RENDERS[k],imd=cx.createImageData(W,H);
+  for(let i=0;i<R.cls.length;i++){const z=CLS2Z[R.cls[i]];if(!z)continue;const col=ZG.find(g=>g[0]===z)[3];if(!col)continue;imd.data[i*4]=col[0];imd.data[i*4+1]=col[1];imd.data[i*4+2]=col[2];imd.data[i*4+3]=100;}cx.putImageData(imd,0,0);}
+function levelName(z){const zb=G.Zbot,zt=G.Ztop,h=(zt-zb)/3;if(z<zb-0.05)return "below apex";if(z>zt+0.05)return "above base";return z<zb+h?"apex":z<zb+2*h?"mid-gland":"base";}
+function overlays(){const Y="#F2C14E",CY="#5ED3E6",PK="#F08AAE";for(const k in VIEWS){const o=VIEWS[k].o,cx=o.getContext("2d");cx.clearRect(0,0,o.width,o.height);}
+  const ax=VIEWS.ax.o.getContext("2d"),sa=VIEWS.sa.o.getContext("2d"),co=VIEWS.co.o.getContext("2d");
+  txt(ax,"R",14,40,"#cfd8de");txt(ax,"L",VIEWS.ax.o.width-14,40,"#cfd8de","right");txt(ax,"Anterior",360,30,"#cfd8de","center");
+  txt(sa,"Ant",14,40,"#cfd8de");txt(sa,"Post",VIEWS.sa.o.width-14,40,"#cfd8de","right");txt(co,"R",14,40,"#cfd8de");txt(co,"L",VIEWS.co.o.width-14,40,"#cfd8de","right");
+  const line=(k,a,b,col,dash,wd)=>{const cx=VIEWS[k].o.getContext("2d"),A=toPx(k,a),B=toPx(k,b);cx.strokeStyle=col;cx.lineWidth=wd||1.6;cx.setLineDash(dash||[]);cx.beginPath();cx.moveTo(A[0],A[1]);cx.lineTo(B[0],B[1]);cx.stroke();cx.setLineDash([]);};
+  const pline=(k,o,col,dash,wd,lab)=>{const V=PL(k),B=PL(o),A1=dot(B.n,V.e1),B1=dot(B.n,V.e2),Cc=dot(B.n,[V.c[0]-B.c[0],V.c[1]-B.c[1],V.c[2]-B.c[2]]),pts=[];const U=[V.u0,V.u0+FOV],Vv=V.down?[V.v0,V.v0+FOV]:[V.v0-FOV,V.v0];
+    if(Math.abs(B1)>Math.abs(A1)){for(const u of U)pts.push([u,-(A1*u+Cc)/B1]);}else{for(const v of Vv)pts.push([-(B1*v+Cc)/A1,v]);}
+    const pp=pts.map(([u,v])=>[V.c[0]+u*V.e1[0]+v*V.e2[0],V.c[1]+u*V.e1[1]+v*V.e2[1],V.c[2]+u*V.e1[2]+v*V.e2[2]]);line(k,pp[0],pp[1],col,dash,wd);
+    if(lab){const cx=VIEWS[k].o.getContext("2d"),A=toPx(k,pp[0]),Bp=toPx(k,pp[1]),L=A[0]<Bp[0]?A:Bp,R2=A[0]<Bp[0]?Bp:A,t=0.08,x=L[0]+(R2[0]-L[0])*t,y=L[1]+(R2[1]-L[1])*t;txt(cx,lab,Math.max(10,x),y-10,col);}};
+  if($("oX").checked){pline("ax","co",CY,[5,5]);pline("ax","sa",PK,[5,5]);pline("sa","ax",Y,[],2.2,AOB<0.5?"Straight axial":Math.abs(AOB-TILT)<1?"Oblique axial (⟂ gland)":`Axial ${AOB.toFixed(0)}°`);pline("sa","co",CY,[5,5]);pline("co","ax",Y,[5,5]);pline("co","sa",PK,[5,5]);}
+  if($("oLev").checked)for(const k in VIEWS){const R0=RENDERS[k],cx=VIEWS[k].o.getContext("2d"),code=new Uint8Array(W*H);for(let i=0;i<code.length;i++)code[i]=INGL.has(CLS2Z[R0.cls[i]])?R0.lev[i]:0;
+    cx.fillStyle="rgba(255,255,255,.85)";const sx=[0,0,0,0],sy=[0,0,0,0],n=[0,0,0,0];
+    for(let j=1;j<H-1;j++)for(let i=1;i<W-1;i++){const c=code[j*W+i];if(!c)continue;sx[c]+=i;sy[c]+=j;n[c]++;const r=code[j*W+i+1],d=code[(j+1)*W+i];if((r&&r!==c)||(d&&d!==c))cx.fillRect(i*SC,j*SC,SC,SC);}
+    const names=[null,"Apex","Mid","Base"],present=[1,2,3].filter(c=>n[c]>25);if(present.length>1||k==="ax")for(const c of present){const X=sx[c]/n[c]*SC,Yp=sy[c]/n[c]*SC;txt(cx,names[c],X,Yp+8,"#FFE9A8","center");}}
+  if($("oLab").checked)for(const k in VIEWS)labels(k);
+  // measurements
+  for(const t in M){const P=M[t];if(!P.length)continue;const k=t==="TR"?"ax":"sa",cx=VIEWS[k].o.getContext("2d");P.forEach(p=>{const A=toPx(k,p);cx.fillStyle="#7BE38C";cx.beginPath();cx.arc(A[0],A[1],6,0,TAU);cx.fill();});
+    if(P.length===2){line(k,P[0],P[1],"#7BE38C",[],2.5);const A=toPx(k,P[1]);txt(cx,`${t} ${dist(P[0],P[1]).toFixed(1)}`,A[0]+10,A[1]-8,"#7BE38C");}}
+  // inspection marker
+  if(INSP){for(const k in VIEWS){const A=toPx(k,toBody(INSP)),cx=VIEWS[k].o.getContext("2d");cx.strokeStyle="#FFE066";cx.lineWidth=3;cx.beginPath();cx.arc(A[0],A[1],13,0,TAU);cx.stroke();cx.beginPath();cx.moveTo(A[0]-22,A[1]);cx.lineTo(A[0]-15,A[1]);cx.moveTo(A[0]+15,A[1]);cx.lineTo(A[0]+22,A[1]);cx.stroke();}}
+  {const cp=toAnat(crossPoint());$("zAxL").textContent=`${ZA.toFixed(1)} cm · ${AOB<0.5?"straight":Math.abs(AOB-TILT)<1?"⟂ gland":AOB.toFixed(0)+"°"} · ${levelName(cp[2])}`;}}
+function labels(k){const R=RENDERS[k],cx=VIEWS[k].o.getContext("2d"),boxes=[];for(const [key,name,set] of ZG){let sx=0,sy=0,n=0;const S=new Set(set);for(let i=0;i<R.cls.length;i++)if(S.has(R.cls[i])){sx+=i%W;sy+=(i/W)|0;n++;}if(n<30)continue;sx/=n;sy/=n;
+  let best=1e9,bi=0,bj=0;for(let i=0;i<R.cls.length;i++)if(S.has(R.cls[i])){const x=i%W,y=(i/W)|0,d=(x-sx)**2+(y-sy)**2;if(d<best){best=d;bi=x;bj=y;}}
+  const X=bi*SC+1.5,Yp=bj*SC+1.5,right=X>VIEWS[k].o.width*0.6;cx.font="600 24px system-ui, sans-serif";const w=cx.measureText(name).width;let ty=Yp-7;const bx=()=>right?[X-9-w,X-9]:[X+9,X+9+w];
+  for(let tries=0;tries<12;tries++){const [a,b]=bx();if(!boxes.some(B=>a<B[1]&&b>B[0]&&ty-22<B[3]&&ty>B[2]))break;ty+=(tries%2?-1:1)*26*(tries+1);}
+  const [a,b]=bx();boxes.push([a,b,ty-22,ty]);cx.fillStyle="#fff";cx.beginPath();cx.arc(X,Yp,4.5,0,TAU);cx.fill();if(Math.abs(ty-(Yp-7))>2){cx.strokeStyle="rgba(255,255,255,.6)";cx.lineWidth=1.5;cx.beginPath();cx.moveTo(X,Yp);cx.lineTo(right?b:a,ty-8);cx.stroke();}txt(cx,name,right?X-9:X+9,ty,"#fff",right?"right":"left");}}
+// ---------- inspector and sectors ----------
+const DESC={PZ:"Peripheral zone: bright on T2, high ADC, low on high-b DWI, gradual mild enhancement.",TZ:"Transition zone (BPH tissue): heterogeneous. Stromal nodules are dark on T2 and lower on ADC, glandular nodules bright; nodules are encapsulated.",CZ:"Central zone: symmetric, dark on T2, lower ADC, no early enhancement. Cone around the ejaculatory ducts at the posterior base; a classic mimic.",AFMS:"Anterior fibromuscular stroma: non-glandular, dark on T2 and ADC, low late enhancement, symmetric crescent.",URE:"Prostatic urethra with periurethral smooth muscle.",CAV:"Post-procedural cavity filled with urine, continuous with the bladder.",SV:"Seminal vesicle / vas: fluid bright on T2 with thin dark walls.",NVB:"Neurovascular bundle: posterolateral, about 5 and 7 o'clock; enhances avidly.",VEN:"Periprostatic venous plexus: bright on T2, enhances.",BLAD:"Bladder.",REC:"Rectum: dark muscularis, intermediate mucosa, gas centrally.",LEV:"Levator ani.",SPH:"External (rhabdo)sphincter around the membranous urethra.",BULB:"Penile bulb: bright on T2.",PUB:"Bone (pubis, symphysis or ischium)."};
+function sectorAt(p,cls){const z=CLS2Z[cls],side=p[0]<0?"right":"left",lv=levelName(p[2]),L={apex:"Apex","mid-gland":"Mid",base:"Base"}[lv];const q=p.map(v=>v/G.g),rel=q[1]-yU(q[2]);
+  if(z==="SV")return `SV (${side})`;if((cls===K.SPH||cls===K.URE)&&p[2]<G.Zbot)return "US (membranous urethra)";if(!L)return null;
+  if(z==="PZ"){if(rel<-0.1)return `${L} PZa (${side})`;const ang=Math.atan2(Math.abs(q[0]),rel)*180/Math.PI;return `${L} ${ang<40?"PZpm":"PZpl"} (${side})`;}
+  if(z==="TZ")return cls===K.NCAP&&!(gd(q).dT<0)?`${L} TZ/PZ boundary (pseudocapsule)`:`${L} ${rel<0?"TZa":"TZp"} (${side})`;
+  if(z==="AFMS")return `${L} AS (${side})`;if(z==="CZ")return lv==="base"?`Base CZ (${side})`:`${L} PZpm (${side})`;
+  if(z==="URE")return "prostatic urethra (no sector)";if(z==="CAV")return "post-procedural cavity (no sector)";return null;}
+function inspect(p){INSP=p;IGNORE_ART=true;const cls=tissue(...p);IGNORE_ART=false;const art=tissue(...p)===K.ART||tissue(...p)===K.ARTR;const z=CLS2Z[cls],sec=sectorAt(p,cls);
+  let h=`<b>${z?ZG.find(g=>g[0]===z)[1]:"Periprostatic fat / other"}</b>${sec?` · PI-RADS sector: <b>${sec}</b>`:""}<br>${DESC[z]||"Outside the gland."}`;
+  if(cls===K.PZH)h+=" <i>Post-biopsy hemorrhage: low on T2, bright on T1.</i>";if(cls===K.PZI)h+=" <i>Prostatitis: band-like low T2, mild ADC drop.</i>";if(cls===K.ECT)h+=" <i>Ectopic BPH nodule: encapsulated, round, in the PZ.</i>";if(cls===K.NCAP&&z==="TZ")h+=" <i>Dark capsule of a BPH nodule or the surgical pseudocapsule.</i>";if(cls===K.CAPS)h+=" <i>At the capsule.</i>";
+  if(C.tx==="ebrt"&&GLANDSET.has(cls))h+=" <i>After radiation: diffusely low T2, zonal contrast lost.</i>";if(art)h+=` <i>This point is inside a susceptibility artifact on ${SEQ.toUpperCase()}.</i>`;
+  $("insp").innerHTML=h;}
+// ---------- measurements ----------
+const M={TR:[],AP:[],CC:[],MUL:[]};let MT=null;
+function measTable(){const d=t=>M[t].length===2?dist(M[t][0],M[t][1]):null,T=G.TRUE,rev=$("mreveal").checked,psa=+$("psa").value||0,f=v=>v==null?"–":v.toFixed(1);
+  const mine={TR:d("TR"),AP:d("AP"),CC:d("CC"),MUL:d("MUL")},ell=mine.TR&&mine.AP&&mine.CC?mine.TR*mine.AP*mine.CC*0.52:null;
+  let h=`<table><thead><tr><th></th><th>Yours</th>${rev?"<th>True</th>":""}</tr></thead><tbody>`;
+  for(const t of ["TR","AP","CC"])h+=`<tr><td>${t} (cm)</td><td>${f(mine[t])}</td>${rev?`<td>${f(T[t])}</td>`:""}</tr>`;
+  h+=`<tr><td>Volume, ellipsoid (mL)</td><td><b>${ell?ell.toFixed(0):"–"}</b></td>${rev?`<td>${T.ell.toFixed(0)}</td>`:""}</tr>`;
+  if(rev)h+=`<tr><td>True tissue volume (mL)</td><td></td><td>${T.vol.toFixed(0)}</td></tr>`;
+  h+=`<tr><td>PSA density (ng/mL²)</td><td><b>${ell&&psa?(psa/ell).toFixed(2):"–"}</b></td>${rev?`<td>${psa?(psa/T.ell).toFixed(2):"–"}</td>`:""}</tr>`;
+  h+=`<tr><td>Membranous urethral length (cm)</td><td>${f(mine.MUL)}</td>${rev?`<td>${f(T.MUL)}</td>`:""}</tr></tbody></table>`;$("mtab").innerHTML=h;}
+$$("#mtool button").forEach(b=>b.onclick=()=>{MT=MT===b.dataset.v?null:b.dataset.v;if(MT)M[MT]=[];syncMT();overlays();measTable();});
+function syncMT(){$$("#mtool button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===MT));$("mhint").textContent=MT?`Click the two ends of ${MT} on the ${MT==="TR"?"axial":"sagittal"} view.${MT==="TR"?" Use the widest axial level.":MT==="MUL"?" From the prostatic apex to where the urethra enters the penile bulb.":" Use the midsagittal image."}`:"Pick a measurement, then click its two ends on the matching view.";}
+$("mclear").onclick=()=>{for(const t in M)M[t]=[];MT=null;syncMT();overlays();measTable();};$("mreveal").onchange=measTable;$("psa").addEventListener("input",measTable);
+// ---------- UI ----------
+function note(h){$("note").innerHTML=h;}
+function sync(){$("bph").value=C.bph;$("bpho").textContent=C.bph<0.05?"none":C.bph<0.4?"mild":C.bph<0.65?"moderate":C.bph<0.9?"marked":"severe";["median","ectopic","fid","hem","pros"].forEach(k=>$(k).checked=!!C[k]);
+  $$("#tx button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===C.tx));$$("#seq button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===SEQ));
+  $("zAx").value=ZA;$("xSa").value=XS;$("xSaL").textContent=XS<0?`${(-XS).toFixed(1)} R`:`${XS.toFixed(1)} L`;$("yCo").value=YC;$("yCoL").textContent=(YC<0?`${(-YC).toFixed(1)} ant`:`${YC.toFixed(1)} post`)+` · ${COB<0.5?"straight":Math.abs(COB-TILT)<1?"∥ gland":COB.toFixed(0)+"°"}`;
+  $("tilt").value=TILT;$("tilto").textContent=TILT+"°";$("aob").value=AOB;$("aobo").textContent=AOB.toFixed(0)+"°";$("cob").value=COB;$("cobo").textContent=COB.toFixed(0)+"°";}
+function changed(msg){rebuild();clampPlanes();sync();draw();measTable();if(INSP)inspect(INSP);if(msg)note(msg);}
+function clampPlanes(){ZA=clamp(ZA,-6,7);}
+function setAngles(a,b,msg){const cp=crossPoint();if(a!=null)AOB=a;if(b!=null)COB=b;planesThrough(cp);sync();draw();if(msg)note(msg);}
+$("tilt").addEventListener("input",e=>{const cpA=toAnat(crossPoint());TILT=+e.target.value;if(AXLOCK)AOB=TILT;if(COLOCK)COB=TILT;rebuild();planesThrough(toBody(cpA));sync();draw();});
+$("aob").addEventListener("input",e=>{AXLOCK=Math.abs(+e.target.value-TILT)<0.5;setAngles(+e.target.value,null);});
+$("cob").addEventListener("input",e=>{COLOCK=Math.abs(+e.target.value-TILT)<0.5;setAngles(null,+e.target.value);});
+$("axStraight").onclick=()=>{AXLOCK=false;setAngles(0,null,"<b>Straight axial</b>: perpendicular to the scanner's long axis. Because the prostate is tilted, one slice cuts the apex anteriorly and the base posteriorly; watch the Apex / Mid / Base bands on the axial image and the yellow plane on the sagittal.");};
+$("axObl").onclick=()=>{AXLOCK=true;setAngles(TILT,null,"<b>Oblique axial</b>: perpendicular to the long axis of the gland (prescribed on the sagittal image). Each slice samples one level, so zones and sectors are read consistently.");};
+$("coStraight").onclick=()=>{COLOCK=false;setAngles(null,0,"<b>Straight coronal</b>: parallel to the scanner's long axis; it cuts through the tilted gland obliquely.");};
+$("coObl").onclick=()=>{COLOCK=true;setAngles(null,TILT,"<b>Oblique coronal</b>: parallel to the long axis of the gland, showing base to apex in one image.");};
+function goLevel(l){const h=(G.Ztop-G.Zbot)/3,z=l==="base"?G.Zbot+2.5*h:l==="mid"?G.Zbot+1.5*h:l==="apex"?G.Zbot+0.5*h:G.BN[2]*G.g+0.7;const pa=[0,l==="sv"?G.YpM*0.72+0.35:G.g*yU(clamp(z/G.g,G.A0[2],G.BN[2])),z];ZA=dot(toBody(pa),PL("ax").n);sync();draw();}
+$$("#lvl button").forEach(b=>b.onclick=()=>goLevel(b.dataset.v));
+$("bph").addEventListener("input",e=>{C.bph=+e.target.value;changed(C.bph>=0.9?"<b>Severe BPH</b>: the transition zone fills the gland and the peripheral zone is effaced to a thin rim against the pseudocapsule.":C.bph>=0.65?"<b>Marked BPH</b>: the peripheral zone is a thin posterior band.":"");});
+["median","ectopic","fid","hem","pros"].forEach(k=>$(k).addEventListener("change",e=>{C[k]=e.target.checked;changed({median:"Median lobe: transition-zone tissue protruding into the bladder base (intravesical prostatic protrusion).",ectopic:"Ectopic BPH nodule: an encapsulated, round, often T2-dark nodule in the peripheral zone; a known mimic of cancer.",fid:"Gold fiducials: small voids on T2, larger blooming on T1, DCE and especially DWI.",hem:"Post-biopsy hemorrhage in the right PZ: compare T2 (low) with T1 (bright).",pros:"Prostatitis in the left PZ: band-like, mildly low T2 and ADC, no mass."}[k]&&C[k]?{median:"Median lobe: transition-zone tissue protruding into the bladder base (intravesical prostatic protrusion).",ectopic:"Ectopic BPH nodule: an encapsulated, round, often T2-dark nodule in the peripheral zone; a known mimic of cancer.",fid:"Gold fiducials: small voids on T2, larger blooming on T1, DCE and especially DWI.",hem:"Post-biopsy hemorrhage in the right PZ: compare T2 (low) with T1 (bright).",pros:"Prostatitis in the left PZ: band-like, mildly low T2 and ADC, no mass."}[k]:"");}));
+$$("#tx button").forEach(b=>b.onclick=()=>{C.tx=b.dataset.v;changed({none:"",turp:"<b>TURP</b>: funnel-shaped urine-filled defect of the proximal urethra, widest at the bladder neck; residual TZ laterally.",holep:"<b>HoLEP</b>: the adenoma is enucleated to the surgical capsule; a large fossa surrounded by a thin rim of compressed PZ.",urolift:"<b>UroLift</b>: the stainless-steel urethral end pieces bloom in the posterior TZ, about 8 mm on T2, 10 mm on DCE and nearly 3 cm on DWI.",ebrt:"<b>After radiation</b>: smaller gland, diffusely low T2, lost zonal contrast, lower ADC and enhancement, atrophic seminal vesicles, thicker rectal wall."}[C.tx]);});
+$$("#seq button").forEach(b=>b.onclick=()=>{SEQ=b.dataset.v;seqSeen.add(SEQ);sync();draw();if(INSP)inspect(INSP);note({t2:"<b>T2</b>: the anatomy sequence. Bright PZ, heterogeneous TZ, dark CZ and AFMS, dark capsule, bright SV fluid and periprostatic veins.",adc:"<b>ADC map</b>: PZ high, TZ intermediate, CZ and AFMS lower, urine and SV fluid highest. Lower resolution than T2.",dwi:"<b>High-b DWI</b>: normal gland mostly dark; CZ and stromal nodules mildly brighter. Metal blooms most on this echo-planar sequence.",dce1:"<b>DCE early</b>: TZ nodules and NVBs enhance early; normal PZ, CZ and AFMS are relatively low.",dce2:"<b>DCE late</b>: the gland equalizes; enhancement is gradual in the PZ.",t1:"<b>T1</b>: little zonal contrast; useful for hemorrhage (bright) and periprostatic fat, nodes and bones."}[SEQ]);});
+$("zAx").addEventListener("input",e=>{ZA=+e.target.value;draw();});$("xSa").addEventListener("input",e=>{XS=+e.target.value;sync();draw();});$("yCo").addEventListener("input",e=>{YC=+e.target.value;sync();draw();});
+["oZone","oLab","oLev","oX"].forEach(id=>$(id).addEventListener("change",()=>{for(const k in VIEWS)drawZones(k);overlays();}));
+function clickView(kind,ev){const V=VIEWS[kind],r=V.c.getBoundingClientRect(),i=(ev.clientX-r.left)/r.width*W-0.5,j=(ev.clientY-r.top)/r.height*H-0.5,p=coord(kind,i,j);
+  if(MT&&((MT==="TR")===(kind==="ax"))){M[MT].push(p);if(M[MT].length>=2){MT=null;syncMT();}overlays();measTable();return;}
+  const ax=PL("ax").n,co=PL("co").n;if(kind!=="ax")ZA=dot(p,ax);if(kind!=="co")YC=dot(p,co);if(kind!=="sa")XS=p[0];
+  inspect(toAnat(p));sync();draw();}
+for(const k in VIEWS)VIEWS[k].c.addEventListener("click",e=>clickView(k,e));
+$("preset").innerHTML=Object.entries(PRESETS).map(([k,p])=>`<option value="${k}">${p.n}</option>`).join("");$("preset").onchange=e=>loadPreset(e.target.value);
+function loadPreset(k){const p=PRESETS[k];C=Object.assign({},DEF,p.s);$("preset").value=k;INSP=null;$("insp").innerHTML='<span style="color:#9fb0bb">Click any view.</span>';for(const t in M)M[t]=[];rebuild();planesThrough(toBody(gcA()));XS=0;changed(`<b>${p.n}</b> loaded.`);}
+// ---------- drills ----------
+let drillActive=null,choice=null;const done=new Set();
+function setPoint(q){const pp=q.map(v=>v*G.g);planesThrough(toBody(pp));inspect(pp);$("insp").innerHTML='<span style="color:#9fb0bb">Marked point (yellow circle). Answer the drill first; click elsewhere to inspect freely.</span>';sync();draw();return pp;}
+function truthZone(){IGNORE_ART=true;const c=tissue(...INSP);IGNORE_ART=false;return c;}
+const ZNAME={PZ:"Peripheral zone",TZ:"Transition zone",CZ:"Central zone",AFMS:"Anterior fibromuscular stroma"};
+let DPT=null;
+const DR=[
+ {id:"cz",t:"Name the zone at the base",s:"central zone",setup:()=>{loadPreset("normal");let best=null;IGNORE_ART=true;for(const tt of [0.75,0.7,0.8,0.65,0.85])for(const dy of [0.15,0.25,0.35,0.05])for(const dx of [0.35,0.4,0.3]){if(best)break;const a=lerp(G.CZa,G.CZb,tt),q=[dx,a[1]+dy,a[2]];if(tissue(...q.map(v=>v*G.g))===K.CZ)best=q;}IGNORE_ART=false;DPT=setPoint(best||lerp(G.CZa,G.CZb,0.75));},choices:["Peripheral zone","Central zone","Transition zone","Anterior fibromuscular stroma"],task:"A point is marked at the posterior base. Which zone is it in?",
+  check:()=>{const z=ZNAME[CLS2Z[truthZone()]];return choice===z?[1,`${z}: the cone of dense stroma around the ejaculatory ducts at the posterior base; symmetric and dark on T2.`]:[0,"Look at the ejaculatory ducts on the sagittal view and the symmetric dark tissue around them."];}},
+ {id:"sector",t:"Name the PI-RADS sector",s:"v2.1 sector map",setup:()=>{loadPreset("normal");DPT=setPoint([1.25,0.7,-0.2]);},choices:null,task:"Name the PI-RADS v2.1 sector of the marked point.",
+  gen:()=>{IGNORE_ART=true;const c=tissue(...INSP);IGNORE_ART=false;const t=sectorAt(INSP,c);const alt=[t,t.replace("left","right"),t.includes("PZpl")?t.replace("PZpl","PZpm"):t.replace("PZpm","PZpl"),t.replace("Mid","Apex")];return [...new Set(alt)].sort();},
+  check:()=>{IGNORE_ART=true;const c=tissue(...INSP);IGNORE_ART=false;const t=sectorAt(INSP,c);return choice===t?[1,`${t}: patient left is image right; posterolateral PZ lies lateral to the posteromedial sector.`]:[0,"Check the level (thirds of the gland), the side (patient left is image right) and medial versus lateral posterior PZ."];}},
+ {id:"vol",t:"Measure the gland",s:"volume and PSA density",setup:()=>{loadPreset("moderate");$("psa").value=7.5;$("mreveal").checked=false;measTable();},choices:["PSAD < 0.15","PSAD ≥ 0.15"],task:"Measure TR (widest axial level), AP and CC (midsagittal) with the tools on the right. PSA is 7.5 ng/mL. Then choose the PSA density category.",
+  check:()=>{const T=G.TRUE,bad=["TR","AP","CC"].filter(t=>M[t].length<2||Math.abs(dist(M[t][0],M[t][1])-T[t])/T[t]>0.12);if(bad.length)return [0,`Re-measure ${bad.join(", ")} (within about 12% of the true value).`];const v=["TR","AP","CC"].map(t=>dist(M[t][0],M[t][1])).reduce((a,b)=>a*b)*0.52,ps=7.5/v,ans=ps<0.15?"PSAD < 0.15":"PSAD ≥ 0.15";return choice===ans?[1,`Ellipsoid volume ${v.toFixed(0)} mL, PSA density ${ps.toFixed(2)}.`]:[0,`Your volume is ${v.toFixed(0)} mL; PSA / volume = ${ps.toFixed(2)}.`];}},
+ {id:"czmimic",t:"Dark at the base: tumor?",s:"central zone mimic",setup:()=>{loadPreset("normal");goLevel("base");seqSeen=new Set([SEQ]);},choices:["Normal central zone","Bilateral central-zone tumor"],task:"There is dark T2 tissue at the posterior base on both sides. Check ADC and early DCE, then decide.",
+  check:()=>seqSeen.has("adc")&&seqSeen.has("dce1")&&choice==="Normal central zone"?[1,"Symmetric, cone-shaped around the ejaculatory ducts, only mildly low ADC and no early enhancement: normal central zone."]:[0,!(seqSeen.has("adc")&&seqSeen.has("dce1"))?"Look at ADC and early DCE first.":"Reconsider: is it symmetric and centered on the ejaculatory ducts?"]},
+ {id:"afms",t:"Anterior dark band",s:"AFMS",setup:()=>{loadPreset("normal");DPT=setPoint([0,yU(-0.9)-0.75,-0.9]);},choices:["Anterior fibromuscular stroma","Anterior transition-zone tumor"],task:"A dark crescent lies anterior to the urethra at the apex-mid gland. What is it?",
+  check:()=>choice==="Anterior fibromuscular stroma"?[1,"Symmetric, crescentic, dark on T2 and ADC with low late enhancement: normal anterior fibromuscular stroma. Asymmetry or a lenticular mass would raise concern."]:[0,"Is it symmetric and in continuity with the anterior surface?"]},
+ {id:"effaced",t:"How much PZ is left?",s:"BPH",setup:()=>{loadPreset("severe");goLevel("mid");},choices:["Normal peripheral zone","Thinned peripheral zone","Effaced peripheral zone (thin rim)"],task:"Assess the posterior peripheral zone at mid-gland.",
+  check:()=>{const t=G.pzThick,ans=t>0.5?"Normal peripheral zone":t>0.2?"Thinned peripheral zone":"Effaced peripheral zone (thin rim)";return choice===ans?[1,`About ${(t*10).toFixed(0)} mm of PZ remains behind the transition zone: ${ans.toLowerCase()}.`]:[0,"Measure the posterior PZ between the dark pseudocapsule and the capsule."];}},
+ {id:"proc1",t:"Which procedure? (1)",s:"post-treatment",setup:()=>loadPreset("holep"),choices:["TURP","HoLEP","UroLift","EBRT"],task:"This patient had a procedure for BPH. Which one?",
+  check:()=>choice==="HoLEP"?[1,"A large fossa where the whole adenoma was, with a thin rim of compressed PZ: enucleation (HoLEP). TURP leaves a narrower funnel with lateral TZ remnants."]:[0,"How much transition zone remains?"]},
+ {id:"proc2",t:"Which procedure? (2)",s:"susceptibility",setup:()=>{loadPreset("urolift");seqSeen=new Set([SEQ]);},choices:["TURP","HoLEP","UroLift","Gold fiducials"],task:"Look at T2 and DWI. What explains the dark spots in the posterior transition zone?",
+  check:()=>seqSeen.has("dwi")&&choice==="UroLift"?[1,"Paired voids beside the urethra in the posterior TZ, small on T2 and huge on DWI: UroLift urethral end pieces. They can hide the adjacent TZ on DWI."]:[0,!seqSeen.has("dwi")?"Compare the DWI images first.":"Where are the spots and how much do they bloom?"]},
+ {id:"fid",t:"Dark dots after radiation",s:"fiducials",setup:()=>{loadPreset("ebrt");seqSeen=new Set([SEQ]);},choices:["Calcifications","Gold fiducials","UroLift implants"],task:"This gland was irradiated. Identify the dark foci in the peripheral zone, comparing at least two sequences.",
+  check:()=>seqSeen.size>=2&&choice==="Gold fiducials"?[1,"Small cylindrical voids in the PZ that bloom on DWI: gold fiducials for radiation targeting. Note the diffusely low T2 gland after radiation."]:[0,seqSeen.size<2?"Compare at least two sequences.":"Reconsider their location and blooming."]},
+ {id:"hem",t:"Low T2 in the right PZ",s:"hemorrhage",setup:()=>{loadPreset("hem");seqSeen=new Set([SEQ]);},choices:["Tumor","Post-biopsy hemorrhage","Prostatitis"],task:"There is patchy low T2 signal in the right peripheral zone after a recent biopsy. Decide after checking T1.",
+  check:()=>seqSeen.has("t1")&&choice==="Post-biopsy hemorrhage"?[1,"Bright on T1 with matching low T2: hemorrhage. Tumor tends to spare hemorrhage (exclusion sign); waiting about 6 weeks after biopsy reduces the problem."]:[0,!seqSeen.has("t1")?"Look at T1 first.":"Reconsider with the T1 signal."]},
+ {id:"straight",t:"One straight axial slice",s:"plane obliquity",setup:()=>{loadPreset("moderate");$("oLev").checked=true;setAngles(0,null);goLevel("mid");},choices:["The same level throughout","Apex anteriorly, base posteriorly","Base anteriorly, apex posteriorly"],task:"The axial plane is straight (perpendicular to the scanner axis). Which PI-RADS levels does this single mid-gland slice sample from front to back? Use the sagittal view and the level bands.",
+  check:()=>AOB<2&&choice==="Apex anteriorly, base posteriorly"?[1,"Because the gland's long axis runs from posterosuperior (base) to anteroinferior (apex), a straight axial slice catches apex anteriorly and base posteriorly; zones and sectors mix within one image."]:[0,AOB>=2?"Keep the axial plane straight for this question.":"Look at where the yellow axial line crosses the gland on the sagittal view."]},
+ {id:"oblique",t:"Prescribe the oblique axial",s:"planning",setup:()=>{loadPreset("normal");$("oLev").checked=true;setAngles(0,0);goLevel("mid");},choices:["Done"],task:"Using the axial obliquity slider (not the button), tilt the axial plane until it is perpendicular to the long axis of the gland on the sagittal view, so the whole axial slice falls into one level. Then press Done and Check.",
+  check:()=>Math.abs(AOB-TILT)<=4&&choice==="Done"?[1,`Axial plane at ${AOB.toFixed(0)}° for a gland tilted ${TILT}°: within ${Math.abs(AOB-TILT).toFixed(0)}° of perpendicular. Each slice now samples a single level.`]:[0,`Your plane is ${AOB.toFixed(0)}°; the gland axis is tilted about ${TILT}°. Align the yellow line on the sagittal view perpendicular to the urethra and posterior gland surface.`]},
+ {id:"nvb",t:"Where are the NVBs?",s:"clock face",setup:()=>{loadPreset("normal");goLevel("mid");},choices:["1 and 11 o'clock","3 and 9 o'clock","5 and 7 o'clock","12 o'clock"],task:"Find the neurovascular bundles on the axial image (turn on labels or zone colors if needed).",
+  check:()=>choice==="5 and 7 o'clock"?[1,"Posterolateral at about 5 and 7 o'clock: the route of extraprostatic extension and the nerves spared in surgery."]:[0,"They run posterolaterally between the capsule and the levator."]}];
+function mkDrills(){$("drills").innerHTML="";DR.forEach(d=>{const b=document.createElement("button");b.className="drill"+(done.has(d.id)?" done":"");b.innerHTML=`${d.t}<small>${d.s}${done.has(d.id)?" · solved":""}</small>`;b.setAttribute("aria-pressed",drillActive===d.id);b.onclick=()=>startDrill(d.id);$("drills").appendChild(b);});}
+function startDrill(id){const d=DR.find(x=>x.id===id);drillActive=id;choice=null;SEQ="t2";seqSeen=new Set(["t2"]);d.setup();sync();draw();const ch=d.gen?d.gen():d.choices,t=$("task");t.hidden=false;
+  t.innerHTML=`<b>${d.t}.</b> ${d.task}<div class="choices" id="chs">${ch.map(c=>`<button data-c="${c}">${c}</button>`).join("")}</div><div class="row" style="margin-top:8px"><button class="mini primary" id="chk">Check</button><button class="mini" id="ext2">Exit drill</button></div><div id="fb"></div>`;
+  $$("#chs button").forEach(b=>b.onclick=()=>{choice=b.dataset.c;$$("#chs button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+  $("chk").onclick=()=>{const [ok,msg]=d.check();$("fb").innerHTML=`<div class="fb ${ok?"ok":"no"}">${ok?"Correct. ":""}${msg}</div>`;if(ok){done.add(id);mkDrills();}};
+  $("ext2").onclick=()=>{drillActive=null;t.hidden=true;loadPreset("normal");mkDrills();};mkDrills();note(`<b>Drill:</b> ${d.task}`);$("note").scrollIntoView({behavior:"smooth",block:"start"});}
+// ---------- quiz ----------
+const QZ=[
+ {q:"Which zone contains most of the glandular tissue in a young man and gives rise to most cancers?",o:["Transition zone","Peripheral zone","Central zone","Anterior fibromuscular stroma"],a:1,e:"About 70% of glandular tissue and about 70% of cancers."},
+ {q:"BPH arises from:",o:["Peripheral zone","Central zone","Transition zone (and periurethral glands)","Seminal vesicles"],a:2,e:"The enlarging TZ compresses the PZ against the capsule."},
+ {q:"The central zone is best described as:",o:["Bright on T2 at the apex","A symmetric T2-dark cone around the ejaculatory ducts at the posterior base","Anterior non-glandular tissue","Part of the transition zone"],a:1,e:"A classic mimic of cancer; check symmetry and the ejaculatory ducts."},
+ {q:"PI-RADS v2.1 prostate volume uses:",o:["AP × TR × CC × 0.52","AP × TR × 0.52","π × r²","TR × CC × 0.33"],a:0,e:"AP and CC on midsagittal T2, TR on the widest axial T2."},
+ {q:"How many sectors are in the PI-RADS v2.1 sector map?",o:["27","36","39","41"],a:3,e:"38 for the prostate (central zone added at the base), 2 for the seminal vesicles and 1 for the membranous urethra."},
+ {q:"The neurovascular bundles lie at about:",o:["12 o'clock","3 and 9 o'clock","5 and 7 o'clock","1 and 11 o'clock"],a:2,e:"Posterolaterally; a route for extraprostatic extension."},
+ {q:"After HoLEP you expect:",o:["A narrow channel only","A large fossa with a thin rim of PZ","A diffusely T2-dark small gland","Blooming implants"],a:1,e:"The adenoma is enucleated to the surgical capsule."},
+ {q:"In one series, the UroLift artifact was largest on:",o:["T2","DCE","DWI","T1"],a:2,e:"About 28 mm on DWI versus about 8 mm on T2 and 10 mm on DCE; it arose from the stainless-steel urethral end pieces in the posterior TZ."},
+ {q:"After external-beam radiation the prostate typically shows:",o:["Bright PZ with preserved zonal anatomy","Small gland, diffusely low T2, loss of zonal differentiation","Enlarged TZ","Bright T1 signal"],a:1,e:"ADC and enhancement fall; recurrence is focal early enhancement and restricted diffusion."},
+ {q:"Post-biopsy hemorrhage is best confirmed on:",o:["DWI","T1 (bright)","DCE","ADC"],a:1,e:"Low on T2 and bright on T1; tumor tends to spare it (hemorrhage exclusion sign)."}];
+function mkQuiz(){const h=$("quiz");h.innerHTML="";QZ.forEach((q,i)=>{const d=document.createElement("div");d.className="q";d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector(".opts");q.o.forEach((t,j)=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>{op.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===q.a)x.classList.add("right");});if(j!==q.a)b.classList.add("wrong");const ex=d.querySelector(".ex");ex.hidden=false;ex.textContent=(j===q.a?"Correct. ":"Not quite. ")+q.e;};op.appendChild(b);});h.appendChild(d);});}
+window.__P={get TILT(){return TILT},get AOB(){return AOB},setAngles,crossPoint,toAnat,toBody,PL,get C(){return C},get G(){return G},startDrill,setChoice:c=>{choice=c},DR,M,setSeq:s=>{SEQ=s;seqSeen.add(s);},loadPreset,get INSP(){return INSP},sectorAt,tissue,dist,K,CLS2Z,goLevel};
+$("psa").value=6;loadPreset("normal");syncMT();mkDrills();mkQuiz();note("Choose a case, then scroll the planes or click any view to inspect a point. Turn on zone colors and labels to learn the anatomy, then switch sequences.");
+})();
+
+</script>
+</body>
+</html>
