@@ -1,13 +1,13 @@
-# radondemand — Abdominal radiology teaching library
+# RadOnDemand: Abdominal radiology
 
-Static site of interactive abdominal radiology lessons (body MRI, Doppler ultrasound) for radiology residents
+Interactive phantoms for learning body imaging by doing: static site of abdominal radiology lessons (body MRI, Doppler ultrasound, clinical tutorials) for radiology residents
 (UH Cleveland / CWRU). Target: https://radondemand.vercel.app
 
 No build step, no dependencies. Every page is a single self-contained HTML file
 (only external request: Google Fonts, with system-font fallbacks).
 
 ## Layout
-- `index.html` — landing page. Lesson catalog is the `GROUPS` array in its script.
+- `index.html` — landing page. Lesson catalog is the `LESSONS` array in its script (filterable by type and organ).
 - `lessons/<slug>/index.html` — one self-contained lesson each.
 - `vercel.json` — clean URLs, trailing slash.
 
@@ -36,4 +36,4 @@ Import the repo in Vercel (Framework Preset: Other). Project name: `radondemand`
 
 ## Adding a lesson
 1. Create `lessons/<new-slug>/index.html` (self-contained).
-2. Add an entry to `GROUPS` in `index.html` (title, url `lessons/<new-slug>/`, desc, covers, glyph).
+2. Add an entry to `LESSONS` in `index.html` (title, fullTitle, url `lessons/<new-slug>/`, area, sub, organs, badge, desc, covers, glyph) and a thumbnail in `G`.

@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 No build, lint, or test tooling exists. Preview with `python3 -m http.server 8000` (or `python -m http.server 8000` on Windows) and open http://localhost:8000. Deploys via Vercel (Framework Preset: Other); `vercel.json` sets clean URLs and trailing slashes, so lesson links end in `/`.
 
 ## Structure
-- `index.html`: landing page; the catalog is the `GROUPS` array in its script.
+- `index.html`: landing page (title "RadOnDemand: Abdominal radiology"); a filterable card grid driven by the flat `LESSONS` array in its script. Each entry has `area` (physics, ultrasound or clinical), `organs`, `sub` (subspecialty, "abdominal" for now), `badge`, optional `isNew`, `desc`, `covers`, `glyph`.
 - `lessons/<slug>/index.html`: one self-contained lesson each (inline CSS/JS, no shared assets).
-- Adding a lesson: create the file, then add a `GROUPS` entry (title, url `lessons/<slug>/`, desc, covers, glyph). Also add a row to the README lessons table.
+- Adding a lesson: create the file, then add a `LESSONS` entry (title, fullTitle, url `lessons/<slug>/`, area, sub, organs, badge, desc, covers, glyph) and a thumbnail in `G`. Also add a row to the README lessons table.
 
 ## Context
 
@@ -19,13 +19,13 @@ Audience: radiology residents learning body MRI. Tone: plain, clinically precise
 - Keep it static: plain HTML/CSS/JS, no framework, no build step, no npm dependencies.
 - Each lesson is ONE self-contained HTML file. Inline CSS and JS. Google Fonts allowed, always with fallbacks.
 - All images are synthetic phantoms generated in-browser (canvas). Never add real patient images.
-- Landing page: fonts Newsreader + Public Sans; light/dark via CSS variables; lesson list is data-driven from `GROUPS`.
+- Landing page: fonts Newsreader + Public Sans; light/dark via CSS variables; lesson list is data-driven from `LESSONS`.
 - Lessons were originally built as claude.ai artifacts (no browser storage APIs, no network calls). Keep it that way.
 - Check mobile (390px) and dark mode after edits.
 
 ## Style of lessons
 Instrument Sans + Literata, interactive controls that change the image so the physics is visible.
-When adding a lesson, match the existing lessons' look and add it to `GROUPS` in `index.html`.
+When adding a lesson, match the existing lessons' look and add it to `LESSONS` in `index.html`.
 
 There is no shared stylesheet; each lesson copies the same design system inline. Start a new lesson by copying the `<head>`/`<style>` block of the closest existing lesson (`dwi-adc` is the cleanest template), not by writing CSS from scratch. The shared pattern:
 
@@ -44,3 +44,4 @@ When Leo hands over a revised lesson file (exported from claude.ai), re-apply th
 - Vercel Web Analytics snippet before `</head>` (the `window.va` stub plus `<script defer src="/_vercel/insights/script.js"></script>`), as on every page.
 - Footer disclaimer ends with "For teaching only; not for clinical use."
 - Doppler submodules are added inside `lessons/doppler-console/` (one catalog entry); no placeholder entries on the landing page.
+- Landing page filters are Type (physics, ultrasound, clinical) and Organ; remove `isNew` from lessons once they are no longer recent.

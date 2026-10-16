@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Abdominal Radiology Teaching Library — UH Radiology</title>
-<meta name="description" content="Interactive abdominal radiology lessons for radiology residents: body MRI physics and quantification, and Doppler ultrasound.">
+<title>RadOnDemand: Abdominal radiology — UH Radiology</title>
+<meta name="description" content="Interactive phantoms for learning body imaging by doing: MRI physics and quantification, Doppler ultrasound and clinical tutorials for abdominal radiology residents.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧲</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,10 +13,13 @@
 :root{
   --bg:#E8EDF0;        /* lightbox */
   --surface:#F5F7F8;
+  --card:#FFFFFF;
   --ink:#16212B;       /* film base */
   --muted:#56646F;
   --rule:#C3CDD4;
   --accent:#1D5C86;    /* contrast blue */
+  --amber:#B97A06; --amber-ink:#FFFFFF;
+  --chip-on-bg:#16212B; --chip-on-ink:#F5F7F8;
   --serif:"Newsreader", Georgia, "Times New Roman", serif;
   --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   box-sizing:border-box;
@@ -25,54 +28,83 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#121A21; --surface:#18222B; --ink:#E3E9ED; --muted:#98A6B0; --rule:#2C3A45; --accent:#7DB3D8;
+    --bg:#121A21; --surface:#18222B; --card:#18222B; --ink:#E3E9ED; --muted:#98A6B0; --rule:#2C3A45; --accent:#7DB3D8; --amber:#E8B23A; --amber-ink:#1A1300;
+    --chip-on-bg:#E3E9ED; --chip-on-ink:#121A21;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#121A21; --surface:#18222B; --ink:#E3E9ED; --muted:#98A6B0; --rule:#2C3A45; --accent:#7DB3D8;
+  --bg:#121A21; --surface:#18222B; --card:#18222B; --ink:#E3E9ED; --muted:#98A6B0; --rule:#2C3A45; --accent:#7DB3D8; --amber:#E8B23A; --amber-ink:#1A1300;
+  --chip-on-bg:#E3E9ED; --chip-on-ink:#121A21;
 }
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 7rem)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1rem;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--accent)}
-a:focus-visible,button:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .wrap{max-width:72rem;margin:0 auto;padding:0 1.5rem}
 
 /* Hero */
-.hero{padding:4.5rem 0 3.5rem}
-.org{font-size:.9375rem;color:var(--muted);margin:0 0 1.75rem}
-h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.5rem,5.4vw,4.25rem);line-height:1.04;letter-spacing:-.015em;margin:0 0 1.5rem;max-width:20ch}
-.lede{font-size:1.1875rem;max-width:34rem;margin:0 0 1rem}
-.lede-2{color:var(--muted);max-width:34rem;margin:0}
+.hero{padding:2.75rem 0 1.75rem}
+.org{font-size:.875rem;color:var(--muted);margin:0 0 1.1rem}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,6vw,3.9rem);line-height:1.02;letter-spacing:-.015em;margin:0 0 .9rem}
+h1 span{display:block;color:var(--muted);font-size:.62em;letter-spacing:-.01em;margin-top:.12em}
+.lede{font-size:1.25rem;max-width:38rem;margin:0 0 .6rem;font-family:var(--serif)}
+.lede-2{color:var(--muted);max-width:38rem;margin:0;font-size:.97rem}
 
-/* Lessons */
-.lessons{border-top:1px solid var(--rule);padding:3rem 0 4rem}
-.lessons-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
-h2{font-family:var(--serif);font-weight:400;font-size:2rem;line-height:1.15;margin:0}
-.count{color:var(--muted);font-size:.9375rem;margin:0}
-.group{margin-top:2.25rem}
-h3{font-size:1rem;font-weight:600;color:var(--muted);margin:0 0 .25rem}
-.lesson{display:grid;grid-template-columns:4.5rem minmax(0,1fr) auto;gap:1.5rem;align-items:start;padding:1.5rem 0;border-bottom:1px solid var(--rule)}
-.lesson svg{width:4.5rem;height:4.5rem;display:block;background:#000;border-radius:3px}
-.lesson h4{font-family:var(--serif);font-weight:500;font-size:1.4375rem;line-height:1.2;margin:0 0 .35rem}
-.lesson h4 a{color:var(--ink);text-decoration:none}
-.lesson h4 a:hover{color:var(--accent)}
-.lesson p{margin:0;max-width:44rem}
-.lesson .covers{color:var(--muted);font-size:.9375rem;margin-top:.45rem}
-.lesson .note{font-size:.9375rem;margin-top:.45rem;color:var(--accent)}
-.open{align-self:center;white-space:nowrap;font-weight:600;font-size:.9375rem;text-decoration:none;border:1px solid var(--accent);border-radius:3px;padding:.5rem .9rem}
-.open:hover{background:var(--accent);color:var(--surface)}
+/* Filters */
+.tools{display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:1rem 0 .85rem;border-top:1px solid var(--rule)}
+.search{position:relative;flex:1 1 16rem;max-width:26rem}
+.search input{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:.5rem;padding:.55rem .8rem .55rem 2.1rem}
+.search input::placeholder{color:var(--muted)}
+.search svg{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;stroke:var(--muted);fill:none;stroke-width:2;pointer-events:none}
+.count{color:var(--muted);font-size:.9rem;margin:0}
+.count button{font:inherit;color:var(--accent);background:none;border:0;padding:0 0 0 .5rem;cursor:pointer;text-decoration:underline}
+.filters{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--rule);padding:.6rem 0 .7rem;margin-bottom:1.25rem}
+.frow{display:flex;gap:.45rem;align-items:center;overflow-x:auto;scrollbar-width:none;padding:.15rem 1.5rem;margin:0 -1.5rem}
+.frow::-webkit-scrollbar{display:none}
+.frow + .frow{margin-top:.35rem}
+.flabel{flex:none;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);min-width:3.4rem}
+.chip{flex:none;font:inherit;font-size:.875rem;font-weight:500;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:999px;padding:.3rem .85rem;cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--chip-on-bg);color:var(--chip-on-ink);border-color:var(--chip-on-bg)}
+.chip .n{color:var(--muted);font-weight:400;margin-left:.3rem}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.7}
 
-footer{border-top:1px solid var(--rule);padding:2rem 0 3rem;color:var(--muted);font-size:.9375rem}
+/* Cards */
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.9rem;margin:0;padding:0;list-style:none}
+.card{display:grid;grid-template-columns:3.25rem minmax(0,1fr);gap:.85rem;height:100%;padding:.9rem;background:var(--card);border:1px solid var(--rule);border-radius:.6rem;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--accent)}
+.card svg{width:3.25rem;height:3.25rem;display:block;background:#000;border-radius:4px}
+.card h3{font-family:var(--serif);font-weight:500;font-size:1.15rem;line-height:1.2;margin:0 0 .3rem;color:var(--ink)}
+.card:hover h3{color:var(--accent)}
+.card p{margin:0;font-size:.875rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.55rem}
+.tag{font-size:.72rem;line-height:1;padding:.28rem .5rem;border-radius:.3rem;border:1px solid var(--rule);color:var(--muted);white-space:nowrap}
+.tag.area{color:var(--ink);font-weight:500}
+.tag.new{background:var(--amber);border-color:var(--amber);color:var(--amber-ink);font-weight:600}
+.empty{padding:2.5rem 0;color:var(--muted)}
+.empty button{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+
+footer{border-top:1px solid var(--rule);margin-top:3rem;padding:1.75rem 0 2.5rem;color:var(--muted);font-size:.9rem}
 footer p{margin:.25rem 0;max-width:44rem}
 
-@media (max-width:860px){
-  .hero{padding-top:3rem}
-}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){
-  .lesson{grid-template-columns:3.5rem minmax(0,1fr);gap:1rem}
-  .lesson svg{width:3.5rem;height:3.5rem}
-  .open{grid-column:2;justify-self:start}
+  .wrap{padding:0 1rem}
+  .frow{padding:.15rem 1rem;margin:0 -1rem}
+  .hero{padding:1.75rem 0 1.1rem}
+  .org{margin-bottom:.8rem}
+  .lede{font-size:1.1rem}
+  .grid{grid-template-columns:1fr;gap:.6rem}
+  .card{grid-template-columns:2.75rem minmax(0,1fr);padding:.75rem;gap:.7rem}
+  .card svg{width:2.75rem;height:2.75rem}
+  .card p{-webkit-line-clamp:2}
+  .lede-2{display:none}
+  .tools{padding:.7rem 0 .6rem}
+  .search{max-width:none;flex-basis:100%}
+  .count.idle{display:none}
+  .filters{padding:.45rem 0 .55rem;margin-bottom:.9rem}
+  .flabel{min-width:0}
 }
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
@@ -82,20 +114,27 @@ footer p{margin:.25rem 0;max-width:44rem}
 <main class="wrap">
 
   <section class="hero">
-    <div>
-      <p class="org">Department of Radiology, University Hospitals Cleveland Medical Center</p>
-      <h1>Abdominal radiology teaching library</h1>
-      <p class="lede">Interactive phantoms and simulations for radiology residents. Each lesson runs in your browser: change a parameter and watch the image respond.</p>
-      <p class="lede-2">Built around the questions that come up at the workstation — why a subtraction map lies, what an opposed-phase drop actually means, where an ADC number comes from.</p>
-    </div>
+    <p class="org">Department of Radiology, University Hospitals Cleveland Medical Center</p>
+    <h1>RadOnDemand<span>Abdominal radiology</span></h1>
+    <p class="lede">Interactive phantoms for learning body imaging by doing.</p>
+    <p class="lede-2">Each lesson runs in your browser. Change a parameter and watch the image respond, then test yourself with drills and cases. Built around the questions that come up at the workstation.</p>
   </section>
 
-  <section class="lessons" aria-labelledby="lessons-title">
-    <div class="lessons-head">
-      <h2 id="lessons-title">Lessons</h2>
-      <p class="count" id="count"></p>
+  <section aria-labelledby="lessons-title">
+    <h2 id="lessons-title" hidden>Lessons</h2>
+    <div class="tools">
+      <label class="search"><span hidden>Search lessons</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="q" type="search" placeholder="Search lessons" autocomplete="off">
+      </label>
+      <p class="count" id="count" aria-live="polite"></p>
     </div>
-    <div id="list"></div>
+    <div class="filters" role="group" aria-label="Filter lessons">
+      <div class="frow" id="fArea"><span class="flabel">Type</span></div>
+      <div class="frow" id="fOrgan"><span class="flabel">Organ</span></div>
+    </div>
+    <ul class="grid" id="list"></ul>
+    <p class="empty" id="empty" hidden>No lessons match. <button type="button" id="clear2">Clear filters</button></p>
   </section>
 
 </main>
@@ -108,74 +147,97 @@ footer p{margin:.25rem 0;max-width:44rem}
 </footer>
 
 <script>
-/* ---------- Lesson catalog: add new lessons here ---------- */
-const GROUPS = [
-  { name: "Ultrasound", lessons: [
+/* ---------- Lesson catalog: add new lessons here ----------
+   area:   "physics" | "ultrasound" | "clinical"   (the Type chips)
+   organs: any of ORGANS below                      (the Organ chips)
+   sub:    subspecialty, "abdominal" for now; reserved so other subspecialties can be added later
+   isNew:  true shows a "New" badge (clear it once the lesson is no longer recent)  */
+const AREAS = [["physics","MRI physics"],["ultrasound","Ultrasound"],["clinical","Clinical"]];
+const ORGANS = ["Liver","Kidney","Prostate","Pelvic floor","Vascular","General"];
+const LESSONS = [
     { title: "Doppler ultrasound console trainer",
+      fullTitle: "Doppler ultrasound console trainer",
       url: "lessons/doppler-console/",
+      area: "ultrasound", sub: "abdominal", organs: ["Vascular", "Liver", "Kidney"],
+      badge: "Console, drills, quiz",
       desc: "A working scanner on a flow phantom, then exam presets: B-mode, color box, spectral Doppler and audio generated live from a flow model and the Doppler equation.",
       covers: "Console layouts, angle, gate and scale, aliasing, troubleshooting drills; carotid and vertebral, abdominal aorta and mesenteric, lower extremity arterial and venous, native renal, renal transplant and liver transplant",
-      glyph: "doppler" }
-  ]},
-  { name: "Fundamentals", lessons: [
-    { title: "The SNR equation: knobs, costs and tradeoffs",
+      glyph: "doppler" },
+    { title: "The SNR equation",
+      fullTitle: "The SNR equation: knobs, costs and tradeoffs",
       url: "lessons/snr-equation/",
+      area: "physics", sub: "abdominal", organs: ["General"],
+      badge: "Simulator",
       desc: "Turn protocol knobs on a synthetic slice and see which factor bought or cost SNR, scan time and artifact against a baseline protocol.",
       covers: "Voxel size, averages, bandwidth, parallel imaging g-factor, TR/TE, field strength, wrap, ghosting, chemical shift and EPI distortion",
       glyph: "snr" },
-    { title: "Subtraction maps on body MRI",
+    { title: "Subtraction maps",
+      fullTitle: "Subtraction maps on body MRI",
       url: "lessons/subtraction-maps/",
+      area: "physics", sub: "abdominal", organs: ["General"],
+      badge: "Simulator",
       desc: "Build a pre/post-contrast subtraction from a phantom, then break it with misregistration and signal mismatch.",
       covers: "Subtraction basics, misregistration artifact, mismatch pitfalls, how to QA a subtraction map",
-      glyph: "subtraction" }
-  ]},
-  { name: "Chemical shift and fat–iron quantification", lessons: [
-    { title: "In/opposed phase, multi-echo Dixon and fat–iron quantification",
+      glyph: "subtraction" },
+    { title: "Dixon and fat–iron quantification",
+      fullTitle: "In/opposed phase, multi-echo Dixon and fat–iron quantification",
       url: "lessons/dixon-fat-iron/",
+      area: "physics", sub: "abdominal", organs: ["Liver"],
+      badge: "Simulator",
       desc: "A synthetic liver-hilum slice with an angiomyolipoma, hepatic cyst, steatotic hepatocellular adenoma and adrenal adenoma.",
       covers: "Steatosis, organ iron overload, pneumobilia, metal, calcification and hemosiderin, q-Dixon / IDEAL-IQ style PDFF and R2*",
-      glyph: "dixon" }
-  ]},
-  { name: "Diffusion", lessons: [
+      glyph: "dixon" },
     { title: "DWI, ADC and calculated b-values",
+      fullTitle: "DWI, ADC and calculated b-values",
       url: "lessons/dwi-adc/",
+      area: "physics", sub: "abdominal", organs: ["Liver", "Prostate"],
+      badge: "Simulator",
       desc: "Signal-versus-b curves from linear to log scale, tangents as local ADC, and the slope-triangle ADC formula.",
       covers: "Upper-abdomen slice, prostate with a peripheral-zone lesion, PI-RADS v2.1 calculated b1400 and b2000",
-      glyph: "dwi" }
-  ]},
-  { name: "Clinical tutorials", lessons: [
-    { title: "MR defecography for pelvic floor weakness",
+      glyph: "dwi" },
+    { title: "MR defecography",
+      fullTitle: "MR defecography for pelvic floor weakness",
       url: "lessons/mr-defecography/",
+      area: "clinical", sub: "abdominal", organs: ["Pelvic floor"],
+      badge: "Cases, report", isNew: true,
       desc: "A synthetic midsagittal pelvis that moves like a dynamic study: rest, squeeze, strain, evacuation and post-evacuation strain, with live reference lines and measurements.",
       covers: "Cystocele, vaginal vault and uterine prolapse, rectocele, intussusception, peritoneocele, descending perineum, ACR–SAR–SPR (PCL), HMO and MPL grading, structured report",
       glyph: "defec" },
-    { title: "MRI of fistula-in-ano: anatomy, classification and reporting",
+    { title: "MRI of fistula-in-ano",
+      fullTitle: "MRI of fistula-in-ano: anatomy, classification and reporting",
       url: "lessons/mri-fistula-in-ano/",
+      area: "clinical", sub: "abdominal", organs: ["Pelvic floor"],
+      badge: "Cases, report", isNew: true,
       desc: "A 3D model of the anal canal and pelvic floor, sliced in axial-oblique, coronal-oblique and sagittal planes. Build a fistula from its internal opening outward and switch sequences.",
       covers: "Parks and St James's classification, sphincter involvement, abscess and horseshoe extension, Crohn's activity scoring (MAGNIFI-CD, Van Assche), structured report",
       glyph: "fistula" },
-    { title: "Prostate anatomy on MRI: zones, measurements, BPH and treatment changes",
+    { title: "Prostate anatomy on MRI",
+      fullTitle: "Prostate anatomy on MRI: zones, measurements, BPH and treatment changes",
       url: "lessons/prostate-mri-anatomy/",
+      area: "clinical", sub: "abdominal", organs: ["Prostate"],
+      badge: "Cases, quiz", isNew: true,
       desc: "A 3D prostate and its neighbors sliced in axial, sagittal and coronal planes on T2, ADC, DWI, DCE and T1. Click any point to name its zone, measure the gland, grow BPH and see what treatment leaves behind.",
       covers: "McNeal zones, PI-RADS v2.1 sectors, straight versus oblique axial planes, volume and PSA density, BPH, TURP, HoLEP, UroLift, radiation, fiducials",
-      glyph: "prostate" }
-  ]},
-  { name: "Quantitative MRI", lessons: [
+      glyph: "prostate" },
     { title: "MR Fingerprinting",
+      fullTitle: "MR Fingerprinting",
       url: "lessons/mr-fingerprinting/",
+      area: "physics", sub: "abdominal", organs: ["Prostate"],
+      badge: "Simulator",
       desc: "Prostate FISP-MRF from acquisition to maps: EPG dictionary, SVD compression and the matching landscape.",
       covers: "T1, T2, M0, B1 and synthetic maps, Monte Carlo precision versus conventional IR and multi-echo spin-echo fitting",
       glyph: "mrf" },
-    { title: "Liver MR Fingerprinting for diffuse liver disease",
+    { title: "Liver MR Fingerprinting",
+      fullTitle: "Liver MR Fingerprinting for diffuse liver disease",
       url: "lessons/liver-mrf/",
+      area: "physics", sub: "abdominal", organs: ["Liver"],
+      badge: "Simulator",
       desc: "Multi-echo water–fat MRF with R2*, water T1 and T2, PDFF and iron-corrected T1.",
       covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
       note: "Companion to MR Fingerprinting — start there.",
       glyph: "liver" }
-  ]}
 ];
 
-/* Small monochrome thumbnails, drawn like tiny images */
 const G = {
   prostate: `<ellipse cx="36" cy="38" rx="22" ry="17" fill="#8a8a8a"/><ellipse cx="36" cy="36" rx="11" ry="9" fill="#d9d9d9"/><ellipse cx="36" cy="38" rx="3" ry="4" fill="#222"/>`,
   fistula: `<circle cx="36" cy="38" r="9" fill="none" stroke="#e6e6e6" stroke-width="2.4"/><circle cx="36" cy="38" r="17" fill="none" stroke="#777" stroke-width="2"/><path d="M42 31 C52 24 56 18 62 12" fill="none" stroke="#e6e6e6" stroke-width="2.4"/>`,
@@ -190,27 +252,68 @@ const G = {
 };
 
 (function renderLessons(){
-  const list = document.getElementById("list");
-  let n = 0;
-  for (const g of GROUPS){
-    const sec = document.createElement("div");
-    sec.className = "group";
-    sec.innerHTML = `<h3>${g.name}</h3>` + g.lessons.map(l => {
-      n++;
-      return `<article class="lesson">
-        <svg viewBox="0 0 72 72" aria-hidden="true">${G[l.glyph]||""}</svg>
-        <div>
-          <h4><a href="${l.url}">${l.title}</a></h4>
-          <p>${l.desc}</p>
-          <p class="covers">Covers: ${l.covers}</p>
-          ${l.note ? `<p class="note">${l.note}</p>` : ""}
-        </div>
-        <a class="open" href="${l.url}" aria-label="Open lesson: ${l.title}">Open lesson</a>
-      </article>`;
-    }).join("");
-    list.appendChild(sec);
+  const AL = Object.fromEntries(AREAS);
+  const list = document.getElementById("list"), qEl = document.getElementById("q");
+  const st = {area:"", organ:"", q:""};
+
+  list.innerHTML = LESSONS.map((l,i) => `<li data-i="${i}"><a class="card" href="${l.url}" aria-label="${l.fullTitle}">
+      <svg viewBox="0 0 72 72" aria-hidden="true">${G[l.glyph]||""}</svg>
+      <div>
+        <h3>${l.title}</h3>
+        <p>${l.desc}</p>
+        <div class="tags"><span class="tag area">${AL[l.area]}</span>${l.organs.filter(o=>o!=="General").slice(0,2).map(o=>`<span class="tag">${o}</span>`).join("")}${l.isNew?'<span class="tag new">New</span>':""}</div>
+      </div></a></li>`).join("");
+  const items = [...list.children];
+  const hay = LESSONS.map(l => [l.fullTitle,l.desc,l.covers,l.note||"",AL[l.area],l.organs.join(" "),l.badge].join(" ").toLowerCase());
+
+  function chip(label, val, key, n){
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.dataset.key = key; b.dataset.val = val;
+    b.innerHTML = `${label}<span class="n">${n}</span>`;
+    b.addEventListener("click", () => { st[key] = st[key]===val ? "" : val; apply(); });
+    return b;
   }
-  document.getElementById("count").textContent = `${n} lessons, more on the way`;
+  const fArea = document.getElementById("fArea"), fOrgan = document.getElementById("fOrgan");
+  fArea.append(chip("All","","area",LESSONS.length), ...AREAS.map(([v,t]) => chip(t,v,"area",LESSONS.filter(l=>l.area===v).length)));
+  fOrgan.append(chip("Any","","organ",LESSONS.length), ...ORGANS.filter(o=>LESSONS.some(l=>l.organs.includes(o))).map(o => chip(o,o,"organ",LESSONS.filter(l=>l.organs.includes(o)).length)));
+
+  function matches(i, skip){
+    const l = LESSONS[i];
+    if (skip!=="area" && st.area && l.area!==st.area) return false;
+    if (skip!=="organ" && st.organ && !l.organs.includes(st.organ)) return false;
+    return !st.q || st.q.toLowerCase().split(/\s+/).every(w => hay[i].includes(w));
+  }
+  function apply(fromHash){
+    let n = 0;
+    items.forEach((li,i) => { const ok = matches(i); li.hidden = !ok; if (ok) n++; });
+    // chips: pressed state, and counts that respect the other active filters
+    document.querySelectorAll(".chip").forEach(b => {
+      const key = b.dataset.key, val = b.dataset.val;
+      b.setAttribute("aria-pressed", String(st[key]===val));
+      const other = key==="area" ? "organ" : "area";
+      let c = 0; LESSONS.forEach((l,i) => { if (matches(i,key) && (!val || (key==="area" ? l.area===val : l.organs.includes(val)))) c++; });
+      b.querySelector(".n").textContent = c;
+    });
+    const active = st.area || st.organ || st.q;
+    const cnt = document.getElementById("count");
+    cnt.classList.toggle("idle", !active);
+    cnt.innerHTML = `${n} of ${LESSONS.length} lessons` + (active ? ` <button type="button" id="clear">Clear</button>` : "");
+    const clr = document.getElementById("clear"); if (clr) clr.onclick = clearAll;
+    document.getElementById("empty").hidden = n>0;
+    if (!fromHash){
+      const p = new URLSearchParams(); if (st.area) p.set("t",st.area); if (st.organ) p.set("o",st.organ); if (st.q) p.set("q",st.q);
+      history.replaceState(null,"", p.toString() ? "#"+p : location.pathname+location.search);
+    }
+  }
+  function clearAll(){ st.area = st.organ = st.q = ""; qEl.value = ""; apply(); }
+  document.getElementById("clear2").onclick = clearAll;
+  qEl.addEventListener("input", () => { st.q = qEl.value.trim(); apply(); });
+
+  const p = new URLSearchParams(location.hash.slice(1));
+  if (AREAS.some(a=>a[0]===p.get("t"))) st.area = p.get("t");
+  if (ORGANS.includes(p.get("o"))) st.organ = p.get("o");
+  if (p.get("q")){ st.q = p.get("q").slice(0,80); qEl.value = st.q; }
+  apply(true);
 })();
 </script>
 </body>
