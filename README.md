@@ -36,4 +36,4 @@ Import the repo in Vercel (Framework Preset: Other). Project name: `radondemand`
 
 ## Adding a lesson
 1. Create `lessons/<new-slug>/index.html` (self-contained).
-2. Add an entry to `LESSONS` in `index.html` (title, fullTitle, url `lessons/<new-slug>/`, area, sub, organs, badge, desc, covers, glyph) and a thumbnail in `G`.
+2. Add an entry to `LESSONS` in `index.html` (title, fullTitle, url `lessons/<new-slug>/`, area, sub, organs, badge, added, desc, covers, glyph) and a thumbnail in `G`.

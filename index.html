@@ -151,15 +151,16 @@ footer p{margin:.25rem 0;max-width:44rem}
    area:   "physics" | "ultrasound" | "clinical"   (the Type chips)
    organs: any of ORGANS below                      (the Organ chips)
    sub:    subspecialty, "abdominal" for now; reserved so other subspecialties can be added later
-   isNew:  true shows a "New" badge (clear it once the lesson is no longer recent)  */
+   added:  "YYYY-MM-DD" the day the lesson was first published; lessons added within the last NEW_DAYS days get a "New" badge automatically  */
 const AREAS = [["physics","MRI physics"],["ultrasound","Ultrasound"],["clinical","Clinical"]];
+const NEW_DAYS = 10;
 const ORGANS = ["Liver","Kidney","Prostate","Pelvic floor","Vascular","General"];
 const LESSONS = [
     { title: "Doppler ultrasound console trainer",
       fullTitle: "Doppler ultrasound console trainer",
       url: "lessons/doppler-console/",
       area: "ultrasound", sub: "abdominal", organs: ["Vascular", "Liver", "Kidney"],
-      badge: "Console, drills, quiz",
+      badge: "Console, drills, quiz", added: "2026-10-06",
       desc: "A working scanner on a flow phantom, then exam presets: B-mode, color box, spectral Doppler and audio generated live from a flow model and the Doppler equation.",
       covers: "Console layouts, angle, gate and scale, aliasing, troubleshooting drills; carotid and vertebral, abdominal aorta and mesenteric, lower extremity arterial and venous, native renal, renal transplant and liver transplant",
       glyph: "doppler" },
@@ -167,7 +168,7 @@ const LESSONS = [
       fullTitle: "The SNR equation: knobs, costs and tradeoffs",
       url: "lessons/snr-equation/",
       area: "physics", sub: "abdominal", organs: ["General"],
-      badge: "Simulator",
+      badge: "Simulator", added: "2026-10-05",
       desc: "Turn protocol knobs on a synthetic slice and see which factor bought or cost SNR, scan time and artifact against a baseline protocol.",
       covers: "Voxel size, averages, bandwidth, parallel imaging g-factor, TR/TE, field strength, wrap, ghosting, chemical shift and EPI distortion",
       glyph: "snr" },
@@ -175,7 +176,7 @@ const LESSONS = [
       fullTitle: "Subtraction maps on body MRI",
       url: "lessons/subtraction-maps/",
       area: "physics", sub: "abdominal", organs: ["General"],
-      badge: "Simulator",
+      badge: "Simulator", added: "2026-10-01",
       desc: "Build a pre/post-contrast subtraction from a phantom, then break it with misregistration and signal mismatch.",
       covers: "Subtraction basics, misregistration artifact, mismatch pitfalls, how to QA a subtraction map",
       glyph: "subtraction" },
@@ -183,7 +184,7 @@ const LESSONS = [
       fullTitle: "In/opposed phase, multi-echo Dixon and fat–iron quantification",
       url: "lessons/dixon-fat-iron/",
       area: "physics", sub: "abdominal", organs: ["Liver"],
-      badge: "Simulator",
+      badge: "Simulator", added: "2026-10-01",
       desc: "A synthetic liver-hilum slice with an angiomyolipoma, hepatic cyst, steatotic hepatocellular adenoma and adrenal adenoma.",
       covers: "Steatosis, organ iron overload, pneumobilia, metal, calcification and hemosiderin, q-Dixon / IDEAL-IQ style PDFF and R2*",
       glyph: "dixon" },
@@ -191,7 +192,7 @@ const LESSONS = [
       fullTitle: "DWI, ADC and calculated b-values",
       url: "lessons/dwi-adc/",
       area: "physics", sub: "abdominal", organs: ["Liver", "Prostate"],
-      badge: "Simulator",
+      badge: "Simulator", added: "2026-10-01",
       desc: "Signal-versus-b curves from linear to log scale, tangents as local ADC, and the slope-triangle ADC formula.",
       covers: "Upper-abdomen slice, prostate with a peripheral-zone lesion, PI-RADS v2.1 calculated b1400 and b2000",
       glyph: "dwi" },
@@ -199,7 +200,7 @@ const LESSONS = [
       fullTitle: "MR defecography for pelvic floor weakness",
       url: "lessons/mr-defecography/",
       area: "clinical", sub: "abdominal", organs: ["Pelvic floor"],
-      badge: "Cases, report", isNew: true,
+      badge: "Cases, report", added: "2026-10-06",
       desc: "A synthetic midsagittal pelvis that moves like a dynamic study: rest, squeeze, strain, evacuation and post-evacuation strain, with live reference lines and measurements.",
       covers: "Cystocele, vaginal vault and uterine prolapse, rectocele, intussusception, peritoneocele, descending perineum, ACR–SAR–SPR (PCL), HMO and MPL grading, structured report",
       glyph: "defec" },
@@ -207,7 +208,7 @@ const LESSONS = [
       fullTitle: "MRI of fistula-in-ano: anatomy, classification and reporting",
       url: "lessons/mri-fistula-in-ano/",
       area: "clinical", sub: "abdominal", organs: ["Pelvic floor"],
-      badge: "Cases, report", isNew: true,
+      badge: "Cases, report", added: "2026-10-07",
       desc: "A 3D model of the anal canal and pelvic floor, sliced in axial-oblique, coronal-oblique and sagittal planes. Build a fistula from its internal opening outward and switch sequences.",
       covers: "Parks and St James's classification, sphincter involvement, abscess and horseshoe extension, Crohn's activity scoring (MAGNIFI-CD, Van Assche), structured report",
       glyph: "fistula" },
@@ -215,7 +216,7 @@ const LESSONS = [
       fullTitle: "Prostate anatomy on MRI: zones, measurements, BPH and treatment changes",
       url: "lessons/prostate-mri-anatomy/",
       area: "clinical", sub: "abdominal", organs: ["Prostate"],
-      badge: "Cases, quiz", isNew: true,
+      badge: "Cases, quiz", added: "2026-10-16",
       desc: "A 3D prostate and its neighbors sliced in axial, sagittal and coronal planes on T2, ADC, DWI, DCE and T1. Click any point to name its zone, measure the gland, grow BPH and see what treatment leaves behind.",
       covers: "McNeal zones, PI-RADS v2.1 sectors, straight versus oblique axial planes, volume and PSA density, BPH, TURP, HoLEP, UroLift, radiation, fiducials",
       glyph: "prostate" },
@@ -223,7 +224,7 @@ const LESSONS = [
       fullTitle: "MR Fingerprinting",
       url: "lessons/mr-fingerprinting/",
       area: "physics", sub: "abdominal", organs: ["Prostate"],
-      badge: "Simulator",
+      badge: "Simulator", added: "2026-10-01",
       desc: "Prostate FISP-MRF from acquisition to maps: EPG dictionary, SVD compression and the matching landscape.",
       covers: "T1, T2, M0, B1 and synthetic maps, Monte Carlo precision versus conventional IR and multi-echo spin-echo fitting",
       glyph: "mrf" },
@@ -231,7 +232,7 @@ const LESSONS = [
       fullTitle: "Liver MR Fingerprinting for diffuse liver disease",
       url: "lessons/liver-mrf/",
       area: "physics", sub: "abdominal", organs: ["Liver"],
-      badge: "Simulator",
+      badge: "Simulator", added: "2026-10-01",
       desc: "Multi-echo water–fat MRF with R2*, water T1 and T2, PDFF and iron-corrected T1.",
       covers: "Fat, iron, inflammation and fibrosis sliders, and the T1 tug-of-war between them",
       note: "Companion to MR Fingerprinting — start there.",
@@ -253,6 +254,10 @@ const G = {
 
 (function renderLessons(){
   const AL = Object.fromEntries(AREAS);
+  const day = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isNew = l => Math.round((today - day(l.added)) / 864e5) <= NEW_DAYS;
+  const when = l => day(l.added).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
   const list = document.getElementById("list"), qEl = document.getElementById("q");
   const st = {area:"", organ:"", q:""};
 
@@ -261,7 +266,7 @@ const G = {
       <div>
         <h3>${l.title}</h3>
         <p>${l.desc}</p>
-        <div class="tags"><span class="tag area">${AL[l.area]}</span>${l.organs.filter(o=>o!=="General").slice(0,2).map(o=>`<span class="tag">${o}</span>`).join("")}${l.isNew?'<span class="tag new">New</span>':""}</div>
+        <div class="tags"><span class="tag area">${AL[l.area]}</span>${l.organs.filter(o=>o!=="General").slice(0,2).map(o=>`<span class="tag">${o}</span>`).join("")}${isNew(l)?`<span class="tag new" title="Added ${when(l)}">New</span>`:""}</div>
       </div></a></li>`).join("");
   const items = [...list.children];
   const hay = LESSONS.map(l => [l.fullTitle,l.desc,l.covers,l.note||"",AL[l.area],l.organs.join(" "),l.badge].join(" ").toLowerCase());
