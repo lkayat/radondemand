@@ -242,7 +242,7 @@ h2 .totop:hover{color:var(--amber)}
 </div>
 
 <h2 id="lesionsH">The lesions</h2>
-<p class="read">Each card has the key features and a simulated strip from this model.</p>
+<p class="read">Each card has the key features, a simulated strip from this model, and case images from the author's teaching files (de-identified). Click a case image to enlarge it.</p>
 <div id="lcards"></div>
 
 <h2 id="approachH">A simple approach</h2>
@@ -260,7 +260,7 @@ h2 .totop:hover{color:var(--amber)}
 
 <h2 id="refsH">References</h2>
 <ol class="refs" id="refs"></ol>
-<p class="foot">Teaching simulation. The liver and its lesions are a simplified model, and the enhancement curves are idealized versions of typical extracellular-agent kinetics, so real lesions vary. Hepatobiliary agents (gadoxetate) and LI-RADS are covered in separate lessons. For teaching only; not for clinical use.</p>
+<p class="foot">Teaching simulation. The liver and its lesions are a simplified model, and the enhancement curves are idealized versions of typical extracellular-agent kinetics, so real lesions vary. Case images are from the author's teaching files and have been de-identified. Hepatobiliary agents (gadoxetate) and LI-RADS are covered in separate lessons. For teaching only; not for clinical use.</p>
 </div>
 <div class="lb" id="lb" hidden><div><img id="lbImg" alt=""><p id="lbCap"></p></div></div>
 <script>
@@ -656,7 +656,6 @@ const NOTES={
   ip:'In-phase: hypointense mass.',op:'No signal drop on opposed-phase: no fat.'}
 };
 const CASEDIR='cases/';
-const SHOW_CASES=false; // real patient case images are not published on this site (see CLAUDE.md)
 const CARDS={
  cyst:{lead:'No enhancement, fluid on every sequence.',b:['Present in 5–14% of the population. Lined by biliary-type epithelium but contains no bile.','CT: water density, below 10 HU (below 20 HU on multidetector CT). MRI: T1 dark, very T2 bright.','No enhancement in any phase, no wall, no septa, no nodules. Ultrasound is often enough.','Polycystic liver disease: consider it when there are more than 10 cysts. Cysts may bleed (T1 bright, fluid levels) or calcify.'],
   p:['Septations, nodules or a thick wall: think of a biliary cystic neoplasm or an abscess, not a simple cyst.','Lesions too small to characterize on CT: MRI with heavily T2-weighted images solves most of them.'],
@@ -907,7 +906,7 @@ function matrixPick(ri,ci){if(S.drill)return;const row=matrixRows()[ri];const k=
 function mkCards(){
   const host=$('#lcards');host.innerHTML='';
   for(const k of LORDER){const c=CARDS[k],d=document.createElement('div');d.className='lcard';d.id='card-'+k;
-    const cases=!SHOW_CASES?'':c.cases.map(([title,imgs])=>`<div class="grp">${title}</div><div class="strip">${imgs.map(([f,cap])=>`<figure data-src="${CASEDIR}${f}.jpg" data-cap="${LESDEF[k].name}: ${cap}"><img src="${CASEDIR}${f}.jpg" alt="${LESDEF[k].name}, ${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('')}</div>`).join('');
+    const cases=c.cases.map(([title,imgs])=>`<div class="grp">${title}</div><div class="strip">${imgs.map(([f,cap])=>`<figure data-src="${CASEDIR}${f}.jpg" data-cap="${LESDEF[k].name}: ${cap}"><img src="${CASEDIR}${f}.jpg" alt="${LESDEF[k].name}, ${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('')}</div>`).join('');
     d.innerHTML=`<h3>${LESDEF[k].name}</h3><p style="font-family:var(--read);font-weight:600;margin-bottom:8px">${c.lead}</p>
       <div class="cols"><div><ul>${c.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="grp">Pitfalls</div><ul>${c.p.map(x=>`<li>${x}</li>`).join('')}</ul>
       <button class="mini primary" data-load="${k}">Load in the viewer</button></div>

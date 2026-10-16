@@ -178,7 +178,7 @@ h2 .totop:hover{color:var(--amber)}
 <h1>Hepatobiliary contrast agents</h1>
 <p class="lede">Gadoxetate (Eovist, Primovist) and gadobenate (MultiHance) next to a standard extracellular agent, on the same liver and the same lesions. Scrub from the arterial phase to two hours, watch hepatocytes take up the agent and excrete it into the bile, and see why FNH lights up, adenomas and metastases go dark, hemangiomas "wash out" when they do not, and an early HCC can show itself before it turns hypervascular.</p>
 
-<nav class="secnav" id="secnav" aria-label="Sections"><a href="#viewer">Viewer</a><a href="#matrixH">All together now</a><a href="#agentsH">Three agents</a><a href="#mechH">How it works</a><a href="#keyH">Key questions</a><a href="#protoH">Protocol</a><a href="#drillsH">Drills</a><a href="#quizH">Quiz</a><a href="#refsH">References</a></nav>
+<nav class="secnav" id="secnav" aria-label="Sections"><a href="#viewer">Viewer</a><a href="#matrixH">All together now</a><a href="#agentsH">Three agents</a><a href="#mechH">How it works</a><a href="#keyH">Key questions</a><a href="#protoH">Protocol</a><a href="#casesH">Cases</a><a href="#drillsH">Drills</a><a href="#quizH">Quiz</a><a href="#refsH">References</a></nav>
 
 <div class="stage" id="viewer">
   <div class="imgcol">
@@ -274,6 +274,10 @@ h2 .totop:hover{color:var(--amber)}
   <ul id="protoTips" class="read"></ul>
 </div>
 
+<h2 id="casesH">Cases</h2>
+<p class="read">From the author's teaching files, de-identified. Click an image to enlarge it.</p>
+<div id="cases2"></div>
+
 <h2 id="drillsH">Drills</h2>
 <div class="drills" id="drills"></div>
 
@@ -282,7 +286,7 @@ h2 .totop:hover{color:var(--amber)}
 
 <h2 id="refsH">References</h2>
 <ol class="refs" id="refs"></ol>
-<p class="foot">Teaching simulation. Agent kinetics are idealized: uptake, excretion and timing vary with dose, injection rate, field strength, sequence parameters and liver function. LI-RADS and stepwise carcinogenesis are covered in the HCC lesson. For teaching only; not for clinical use.</p>
+<p class="foot">Teaching simulation. Agent kinetics are idealized: uptake, excretion and timing vary with dose, injection rate, field strength, sequence parameters and liver function. Case images are from the author's teaching files and have been de-identified. LI-RADS and stepwise carcinogenesis are covered in the HCC lesson. For teaching only; not for clinical use.</p>
 </div>
 <div class="lb" id="lb" hidden><div><img id="lbImg" alt=""><p id="lbCap"></p></div></div>
 <script>
@@ -769,7 +773,6 @@ const AGINFO={
  gdx:'<b>Gadoxetate.</b> 0.025 mmol/kg (0.1 mL/kg), with about twice the T1 relaxivity. About 50% is taken up by hepatocytes (OATP1B1/B3) and excreted into bile (MRP2); the rest by the kidneys. Hepatobiliary phase at about 20 min.',
  gdb:'<b>Gadobenate.</b> 0.05–0.1 mmol/kg, with higher relaxivity than standard agents. Dynamic phases behave like an extracellular agent; only 3–5% is taken up and excreted into bile. Hepatobiliary phase at 1–3 h.'};
 const CASEDIR='cases/';
-const SHOW_CASES=false; // real patient case images are not published on this site (see CLAUDE.md)
 const TOPICS=[
  {t:'FNH versus adenoma',p:'With extracellular agents both are hypervascular and fade to near isointensity. In the hepatobiliary phase, FNH is iso- or hyperintense in over 90% of cases, while most adenomas are hypointense. Exceptions: some inflammatory and β-catenin adenomas take up the agent.',
   b:[['FNH, hepatobiliary phase',{type:'fnh',var:'scar',ag:'gdx',t:1200}],['HNF1α adenoma, hepatobiliary phase',{type:'aden',var:'hnf',ag:'gdx',t:1200}],['β-catenin adenoma, hepatobiliary phase',{type:'aden',var:'bcat',ag:'gdx',t:1200}],['FNH with gadobenate at 90 min',{type:'fnh',var:'scar',ag:'gdb',t:5400}]]},
@@ -1121,7 +1124,7 @@ function drawProto(){
 function protoCursor(){const l=document.getElementById('pcur');if(!l)return;const P=PROTO[PAG];const m=P.inj+(S.t-DLY)/60;const x=180+m*18;
   if(PAG===AG&&!S.lockAg&&m<=30.5&&seqNow()==='t1'){l.setAttribute('x1',x);l.setAttribute('x2',x);l.setAttribute('visibility','visible');}else l.setAttribute('visibility','hidden');}
 /* ---------------- cases ---------------- */
-function mkCases(){if(!SHOW_CASES)return;const host=$('#cases2');host.innerHTML='';
+function mkCases(){const host=$('#cases2');host.innerHTML='';
   CASES2.forEach(([title,imgs])=>{const d=document.createElement('div');d.className='lcard';
     d.innerHTML=`<h3>${title}</h3><div class="strip">${imgs.map(([f,cap])=>`<figure data-src="${CASEDIR}${f}.jpg" data-cap="${title}: ${cap}" class="${f.startsWith('fig-')?'wide':''}"><img src="${CASEDIR}${f}.jpg" alt="${title}, ${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('')}</div>`;host.appendChild(d);});
   host.querySelectorAll('figure[data-src]').forEach(f=>f.onclick=()=>{$('#lbImg').src=f.dataset.src;$('#lbImg').alt=f.dataset.cap;$('#lbCap').textContent=f.dataset.cap;$('#lb').hidden=false;});}

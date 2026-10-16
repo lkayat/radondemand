@@ -195,7 +195,7 @@ h2 .totop:hover{color:var(--amber)}
 <h1>HCC: from fibrosis to LI-RADS and treatment</h1>
 <p class="lede">The natural history of hepatocellular carcinoma has a handful of checkpoints where imaging makes the decision: is there fibrosis, is this patient at risk, is that nodule HCC, how far has it spread, and did the treatment work. This lesson follows a liver along that path, from chronic injury to stepwise carcinogenesis, LI-RADS categorization, staging and treatment response.</p>
 
-<nav class="secnav" id="secnav" aria-label="Sections"><a href="#flowH">Map</a><a href="#secA">1 Fibrosis</a><a href="#secB">2 Carcinogenesis</a><a href="#secC">3 LI-RADS</a><a href="#secD">4 Treatment response</a><a href="#secE">5 US surveillance</a><a href="#secF">6 Checkpoints</a><a href="#secG">7 BCLC</a><a href="#secDrills">Drills</a><a href="#secQuiz">Quiz</a></nav>
+<nav class="secnav" id="secnav" aria-label="Sections"><a href="#flowH">Map</a><a href="#secA">1 Fibrosis</a><a href="#secB">2 Carcinogenesis</a><a href="#secC">3 LI-RADS</a><a href="#secD">4 Treatment response</a><a href="#secE">5 US surveillance</a><a href="#secF">6 Checkpoints</a><a href="#secG">7 BCLC</a><a href="#secCases">Cases</a><a href="#secDrills">Drills</a><a href="#secQuiz">Quiz</a></nav>
 <h2 id="flowH" style="margin-top:22px">The checkpoints</h2>
 <p class="read">Click any box to jump to that part of the lesson. Arrow colors show which modality usually makes each decision.</p>
 <div id="flow" class="sec"></div>
@@ -357,6 +357,10 @@ h2 .totop:hover{color:var(--amber)}
   <div class="card"><h3>Systemic therapy</h3><p>First line for advanced HCC is now immunotherapy-based (atezolizumab–bevacizumab or durvalumab–tremelimumab); sorafenib, lenvatinib and durvalumab alone are alternatives.</p></div>
 </div>
 
+<h2 id="secCases">Cases</h2>
+<p class="read">From the authors' RSNA 2018 exhibit, de-identified. Click an image to enlarge it.</p>
+<div id="cases3"></div>
+
 <h2 id="secDrills">Drills</h2>
 <div class="drills" id="drills"></div>
 <div class="task" id="task" hidden></div>
@@ -366,7 +370,7 @@ h2 .totop:hover{color:var(--amber)}
 
 <h2>References</h2>
 <ol class="refs" id="refs"></ol>
-<p class="foot">Teaching simulation based on the RSNA 2018 exhibit "Imaging-based decision-making at the main checkpoints in the natural history of HCC" (Bittencourt LK, Panizza P, Coelho F, Leidersnaider C, Felippe R, Cunha G, Sabaneeff N), updated to LI-RADS CT/MRI v2018, LI-RADS treatment response v2024, LI-RADS US surveillance v2024 and BCLC 2022. The decision tools follow the published algorithms in simplified form; always check the official ACR documents and your multidisciplinary team. Synthetic images are idealized. For teaching only; not for clinical use.</p>
+<p class="foot">Teaching simulation based on the RSNA 2018 exhibit "Imaging-based decision-making at the main checkpoints in the natural history of HCC" (Bittencourt LK, Panizza P, Coelho F, Leidersnaider C, Felippe R, Cunha G, Sabaneeff N), updated to LI-RADS CT/MRI v2018, LI-RADS treatment response v2024, LI-RADS US surveillance v2024 and BCLC 2022. The decision tools follow the published algorithms in simplified form; always check the official ACR documents and your multidisciplinary team. Synthetic images are idealized; case images are de-identified. For teaching only; not for clinical use.</p>
 </div>
 <div class="lb" id="lb" hidden><div><img id="lbImg" alt=""><p id="lbCap"></p></div></div>
 <script>
@@ -1147,7 +1151,6 @@ function initG(){const map={bN:'n',bS:'s'};for(const id in map){$('#'+id).value=
   $('#bPS').value=BC.ps;$('#bPS').onchange=e=>{BC.ps=e.target.value;bUpdate();};$('#bLF').value=BC.lf;$('#bLF').onchange=e=>{BC.lf=e.target.value;bUpdate();};bUpdate();}
 /* ================= cases ================= */
 const CASEDIR='cases/';
-const SHOW_CASES=false; // real patient case images are not published on this site (see CLAUDE.md)
 const CASES3=[
  ['Chronic liver disease: morphology (MRI, T2)',[['cir-t2a','T2'],['cir-t2-outline','Caudate and lateral segment hypertrophy, right lobe atrophy (outlines)'],['cir-t2-annot','Nodular surface (arrow), right lobe atrophy (dotted), gallbladder wall thickening (arrowhead), splenomegaly (star)']]],
  ['MR elastography',[['mre-panel','Chronic hepatitis C: morphology (top); wave image, stiffness map and ROI on the magnitude image (bottom), mean 8.2 kPa: stage F4'],['mre-stages','Stiffness maps across fibrosis stages, from about 3 kPa (F1) to 15 kPa (F4)']]],
@@ -1163,7 +1166,7 @@ const CASES3=[
  ['Vascular invasion',[['tiv-pv-1','Case 1, MRI'],['tiv-pv-2','Case 1, MRI'],['tiv-ivc-1','Case 2, CT'],['tiv-ivc-2','Case 2, CT'],['tiv-atrium-1','Tumor thrombus extending to the right atrium'],['tiv-atrium-2','Tumor thrombus extending to the right atrium'],['tiv-atrium-3','Tumor thrombus extending to the right atrium']]],
  ['Recurrence after ablation (CT)',[['abl-0','Hypervascular primary tumor'],['abl-2m','2 months: avascular zone with a hyperemic halo'],['abl-3m','3 months: zone shrinking, suggesting complete response'],['abl-5m','5 months: new hypervascular area at the medial margin'],['abl-7m','7 months: growth with faint peripheral enhancement'],['abl-10m','10 months: more enhancement: recurrence (LR-TR viable)']]],
  ['Residual tumor after TACE',[['tace-pre','2 cm hyperenhancing nodule with washout and capsule, segments V/VI: LR-5'],['tace-post','After chemoembolization: mostly avascular with an eccentric nodular enhancing focus: viable tumor']]]];
-function mkCases(){if(!SHOW_CASES)return;const host=$('#cases3');host.innerHTML='';
+function mkCases(){const host=$('#cases3');host.innerHTML='';
   CASES3.forEach(([title,imgs])=>{const d=document.createElement('div');d.className='lcard';
     d.innerHTML=`<h3>${title}</h3><div class="strip">${imgs.map(([f,cap])=>`<figure data-src="${CASEDIR}${f}.jpg" data-cap="${title}: ${cap}" class="${/annot|example|mre|outline/.test(f)?'wide':''}"><img src="${CASEDIR}${f}.jpg" alt="${title}, ${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('')}</div>`;host.appendChild(d);});
   host.querySelectorAll('figure[data-src]').forEach(f=>f.onclick=()=>{$('#lbImg').src=f.dataset.src;$('#lbImg').alt=f.dataset.cap;$('#lbCap').textContent=f.dataset.cap;$('#lb').hidden=false;});}

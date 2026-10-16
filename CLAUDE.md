@@ -17,8 +17,8 @@ Audience: radiology residents learning body MRI. Tone: plain, clinically precise
 
 ## Conventions
 - Keep it static: plain HTML/CSS/JS, no framework, no build step, no npm dependencies.
-- Each lesson is ONE self-contained HTML file. Inline CSS and JS. Google Fonts allowed, always with fallbacks.
-- All images are synthetic phantoms generated in-browser (canvas). Never add real patient images.
+- Each lesson is ONE self-contained HTML file (the three liver lessons also load their `cases/` images). Inline CSS and JS. Google Fonts allowed, always with fallbacks.
+- All images are synthetic phantoms generated in-browser (canvas). Never add real patient images, with one exception approved by Leo: the three liver lessons (`focal-liver-lesions`, `hepatobiliary-agents`, `hcc-lirads`) include de-identified case images from his own teaching files (all previously shown at international conferences), stored as JPEGs in a `cases/` folder next to each lesson. Keep those filenames generic (no names, dates or ID numbers), and do not add any other real patient images without his explicit say-so.
 - Landing page: fonts Newsreader + Public Sans; light/dark via CSS variables; lesson list is data-driven from `LESSONS`.
 - Lessons were originally built as claude.ai artifacts (no browser storage APIs, no network calls). Keep it that way.
 - Check mobile (390px) and dark mode after edits.
@@ -45,4 +45,4 @@ When Leo hands over a revised lesson file (exported from claude.ai), re-apply th
 - Footer disclaimer ends with "For teaching only; not for clinical use."
 - Doppler submodules are added inside `lessons/doppler-console/` (one catalog entry); no placeholder entries on the landing page.
 - Landing page filters are Type (physics, ultrasound, clinical) and Organ; the "New" badge is automatic for lessons whose `added` date is within `NEW_DAYS` (10) days.
-- Exports of the three liver lessons (focal-liver-lesions, hepatobiliary-agents, hcc-lirads) reference real, de-identified patient case images in a `cases/` folder. These are not published: each file has `const SHOW_CASES=false;`, and the Cases sections are removed. Re-apply that when updating them, unless Leo approves publishing the images.
+- When re-exporting the three liver lessons, refresh their `cases/` folder from the artifact's published files too (Artifact `read` with `paths`), and check the filenames stay generic.
