@@ -45,3 +45,4 @@ When Leo hands over a revised lesson file (exported from claude.ai), re-apply th
 - Footer disclaimer ends with "For teaching only; not for clinical use."
 - Doppler submodules are added inside `lessons/doppler-console/` (one catalog entry); no placeholder entries on the landing page.
 - Landing page filters are Type (physics, ultrasound, clinical) and Organ; the "New" badge is automatic for lessons whose `added` date is within `NEW_DAYS` (10) days.
+- Exports of the three liver lessons (focal-liver-lesions, hepatobiliary-agents, hcc-lirads) reference real, de-identified patient case images in a `cases/` folder. These are not published: each file has `const SHOW_CASES=false;`, and the Cases sections are removed. Re-apply that when updating them, unless Leo approves publishing the images.

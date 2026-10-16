@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Focal Liver Lesion Enhancement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F1;--panel:#FFFFFF;--ink:#18222C;--muted:#5A6874;--line:#CFD6DB;--soft:#F5F7F8;--amber:#C98A0C;--cyan:#1F7F95;--rose:#B0476A;--ok:#2F7D4F;--warn:#B8621B;--bad:#B3261E;--chip-ok:#E3F1E8;--chip-warn:#FBEEDD;--chip-bad:#F8E1DF;
+  --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--read:"Literata",Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}}
+:root[data-theme="dark"]{--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}*,*::before,*::after{box-sizing:inherit}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px}h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}.lede{font-family:var(--read);font-size:18px;max-width:84ch;color:var(--muted)}.read{font-family:var(--read);max-width:84ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:16px 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}.seg.sm button{font-size:13px;padding:4px 10px;font-weight:500}
+select{font:inherit;font-size:14px;padding:4px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);min-height:48px}
+.stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(340px,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:1050px){.stage{grid-template-columns:1fr}}
+.views{background:#000;border-radius:10px;padding:10px;display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+@media (max-width:640px){.views{grid-template-columns:1fr}}
+.view{position:relative}.view .cv{position:relative;width:100%}
+.view canvas{display:block;width:100%;height:auto;image-rendering:auto;cursor:crosshair}
+.view .ov{position:absolute;inset:0;pointer-events:none}
+.vlab{color:#dfe6ea;font-size:13px;display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-variant-numeric:tabular-nums}
+.vlab input[type=range]{flex:1;accent-color:var(--amber)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.ovl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:#dfe6ea;font-size:13px;grid-column:1/-1}.ovl label{display:flex;gap:5px;align-items:center}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.grp{font-size:12.5px;color:var(--muted);margin:12px 0 4px;font-weight:700}.grp:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:132px 1fr 60px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:14px;margin:6px 0}
+.tbl{overflow-x:auto}.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tbl th{font-size:12.5px;color:var(--muted);font-weight:600}
+.big{font-family:var(--read);font-size:22px;font-weight:600}
+.g0{color:var(--ok)}.g1{color:var(--warn)}.g2{color:var(--bad)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px}.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.report{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-family:var(--read);font-size:15px;line-height:1.6;white-space:pre-wrap}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.drills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.drill{font:inherit;text-align:left;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.drill[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}.drill.done{background:var(--chip-ok)}.drill small{display:block;color:var(--muted);font-size:12px}
+.task{background:var(--panel);border-left:4px solid var(--amber);border-radius:4px;padding:12px 15px;margin-top:10px;font-family:var(--read)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.choices button{font:inherit;font-size:13.5px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.fb{font-size:14px;margin-top:8px;padding:8px 10px;border-radius:6px;font-family:var(--ui)}.fb.ok{background:var(--chip-ok)}.fb.no{background:var(--chip-warn)}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-bottom:10px}.quiz .q p{font-family:var(--read);margin-bottom:8px}
+.quiz .opts{display:flex;flex-direction:column;gap:6px}.quiz .opts button{font:inherit;font-size:14px;text-align:left;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.quiz .opts button.right{background:var(--chip-ok);border-color:var(--ok)}.quiz .opts button.wrong{background:var(--chip-bad);border-color:var(--bad)}.quiz .ex{font-size:14px;color:var(--muted);margin-top:8px}
+ol.refs{font-size:14px;color:var(--muted);padding-left:24px;max-width:98ch;line-height:1.55}ol.refs li{margin-bottom:6px}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:92ch}.hint{font-size:12.5px;color:var(--muted)}
+.sc select{font-size:13px;max-width:100%}
+</style>
+<style>
+.views2{background:#000;border-radius:10px;padding:10px}
+.slicewrap{position:relative;width:100%;aspect-ratio:360/270}
+.slicewrap canvas{position:absolute;inset:0;width:100%;height:100%}
+#slice{cursor:crosshair}
+.scrub{display:flex;align-items:center;gap:10px;margin-top:8px;color:#dfe6ea;font-size:13px;flex-wrap:wrap}
+.scrub input[type=range]{flex:1;min-width:180px;accent-color:var(--amber)}
+.scrub button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid #3a4652;background:#1b242d;color:#dfe6ea;cursor:pointer}
+.scrub button[aria-pressed="true"]{background:#dfe6ea;color:#000}
+.tread{color:#fff;font-variant-numeric:tabular-nums;font-weight:600;flex:0 0 230px;width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phasebar{position:relative;height:16px;margin:2px 0 0;border-radius:3px;overflow:hidden;background:#1b242d}
+.phasebar span{position:absolute;top:0;bottom:0;font-size:10.5px;color:#0b1116;padding-left:3px;white-space:nowrap;overflow:hidden;line-height:16px}
+.curvebox{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;margin-top:6px}
+.legend label{display:flex;align-items:center;gap:5px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px}
+.matrix{background:#000;border-radius:10px;padding:10px;overflow-x:auto}
+.matrix table{border-collapse:separate;border-spacing:5px;margin:0 auto}
+.matrix th{color:#dfe6ea;font-size:12.5px;font-weight:600;padding:2px 4px;text-align:center;white-space:nowrap}
+.matrix th.rowh{text-align:right;color:#9fb0bb;font-weight:600;width:132px;min-width:132px}
+.matrix tr.now th.rowh{color:#F2C14E}
+.matrix td{padding:0;position:relative}
+.matrix canvas{display:block;width:92px;height:92px;border-radius:4px;border:2px solid transparent}
+.matrix tr.cur canvas{border-color:#F2C14E}
+.matrix td.hid canvas{visibility:hidden}
+.matrix td.hid::after{content:"";position:absolute;inset:0;border-radius:4px;background:#222b33}
+.mbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:#dfe6ea;font-size:13px;margin-bottom:6px}
+.mbar button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid #3a4652;background:#1b242d;color:#dfe6ea;cursor:pointer}
+.mbar label{display:flex;gap:5px;align-items:center}
+.lcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px;margin-bottom:14px}
+.lcard h3{font-size:18px;font-family:var(--read);margin-bottom:6px}
+.lcard .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px}
+@media (max-width:900px){.lcard .cols{grid-template-columns:1fr}}
+.lcard ul{margin:0 0 8px;padding-left:20px;font-family:var(--read);line-height:1.55;font-size:15px}
+.strip{display:flex;flex-wrap:wrap;gap:6px}
+.strip figure{margin:0;background:#000;border-radius:6px;overflow:hidden;cursor:zoom-in;width:132px}
+.strip img{display:block;width:132px;height:108px;object-fit:contain;background:#000}
+.strip figcaption{color:#dfe6ea;font-size:11.5px;padding:3px 6px 4px}
+.synth{display:flex;flex-wrap:wrap;gap:6px}
+.synth figure{margin:0;background:#000;border-radius:6px;overflow:hidden;width:88px}
+.synth canvas{display:block;width:88px;height:88px}
+.synth figcaption{color:#dfe6ea;font-size:11.5px;padding:3px 6px 4px}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.lb img{max-width:min(92vw,900px);max-height:82vh;border-radius:6px}
+.lb p{color:#fff;font-family:var(--ui);text-align:center;margin-top:8px}
+.lb div{display:flex;flex-direction:column;align-items:center}
+.algo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.algo{grid-template-columns:1fr}}
+.algo fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:0 0 10px;background:var(--panel)}
+.algo legend{font-size:13px;font-weight:700;color:var(--muted);padding:0 4px}
+.algo label{display:flex;gap:7px;align-items:center;font-size:14px;margin:3px 0}
+.ddx{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.ddx .bar{height:8px;border-radius:4px;background:var(--cyan);margin:2px 0 8px}
+.unk{display:flex;flex-wrap:wrap;gap:6px;background:#000;padding:8px;border-radius:8px;margin-top:8px}
+.unk figure{margin:0;width:104px}.unk canvas{width:104px;height:104px;display:block;border-radius:4px}.unk figcaption{color:#dfe6ea;font-size:11.5px;text-align:center}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:var(--muted);margin-left:6px;font-family:var(--ui);font-weight:500;vertical-align:middle}
+#les,#var{width:260px;max-width:72vw}
+#ro{min-height:44px}
+.slot{display:inline-grid}.slot>*{grid-area:1/1}
+</style>
+<style>
+/* ---- navigation and workbench layout (shared by lessons 1 and 2) ---- */
+.secnav{position:sticky;top:0;z-index:30;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin:14px -20px 0;padding:7px 20px}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a{flex:0 0 auto;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.secnav a:hover{color:var(--ink);background:var(--soft)}.secnav a.on{color:var(--bg);background:var(--ink)}
+h2[id],#viewer{scroll-margin-top:52px}
+h2 .totop{font-family:var(--ui);font-size:12.5px;font-weight:500;color:var(--muted);text-decoration:none;margin-left:12px;white-space:nowrap;vertical-align:middle}
+h2 .totop:hover{color:var(--amber)}
+/* viewer workbench: image stays put on the left, everything that drives it sits on the right */
+.stage{grid-template-columns:minmax(0,1.55fr) minmax(360px,1fr);margin-top:16px}
+.imgcol{position:sticky;top:50px}
+.imgcol .slicewrap{width:min(100%,max(420px,calc((100vh - 236px)*1.3333)));margin:0 auto}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.side .panel{margin:0}
+.ctlpanel .bar{margin:0;gap:8px 12px}.ctlpanel .bar+.bar{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ctlpanel select{max-width:100%}.ctlpanel label{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.side .task{margin:0}.side .note{margin:0}
+.insp{color:#dfe6ea;font-size:13px;line-height:1.45;margin-top:8px;padding:6px 4px 0;border-top:1px solid #26313b;min-height:40px}
+.insp .hint{color:#9fb0bb}.insp b{color:#fff}
+.miniT{display:flex;align-items:center;gap:8px;flex:1 1 260px}.miniT input{flex:1;min-width:120px;accent-color:#F2C14E}.miniT output{color:#F2C14E;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ddx{position:sticky;top:60px}
+.backpill{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:45;font:inherit;font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--ink);color:var(--bg);cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.backpill[hidden]{display:none}
+@media (max-width:1050px){
+  .stage{display:flex;flex-direction:column}
+  .side{display:contents}.side>*{order:2;width:100%;box-sizing:border-box}.side>.ctlpanel{order:-1}
+  .imgcol{position:static;width:100%}.imgcol .slicewrap{width:100%}
+  .ddx{position:static}
+}
+.ctlpanel .seg{flex-wrap:wrap}.ctlpanel .seg button{white-space:nowrap}
+.task button{font-family:var(--ui)}
+.proto,.mech{overflow-x:auto}
+@media (max-width:640px){.proto svg{min-width:600px}.mech svg{min-width:520px}}
+@media (max-width:1050px){.side>.task{order:-3}.side>.ctlpanel{order:-2}.imgcol{order:-1}}
+.ctlpanel label:has(>input[type=checkbox]){flex-wrap:nowrap;align-items:flex-start}
+@media (max-width:1050px){.ctlpanel label[style*="visibility: hidden"]{display:none}}
+.algo{align-items:start}
+</style>
+<style>.back{font-size:14px;margin:0 0 16px}.back a{color:var(--muted);text-decoration:none}.back a:hover{color:var(--ink);text-decoration:underline}.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>Focal liver lesions: dynamic enhancement</h1>
+<p class="lede">Seven lesions, one injection. Scrub through a multiphase MRI or CT with an extracellular contrast agent and watch a cyst, hemangioma, FNH, adenoma, HCC, colorectal metastasis and intrahepatic cholangiocarcinoma fill, flash, fade and wash out against the same liver, then compare them all at once in the "All together now" matrix.</p>
+
+<nav class="secnav" id="secnav" aria-label="Sections"><a href="#viewer">Viewer</a><a href="#matrixH">All together now</a><a href="#phasesH">Phases</a><a href="#lesionsH">Lesions</a><a href="#approachH">Approach</a><a href="#drillsH">Drills</a><a href="#quizH">Quiz</a><a href="#refsH">References</a></nav>
+
+<div class="stage" id="viewer">
+  <div class="imgcol">
+    <div class="views2">
+      <div class="slicewrap"><canvas id="cv" width="432" height="324" aria-label="Axial slice through the liver"></canvas><canvas id="ov" width="1296" height="972" style="pointer-events:none"></canvas></div>
+      <div class="scrub">
+        <button id="play" aria-label="Play">▶ Play</button>
+        <input type="range" id="t" min="0" max="300" step="1" aria-label="Time after injection">
+        <span class="tread" id="tread"></span>
+      </div>
+      <div class="phasebar" id="pbar"></div>
+      <div class="scrub" id="phb">
+        <button data-t="0">Pre</button><button data-t="20">Early arterial</button><button data-t="35">Late arterial</button><button data-t="70">Portal venous</button><button data-t="180">Delayed 3 min</button>
+        <label style="display:flex;gap:5px;align-items:center;margin-left:auto"><input type="checkbox" id="oLab" checked> Labels</label>
+      </div>
+      <div class="insp" id="insp"><span class="hint">Point inspector: click the image to identify a tissue and read its signal or attenuation.</span></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="task" id="task" hidden></div>
+    <div class="panel ctlpanel">
+<div class="bar">
+  <span class="seg" id="mod"><button data-v="mri">MRI</button><button data-v="ct">CT</button></span>
+  <span class="slot"><span class="seg sm" id="seq"><button data-v="t1">T1 dynamic</button><button data-v="t2">T2 FS</button><button data-v="dwi">DWI b800</button><button data-v="adc">ADC</button><button data-v="ip">In-phase</button><button data-v="op">Opposed-phase</button></span>
+  <label id="winL" style="align-self:center">Window <select id="win"><option value="soft">Soft tissue (W400 L50)</option><option value="liver">Liver (W170 L80)</option></select></label></span>
+</div>
+<div class="bar" style="margin-top:0">
+  <label>Lesion <select id="les"></select></label>
+  <label>Variant <select id="var"></select></label>
+  <label id="multiL"><input type="checkbox" id="multi"> Multiple</label>
+  <span class="seg sm" id="bg"><button data-v="normal">Normal liver</button><button data-v="steatotic">Steatotic</button><button data-v="cirrhotic">Cirrhotic</button></span>
+</div>
+    </div>
+    <div class="note" id="note"></div>
+    <div class="curvebox">
+      <h3>Time–enhancement curves</h3>
+      <svg id="curve" viewBox="0 0 460 250" style="width:100%;height:auto;display:block;cursor:crosshair" role="img" aria-label="Enhancement curves over time"></svg>
+      <div class="legend" id="legend"></div>
+      <div id="ro" style="margin-top:10px;font-size:14px"></div>
+      <div class="ctl" style="margin-top:10px"><label for="dly">Circulation delay</label><input type="range" id="dly" min="0" max="15" step="1"><output id="dlyo"></output></div>
+      <p class="hint" style="margin:0">Slow circulation (low cardiac output) shifts every curve to the right. Phase buttons follow the bolus, as bolus tracking does.</p>
+    </div>
+  </div>
+</div>
+
+<h2 id="matrixH">All together now</h2>
+<p class="read">Every lesion, every phase, side by side, rendered live from the same model and the same injection as the viewer above. The highlighted row is the phase you are on, and the bottom row follows the time scrubber. Use "Build it row by row" to reveal one phase at a time, as in a lecture, and click any tile to load that lesion and phase above.</p>
+<div class="matrix">
+  <div class="mbar">
+    <button id="mBuild">Build it row by row</button>
+    <label><input type="checkbox" id="mExtra"> Add T2, DWI, ADC and chemical-shift rows</label>
+    <label><input type="checkbox" id="mClean"> Clean (no noise or texture)</label>
+    <label class="miniT">Bottom row <input type="range" aria-label="Time for the bottom row"><output></output></label>
+    <span id="mInfo" style="color:#9fb0bb"></span>
+  </div>
+  <table id="mtx"></table>
+</div>
+
+<h2 id="phasesH">Phases of a dynamic liver study</h2>
+<div class="cards">
+  <div class="card"><h3>Pre-contrast</h3><p>The baseline. You need it to know whether a lesion is truly enhancing or already bright, such as T1-bright hemorrhage in an adenoma or a fat-containing nodule. On CT, it shows calcification and how dense the lesion is.</p></div>
+  <div class="card"><h3>Early arterial, about 15–25 s</h3><p>Arteries are bright and the portal vein is still dark. This phase is good for an arterial map before surgery, but too early for lesions, because hypervascular tumors have not filled yet.</p></div>
+  <div class="card"><h3>Late arterial, about 30–40 s</h3><p>Hepatic arteries are fully enhanced and the portal vein is starting to fill, but the hepatic veins are not yet. Hypervascular lesions (FNH, adenoma, HCC, hypervascular metastases, flash-filling hemangioma) are most conspicuous here. Liver protocols aim for this phase.</p></div>
+  <div class="card"><h3>Portal venous, about 60–80 s</h3><p>The portal and hepatic veins are enhanced and the liver is at peak enhancement. This is the best phase to find hypovascular lesions such as colorectal metastases. Hypervascular lesions start to fade, and washout begins to show.</p></div>
+  <div class="card"><h3>Delayed (equilibrium), about 3 min</h3><p>Contrast is in equilibrium between blood and interstitium, and the liver starts to fade. Capsule appearance, washout, and delayed enhancement of fibrous tissue (FNH scar, cholangiocarcinoma, fibrosis) are best shown here.</p></div>
+  <div class="card"><h3>Washout versus delayed enhancement</h3><p>Both are relative to the liver. Washout means the lesion becomes darker than liver after being bright, because cellular tumor with little interstitium loses contrast. Delayed enhancement means a lesion keeps gaining contrast as it leaks into a large fibrous interstitium. HCC washes out; cholangiocarcinoma and fibrous scars fill in.</p></div>
+</div>
+
+<h2 id="lesionsH">The lesions</h2>
+<p class="read">Each card has the key features and a simulated strip from this model.</p>
+<div id="lcards"></div>
+
+<h2 id="approachH">A simple approach</h2>
+<p class="read">Start from the clinical setting (chronic liver disease, known cancer, hormone exposure), then let the imaging features narrow the list. Tick what you see and the differential reorders. This is a teaching aid, not a diagnostic score.</p>
+<div class="algo">
+  <div id="algoIn"></div>
+  <div class="ddx" id="algoOut"></div>
+</div>
+
+<h2 id="drillsH">Drills</h2>
+<div class="drills" id="drills"></div>
+
+<h2 id="quizH">Quick quiz</h2>
+<div class="quiz" id="quiz"></div>
+
+<h2 id="refsH">References</h2>
+<ol class="refs" id="refs"></ol>
+<p class="foot">Teaching simulation. The liver and its lesions are a simplified model, and the enhancement curves are idealized versions of typical extracellular-agent kinetics, so real lesions vary. Hepatobiliary agents (gadoxetate) and LI-RADS are covered in separate lessons. For teaching only; not for clinical use.</p>
+</div>
+<div class="lb" id="lb" hidden><div><img id="lbImg" alt=""><p id="lbCap"></p></div></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+function h2(i,j,s){let h=(i*374761393+j*668265263+s*1442695041)|0;h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return (h>>>0)/4294967296;}
+function vnoise(x,y,s){const i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j;const ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy);
+  const a=h2(i,j,s),b=h2(i+1,j,s),c=h2(i,j+1,s),d=h2(i+1,j+1,s);return a+(b-a)*ux+(c-a)*uy+(a-b-c+d)*ux*uy;}
+function fbm(x,y,s){return 0.55*vnoise(x,y,s)+0.3*vnoise(x*2.03,y*2.03,s+7)+0.15*vnoise(x*4.1,y*4.1,s+13);}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+
+/* ---------------- contrast kinetics (extracellular gadolinium or iodine) ---------------- */
+let DLY=0; // circulation delay of this patient, s
+const gv=(t,t0,tp,a)=>{if(t<=t0)return 0;const x=(t-t0)/tp;return Math.pow(x,a)*Math.exp(a*(1-x));};
+const eqA=t=>t<=16?0:0.3*(1-Math.exp(-(t-16)/22))*Math.exp(-Math.max(0,t-60)/520);
+const Ca=t=>gv(t,14,11,3)+0.28*gv(t,30,20,2.2)+eqA(t);
+const Cp=t=>0.55*gv(t,21,30,2.4)+eqA(t-8);
+const Chv=t=>0.42*gv(t,30,34,2.4)+eqA(t-14);
+const Cl=t=>0.05*Ca(t-2)+0.22*Cp(t-3)+0.25*eqA(t-20);
+const rise=(t,t0,tau)=>t<=t0?0:1-Math.exp(-(t-t0)/tau);
+const hf=(t,t0,tau,g)=>t<=t0?0:1-Math.exp(-Math.pow((t-t0)/tau,g));
+const HEMF={classic:t=>hf(t,18,61,1.6),flash:t=>hf(t,14,7,1.3),slow:t=>hf(t,20,190,1.5),giant:t=>hf(t,18,72,1.6)};
+function comps(T,les){
+  const t=T-DLY,a=Ca(t),p=Cp(t),hv=Chv(t),l=Cl(t),art=gv(t,15,14,2.2);
+  const hv0=les&&les.type==='hem'?(HEMF[les.var]||HEMF.classic)(t):0;
+  // kidney: corticomedullary in the arterial phase, then the medulla catches up (nephrographic) and both fade together
+  const kc=0.75*Ca(t-1)+0.3*eqA(t),wN=rise(t,40,25),km=wN*1.05*kc+(1-wN)*0.5*gv(t,28,45,2);
+  return {t,a,p,hv,l,art,ha:0.95*Ca(t-1),
+    ivc:0.45*hv+0.3*gv(t,22,14,2.5)+0.55*eqA(t-12), sv:0.6*gv(t,18,22,2.4)+eqA(t-5),
+    spl:0.3*Ca(t-2)+0.08*p+0.25*eqA(t-6), splArc:gv(t,14,18,2),
+    kc, km, ku:1.3*rise(t,110,80),
+    pan:0.45*gv(t,16,18,2.4)+0.25*eqA(t-4), mus:0.05*Ca(t-3)+0.18*eqA(t-5),
+    gut:0.35*gv(t,16,20,2.2)+0.3*eqA(t), mar:0.12*Ca(t-3)+0.15*eqA(t),
+    fib:0.1*l+0.32*rise(t,30,110),
+    fnh:l+0.55*art, scar:0.02+0.3*rise(t,30,110),
+    adH:0.85*l+0.30*art, adI:0.95*l+0.5*art+0.07*rise(t,40,90),
+    hccA:0.75*gv(t,15,15,2.2), hccB:0.2*l+0.15*eqA(t-15), cap:l+0.15*rise(t,50,80),
+    pool:0.95*Ca(t-3), hemF:hv0, eq:eqA(t),
+    metRim:0.35*l+0.3*gv(t,16,16,2.2)+0.12*eqA(t), metCore:0.22*rise(t,60,170),
+    netRim:0.2*l+0.75*gv(t,15,13,2.2)+0.1*eqA(t),
+    iccRim:0.35*l+0.33*gv(t,16,16,2.2)+0.12*eqA(t), iccCore:0.4*rise(t,25,120),
+    thad:0.16*gv(t,15,14,2.2)};
+}
+
+/* ---------------- tissues ---------------- */
+const TIS={AIR:0,FAT:1,MUS:2,BONE:3,MAR:4,CSF:5,AO:6,IVC:7,PV:8,HV:9,HA:10,SV:11,LIV:12,SPL:13,KC:14,KM:15,KU:16,PAN:17,GUTW:18,GFL:19,GB:20,ASC:21,
+  CYST:30,HEM:31,CLEFT:32,FNH:33,SCAR:34,ADH:35,ADBL:36,HCC:37,CAP:38,MRIM:39,MCORE:40,IRIM:41,ICORE:42,DUCT:43,CALC:44,ADI:45,HCCF:46,MMUC:47,NRIM:48};
+const TNAME=['Air','Fat','Muscle','Cortical bone','Bone marrow','CSF','Aorta','Inferior vena cava','Portal vein','Hepatic vein','Hepatic artery','Splenic vein','Liver','Spleen','Renal cortex','Renal medulla','Urine / collecting system','Pancreas','Bowel wall','Stomach contents','Gallbladder','Ascites'];
+Object.assign(TNAME,{30:'Cyst',31:'Hemangioma',32:'Hemangioma: non-filling central cleft',33:'FNH',34:'FNH central scar',35:'Adenoma (HNF1α, fat-containing)',36:'Adenoma: hemorrhage',37:'HCC',38:'HCC capsule / septum',39:'Metastasis: viable rim',40:'Metastasis: necrotic / fibrotic core',41:'Cholangiocarcinoma: cellular rim',42:'Cholangiocarcinoma: fibrous core',43:'Dilated bile duct',44:'Calcification',45:'Adenoma (inflammatory)',46:'HCC: fat-containing nodule',47:'Metastasis: mucinous core',48:'Metastasis: hypervascular rim'});
+//            t1fs  t2fs  adc  ip(T1 dual echo) w    f    hu
+const PROP=[];function P(id,t1,t2,adc,ip,w,f,hu){PROP[id]={t1,t2,adc,ip,w,f,hu};}
+P(0,0,0,0,0,0,0,-1000);P(1,.07,.07,1.5,.9,.05,.95,-105);P(2,.30,.16,1.4,.42,1,0,52);P(3,.03,.03,.3,.05,1,0,900);P(4,.22,.18,.5,.7,.52,.45,170);
+P(5,.05,.95,3.0,.12,1,0,8);for(const id of [6,7,8,9,10,11])P(id,.18,.05,2.0,.25,1,0,42);
+P(12,.38,.20,1.15,.55,.97,.03,58);P(13,.28,.45,.8,.45,1,0,48);P(14,.32,.40,2.0,.45,1,0,32);P(15,.22,.55,2.1,.38,1,0,30);P(16,.05,.95,2.8,.12,1,0,5);
+P(17,.55,.25,1.3,.6,.97,.03,45);P(18,.30,.22,1.3,.45,1,0,45);P(19,.06,.85,2.8,.1,1,0,10);P(20,.08,.92,2.9,.12,1,0,5);P(21,.05,.90,3.0,.1,1,0,6);
+P(30,.07,.97,3.0,.1,1,0,4);P(31,.16,.78,1.9,.25,1,0,40);P(32,.10,.95,2.4,.15,1,0,20);P(33,.34,.22,1.12,.5,.98,.02,56);P(34,.22,.55,1.5,.3,1,0,40);
+P(35,.35,.26,1.1,.62,.65,.35,30);P(36,.75,.50,.9,.7,1,0,65);P(37,.30,.32,.85,.48,.97,.03,48);P(38,.30,.30,1.2,.45,1,0,50);
+P(39,.24,.40,.85,.38,1,0,45);P(40,.18,.55,1.5,.3,1,0,30);P(41,.25,.45,.9,.4,1,0,45);P(42,.22,.28,1.2,.38,1,0,42);P(43,.06,.90,2.8,.12,1,0,8);
+P(44,.05,.05,.3,.05,1,0,450);P(45,.32,.42,1.15,.52,.97,.03,50);P(46,.30,.30,.9,.55,.72,.28,28);P(47,.10,.86,2.1,.15,1,0,22);P(48,.24,.42,.8,.38,1,0,44);
+const LIVBASE={...PROP[12]};
+function applyBg(bg){Object.assign(PROP[12],LIVBASE);
+  if(bg==='steatotic'){PROP[12].w=.76;PROP[12].f=.24;PROP[12].hu=32;PROP[12].t1=.36;}
+  if(bg==='cirrhotic'){PROP[12].t1=.36;PROP[12].t2=.22;PROP[12].adc=1.0;PROP[12].hu=55;}
+}
+const LESION_FAMILY=new Set([30,31,32,33,34,35,36,37,38,39,40,41,42,44,45,46,47,48]);
+const MINOR=new Set([32,34,36,38,44]);
+const LESION_MAIN={30:1,31:1,33:1,35:1,37:1,39:1,41:1,45:1,46:1,48:1,40:1,42:1,47:1};
+
+/* ---------------- geometry ---------------- */
+function ell(x,y,cx,cy,rx,ry,rot){const c=Math.cos(rot||0),s=Math.sin(rot||0),dx=x-cx,dy=y-cy,u=(dx*c+dy*s)/rx,v=(-dx*s+dy*c)/ry;return Math.sqrt(u*u+v*v);}
+function segd(x,y,ax,ay,bx,by){const vx=bx-ax,vy=by-ay,wx=x-ax,wy=y-ay;const t=clamp((wx*vx+wy*vy)/(vx*vx+vy*vy),0,1);const dx=wx-t*vx,dy=wy-t*vy;return Math.sqrt(dx*dx+dy*dy);}
+// tapered, gently curved tube: returns distance scaled so that the radius shrinks to 70% at the far end
+function segt(x,y,s){const ax=s[0],ay=s[1],bx=s[2],by=s[3],vx=bx-ax,vy=by-ay,L2=vx*vx+vy*vy;let t=clamp(((x-ax)*vx+(y-ay)*vy)/L2,0,1);const L=Math.sqrt(L2),nx=-vy/L,ny=vx/L,bow=0.12*L*Math.sin(Math.PI*t)*(s[4]>0.3?0.3:1)*Math.sin(ax*3+by);
+  const px=ax+t*vx+nx*bow,py=ay+t*vy+ny*bow;return Math.hypot(x-px,y-py)/(1-0.3*t);}
+function smin(a,b,k){const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*0.25;}
+const BODY={cx:0,cy:0.4,rx:16.5,ry:12.5};
+const PVS=[[-0.6,1.8,-2.8,1.0,.62],[-2.8,1.0,-6.0,1.3,.48],[-6.0,1.3,-10.5,3.2,.32],[-10.5,3.2,-12.6,4.6,.2],[-6.0,1.3,-5.6,-1.5,.28],[-5.6,-1.5,-5.4,-4.5,.2],
+  [-2.8,1.0,-0.8,-1.6,.36],[-0.8,-1.6,0.4,-3.8,.34],[0.4,-3.8,3.6,-4.6,.2],[0.4,-3.8,2.2,-6.6,.17],[-8.4,2.4,-9.0,5.6,.18]];
+const HAS=[[-4.0,0.55,.12],[-0.4,-1.1,.11],[-5.2,-1.6,.09],[-8.0,2.0,.09]];
+const HVS=[[-3.6,2.6,-8.0,6.0,.3],[-8.0,6.0,-11.5,7.6,.2],[-4.2,-0.4,-4.8,-3.3,.26],[-12.4,-1.0,-13.4,1.6,.22],[1.6,-2.2,4.6,-2.8,.2]];
+function liverF(x,y,cirr){
+  const q1=cirr?ell(x,y,-6.6,0.9,7.0,8.9,0):ell(x,y,-7.0,0.9,7.9,9.7,0);
+  const q2=cirr?ell(x,y,1.6,-5.0,7.6,3.5,-0.18):ell(x,y,1.2,-5.0,6.8,3.1,-0.18);
+  const q3=cirr?ell(x,y,-1.5,1.6,2.7,2.8,0):ell(x,y,-1.6,1.6,1.9,2.1,0);
+  let f=smin(smin(q1,q2,0.3),q3,0.25);
+  if(cirr)f+=0.09*(vnoise(x*0.95+3,y*0.95,5)-0.5)+0.04*(vnoise(x*2.2,y*2.2,9)-0.5);
+  return f;
+}
+const LESDEF={
+  cyst:{name:'Simple cyst',cx:-8.4,cy:-2.6,R:1.05,lob:0.02,vars:{simple:'Simple cyst'}},
+  hem:{name:'Hemangioma',cx:-8.4,cy:-2.6,R:1.9,lob:0.07,vars:{classic:'Classic (centripetal fill-in)',flash:'Flash-filling (small)',slow:'Slow-filling',giant:'Giant with central cleft'}},
+  fnh:{name:'Focal nodular hyperplasia',cx:-8.4,cy:-2.6,R:1.9,lob:0.06,vars:{scar:'Classic with central scar',noscar:'Small, no visible scar'}},
+  aden:{name:'Hepatocellular adenoma',cx:-8.4,cy:-2.6,R:2.1,lob:0.03,vars:{hnf:'HNF1α-inactivated (fat)',inflam:'Inflammatory',hemor:'Inflammatory with hemorrhage'}},
+  hcc:{name:'Hepatocellular carcinoma',cx:-8.4,cy:-2.6,R:1.8,lob:0.05,vars:{classic:'Classic (washout + capsule)',fat:'Fat-containing',small:'Small, no capsule'}},
+  met:{name:'Colorectal metastasis',cx:-8.4,cy:-2.6,R:1.45,lob:0.08,vars:{crc:'Colorectal (rim, target)',muc:'Mucinous colorectal',net:'Hypervascular (e.g., neuroendocrine)'}},
+  icc:{name:'Intrahepatic cholangiocarcinoma',cx:-8.85,cy:-3.4,R:2.2,lob:0.12,vars:{mass:'Mass-forming'}}
+};
+const LORDER=['cyst','hem','fnh','aden','hcc','met','icc'];
+const LSHORT={cyst:'Cyst',hem:'Hemangioma',fnh:'FNH',aden:'Adenoma',hcc:'HCC',met:'CRC met',icc:'iCCA'};
+const EXTRA_METS=[[-3.6,-4.2,.55],[-11.6,2.4,.9],[1.8,-5.6,.4],[-5.6,4.6,.65],[-12.2,-2.6,.32]];
+function buildCfg(type,vr,bg,multi,opt){
+  const d=LESDEF[type];vr=vr in d.vars?vr:Object.keys(d.vars)[0];
+  let R=d.R;if(type==='hem'&&vr==='flash')R=0.8;if(type==='hem'&&vr==='giant')R=2.5;if(type==='hcc'&&vr==='small')R=0.85;if(type==='fnh'&&vr==='noscar')R=1.15;
+  const L={type,var:vr,cx:d.cx,cy:d.cy,R,lob:d.lob,seed:LORDER.indexOf(type)*17+3,s1:1.3+LORDER.indexOf(type),s2:0.4+LORDER.indexOf(type)*0.7};
+  const les=[L];
+  if(type==='met'&&multi)for(const [x,y,r] of EXTRA_METS)les.push({type:'met',var:vr,cx:x,cy:y,R:r,lob:.06,seed:Math.round(x*7+y*3+50),s1:x,s2:y,extra:true});
+  const cfg={type,var:vr,bg,cirr:bg==='cirrhotic',les,main:L,opt:opt||{}};
+  if(type==='hem'){ // peripheral nodule centers
+    const rnd=mulberry(L.seed);L.blobs=[];const n=vr==='flash'?3:6;for(let k=0;k<n;k++){const a=k/n*6.283+(rnd()-0.5)*0.9,rr=0.74+rnd()*0.14;L.blobs.push([Math.cos(a)*rr,Math.sin(a)*rr,0.09+rnd()*0.13]);}
+  }
+  if(type==='hcc'){const rnd=mulberry(L.seed+5);L.cells=[];const n=vr==='small'?3:9;for(let k=0;k<n;k++){const a=rnd()*6.283,r=Math.sqrt(rnd())*0.8;L.cells.push([Math.cos(a)*r*L.R,Math.sin(a)*r*L.R,rnd()]);}}
+  if(type==='icc'){ // capsular retraction point and upstream ducts
+    const dx=-0.35,dy=-0.94;let s=L.R*0.6;while(s<8&&liverF(L.cx+dx*s,L.cy+dy*s,cfg.cirr)<1&&bq(L.cx+dx*s,L.cy+dy*s,2.35,1.55)<1)s+=0.05;
+    L.ret=[L.cx+dx*(s+0.15),L.cy+dy*(s+0.15)];L.retS=s;
+    L.ducts=[[L.cx-1.6,L.cy+1.3,-13.0,-0.6,.2],[-13.0,-0.6,-13.8,0.8,.15],[L.cx-0.4,L.cy+2.1,-11.6,0.9,.22],[-11.6,0.9,-12.2,3.0,.15],[L.cx-2.0,L.cy+0.2,-13.2,-3.0,.16]];
+  }
+  return cfg;
+}
+function lesionRR(L,x,y){const dx=x-L.cx,dy=y-L.cy,r=Math.sqrt(dx*dx+dy*dy),th=Math.atan2(dy,dx);
+  const Rt=L.R*(1+L.lob*(0.6*Math.sin(3*th+L.s1)+0.4*Math.sin(5*th+L.s2)));return [r/Rt,th,r,dx,dy];}
+function classLesion(L,x,y,cfg,out){
+  const [rr,th,r,dx,dy]=lesionRR(L,x,y);const capOut=L.type==='hcc'&&L.var!=='small'?1.07:1;
+  if(rr>=capOut)return false;
+  out[1]=0;out[2]=0;
+  switch(L.type){
+    case 'cyst':out[0]=TIS.CYST;return true;
+    case 'hem':{
+      if(L.var==='giant'&&rr<0.36*(1+0.35*Math.sin(4*th+1)+0.15*Math.sin(7*th))){out[0]=TIS.CLEFT;return true;}
+      let bd=9;for(const b of L.blobs){const ux=dx/L.R-b[0],uy=dy/L.R-b[1];bd=Math.min(bd,Math.sqrt(ux*ux+uy*uy)/b[2]);}
+      out[0]=TIS.HEM;out[1]=Math.min(0.16+(1-rr)+0.04*Math.sin(7*th+L.s1),0.10*bd);return true;}
+    case 'fnh':{
+      if(L.var==='scar'){if(rr<0.14){out[0]=TIS.SCAR;return true;}
+        if(rr<0.8){for(let k=0;k<5;k++){let a=th-(k*1.2566+0.3);a=Math.atan2(Math.sin(a),Math.cos(a));if(Math.abs(a)*r<0.05+0.09*(1-rr/0.8)){out[0]=TIS.SCAR;return true;}}}}
+      out[0]=TIS.FNH;return true;}
+    case 'aden':{
+      if(L.var==='hnf'){out[0]=TIS.ADH;return true;}
+      if(L.var==='hemor'){const q=ell(x,y,L.cx+0.35*L.R,L.cy+0.15*L.R,0.5*L.R,0.38*L.R,0.6)+0.12*(vnoise(x*3,y*3,4)-0.5);if(q<1){out[0]=TIS.ADBL;return true;}}
+      out[0]=TIS.ADI;out[1]=rr;return true;}
+    case 'hcc':{
+      if(L.var!=='small'&&rr>0.95){out[0]=TIS.CAP;return true;}
+      let d1=99,d2=99,v=0;for(const c of L.cells){const ux=dx-c[0],uy=dy-c[1],d=Math.sqrt(ux*ux+uy*uy);if(d<d1){d2=d1;d1=d;v=c[2];}else if(d<d2)d2=d;}
+      if(L.var!=='small'&&d2-d1<0.07&&rr<0.93){out[0]=TIS.HCC;out[1]=-0.3;return true;} // septa: dark in the arterial mosaic, never enhancing late
+      out[0]=(L.var==='fat'&&v<0.45)?TIS.HCCF:TIS.HCC;out[1]=v;return true;}
+    case 'met':{
+      const core=L.var==='net'?0.38:0.62;const edge=core+0.08*Math.sin(4*th+L.s1);
+      if(L.var==='muc'&&rr<edge&&fbm(x*5,y*5,L.seed)>0.74){out[0]=TIS.CALC;return true;}
+      if(rr<edge&&L.R>0.45){out[0]=L.var==='muc'?TIS.MMUC:TIS.MCORE;return true;}
+      out[0]=L.var==='net'?TIS.NRIM:TIS.MRIM;return true;}
+    case 'icc':{out[0]=rr>0.72+0.06*Math.sin(5*th)?TIS.IRIM:TIS.ICORE;return true;}
+  }
+  return false;
+}
+// returns tissue in out[0], params out[1], out[2]
+// body outline with a thinner posterior wall (so the kidneys sit in fat, clear of the back muscles)
+function bq(x,y,ia,ip){return ell(x,y,BODY.cx,BODY.cy,BODY.rx-ia,y>BODY.cy?BODY.ry-ip:BODY.ry-ia,0);}
+function polyD(x,y,P){let best=1e9,bs=0,acc=0,tot=0;for(let i=1;i<P.length;i++)tot+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+  for(let i=1;i<P.length;i++){const ax=P[i-1][0],ay=P[i-1][1],vx=P[i][0]-ax,vy=P[i][1]-ay,L=Math.hypot(vx,vy);const t=clamp(((x-ax)*vx+(y-ay)*vy)/(L*L),0,1);const d=Math.hypot(x-ax-t*vx,y-ay-t*vy);if(d<best){best=d;bs=(acc+t*L)/tot;}acc+=L;}
+  return [best,bs];}
+const PANC=[[1.3,2.15],[3.2,1.7],[5.4,1.9],[7.3,2.45],[8.5,3.1]];
+const SVP=[[2.3,3.35],[3.4,3.15],[5.5,3.35],[7.4,3.95],[8.7,4.55]];
+const HACURVE=[[-0.3,1.0],[-1.1,0.45],[-2.0,0.2],[-2.7,0.12]];
+function classify(x,y,cfg,out){
+  out[1]=0;out[2]=0;
+  const qb=ell(x,y,BODY.cx,BODY.cy,BODY.rx,BODY.ry,0);
+  if(qb>1){out[0]=TIS.AIR;return;}
+  // ribs, in the muscle layer
+  for(const a of RIBS){const rx=Math.cos(a)*14.65,ry=BODY.cy+Math.sin(a)*(a>0?11.2:10.6);const q=ell(x,y,rx,ry,0.62,0.36,a+1.5708);if(q<1){out[0]=q>0.62?TIS.BONE:TIS.MAR;return;}}
+  if(bq(x,y,1.4,1.0)>1){out[0]=TIS.FAT;return;}
+  // spine and back muscles
+  const qv=ell(x,y,0,7.6,2.0,1.65,0);if(qv<1){out[0]=qv>0.88?TIS.BONE:TIS.MAR;return;}
+  const qc=ell(x,y,0,10.05,0.75,0.68,0);if(qc<1){out[0]=TIS.CSF;return;}
+  if((Math.abs(Math.abs(x)-1.05)<0.32&&y>8.9&&y<10.3)||(ell(x,y,0,10.2,1.55,1.25,0)<1&&y>10.05)||ell(x,y,0,11.8,0.32,0.95,0)<1){out[0]=TIS.BONE;return;}
+  if(ell(x,y,-3.5,10.9,2.4,1.6,0.15)<1||ell(x,y,3.5,10.9,2.4,1.6,-0.15)<1){out[0]=TIS.MUS;return;}
+  if(ell(x,y,-6.4,11.0,2.0,0.5,0.1)<1||ell(x,y,6.4,11.0,2.0,0.5,-0.1)<1){out[0]=TIS.MUS;return;}
+  if(bq(x,y,2.35,1.55)>1){out[0]=TIS.MUS;return;}
+  // crura
+  if(ell(x,y,-1.3,5.6,0.55,2.0,0.35)<1||ell(x,y,2.4,5.8,0.5,1.9,-0.35)<1){out[0]=TIS.MUS;return;}
+  // aorta, IVC
+  const qao=ell(x,y,0.9,4.4,1.1,1.1,0);if(qao<1){out[0]=TIS.AO;return;}if(qao<1.25){out[0]=TIS.FAT;return;}
+  if(ell(x,y,-2.6,3.4,1.35,1.0,0.3)<1){out[0]=TIS.IVC;return;}
+  // kidneys, each in a full rim of perirenal fat
+  for(const K of KIDS){const q=ell(x,y,K.cx,K.cy,K.rx,K.ry,K.rot);if(q<1.3){if(q>=1){out[0]=TIS.FAT;return;}
+      const dx=x-K.cx,dy=y-K.cy,th=Math.atan2(dy,dx),hd=Math.atan2(Math.sin(th-K.hil),Math.cos(th-K.hil));
+      const hw=Math.abs(hd);
+      if(q<0.24&&hw<1.4){out[0]=TIS.KU;return;}
+      if(hw<0.42&&q>0.3){out[0]=(q>0.9&&hw<0.2)?TIS.IVC:TIS.FAT;return;}
+      if(q<0.42&&hw<1.5){out[0]=TIS.FAT;return;}
+      const pa=th-K.hil;if(q<0.8&&q>0.36&&Math.cos(6*pa+0.5)>-0.25+1.1*(0.8-q)/0.44){out[0]=TIS.KM;return;}
+      out[0]=TIS.KC;return;}}
+  // spleen
+  const qs=cfg.cirr?ell(x,y,10.6,4.1,3.6,6.9,0.55):ell(x,y,10.4,4.6,2.8,5.2,0.55);
+  if(qs<1){out[0]=TIS.SPL;out[1]=0.5+0.5*Math.sin((x*1.7+y*1.1)*1.5+5*fbm(x*0.6,y*0.6,21));return;}
+  // stomach: body plus a lateral extension curving toward the spleen
+  const qg=smin(ell(x,y,5.8,-2.4,3.5,2.6,0.3),ell(x,y,9.2,-2.1,2.4,2.8,0.45),0.35);
+  if(qg<1){if(qs<1.07){out[0]=TIS.FAT;return;}if(qg>0.86){out[0]=TIS.GUTW;return;}out[0]=y<-3.4?TIS.AIR:TIS.GFL;return;}
+  // pancreas body and tail, with the splenic vein running behind it
+  const [dp,sp]=polyD(x,y,PANC);const pw=(0.95-0.25*sp)*(1+0.07*Math.sin(x*4.3+y*2)+0.035*Math.sin(x*7.3));
+  if(dp<pw){out[0]=TIS.PAN;return;}
+  const [dv]=polyD(x,y,SVP);if(dv<0.32){out[0]=TIS.SV;return;}
+  // gallbladder: elongated, tilted, bulging slightly past the anterior liver edge
+  if(ell(x,y,-3.0,-5.4,1.25,2.9,-0.3)<1&&bq(x,y,2.35,1.55)<1){out[0]=TIS.GB;return;}
+  // liver
+  const lf=liverF(x,y,cfg.cirr);
+  const M=cfg.main;
+  if(lf<1){
+    if(M.type==='icc'&&M.ret){const ux=x-M.ret[0],uy=y-M.ret[1];const along=Math.abs(ux*0.94-uy*0.35);const q=Math.hypot(ux,uy)+0.5*along;if(q<1.35){out[0]=cfg.cirr?TIS.ASC:TIS.FAT;return;}}
+    for(const L of cfg.les){if(classLesion(L,x,y,cfg,out))return;}
+    for(const s of PVS){if(segt(x,y,s)<s[4]*(cfg.cirr?1.15:1)){out[0]=TIS.PV;return;}}
+    for(const s of HVS){if(segt(x,y,s)<s[4]*(cfg.cirr?0.8:1)){out[0]=TIS.HV;return;}}
+    if(polyD(x,y,HACURVE)[0]<0.15){out[0]=TIS.HA;return;}
+    for(const s of HAS){if(Math.hypot(x-s[0],y-s[1])<s[2]){out[0]=TIS.HA;return;}}
+    if(M.type==='icc'&&M.ducts){for(const s of M.ducts){const d=segd(x,y,s[0],s[1],s[2],s[3]);if(d<s[4]*(1+0.25*Math.sin((x+y)*5))){out[0]=TIS.DUCT;return;}}}
+    out[0]=TIS.LIV;
+    if(cfg.cirr){const v=vnoise(x*1.25+11,y*1.25,31),v2=vnoise(x*2.3,y*2.3+5,37);const a1=(v-0.5)/0.045,a2=(v2-0.5)/0.04;out[1]=Math.min(1,0.62*Math.exp(-a1*a1)+0.36*Math.exp(-a2*a2));}
+    // perilesional transient enhancement (metastases)
+    for(const L of cfg.les){if(L.type!=='met'&&!(L.type==='hcc'&&cfg.opt.thad))continue;const [rr,,r]=lesionRR(L,x,y);const dout=(rr-1)*L.R;if(dout<1.0)out[2]=Math.max(out[2],Math.exp(-dout/0.25)*(L.type==='met'&&L.var==='net'?0.5:1));}
+    return;
+  }
+  if(cfg.cirr){ // ascites hugging liver and spleen
+    if(lf<1.17&&x<1&&y<6)return void(out[0]=TIS.ASC);
+    if(qs<1.18&&y<6.5)return void(out[0]=TIS.ASC);
+  }
+  out[0]=TIS.FAT;
+}
+const RIBS=[-2.75,-2.35,-1.95,-1.2,-0.55,0.35,0.85,2.75,2.3,1.95];
+const KIDS=[{cx:-6.4,cy:7.25,rx:2.2,ry:1.95,rot:0.5,hil:-0.6},{cx:6.4,cy:7.05,rx:2.2,ry:1.95,rot:-0.5,hil:-2.5}];
+
+/* ---------------- grids ---------------- */
+function makeGrid(w,h,x0,y0,scale,cfg,seed){
+  const n=w*h,G={w,h,x0,y0,scale,cfg,tis:new Uint8Array(n),p1:new Float32Array(n),p2:new Float32Array(n),tex:new Float32Array(n),nA:new Float32Array(n),nB:new Float32Array(n)};
+  const out=[0,0,0],rnd=mulberry(seed||7);
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){const k=j*w+i,x=x0+(i+0.5)/scale,y=y0+(j+0.5)/scale;classify(x,y,cfg,out);G.tis[k]=out[0];G.p1[k]=out[1];G.p2[k]=out[2];
+    G.tex[k]=(fbm(x*2.6,y*2.6,3)-0.5)*2;}
+  for(let k=0;k<n;k++){const u=rnd()||1e-9,v=rnd();const m=Math.sqrt(-2*Math.log(u));G.nA[k]=m*Math.cos(6.283*v);G.nB[k]=m*Math.sin(6.283*v);}
+  return G;
+}
+function lesionC(id,p1,p2,K){
+  switch(id){
+    case 0:case 1:case 3:case 5:case 19:case 20:case 21:case 30:case 43:case 44:return 0;
+    case 2:return K.mus;case 4:return K.mar;case 6:return K.a;case 7:return K.ivc;case 8:return K.p;case 9:return K.hv;case 10:return K.ha;case 11:return K.sv;
+    case 12:return (1-p1)*K.l+p1*K.fib+p2*K.thad;
+    case 13:return Math.max(0,K.spl*(1+1.3*K.splArc*(p1-0.5)));
+    case 14:return K.kc;case 15:return K.km;case 16:return K.ku;case 17:return K.pan;case 18:return K.gut;
+    case 31:{const e=1/(1+Math.exp(-(K.hemF-p1)/0.025));return e*K.pool+(1-e)*0.03*K.eq;}
+    case 32:return 0.02*K.eq;
+    case 33:return K.fnh;case 34:return K.scar;case 35:return K.adH;case 36:return 0;case 45:return K.adI;
+    case 37:case 46:return K.hccA*Math.max(0,0.3+1.0*p1)+K.hccB;
+    case 38:return K.cap;case 39:return K.metRim;case 40:return K.metCore;case 47:return 0.45*K.metCore;case 48:return K.netRim;
+    case 41:return K.iccRim;case 42:return K.iccCore;
+  }return 0;
+}
+const SEQS={t1:'T1 fat-sat GRE (dynamic)',t2:'T2 fat-sat',dwi:'DWI b800',adc:'ADC map',ip:'T1 in-phase',op:'T1 opposed-phase'};
+function boxBlur(a,w,h,passes){const tmp=new Float32Array(a.length);for(let p=0;p<passes;p++){
+  for(let j=0;j<h;j++){const r=j*w;for(let i=0;i<w;i++){const l=i>0?i-1:i,rr=i<w-1?i+1:i;tmp[r+i]=(a[r+l]+a[r+i]+a[r+rr])/3;}}
+  for(let j=0;j<h;j++){const u=j>0?j-1:j,d=j<h-1?j+1:j;for(let i=0;i<w;i++)a[j*w+i]=(tmp[u*w+i]+tmp[j*w+i]+tmp[d*w+i])/3;}}}
+const WIN={soft:[400,50],liver:[170,80]};
+// value (before noise) for one pixel
+function pixVal(id,p1,p2,tex,K,seq,mod,cfg){
+  const pr=PROP[id];
+  if(mod==='ct'){if(id===0)return -1000;let hu=pr.hu;if(id===12&&p1>0)hu=hu*(1-p1)+48*p1;
+    const k=(id>=6&&id<=11)?380:(id===16?320:320);let v=hu+k*lesionC(id,p1,p2,K);
+    if(id===12||id===13||id===17||id===33||id===37)v+=4*tex;return v;}
+  let t1=pr.t1,t2=pr.t2,adc=pr.adc;
+  if(id===12&&p1>0){t1=t1*(1-p1)+0.25*p1;t2=t2*(1-p1)+0.4*p1;adc=adc*(1-p1)+1.25*p1;}
+  if(id===45&&p1>0.86)t2+=0.2;
+  if(id===37&&p1>0.7)t2+=0.06;
+  const tx=(id===12||id===13||id===33||id===35||id===37||id===45||id===46||id===31)?1+0.035*tex:1;
+  switch(seq){
+    case 't1':{const C=lesionC(id,p1,p2,K);return (1-Math.exp(Math.log(1-t1)-6*C))*tx;}
+    case 't2':return t2*tx;
+    case 'dwi':return t2*Math.exp(-0.8*adc)*tx;
+    case 'adc':return t2<0.1?adc*t2/0.1:adc;
+  }
+  return 0;
+}
+// render to gray bytes
+function renderGrid(G,seq,T,mod,opt){
+  opt=opt||{};const n=G.w*G.h,cfg=G.cfg,K=comps(T,cfg.main),out=new Float32Array(n);
+  const clean=!!opt.clean;
+  if(mod!=='ct'&&(seq==='ip'||seq==='op')){
+    const Wa=new Float32Array(n),Fa=new Float32Array(n);
+    for(let k=0;k<n;k++){const id=G.tis[k],pr=PROP[id];let w=pr.w,f=pr.f;const tx=(id===12||id===13)?1+0.03*G.tex[k]:1;Wa[k]=pr.ip*w*tx;Fa[k]=pr.ip*f*tx;}
+    boxBlur(Wa,G.w,G.h,2);boxBlur(Fa,G.w,G.h,2);
+    for(let k=0;k<n;k++)out[k]=seq==='ip'?Wa[k]+Fa[k]:Math.abs(Wa[k]-Fa[k]);
+  } else {
+    for(let k=0;k<n;k++)out[k]=pixVal(G.tis[k],G.p1[k],G.p2[k],clean?0:G.tex[k],K,seq,mod,cfg);
+    boxBlur(out,G.w,G.h,opt.blur==null?2:opt.blur);
+  }
+  const g=new Uint8ClampedArray(n);
+  if(mod==='ct'){const [W,L]=WIN[opt.win||'soft'];const lo=L-W/2;for(let k=0;k<n;k++){const v=out[k]+(clean?0:8*G.nA[k]);g[k]=255*clamp((v-lo)/W,0,1);}return {g,raw:out,K};}
+  const sig={t1:.016,t2:.018,dwi:.008,adc:.07,ip:.016,op:.016}[seq],hi={t1:.95,t2:.9,dwi:.22,adc:3.0,ip:.95,op:.95}[seq],gam={t1:.75,t2:.85,dwi:.9,adc:1,ip:.85,op:.85}[seq];
+  for(let k=0;k<n;k++){let v=out[k];if(!clean){const a=v+sig*G.nA[k],b=sig*G.nB[k];v=seq==='adc'?v+sig*G.nA[k]:Math.sqrt(a*a+b*b);}g[k]=255*Math.pow(clamp(v/hi,0,1),gam);}
+  return {g,raw:out,K};
+}
+function putGray(ctx,G,g){const im=ctx.createImageData(G.w,G.h),d=im.data;for(let k=0;k<g.length;k++){const v=g[k];d[4*k]=v;d[4*k+1]=v;d[4*k+2]=v;d[4*k+3]=255;}ctx.putImageData(im,0,0);}
+// lesion vs adjacent liver contrast from a rendered grid (raw values, pre-noise)
+function lesionContrast(G,raw,mod){
+  const L=G.cfg.main;let sl=0,nl=0,sv=0,nv=0;
+  for(let j=0;j<G.h;j+=1)for(let i=0;i<G.w;i+=1){const k=j*G.w+i,x=G.x0+(i+0.5)/G.scale,y=G.y0+(j+0.5)/G.scale;const [rr]=lesionRR(L,x,y);const id=G.tis[k];
+    if(rr<0.85&&LESION_FAMILY.has(id)&&!MINOR.has(id)){sl+=raw[k];nl++;}else if(rr>1.35&&rr<1.35+1.6/L.R&&id===12){sv+=raw[k];nv++;}}
+  if(!nl||!nv)return null;const a=sl/nl,b=sv/nv;
+  if(mod==='ct')return {les:a,liv:b,d:a-b,rel:(a-b)/40};
+  return {les:a,liv:b,d:a-b,rel:(a-b)/Math.max(0.05,b)};
+}
+/* ---------------- teaching text ---------------- */
+const NOTES={
+ cyst:{pre:['Cyst: uniformly dark on T1, like fluid.','Cyst: water density (about 0–10 HU), the same as the gallbladder.'],
+  ea:'No enhancement. A cyst never changes from its pre-contrast appearance.',
+  la:'No enhancement. Any measurable enhancement (on CT, more than about 10–20 HU) excludes a simple cyst.',
+  pv:'Still no enhancement, and the cyst is most conspicuous now against the fully enhanced liver. The wall is imperceptible, with no septa or nodules.',
+  del:'No enhancement on delayed images either. Compare with a hemangioma, which keeps filling in.',
+  t2:'Very bright on T2, as bright as the gallbladder and CSF, with a sharp margin. On heavily T2-weighted images (long TE) it stays bright while solid lesions fade.',
+  dwi:'Free water: the cyst loses signal at b800. Any residual brightness is T2 shine-through, so always check the ADC.',
+  adc:'Very high ADC (bright), about 3 × 10⁻³ mm²/s, like free water.',
+  ip:'In-phase: dark, like fluid.',op:'No signal change from in-phase: no fat.'},
+ hem:{pre:['Hemangioma: T1 dark and well defined.','Hemangioma: hypoattenuating, with about the same density as blood in the aorta.'],
+  ea:'The first peripheral nodules appear: discontinuous, at the very edge of the lesion.',
+  la:'Peripheral, discontinuous, nodular enhancement, with each nodule as bright as the aorta. That match to the blood pool is the key.',
+  pv:'Centripetal fill-in: the nodules grow and merge toward the center, still matching the blood pool.',
+  del:'Near-complete fill-in, still as bright as the blood pool and brighter than liver. No washout.',
+  t2:'"Light-bulb" bright on T2: close to fluid, but usually a little less bright than a cyst.',
+  dwi:'Bright at b800, mostly T2 shine-through.',adc:'High ADC (bright), unlike solid malignant tumors.',
+  ip:'In-phase: dark, well-defined lesion.',op:'No signal drop on opposed-phase: no fat.'},
+ 'hem.flash':{ea:'Flash-filling: the whole lesion is already enhancing in the early arterial phase.',
+  la:'Uniform, intense enhancement as bright as the aorta. This mimics a hypervascular tumor (HCC, adenoma, neuroendocrine metastasis).',
+  pv:'Still bright and still matching the blood pool, with no washout. That, plus light-bulb T2 signal, is the clue.',
+  del:'Still isointense to the blood pool. Transient perilesional enhancement from arterioportal shunting is common around flash-filling hemangiomas.'},
+ 'hem.slow':{pv:'Slow filling: only the periphery has filled so far. Delayed images will show progressive fill-in.',
+  del:'Still incomplete at 3 minutes. Slow-filling hemangiomas may need 10 minutes or more, so add a later delayed acquisition.'},
+ 'hem.giant':{del:'Fill-in is complete except for a central cleft (cystic degeneration or fibrosis), which stays dark and never enhances.',
+  t2:'Very bright, with an even brighter central cleft from degeneration.'},
+ fnh:{pre:['FNH: nearly isointense to liver on T1 ("liver looks like liver"), with a slightly darker central scar.','FNH: nearly isodense to liver, and easily missed without contrast.'],
+  ea:'The FNH lights up homogeneously ahead of the liver.',
+  la:'Intense, homogeneous arterial hyperenhancement, everywhere except the central scar, which stays dark.',
+  pv:'Fading to isointense with liver: the lesion "disappears". No washout.',
+  del:'Isointense to liver, with delayed enhancement of the central stellate scar (fibrous tissue with a large interstitium).',
+  t2:'Iso- to slightly hyperintense on T2, with a T2-bright central scar. (The scar of fibrolamellar carcinoma is typically T2 dark.)',
+  dwi:'DWI helps detection, not characterization: FNH is often mildly bright.',adc:'ADC close to that of liver.',
+  ip:'In-phase: nearly isointense to liver.',op:'No signal drop on opposed-phase: no fat.'},
+ 'fnh.noscar':{la:'Homogeneous arterial hyperenhancement. FNHs under 3 cm often have no visible scar.',
+  del:'Isointense to liver. Without a scar, the hepatobiliary phase on gadoxetate MRI is the problem-solver (next lesson).'},
+ aden:{pre:['Adenoma: around isointense on T1.','Adenoma: slightly hypodense when it contains fat.'],
+  ea:'Arterial enhancement begins.',
+  la:'Mild-to-moderate arterial hyperenhancement. HNF1α adenomas are less vascular than inflammatory ones.',
+  pv:'Iso to slightly hypointense. Mild "washout" can occur in adenomas, so washout alone does not mean HCC in a non-cirrhotic liver.',
+  del:'Iso to slightly hypointense.',
+  t2:'Iso to mildly hyperintense on T2.',dwi:'Mildly bright.',adc:'ADC similar to that of liver.',
+  ip:'In-phase: similar to or brighter than liver.',
+  op:'Diffuse, homogeneous signal drop on opposed-phase: intracellular fat, the hallmark of the HNF1α subtype. Do not confuse it with the India-ink artifact, the thin black line at every fat–water boundary.'},
+ 'aden.inflam':{la:'Strong arterial hyperenhancement.',
+  pv:'Enhancement persists into the portal venous phase, typical of the inflammatory subtype (dilated sinusoids).',
+  del:'Persistent delayed enhancement, typical of the inflammatory subtype.',
+  t2:'Markedly T2 hyperintense, often with a brighter peripheral rim (the "atoll" sign).',
+  op:'No signal drop on opposed-phase: inflammatory adenomas usually contain no fat.'},
+ 'aden.hemor':{pre:['Adenoma with hemorrhage: a T1-bright area (methemoglobin) on fat-suppressed T1 before contrast.','Adenoma with hemorrhage: a hyperdense area of recent blood.'],
+  la:'The viable tissue enhances strongly and the hemorrhagic part does not. When a lesion is bright before contrast, use subtraction images.',
+  pv:'Persistent enhancement of the viable part; the hemorrhage stays unenhanced.',del:'Persistent enhancement of the viable part.',
+  t2:'Heterogeneous: bright inflammatory tissue and mixed-signal blood products.',op:'No fat in the viable tissue.'},
+ hcc:{pre:['HCC: mildly T1 hypointense and mosaic.','HCC: hypo- to isoattenuating.'],
+  ea:'Too early: the tumor is only beginning to enhance. That is why liver protocols aim for the late arterial phase.',
+  la:'Non-rim arterial hyperenhancement with a mosaic pattern: nodules within the nodule, separated by septa.',
+  pv:'Washout: the whole tumor turns darker than liver, and an enhancing capsule starts to appear at its periphery.',
+  del:'Complete washout of the whole tumor, with only the peripheral capsule enhancing (a smooth rim brighter than liver). In a cirrhotic liver this pattern is diagnostic.',
+  t2:'Mildly to moderately T2 hyperintense, never as bright as a cyst or hemangioma.',
+  dwi:'Restricted diffusion: bright at b800.',adc:'Low ADC (dark) relative to liver.',
+  ip:'In-phase: mosaic nodule.',op:'No signal drop in this variant.'},
+ 'hcc.fat':{op:'Patchy signal drop on opposed-phase in some compartments: intralesional fat. In a cirrhotic liver, fat favors HCC (or a dysplastic nodule) over other malignancies.'},
+ 'hcc.small':{la:'Small, homogeneous arterial hyperenhancing nodule.',
+  pv:'Washout, but no capsule. Small HCCs often lack a capsule, and washout may be clear only on delayed images.',
+  del:'Hypointense to liver, with no capsule.'},
+ met:{pre:['Colorectal metastasis: T1 hypointense.','Colorectal metastasis: hypoattenuating.'],
+  ea:'A thin rim of enhancement starts, with a halo of transient enhancement in the liver around it.',
+  la:'Continuous rim enhancement with a perilesional halo; the center does not enhance.',
+  pv:'Hypovascular: dark against the fully enhanced liver. This is the phase for finding metastases.',
+  del:'Peripheral washout (the rim fades below liver) while the fibrotic center slowly fills in: a target pattern.',
+  t2:'Moderately T2 hyperintense with a brighter necrotic center ("target" or "doughnut"), not as bright as a cyst or hemangioma.',
+  dwi:'Restricted diffusion of the viable rim. DWI is the most sensitive sequence for small metastases.',
+  adc:'Low-ADC rim around a higher-ADC necrotic center.',
+  ip:'In-phase: hypointense lesion.',op:'No signal drop on opposed-phase: no fat.'},
+ 'met.muc':{pre:['Mucinous metastasis: T1 dark.','Mucinous metastasis: hypodense, with punctate calcifications.'],
+  t2:'Mucinous metastases are very T2 bright and can mimic a cyst or hemangioma, but they enhance at the periphery.',
+  del:'Mild, peripheral and progressive enhancement.'},
+ 'met.net':{la:'Hypervascular metastasis: strong arterial enhancement (neuroendocrine, renal cell, thyroid, melanoma). This is the phase in which to find these metastases.',
+  pv:'Rapid washout.',del:'Hypointense, washed out.'},
+ icc:{pre:['Intrahepatic cholangiocarcinoma: lobulated, T1 hypointense mass.','Intrahepatic cholangiocarcinoma: lobulated hypoattenuating mass.'],
+  ea:'A thin rim of peripheral enhancement starts.',
+  la:'Irregular rim enhancement; the fibrous center stays dark.',
+  pv:'The rim fades while the center begins to fill.',
+  del:'Progressive central enhancement as contrast leaks into the abundant fibrous stroma. Look for capsular retraction and dilated ducts upstream.',
+  t2:'Hyperintense cellular periphery and a darker fibrous center. The ducts upstream are dilated.',
+  dwi:'Restricted diffusion at the periphery (target).',adc:'Lower ADC at the periphery.',
+  ip:'In-phase: hypointense mass.',op:'No signal drop on opposed-phase: no fat.'}
+};
+const CASEDIR='cases/';
+const SHOW_CASES=false; // real patient case images are not published on this site (see CLAUDE.md)
+const CARDS={
+ cyst:{lead:'No enhancement, fluid on every sequence.',b:['Present in 5–14% of the population. Lined by biliary-type epithelium but contains no bile.','CT: water density, below 10 HU (below 20 HU on multidetector CT). MRI: T1 dark, very T2 bright.','No enhancement in any phase, no wall, no septa, no nodules. Ultrasound is often enough.','Polycystic liver disease: consider it when there are more than 10 cysts. Cysts may bleed (T1 bright, fluid levels) or calcify.'],
+  p:['Septations, nodules or a thick wall: think of a biliary cystic neoplasm or an abscess, not a simple cyst.','Lesions too small to characterize on CT: MRI with heavily T2-weighted images solves most of them.'],
+  cases:[['Case',[['cyst-t2','T2'],['cyst-t1pre','T1 pre-contrast'],['cyst-art','Arterial'],['cyst-pv','Portal venous']]]]},
+ hem:{lead:'Peripheral, discontinuous, nodular, progressive centripetal enhancement that matches the blood pool.',b:['The most common benign liver tumor (up to 5% at autopsy): vascular spaces lined by endothelium, separated by fibrous septa.','MRI: T1 dark and markedly T2 bright ("light bulb"), stays bright on heavily T2-weighted images.','Enhancing parts match the aorta or blood pool in every phase, and the lesion never washes out.','Variants: flash-filling (small, uniform arterial enhancement), slow-filling, giant with a central cleft, and sclerosing (may cause capsular retraction).','Board pearl: Kasabach–Merritt phenomenon, a consumptive coagulopathy with large vascular tumors, mostly in infants.'],
+  p:['Flash-filling hemangioma versus HCC: follow the blood pool on portal venous and delayed images, and check T2.','With gadoxetate, hemangiomas look darker than liver in the transitional and hepatobiliary phases (pseudo-washout). See the next lesson.'],
+  cases:[['Case 1, CT',[['hem-ct-pre','Pre-contrast'],['hem-ct-art','Arterial'],['hem-ct-pv','Portal venous'],['hem-ct-del','Delayed (about 6 min)']]],
+         ['Case 2, MRI',[['hem-mr-t2','T2'],['hem-mr-t1pre','T1 pre-contrast'],['hem-mr-art','Arterial'],['hem-mr-pv','Portal venous'],['hem-mr-del','Delayed']]],
+         ['Case 3, atypical with central degeneration',[['hem-atyp-t2','T2'],['hem-atyp-post','Post-contrast']]]]},
+ fnh:{lead:'Bright in the arterial phase, gone by portal venous, with a scar that fills in late.',b:['A hyperplastic nodule of normal hepatocytes in an abnormal arrangement around a malformed artery. Prevalence 2–5%, 70% solitary, more common in women. No malignant potential; rarely symptomatic.','Marked, early, homogeneous arterial enhancement, becoming isointense in later phases.','Central stellate scar with delayed enhancement: seen in about 65% of FNHs over 3 cm and 35% of smaller ones. The scar is T2 bright.','"Liver looks like liver": nearly iso on unenhanced CT, T1 and T2. DWI helps detection, not characterization.'],
+  p:['Fibrolamellar carcinoma also has a central scar, but its scar is T2 dark and may calcify, the tumor is larger and heterogeneous, and nodes may be enlarged.','FNH versus adenoma: on gadoxetate MRI, FNH is iso or hyperintense in the hepatobiliary phase (next lesson).'],
+  cases:[['Case',[['fnh-pre','T1 pre-contrast'],['fnh-art','Arterial'],['fnh-pv','Portal venous'],['fnh-del','Delayed']]]]},
+ aden:{lead:'A hypervascular, often fat- or blood-containing nodule in a young woman on hormonal contraception.',b:['Benign hepatocytes without portal tracts, central veins or bile ducts, so perfusion is purely arterial. Over 90% occur in young women with more than 2 years of oral contraceptives; others with glycogen storage disease, anabolic steroids or metabolic syndrome.','Subtypes: HNF1α-inactivated (intracellular fat, opposed-phase drop, mild enhancement); inflammatory (T2 bright, "atoll" rim, persistent delayed enhancement); β-catenin-activated (highest risk of malignant transformation, can look like HCC); sonic hedgehog (hemorrhage); unclassified.','Complications: hemorrhage (rising with size over 5 cm) and malignant transformation (β-catenin, men).','With extracellular agents it can be hard to separate from FNH; most adenomas are dark in the hepatobiliary phase on gadoxetate.'],
+  p:['Mild washout can occur in adenomas; in a non-cirrhotic liver, washout alone is not HCC.','Adenomas in men, or any β-catenin adenoma: treat as premalignant (usually resection).'],
+  cases:[['Case (probable adenoma)',[['ad-t2','T2'],['ad-t1pre','T1 pre-contrast'],['ad-opp','Opposed-phase (note the India-ink edges)'],['ad-art','Arterial'],['ad-pv','Portal venous'],['ad-del','Delayed']]]]},
+ hcc:{lead:'Non-rim arterial hyperenhancement, washout and an enhancing capsule in a cirrhotic liver.',b:['The most common primary liver malignancy. Risk: cirrhosis of any cause and chronic hepatitis B (even without cirrhosis); MASLD/NASH is a growing cause in the West.','Stepwise carcinogenesis: regenerative nodule to dysplastic nodule to HCC, with loss of portal supply and gain of unpaired arteries (Lesson 3).','Arterial hyperenhancement, often mosaic, then washout in the portal venous or delayed phase, and an enhancing capsule on delayed images.','Supporting features: mild-to-moderate T2 hyperintensity, restricted diffusion, intralesional fat, nodule-in-nodule, mosaic architecture.'],
+  p:['Arterioportal shunts are wedge-shaped, have no mass effect and do not wash out.','Small HCCs often lack a capsule, and washout may only show on delayed images. LI-RADS is covered in the HCC lesson.'],
+  cases:[['Case 1, small HCC',[['hcc-art-small','Arterial']]],['Case 2, fat-containing HCC',[['hcc-t1opp','Opposed-phase (fat signal drop)'],['hcc-art','Arterial'],['hcc-pv','Portal venous'],['hcc-del','Delayed']]]]},
+ met:{lead:'Hypovascular, rim-enhancing and best seen on portal venous images; a target on DWI.',b:['The most common malignant lesions of a non-cirrhotic liver. Colorectal cancer spreads to the liver in up to half of patients over the course of the disease.','Hypovascular: thin arterial rim enhancement, often with a halo or wedge of transient perilesional enhancement, then hypointense on portal venous images.','Delayed peripheral washout with slow central fill-in (fibrotic stroma) gives a target appearance.','Moderately T2 bright with a brighter necrotic center; restricted diffusion of the rim. DWI plus hepatobiliary-phase MRI is the most sensitive study before resection.','Mucinous colorectal metastases are very T2 bright and may calcify. Hypervascular metastases (neuroendocrine, renal cell, thyroid, melanoma) are best seen in the arterial phase.'],
+  p:['Metastases are uncommon in a cirrhotic liver.','Small metastases can be invisible on arterial images: always read the portal venous phase and DWI.'],
+  cases:[['Case 1, CT: triphasic study',[['met-ct-art','Late arterial: rim enhancement with a perilesional halo'],['met-ct-pv','Portal venous'],['met-ct-del','Delayed: the lesions fade toward the liver']]],
+         ['Case 2, MRI',[['met-mr-pv','T1 post-contrast, portal venous: rim-enhancing targets'],['met-mr-dwi','DWI: restricted diffusion of the viable rims']]],
+         ['Case 3, CT: large metastasis',[['met-ct-large','Portal venous: large heterogeneous mass']]],
+         ['Case 4, CT: multiple metastases',[['mets-ct-pv','Portal venous: multiple hypovascular metastases']]]]},
+ icc:{lead:'A lobulated mass with rim enhancement, progressive central fill-in, capsular retraction and dilated ducts upstream.',b:['The second most common primary liver malignancy. Risk factors: primary sclerosing cholangitis, hepatolithiasis, liver flukes, choledochal cysts, chronic viral hepatitis and cirrhosis.','Mass-forming type: rim arterial enhancement, then progressive delayed enhancement of the fibrous center.','Capsular retraction, upstream bile duct dilatation, vascular encasement without thrombus, and satellite nodules.','T2: brighter cellular periphery, darker fibrous center. DWI: peripheral restriction (target).'],
+  p:['In a cirrhotic liver, small cholangiocarcinomas can show arterial hyperenhancement and mimic HCC: rim enhancement, target DWI and delayed central enhancement point to LR-M (Lesson 3).','Delayed enhancement is not washout: always compare the center with the liver in each phase.'],
+  cases:[['Case: peripheral mass-forming cholangiocarcinoma, with pathology',[['icc-t2','T2: brighter periphery, darker center'],['icc-t1opp','T1 opposed-phase'],['icc-t1','T1 pre-contrast'],['icc-art','Arterial: irregular rim enhancement'],['icc-pv','Portal venous: the center begins to fill'],['icc-del','Delayed: progressive central enhancement'],['icc-cor-t2','Coronal T2'],['icc-gross1','Resected specimen: white, firm tumor'],['icc-gross2','Cut surface: dense fibrous stroma, which explains the delayed enhancement']]]],more:''}
+};
+const ALGO={
+ ctx:[['cir','Cirrhosis or chronic hepatitis B'],['onc','Known extrahepatic cancer'],['ocp','Young woman on hormonal contraception (or anabolic steroids)'],['inc','Incidental, no risk factors']],
+ img:[['fluid','Fluid on every sequence, no enhancement'],['t2b','Light-bulb T2 brightness with enhancement'],['nod','Peripheral nodular, discontinuous, centripetal fill-in'],['homo','Homogeneous arterial enhancement, then isointense'],['scar','Central scar with delayed enhancement'],['fat','Signal drop on opposed-phase (intracellular fat)'],['wash','Arterial hyperenhancement, then washout'],['cap','Enhancing capsule'],['rim','Rim arterial enhancement'],['prog','Progressive central delayed enhancement'],['retr','Capsular retraction'],['duct','Upstream bile duct dilatation'],['dwi','Marked diffusion restriction or target'],['mult','Multiple lesions of varying size']],
+ w:{cir:{hcc:3,icc:1,fnh:-1,aden:-2,met:-1},onc:{met:3},ocp:{aden:2.5,fnh:1},inc:{cyst:1,hem:1,fnh:1},
+  fluid:{cyst:5,hem:-1,fnh:-3,aden:-3,hcc:-3,met:-2,icc:-3},t2b:{hem:3.5,met:0.8,cyst:-2},nod:{hem:5},homo:{fnh:2.5,aden:2.2,hem:0.8,hcc:0.5},scar:{fnh:3.5},
+  fat:{aden:3,hcc:2.2},wash:{hcc:3.5,met:1,aden:0.5},cap:{hcc:3.5},rim:{met:3,icc:2.2},prog:{icc:3.5,met:0.6,hem:0.4},retr:{icc:2.5,met:1},duct:{icc:3.5},dwi:{met:2,icc:1.2,hcc:1},mult:{met:2,hem:0.8,cyst:1}}
+};
+const QZ=[
+ {q:'Which phase is most useful for detecting hypovascular colorectal liver metastases?',o:['Early arterial','Late arterial','Portal venous','Pre-contrast'],a:2,e:'The liver is at peak enhancement in the portal venous phase, so hypovascular lesions stand out as dark defects. DWI adds sensitivity for small ones.'},
+ {q:'A lesion shows peripheral, discontinuous nodular enhancement that matches the aorta and fills in centripetally. What is it?',o:['Hepatocellular carcinoma','Hemangioma','Colorectal metastasis','Focal nodular hyperplasia'],a:1,e:'This is the defining pattern of hemangioma. Metastases enhance as a continuous rim that is less bright than the blood pool.'},
+ {q:'What best describes a well-timed late arterial phase?',o:['Aorta bright, portal vein still unenhanced','Hepatic arteries fully enhanced, portal vein enhancing, hepatic veins not yet enhanced','Portal and hepatic veins equally enhanced','Liver at peak enhancement'],a:1,e:'Late arterial images show portal venous inflow without hepatic venous return. Hypervascular lesions are most conspicuous then, and HCC protocols target this phase.'},
+ {q:'Both a simple cyst and a hemangioma are very bright on T2. What separates them most reliably?',o:['Size','T1 signal','Enhancement','Shape'],a:2,e:'A cyst never enhances. A hemangioma enhances in its peripheral nodular, centripetal pattern.'},
+ {q:'A young woman on oral contraceptives has a hypervascular lesion that drops in signal homogeneously on opposed-phase. Which subtype is most likely?',o:['Inflammatory adenoma','HNF1α-inactivated adenoma','β-catenin-activated adenoma','FNH'],a:1,e:'Diffuse intracellular fat is the hallmark of the HNF1α subtype. Inflammatory adenomas are T2 bright with persistent enhancement.'},
+ {q:'Which feature best separates FNH from fibrolamellar carcinoma?',o:['Arterial enhancement','A central scar','T2 signal of the scar','Patient age'],a:2,e:'The FNH scar is T2 bright and enhances late. The fibrolamellar scar is typically T2 dark and may calcify. Both lesions occur in young patients.'},
+ {q:'A lobulated mass shows rim arterial enhancement, progressive central enhancement on delayed images, capsular retraction and dilated ducts beyond it. What is it?',o:['HCC','Intrahepatic cholangiocarcinoma','Hemangioma','Adenoma'],a:1,e:'Delayed central enhancement reflects abundant fibrous stroma. Retraction and upstream ductal dilatation complete the picture.'},
+ {q:'What distinguishes a flash-filling hemangioma from a small HCC?',o:['Arterial enhancement','It stays as bright as the blood pool in later phases and is very T2 bright','Restricted diffusion','A capsule'],a:1,e:'Both light up in the arterial phase. The hemangioma follows the blood pool and never washes out; the HCC washes out and is only mildly T2 bright.'},
+ {q:'Why does the HCC capsule look brighter than liver on delayed images?',o:['It contains fat','It is fibrous tissue with a large extracellular space that retains contrast','It is arterialized','It contains hemorrhage'],a:1,e:'Fibrous tissue enhances slowly and holds contrast while tumor and liver fade, so the capsule stands out late around a washed-out tumor.'},
+ {q:'In a steatotic liver, why can a fat-free lesion look bright on opposed-phase images?',o:['It enhances','The liver around it loses signal, so the lesion appears relatively brighter','Because of the India-ink artifact','Because of T2 shine-through'],a:1,e:'Signal is relative. When the background liver drops, a lesion without fat keeps its signal and stands out. Always compare with the in-phase image.'}
+];
+const REFS=[
+ 'Hussain SM, Reinhold C, Mitchell DG. Cirrhosis and lesion characterization at MR imaging. RadioGraphics. 2009;29(6):1637–1652.',
+ 'Marrero JA, Ahn J, Reddy KR. ACG clinical guideline: the diagnosis and management of focal liver lesions. Am J Gastroenterol. 2014;109(9):1328–1347.',
+ 'European Association for the Study of the Liver. EASL Clinical Practice Guidelines on the management of benign liver tumours. J Hepatol. 2016;65(2):386–398.',
+ 'Silva AC, Evans JM, McCullough AE, Jatoi MA, Vargas HE, Hara AK. MR imaging of hypervascular liver masses: a review of current techniques. RadioGraphics. 2009;29(2):385–402. doi:10.1148/rg.292085123',
+ 'Klotz T, Montoriol PF, Da Ines D, Petitcolin V, Joubert-Zakeyh J, Garcier JM. Hepatic haemangioma: common and uncommon imaging features. Diagn Interv Imaging. 2013;94(9):849–859.',
+ 'Hussain SM, Terkivatan T, Zondervan PE, et al. Focal nodular hyperplasia: findings at state-of-the-art MR imaging, US, CT, and pathologic analysis. RadioGraphics. 2004;24(1):3–17. doi:10.1148/rg.241035050',
+ 'Katabathina VS, Menias CO, Shanbhogue AK, Jagirdar J, Paspulati RM, Prasad SR. Genetics and imaging of hepatocellular adenomas: 2011 update. RadioGraphics. 2011;31(6):1529–1543. doi:10.1148/rg.316115527',
+ 'Danet IM, Semelka RC, Leonardou P, et al. Spectrum of MRI appearances of untreated metastases of the liver. AJR Am J Roentgenol. 2003;181(3):809–817.',
+ 'Chung YE, Kim MJ, Park YN, et al. Varying appearances of cholangiocarcinoma: radiologic-pathologic correlation. RadioGraphics. 2009;29(3):683–700. doi:10.1148/rg.293085729',
+ 'Chernyak V, Fowler KJ, Kamaya A, et al. Liver Imaging Reporting and Data System (LI-RADS) version 2018: imaging of hepatocellular carcinoma in at-risk patients. Radiology. 2018;289(3):816–830.'
+];
+/* ---------------- state ---------------- */
+const S={mod:'mri',seq:'t1',bg:'normal',type:'hem',var:'classic',multi:false,t:35,lab:true,win:'soft',playing:false,drill:null,unknown:false,marks:[],reveal:null,extra:false,clean:false,lockPh:false};
+const MAIN={w:432,h:324,x0:-18,y0:-13.5,sc:12};
+let CFG,G,SAMPLE=[],LASTRAW=null,CURVES=null;
+const cv=$('#cv'),ctx=cv.getContext('2d'),ov=$('#ov'),octx=ov.getContext('2d');
+const PHNAME={pre:'Pre-contrast',ea:'Early arterial',la:'Late arterial',pv:'Portal venous',del:'Delayed (equilibrium)'};
+function phaseKey(t){const tt=t-DLY;return tt<15?'pre':tt<27?'ea':tt<50?'la':tt<110?'pv':'del';}
+function seqNow(){return S.mod==='ct'?'t1':S.seq;}
+
+function rebuild(){
+  applyBg(S.bg);CFG=buildCfg(S.type,S.var,S.bg,S.multi,{});S.var=CFG.var;
+  G=makeGrid(MAIN.w,MAIN.h,MAIN.x0,MAIN.y0,MAIN.sc,CFG,7);
+  SAMPLE=[];const L=CFG.main;const idx=[];
+  for(let k=0;k<G.tis.length;k++){if(!LESION_FAMILY.has(G.tis[k]))continue;const i=k%G.w,j=(k/G.w)|0;const [rr]=lesionRR(L,MAIN.x0+(i+.5)/MAIN.sc,MAIN.y0+(j+.5)/MAIN.sc);if(rr<1.08)idx.push(k);}
+  const step=Math.max(1,Math.floor(idx.length/500));for(let n=0;n<idx.length;n+=step){const k=idx[n];SAMPLE.push([G.tis[k],G.p1[k],G.p2[k]]);}
+  syncControls();computeCurves();buildMatrix();draw();
+}
+/* ---------------- curves ---------------- */
+const CCOL={a:'#C0392B',p:'#2E6FD8',hv:'#7A5BC4',l:'#B07A12',les:'#D0457A',c1:'#E89AB8',c2:'#2E9E8F'};
+function compDefs(){const L=CFG.main;switch(L.type){
+  case 'hem':return [['Filled vascular spaces',K=>K.pool,'c1']];
+  case 'fnh':return L.var==='scar'?[['Central scar',K=>K.scar,'c2']]:[];
+  case 'hcc':return L.var!=='small'?[['Capsule',K=>K.cap,'c2']]:[];
+  case 'met':return [['Rim',K=>L.var==='net'?K.netRim:K.metRim,'c1'],['Core',K=>L.var==='muc'?0.45*K.metCore:K.metCore,'c2']];
+  case 'icc':return [['Rim',K=>K.iccRim,'c1'],['Core',K=>K.iccCore,'c2']];
+  case 'aden':return L.var==='hnf'?[]:[];
+} return [];}
+function lesionMean(K){if(!SAMPLE.length)return 0;let s=0;for(const [id,p1,p2] of SAMPLE)s+=lesionC(id,p1,p2,K);return s/SAMPLE.length;}
+function computeCurves(){const ts=[],o={a:[],p:[],hv:[],l:[],les:[],comp:compDefs().map(()=>[])};
+  for(let t=0;t<=300;t+=2){const K=comps(t,CFG.main);ts.push(t);o.a.push(K.a);o.p.push(K.p);o.hv.push(K.hv);o.l.push(K.l);o.les.push(lesionMean(K));o.comp.forEach((arr,i)=>arr.push(compDefs()[i][1](K)));}
+  CURVES={ts,...o};drawCurve();}
+const CP={l:34,r:10,t:16,b:30,W:460,H:250,ymax:0.8};
+const cx=t=>CP.l+(t/300)*(CP.W-CP.l-CP.r), cy=v=>CP.H-CP.b-(Math.min(v,CP.ymax)/CP.ymax)*(CP.H-CP.t-CP.b);
+function drawCurve(){
+  const sv=$('#curve');const bands=[[15,27,'#C98A0C','EA'],[27,50,'#C98A0C','LA'],[50,110,'#1F7F95','PV'],[110,300,'#6B5BA8','Delayed']];
+  let h='';
+  bands.forEach(([a,b,c,n],i)=>{const x1=cx(Math.min(300,a+DLY)),x2=cx(Math.min(300,b+DLY));h+=`<rect x="${x1}" y="${CP.t}" width="${Math.max(0,x2-x1)}" height="${CP.H-CP.t-CP.b}" fill="${c}" opacity="${i===0?0.07:0.12}"/><text x="${(x1+x2)/2}" y="${CP.t-4}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".7">${n}</text>`;});
+  for(let v=0;v<=0.8;v+=0.2){h+=`<line x1="${CP.l}" x2="${CP.W-CP.r}" y1="${cy(v)}" y2="${cy(v)}" stroke="currentColor" opacity=".12"/><text x="${CP.l-5}" y="${cy(v)+3}" font-size="10" text-anchor="end" fill="currentColor" opacity=".7">${v.toFixed(1)}</text>`;}
+  for(let t=0;t<=300;t+=60)h+=`<text x="${cx(t)}" y="${CP.H-CP.b+14}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".7">${t}</text>`;
+  h+=`<text x="${(CP.l+CP.W)/2}" y="${CP.H-3}" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".8">seconds after injection</text><text transform="translate(10 ${(CP.H-CP.b+CP.t)/2}) rotate(-90)" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".8">contrast (a.u.)</text>`;
+  const path=(arr,col,w,dash)=>`<path d="${arr.map((v,i)=>(i?'L':'M')+cx(CURVES.ts[i]).toFixed(1)+' '+cy(v).toFixed(1)).join('')}" fill="none" stroke="${col}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+  h+=path(CURVES.a,CCOL.a,1.6)+path(CURVES.p,CCOL.p,1.6)+path(CURVES.hv,CCOL.hv,1.2,'4 3')+path(CURVES.l,CCOL.l,2.6);
+  const cd=compDefs();CURVES.comp.forEach((arr,i)=>h+=path(arr,CCOL[cd[i][2]],1.4,'5 3'));
+  h+=path(CURVES.les,CCOL.les,2.8);
+  h+=`<line id="cur" y1="${CP.t}" y2="${CP.H-CP.b}" stroke="currentColor" stroke-width="1.5"/>`;
+  sv.innerHTML=h;
+  const nm=S.unknown?'Lesion (mean)':LSHORT[S.type]+' (mean)';
+  const items=[['Aorta',CCOL.a,''],['Portal vein',CCOL.p,''],['Hepatic veins',CCOL.hv,'dash'],['Liver',CCOL.l,''],[nm,CCOL.les,'']].concat(S.unknown?[]:cd.map(c=>[c[0],CCOL[c[2]],'dash']));
+  $('#legend').innerHTML=items.map(([n,c,d])=>`<label><i style="background:${d?`repeating-linear-gradient(90deg,${c} 0 5px,transparent 5px 8px)`:c}"></i>${n}</label>`).join('');
+  moveCursor();
+}
+function moveCursor(){const l=$('#cur');if(l){l.setAttribute('x1',cx(S.t));l.setAttribute('x2',cx(S.t));}}
+(function(){const sv=$('#curve');let drag=false;const go=e=>{const r=sv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*CP.W;setT(Math.round(clamp((x-CP.l)/(CP.W-CP.l-CP.r)*300,0,300)),true);};
+  sv.addEventListener('pointerdown',e=>{drag=true;sv.setPointerCapture(e.pointerId);go(e);});sv.addEventListener('pointermove',e=>{if(drag)go(e);});sv.addEventListener('pointerup',()=>drag=false);})();
+
+/* ---------------- main view ---------------- */
+function setT(t,forceDyn){S.t=clamp(t,0,300);if(forceDyn&&S.mod==='mri'&&S.seq!=='t1'){S.seq='t1';syncControls();}draw();}
+function draw(){
+  const seq=seqNow();const r=renderGrid(G,seq,S.t,S.mod,{win:S.win});LASTRAW=r.raw;putGray(ctx,G,r.g);
+  drawOverlay();updateNote();updateReadout(r.raw);moveCursor();updateTimeUI();updateMatrixNow();
+}
+const LABELS=[['Aorta',0.9,4.4,3.4,5.9],['IVC',-2.6,3.4,-2.2,5.6],['Portal vein',-2.4,1.1,-0.6,3.0],['Hepatic vein',-6.4,4.6,-9.8,6.2],['Spleen',10.8,5.6,11.0,1.4],['Stomach',6.0,-2.0,6.0,-1.6],['Gallbladder',-3.2,-6.6,-6.4,-9.0],['Kidney',-6.4,7.25,-8.9,10.2],['Kidney',6.4,7.05,8.9,10.2],['Pancreas',4.6,1.7,3.6,-0.4],['Splenic vein',7.6,4.05,12.0,9.4],['Hepatic artery',-1.1,0.45,-1.8,-1.6]];
+function c2o(x,y){const k=ov.width/MAIN.w;return [(x-MAIN.x0)*MAIN.sc*k,(y-MAIN.y0)*MAIN.sc*k];}
+function drawOverlay(){
+  octx.clearRect(0,0,ov.width,ov.height);const fk=Math.min(1.45,Math.max(1,10.5*ov.width/(28*(ov.clientWidth||ov.width))));octx.font=`600 ${Math.round(28*fk)}px "Instrument Sans",system-ui,sans-serif`;octx.lineWidth=2;
+  const txt=(s,x,y,c)=>{octx.strokeStyle='rgba(0,0,0,.85)';octx.lineWidth=6;octx.strokeText(s,x,y);octx.fillStyle=c;octx.fillText(s,x,y);};
+  if(S.lab&&!S.unknown&&S.drill!=='find'){
+    for(const [n,ax,ay,lx,ly] of LABELS){const [px,py]=c2o(ax,ay),[tx,ty]=c2o(lx,ly);if(n==='Stomach'){octx.textAlign='center';txt(n,tx,ty,'#9fd3e0');continue;}
+      octx.textAlign='center';octx.strokeStyle='rgba(159,211,224,.8)';octx.lineWidth=2;octx.beginPath();octx.moveTo(px,py);octx.lineTo(tx,ty-(ty>py?22:-8));octx.stroke();txt(n,tx,ty,'#9fd3e0');}
+    const L=CFG.main,[px,py]=c2o(L.cx-L.R*0.75,L.cy-L.R*0.75),[tx,ty]=c2o(L.cx-L.R-1.6,L.cy-L.R-1.4);
+    octx.strokeStyle='#F2C14E';octx.lineWidth=3;octx.beginPath();octx.moveTo(tx+20,ty+8);octx.lineTo(px,py);octx.stroke();octx.textAlign='center';txt(LSHORT[S.type],tx,ty,'#F2C14E');
+    if(L.type==='icc'&&L.ret){const [rx,ry]=c2o(L.ret[0],L.ret[1]),[qx,qy]=c2o(L.ret[0]-0.4,L.ret[1]-2.1);octx.strokeStyle='#F2C14E';octx.lineWidth=2;octx.beginPath();octx.moveTo(qx,qy+8);octx.lineTo(rx,ry);octx.stroke();txt('Capsular retraction',qx,qy,'#F2C14E');
+      const d=L.ducts[0],[dx,dy]=c2o(d[2],d[3]),[ex,ey]=c2o(-14.6,-3.4);octx.beginPath();octx.moveTo(ex,ey+8);octx.lineTo(dx,dy);octx.stroke();txt('Dilated ducts',ex,ey,'#F2C14E');}
+  }
+  for(const m of S.marks){const [px,py]=c2o(m[0],m[1]);octx.lineWidth=4;octx.strokeStyle=m[2]?'#6CC08D':'#F07A70';octx.beginPath();if(m[2])octx.arc(px,py,m[3]*MAIN.sc*3+10,0,6.283);else{octx.moveTo(px-12,py-12);octx.lineTo(px+12,py+12);octx.moveTo(px+12,py-12);octx.lineTo(px-12,py+12);}octx.stroke();}
+  const sq=seqNow(),txtc=S.mod==='ct'?`CT · ${phaseKey(S.t)==='pre'?'non-contrast':PHNAME[phaseKey(S.t)].toLowerCase()} · W${WIN[S.win][0]} L${WIN[S.win][1]}`:`MRI · ${SEQS[sq]}${sq==='t1'?' · '+PHNAME[phaseKey(S.t)].toLowerCase():''}`;
+  octx.textAlign='left';octx.font=`500 ${Math.round(25*fk)}px "Instrument Sans",system-ui,sans-serif`;txt(txtc,18,36*fk,'#dfe6ea');
+  if(sq==='t1'){octx.textAlign='right';txt(`t = ${Math.round(S.t)} s`,ov.width-18,36*fk,'#dfe6ea');}
+  octx.textAlign='left';txt('R',18,ov.height/2,'#9fb0bb');octx.textAlign='right';txt('L',ov.width-18,ov.height/2,'#9fb0bb');
+}
+function noteKey(){const sq=seqNow();return sq==='t1'?phaseKey(S.t):sq;}
+function getNote(type,vr,key){const o=NOTES[type+'.'+vr],b=NOTES[type];let n=(o&&o[key])||b[key];if(Array.isArray(n))n=n[S.mod==='ct'?1:0];return n||'';}
+function updateNote(){
+  if(S.unknown){$('#note').innerHTML='<b>Unknown lesion.</b> Scrub through the phases and switch sequences as you would on a workstation, then answer in the drill box.';return;}
+  const key=noteKey();let n=getNote(S.type,S.var,key);
+  if(S.mod==='ct'&&['t2','dwi','adc','ip','op'].includes(key))n='';
+  let bgn='';
+  if(S.bg==='steatotic'&&key==='op')bgn=' <span class="hint">Background: the whole liver drops on opposed-phase (steatosis), so lesions without fat look relatively bright.</span>';
+  if(S.bg==='steatotic'&&S.mod==='ct'&&key==='pre')bgn=' <span class="hint">Background: the steatotic liver is darker than the spleen on non-contrast CT.</span>';
+  if(S.bg==='cirrhotic'&&key==='del')bgn=' <span class="hint">Background: reticular fibrosis enhances on delayed images; do not mistake it for a capsule.</span>';
+  if(S.bg==='cirrhotic'&&(key==='pre'||key==='t2'))bgn=' <span class="hint">Background: nodular surface, enlarged caudate and left lobe, splenomegaly and ascites.</span>';
+  if(S.multi&&S.type==='met'&&key==='pv')bgn+=' <span class="hint">There are six metastases on this slice; the smallest is about 6 mm.</span>';
+  $('#note').innerHTML=`<b>${LESDEF[S.type].name}${Object.keys(LESDEF[S.type].vars).length>1?' · '+LESDEF[S.type].vars[S.var]:''}.</b> ${n}${bgn}`;
+}
+function updateReadout(raw){
+  const c=lesionContrast(G,raw,S.mod);if(!c){$('#ro').textContent='';return;}
+  let word,cls;const th=S.mod==='ct'?0.25:0.08;
+  if(c.rel>th){word=S.mod==='ct'?'hyperattenuating':'hyperintense';cls='g1';}else if(c.rel<-th){word=S.mod==='ct'?'hypoattenuating':'hypointense';cls='g2';}else{word=S.mod==='ct'?'isoattenuating':'isointense';cls='g0';}
+  const val=S.mod==='ct'?`${c.d>0?'+':''}${Math.round(c.d)} HU (lesion ${Math.round(c.les)}, liver ${Math.round(c.liv)})`:`${c.rel>0?'+':''}${Math.round(c.rel*100)}% versus liver`;
+  $('#ro').innerHTML=`Lesion compared with the adjacent liver: <b class="${cls}">${word}</b> <span class="hint">${val}</span>`;
+}
+function updateTimeUI(){
+  $('#t').value=S.t;const dyn=seqNow()==='t1';
+  $('#tread').innerHTML=dyn?`${Math.round(S.t)} s · ${PHNAME[phaseKey(S.t)]}`:`<span style="color:#9fb0bb">${SEQS[S.seq]}: no time axis</span>`;
+  $('#t').style.opacity=dyn?1:.45;
+  $$('#phb button').forEach(b=>{const v=+b.dataset.t;b.setAttribute('aria-pressed',dyn&&Math.abs(S.t-(v+(v?DLY:0)))<1);b.disabled=S.lockPh;b.style.opacity=S.lockPh?.4:1;});
+  const pb=$('#pbar');const segs=[[0,15,'#3a4652','Pre'],[15,27,'#B9822A','EA'],[27,50,'#E8B23A','LA'],[50,110,'#4FB6CC','PV'],[110,300,'#9C8FD6','Delayed']];
+  pb.innerHTML=segs.map(([a,b,c,n],i)=>{const x1=i===0?0:Math.min(300,a+DLY),x2=i===segs.length-1?300:Math.min(300,b+DLY);return `<span style="left:${x1/3}%;width:${(x2-x1)/3}%;background:${c}">${n}</span>`;}).join('')+`<span style="left:calc(${S.t/3}% - 1px);width:2px;background:#fff;padding:0"></span>`;
+}
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect();const i=Math.floor((e.clientX-r.left)/r.width*MAIN.w),j=Math.floor((e.clientY-r.top)/r.height*MAIN.h);
+  const x=MAIN.x0+(i+.5)/MAIN.sc,y=MAIN.y0+(j+.5)/MAIN.sc;
+  if(S.drill==='find'){drillFindClick(x,y);return;}
+  const k=j*MAIN.w+i,id=G.tis[k];let nm=TNAME[id]||'Tissue';if(S.unknown&&LESION_FAMILY.has(id))nm='Lesion';
+  const v=LASTRAW?LASTRAW[k]:0;const sq=seqNow();
+  const val=S.mod==='ct'?`${Math.round(v)} HU`:sq==='adc'?`ADC ≈ ${v.toFixed(2)} × 10⁻³ mm²/s`:`signal ${v.toFixed(2)} (a.u.)`;
+  $('#insp').innerHTML=`<b>${nm}</b> · ${val}${sq==='t1'&&id?` <span class="hint">· Contrast now: ${lesionC(id,G.p1[k],G.p2[k],comps(S.t,CFG.main)).toFixed(2)} a.u.</span>`:''}`;
+});
+
+/* fixed-height note: sized once for the longest text, so the viewer never moves */
+function sizeNote(){const n=$('#note');const m=n.cloneNode(false);m.removeAttribute('id');m.style.cssText=`position:absolute;visibility:hidden;left:-9999px;top:0;min-height:0;height:auto;width:${n.offsetWidth}px`;document.body.appendChild(m);
+  const tail=' <span class="hint">Background: nodular surface, enlarged caudate and left lobe, splenomegaly and ascites.</span> <span class="hint">There are six metastases on this slice; the smallest is about 6 mm.</span>';let mx=0;
+  for(const k of LORDER){for(const v of Object.keys(LESDEF[k].vars)){for(const key of ['pre','ea','la','pv','del','t2','dwi','adc','ip','op']){for(const md of ['mri','ct']){const o=NOTES[k+'.'+v],b=NOTES[k];let t=(o&&o[key])||b[key]||'';if(Array.isArray(t))t=t[md==='ct'?1:0];
+    m.innerHTML=`<b>${LESDEF[k].name} · ${LESDEF[k].vars[v]}.</b> ${t}${tail}`;mx=Math.max(mx,m.offsetHeight);}}}}
+  m.remove();n.style.minHeight=n.style.height=mx+'px';}
+let rsT=0;window.addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(sizeNote,150);});
+/* ---------------- controls ---------------- */
+function seg(id,key,after){$$(id+' button').forEach(b=>b.onclick=()=>{S[key]=b.dataset.v;after?after():0;syncControls();});}
+seg('#mod','mod',()=>{buildMatrix();draw();});
+seg('#seq','seq',()=>draw());
+seg('#bg','bg',()=>rebuild());
+function syncControls(){
+  $$('#mod button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.mod));
+  $$('#seq button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.seq));
+  $$('#bg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.bg));
+  $('#seq').style.visibility=S.mod==='ct'?'hidden':'visible';$('#winL').style.visibility=S.mod!=='ct'?'hidden':'visible';$('#win').value=S.win;
+  const ls=$('#les');if(!ls.options.length)LORDER.forEach(k=>ls.add(new Option(LESDEF[k].name,k)));{const q=ls.querySelector('option[value="?"]');if(S.unknown){if(!q)ls.add(new Option('Unknown','?'));ls.value='?';}else{if(q)q.remove();ls.value=S.type;}}ls.disabled=S.unknown;
+  const vs=$('#var');vs.innerHTML='';const vv=LESDEF[S.type].vars;Object.keys(vv).forEach(k=>vs.add(new Option(vv[k],k)));vs.value=S.var;vs.disabled=S.unknown||Object.keys(vv).length<2;
+  vs.parentElement.style.visibility=S.unknown?'hidden':'visible';
+  $('#multiL').style.visibility=(S.type!=='met'||S.unknown)?'hidden':'visible';$('#multi').checked=S.multi;
+  $('#oLab').checked=S.lab;$('#dly').value=DLY;$('#dlyo').textContent=DLY+' s';
+  $('#play').textContent=S.playing?'❚❚ Pause':'▶ Play';
+}
+$('#les').onchange=e=>{S.type=e.target.value;S.var=Object.keys(LESDEF[S.type].vars)[0];S.multi=false;rebuild();};
+$('#var').onchange=e=>{S.var=e.target.value;rebuild();};
+$('#multi').onchange=e=>{S.multi=e.target.checked;rebuild();};
+$('#win').onchange=e=>{S.win=e.target.value;buildMatrix();draw();};
+$('#oLab').onchange=e=>{S.lab=e.target.checked;draw();};
+$('#t').oninput=e=>setT(+e.target.value,true);
+$$('#phb button').forEach(b=>b.onclick=()=>{const v=+b.dataset.t;setT(v+(v?DLY:0),true);});
+$('#dly').oninput=e=>{DLY=+e.target.value;$('#dlyo').textContent=DLY+' s';computeCurves();buildMatrix();draw();};
+let lastF=0;
+function tick(ts){if(!S.playing)return;const dt=lastF?(ts-lastF)/1000:0;lastF=ts;S.t+=dt*18;if(S.t>=300){S.t=300;S.playing=false;syncControls();}draw();if(S.playing)requestAnimationFrame(tick);}
+$('#play').onclick=()=>{S.playing=!S.playing;if(S.playing){if(S.t>=300)S.t=0;if(S.mod==='mri'&&S.seq!=='t1')S.seq='t1';lastF=0;requestAnimationFrame(tick);}syncControls();};
+
+/* ---------------- matrix ---------------- */
+let MG={},MCELLS=[];
+function matrixRows(){const dyn=[['Pre','t1',0],['Arterial 35 s','t1',35],['Portal venous 70 s','t1',70],['Delayed 3 min','t1',180]];
+  const st=[['T2 FS','t2',0],['DWI b800','dwi',0],['ADC','adc',0],['In-phase','ip',0],['Opposed-phase','op',0]];
+  return (S.extra&&S.mod==='mri'?st:[]).concat(dyn).concat([['Now','now',0]]);}
+function buildMatrix(){
+  MG={};for(const k of LORDER){const vr=k===S.type?S.var:Object.keys(LESDEF[k].vars)[0];const cfg=buildCfg(k,vr,S.bg,false,{});const L=cfg.main;
+    const fov=clamp(L.R*2*2.3,4.8,11.5),N=96;MG[k]=makeGrid(N,N,L.cx-fov/2,L.cy-fov/2,N/fov,cfg,11+LORDER.indexOf(k));}
+  const rows=matrixRows(),tb=$('#mtx');MCELLS=[];
+  let h='<tr><th></th>'+LORDER.map(k=>`<th>${LSHORT[k]}</th>`).join('')+'</tr>';
+  rows.forEach((r,ri)=>{h+=`<tr data-r="${ri}"><th class="rowh">${r[0]==='Now'?'<span id="nowLab">Now</span>':r[0]}</th>`+LORDER.map((k,ci)=>`<td data-r="${ri}" data-c="${ci}"><canvas width="96" height="96" title="${LESDEF[k].name}, ${r[0]}"></canvas></td>`).join('')+'</tr>';});
+  tb.innerHTML=h;
+  $$('#mtx td').forEach(td=>{const ri=+td.dataset.r,ci=+td.dataset.c;MCELLS.push({td,ri,ci,cx:td.querySelector('canvas').getContext('2d')});td.onclick=()=>matrixPick(ri,ci);});
+  renderMatrix(false);
+  $('#mInfo').textContent=`${S.mod==='ct'?'CT':'MRI'} · ${{normal:'normal liver',steatotic:'steatotic liver',cirrhotic:'cirrhotic liver'}[S.bg]}${DLY?` · circulation delay ${DLY} s`:''}`;
+}
+function renderTile(c,row){const k=LORDER[c.ci],Gm=MG[k];let seq=row[1],t=row[2];if(seq==='now'){seq=seqNow();t=S.t;}else if(seq==='t1'&&t)t+=DLY;
+  if(S.mod==='ct')seq='t1';applyBg(S.bg);const r=renderGrid(Gm,seq,t,S.mod,{win:S.win,clean:S.clean,blur:1});putGray(c.cx,Gm,r.g);}
+function renderMatrix(onlyNow){const rows=matrixRows();for(const c of MCELLS){const row=rows[c.ri];if(onlyNow&&row[1]!=='now')continue;renderTile(c,row);}applyReveal();highlightRow();}
+function updateMatrixNow(){if(!MCELLS.length)return;renderMatrix(true);const nl=$('#nowLab');if(nl)nl.textContent=seqNow()==='t1'?`Now ${Math.round(S.t)} s`:`Now (${SEQS[S.seq].split(' ')[0]})`;}
+function highlightRow(){const rows=matrixRows(),pk=phaseKey(S.t),sq=seqNow();
+  const want=sq!=='t1'?sq:({pre:0,ea:35,la:35,pv:70,del:180})[pk];
+  $$('#mtx tr[data-r]').forEach(tr=>{const r=rows[+tr.dataset.r];const cur=sq==='t1'?(r[1]==='t1'&&r[2]===want):(r[1]===sq);tr.classList.toggle('cur',cur);tr.classList.toggle('now',r[1]==='now');});}
+function applyReveal(){for(const c of MCELLS)c.td.classList.toggle('hid',S.reveal!=null&&c.ri>=S.reveal);
+  const n=matrixRows().length;$('#mBuild').textContent=S.reveal==null?'Build it row by row':S.reveal>=n?'Start again':`Reveal next row (${S.reveal}/${n})`;}
+$('#mBuild').onclick=()=>{const n=matrixRows().length;if(S.reveal==null||S.reveal>=n)S.reveal=0;else S.reveal++;applyReveal();};
+$('#mExtra').onchange=e=>{S.extra=e.target.checked;S.reveal=null;buildMatrix();};
+$('#mClean').onchange=e=>{S.clean=e.target.checked;renderMatrix(false);};
+function matrixPick(ri,ci){if(S.drill)return;const row=matrixRows()[ri];const k=LORDER[ci];
+  if(k!==S.type){S.type=k;S.var=Object.keys(LESDEF[k].vars)[0];S.multi=false;}
+  if(row[1]==='t1'){S.seq='t1';S.t=row[2]+(row[2]?DLY:0);}else if(row[1]!=='now'){S.seq=row[1];S.mod='mri';}
+  rebuild();goViewer('the matrix');}
+/* ---------------- lesion cards ---------------- */
+function mkCards(){
+  const host=$('#lcards');host.innerHTML='';
+  for(const k of LORDER){const c=CARDS[k],d=document.createElement('div');d.className='lcard';d.id='card-'+k;
+    const cases=!SHOW_CASES?'':c.cases.map(([title,imgs])=>`<div class="grp">${title}</div><div class="strip">${imgs.map(([f,cap])=>`<figure data-src="${CASEDIR}${f}.jpg" data-cap="${LESDEF[k].name}: ${cap}"><img src="${CASEDIR}${f}.jpg" alt="${LESDEF[k].name}, ${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('')}</div>`).join('');
+    d.innerHTML=`<h3>${LESDEF[k].name}</h3><p style="font-family:var(--read);font-weight:600;margin-bottom:8px">${c.lead}</p>
+      <div class="cols"><div><ul>${c.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="grp">Pitfalls</div><ul>${c.p.map(x=>`<li>${x}</li>`).join('')}</ul>
+      <button class="mini primary" data-load="${k}">Load in the viewer</button></div>
+      <div><div class="grp">Simulated (MRI${k==='hcc'?', cirrhotic liver':''})</div><div class="synth" id="syn-${k}"></div>${cases}${c.more?`<p class="hint" style="margin-top:6px">${c.more}</p>`:''}</div></div>`;
+    host.appendChild(d);}
+  host.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{if(S.drill)exitDrill();S.type=b.dataset.load;S.var=Object.keys(LESDEF[S.type].vars)[0];S.multi=false;S.mod='mri';S.seq='t1';S.t=35+DLY;rebuild();goViewer('the '+LESDEF[S.type].name+' card');});
+  host.querySelectorAll('figure[data-src]').forEach(f=>f.onclick=()=>{$('#lbImg').src=f.dataset.src;$('#lbImg').alt=f.dataset.cap;$('#lbCap').textContent=f.dataset.cap;$('#lb').hidden=false;});
+}
+$('#lb').onclick=()=>$('#lb').hidden=true;document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#lb').hidden=true;});
+function mkSynth(){
+  const frames=[['T2','t2',0],['DWI','dwi',0],['Pre','t1',0],['Arterial','t1',35],['Portal venous','t1',70],['Delayed','t1',180]];
+  for(const k of LORDER){const bg=k==='hcc'?'cirrhotic':'normal';applyBg(bg);const cfg=buildCfg(k,null,bg,false,{});const L=cfg.main;const fov=clamp(L.R*2*2.3,4.8,11.5),N=108;
+    const Gs=makeGrid(N,N,L.cx-fov/2,L.cy-fov/2,N/fov,cfg,31);const host=$('#syn-'+k);host.innerHTML='';
+    for(const [n,sq,t] of frames){const f=document.createElement('figure');f.innerHTML=`<canvas width="${N}" height="${N}"></canvas><figcaption>${n}</figcaption>`;host.appendChild(f);
+      const r=renderGrid(Gs,sq,t,'mri',{blur:1});putGray(f.querySelector('canvas').getContext('2d'),Gs,r.g);}}
+  applyBg(S.bg);
+}
+/* ---------------- algorithm ---------------- */
+function mkAlgo(){
+  const box=(title,list)=>`<fieldset><legend>${title}</legend>${list.map(([id,t])=>`<label><input type="checkbox" data-f="${id}"> ${t}</label>`).join('')}</fieldset>`;
+  $('#algoIn').innerHTML=box('Clinical setting',ALGO.ctx)+box('Imaging features',ALGO.img)+'<button class="mini" id="algoClr">Clear</button>';
+  $$('#algoIn input').forEach(i=>i.onchange=runAlgo);$('#algoClr').onclick=()=>{$$('#algoIn input').forEach(i=>i.checked=false);runAlgo();};runAlgo();
+}
+function runAlgo(){
+  const on=$$('#algoIn input').filter(i=>i.checked).map(i=>i.dataset.f);const out=$('#algoOut');
+  if(!on.length){out.innerHTML='<h3>Ranked differential</h3><p class="hint">Tick the clinical setting and the features you see. Try: cirrhosis + arterial hyperenhancement then washout + capsule; or young woman + intracellular fat; or known cancer + rim enhancement + multiple.</p>';return;}
+  const sc={};LORDER.forEach(k=>sc[k]=0);for(const f of on){const w=ALGO.w[f]||{};for(const k in w)sc[k]+=w[k];}
+  const T=2.4;let Z=0;const ex={};LORDER.forEach(k=>{ex[k]=Math.exp(sc[k]/T);Z+=ex[k];});
+  const rk=LORDER.map(k=>[k,ex[k]/Z]).sort((a,b)=>b[1]-a[1]);
+  const why=k=>on.filter(f=>(ALGO.w[f]||{})[k]>0).map(f=>(ALGO.ctx.concat(ALGO.img).find(x=>x[0]===f)||['',''])[1]);
+  out.innerHTML='<h3>Ranked differential</h3>'+rk.map(([k,p],i)=>`<div style="display:flex;justify-content:space-between;gap:8px;font-size:14px"><span><b>${LESDEF[k].name}</b>${i===0&&why(k).length?`<br><span class="hint">Supported by: ${why(k).join('; ')}</span>`:''}</span><span class="hint">${Math.round(p*100)}%</span></div><div class="bar" style="width:${Math.max(2,p*100)}%;opacity:${i===0?1:.55}"></div>`).join('')+
+    `<p class="hint" style="margin-top:6px">Weights are illustrative. ${on.includes('cir')?'In cirrhosis, HCC dominates and LI-RADS applies (Lesson 3). ':''}${on.includes('fat')?'Intracellular fat: also consider focal steatosis, which has no mass effect and lets vessels pass through. ':''}${on.includes('scar')?'A central scar that is T2 dark points instead to fibrolamellar carcinoma. ':''}</p>`;
+}
+/* ---------------- drills ---------------- */
+const DONE=new Set();let FB='';
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function setCase(type,vr,bg,extra){S.type=type;S.var=vr;S.bg=bg;S.multi=false;Object.assign(S,extra||{});rebuild();}
+const DR=[
+ {id:'name',t:'Name that lesion',s:'An unknown lesion with every sequence available',
+  setup(){const k=pick(LORDER),vr=pick(Object.keys(LESDEF[k].vars));const bg=k==='hcc'?'cirrhotic':k==='icc'?pick(['normal','cirrhotic']):pick(['normal','normal','steatotic']);setCase(k,vr,bg,{unknown:true,seq:'t1',t:35+DLY,mod:pick(['mri','mri','ct'])});},
+  task:'Scrub through the dynamic phases and switch sequences, then name the lesion.',choices:()=>LORDER.map(k=>LESDEF[k].name),
+  ans:()=>LESDEF[S.type].name,why:()=>CARDS[S.type].lead},
+ {id:'time',t:'Time the late arterial phase',s:'Slow circulation, no bolus tracking',
+  setup(){DLY=6+Math.floor(Math.random()*9);setCase('hcc','classic','cirrhotic',{unknown:false,seq:'t1',t:0,mod:'mri',lockPh:true});computeCurves();},
+  task:'This patient has a slow circulation and the phase buttons are disabled. Move the time scrubber to a true late arterial phase (hepatic arteries fully enhanced, portal vein enhancing, hepatic veins not yet), then press Check.',
+  check(){const tt=S.t-DLY,p=Cp(tt),hv=Chv(tt),a=Ca(tt);const ok=seqNow()==='t1'&&p>=0.24&&hv<0.2&&a>0.4;
+    const det=`Aorta ${a.toFixed(2)}, portal vein ${p.toFixed(2)}, hepatic veins ${hv.toFixed(2)} (a.u.); bolus arrived about ${14+DLY} s after injection.`;
+    return [ok,ok?`Good timing at ${Math.round(S.t)} s. ${det} With a fixed 35 s delay, this patient would have been scanned too early.`:(p<0.24?`Too early: the portal vein is not yet enhancing. ${det}`:hv>=0.2?`Too late: the hepatic veins are filling, which means the portal venous phase. ${det}`:`Not yet arterial enough. ${det}`)];}},
+ {id:'find',t:'Find the metastases',s:'Click every lesion on portal venous images',
+  setup(){setCase('met','crc','normal',{multi:true,unknown:false,seq:'t1',t:70+DLY,mod:pick(['mri','ct']),lab:false,marks:[]});},
+  task:'Portal venous phase, colorectal cancer staging. Click the center of every metastasis on this slice. Some are small; try the CT liver window or DWI.'},
+ {id:'wash',t:'Washout or delayed enhancement?',s:'HCC, cholangiocarcinoma or metastasis',
+  setup(){const c=pick([['hcc','classic','cirrhotic'],['icc','mass',pick(['normal','cirrhotic'])],['met','crc','normal']]);setCase(c[0],c[1],c[2],{unknown:true,seq:'t1',t:180+DLY,mod:pick(['mri','ct'])});},
+  task:'Delayed phase. Compare this with the arterial and portal venous phases, and decide what the center of the lesion is doing.',choices:()=>['Washout with capsule: HCC','Progressive central enhancement: cholangiocarcinoma','Rim enhancement with peripheral washout: metastasis'],
+  ans:()=>({hcc:'Washout with capsule: HCC',icc:'Progressive central enhancement: cholangiocarcinoma',met:'Rim enhancement with peripheral washout: metastasis'})[S.type],why:()=>getNote(S.type,S.var,'del')},
+ {id:'bright',t:'Bright on T2: cyst or hemangioma?',s:'The dynamic series decides',
+  setup(){const c=pick([['cyst','simple'],['hem','classic'],['hem','slow'],['cyst','simple'],['hem','giant']]);setCase(c[0],c[1],'normal',{unknown:true,seq:'t2',t:0,mod:'mri'});},
+  task:'This lesion is very bright on T2. Use the dynamic series to decide what it is.',choices:()=>['Simple cyst','Hemangioma'],
+  ans:()=>S.type==='cyst'?'Simple cyst':'Hemangioma',why:()=>S.type==='cyst'?'No enhancement in any phase.':'Peripheral nodular enhancement that matches the blood pool and fills in centripetally.'},
+ {id:'vanish',t:'Make the FNH disappear',s:'Find the phase where it blends in',
+  setup(){setCase('fnh','scar','normal',{unknown:false,seq:'t1',t:35+DLY,mod:pick(['mri','ct'])});},
+  task:'This FNH is obvious in the late arterial phase. Move to the post-contrast phase where it becomes nearly invisible against the liver, then press Check.',
+  check(){const c=lesionContrast(G,LASTRAW,S.mod);const tt=S.t-DLY;const th=S.mod==='ct'?0.25:0.08;const ok=seqNow()==='t1'&&tt>=50&&c&&Math.abs(c.rel)<th;
+    return [ok,ok?`Yes. At ${Math.round(S.t)} s the FNH is isointense to liver: "liver looks like liver". Only the scar gives it away, and it enhances late.`:tt<50?'Still too early: the FNH is brighter than liver while the arterial supply dominates.':'Not quite: the lesion still differs from liver here.'];}},
+ {id:'fat',t:'Is there fat?',s:'In-phase versus opposed-phase',
+  setup(){const c=pick([['aden','hnf'],['hcc','fat'],['fnh','scar'],['aden','inflam']]);setCase(c[0],c[1],pick(['normal','steatotic']),{unknown:true,seq:'ip',t:0,mod:'mri'});},
+  task:'Compare in-phase and opposed-phase images. Does the lesion contain intracellular fat? Watch the background liver too.',choices:()=>['Contains fat','No fat'],
+  ans:()=>((S.type==='aden'&&S.var==='hnf')||(S.type==='hcc'&&S.var==='fat'))?'Contains fat':'No fat',
+  why:()=>(((S.type==='aden'&&S.var==='hnf')||(S.type==='hcc'&&S.var==='fat'))?'The lesion itself loses signal on opposed-phase.':'The lesion keeps its signal on opposed-phase.')+(S.bg==='steatotic'?' The liver drops because it is steatotic, which makes a fat-free lesion look relatively bright.':'')+` (${LESDEF[S.type].name}.)`},
+ {id:'flash',t:'Flash-filling hemangioma or small HCC?',s:'Two lesions that light up early',
+  setup(){const c=pick([['hem','flash'],['hcc','small']]);setCase(c[0],c[1],pick(['normal','cirrhotic']),{unknown:true,seq:'t1',t:35+DLY,mod:'mri'});},
+  task:'A small lesion enhances strongly in the late arterial phase. Use the later phases and T2 to decide.',choices:()=>['Flash-filling hemangioma','Small HCC'],
+  ans:()=>S.type==='hem'?'Flash-filling hemangioma':'Small HCC',why:()=>S.type==='hem'?'It stays as bright as the blood pool in the portal venous and delayed phases and is very T2 bright.':'It washes out in the portal venous and delayed phases and is only mildly T2 bright.'}
+];
+function mkDrills(){$('#drills').innerHTML='';DR.forEach(d=>{const b=document.createElement('button');b.className='drill'+(DONE.has(d.id)?' done':'');b.innerHTML=`${d.t}<small>${d.s}${DONE.has(d.id)?' · solved':''}</small>`;b.setAttribute('aria-pressed',S.drill===d.id);b.onclick=()=>startDrill(d.id);$('#drills').appendChild(b);});}
+function startDrill(id){const d=DR.find(x=>x.id===id);if(S.drill)resetDrillState();S.drill=id;S.playing=false;d.setup();syncControls();draw();
+  const t=$('#task');t.hidden=false;const ch=d.choices?d.choices():[];
+  t.innerHTML=`<b>${d.t}${/[?.]$/.test(d.t)?"":"."}</b> ${d.task}${ch.length?`<div class="choices" id="chs">${ch.map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div>`:''}<div class="row" style="margin-top:8px">${d.check?'<button class="mini primary" id="chk">Check</button>':''}<button class="mini" id="nxt">New case</button><button class="mini" id="ext">Exit drill</button></div><div id="fb"></div>`;
+  t.querySelectorAll('#chs button').forEach(b=>b.onclick=()=>{t.querySelectorAll('#chs button').forEach(x=>x.setAttribute('aria-pressed',x===b));const ok=b.dataset.c===d.ans();fb(ok,ok?`Correct. ${d.why()}`:'Not quite. Look again at every phase and sequence, then try another answer.');if(ok)solved(d.id);});
+  if(d.check)$('#chk').onclick=()=>{const [ok,msg]=d.check();fb(ok,msg);if(ok)solved(d.id);};
+  $('#nxt').onclick=()=>startDrill(id);$('#ext').onclick=exitDrill;mkDrills();
+  if(id==='find')updateFind();
+  hidePill();goViewer();
+}
+function fb(ok,msg){FB=(ok?'ok:':'no:')+msg;const f=$('#fb');if(f)f.innerHTML=`<div class="fb ${ok?'ok':'no'}">${msg}</div>`;}
+function solved(id){DONE.add(id);mkDrills();}
+function resetDrillState(){S.unknown=false;S.lockPh=false;S.marks=[];S.lab=true;if(S.drill==='time'){DLY=0;computeCurves();}}
+function exitDrill(){resetDrillState();S.drill=null;$('#task').hidden=true;FB='';rebuild();mkDrills();}
+function updateFind(){const n=CFG.les.length,f=S.marks.filter(m=>m[2]).length,miss=S.marks.filter(m=>!m[2]).length;const t=$('#task');let st=t.querySelector('.fstat');if(!st){st=document.createElement('div');st.className='fstat hint';st.style.marginTop='6px';t.insertBefore(st,t.querySelector('.row'));}st.textContent=`Found ${f} of ${n}${miss?` · ${miss} click${miss>1?'s':''} on normal tissue`:''}`;}
+function drillFindClick(x,y){
+  let hit=-1;CFG.les.forEach((L,i)=>{if(lesionRR(L,x,y)[0]<1.3+0.25/L.R)hit=i;});
+  if(hit>=0){if(!S.marks.some(m=>m[4]===hit)){const L=CFG.les[hit];S.marks.push([L.cx,L.cy,true,L.R,hit]);}}else S.marks.push([x,y,false,0,-1]);
+  drawOverlay();updateFind();const f=S.marks.filter(m=>m[2]).length;
+  if(f===CFG.les.length){const miss=S.marks.filter(m=>!m[2]).length;fb(true,`All ${f} found${miss?` (with ${miss} false-positive click${miss>1?'s':''})`:''}. Hypovascular metastases are darkest against the liver in the portal venous phase. The smallest ones are easier on DWI.`);solved('find');}
+  else if(hit<0)fb(false,'That is normal tissue (often a vessel in cross-section). Metastases are round, darker than liver, and have a rim.');
+  else fb(true,`Found one. ${CFG.les.length-f} to go.`);
+}
+/* ---------------- quiz and references ---------------- */
+function mkQuiz(){const h=$('#quiz');h.innerHTML='';QZ.forEach((q,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector('.opts');q.o.forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{op.querySelectorAll('button').forEach((x,k)=>{x.disabled=true;if(k===q.a)x.classList.add('right');});if(j!==q.a)b.classList.add('wrong');const ex=d.querySelector('.ex');ex.hidden=false;ex.textContent=(j===q.a?'Correct. ':'Not quite. ')+q.e;};op.appendChild(b);});h.appendChild(d);});}
+$('#refs').innerHTML=REFS.map(r=>`<li>${r}</li>`).join('');
+/* ---------------- init ---------------- */
+mkCards();mkSynth();mkAlgo();mkDrills();mkQuiz();rebuild();sizeNote();if(document.fonts)document.fonts.ready.then(sizeNote);
+/* ---------------- section navigation, back links, return pill ---------------- */
+(function(){
+  $$('h2[id]').forEach(h=>{const a=document.createElement('a');a.href='#viewer';a.className='totop';a.textContent='↑ viewer';h.appendChild(a);});
+  const links=$$('#secnav a'),hs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1)));let last=-1;
+  const upd=()=>{let cur=0;hs.forEach((h,i)=>{if(h&&h.getBoundingClientRect().top<120)cur=i;});links.forEach((a,i)=>a.classList.toggle('on',i===cur));
+    if(cur!==last){last=cur;const n=$('#secnav'),on=links[cur];n.scrollTo({left:on.offsetLeft-n.clientWidth/2+on.offsetWidth/2,behavior:'smooth'});}};
+  let tk=0;window.addEventListener('scroll',()=>{if(!tk){tk=1;requestAnimationFrame(()=>{tk=0;upd();pillCheck();});}},{passive:true});upd();
+  links.forEach(a=>a.addEventListener('click',()=>hidePill()));
+})();
+let PILL=null;
+function goViewer(label){const y=window.scrollY;document.getElementById('viewer').scrollIntoView({behavior:'smooth',block:'start'});
+  if(!label)return;let p=$('#backpill');if(!p){p=document.createElement('button');p.id='backpill';p.className='backpill';document.body.appendChild(p);p.onclick=()=>{const t=PILL;hidePill();if(t)window.scrollTo({top:t.y,behavior:'smooth'});};}
+  p.textContent='↓ Back to '+label;p.hidden=false;PILL={y,armed:false};setTimeout(()=>{if(PILL)PILL.armed=true;},900);}
+function hidePill(){PILL=null;const p=$('#backpill');if(p)p.hidden=true;}
+function pillCheck(){if(PILL&&PILL.armed&&Math.abs(window.scrollY-PILL.y)<250)hidePill();}
+/* mini time scrubbers mirror the viewer's scrubber */
+(function(){const main=$('#t');$$('.miniT input').forEach(i=>{i.min=main.min;i.max=main.max;i.step=main.step;i.oninput=e=>{main.value=e.target.value;main.dispatchEvent(new Event('input'));};});
+  const _u=updateTimeUI;updateTimeUI=function(){_u.apply(this,arguments);const tr=$('#tread').textContent;$$('.miniT').forEach(m=>{m.querySelector('input').value=main.value;m.querySelector('output').textContent=tr;});};updateTimeUI();})();
+{let ro=0;window.addEventListener('resize',()=>{clearTimeout(ro);ro=setTimeout(()=>{if(typeof drawOverlay==='function')drawOverlay();},160);});}
+</script>
+</body></html>

@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hepatobiliary Contrast Agents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F1;--panel:#FFFFFF;--ink:#18222C;--muted:#5A6874;--line:#CFD6DB;--soft:#F5F7F8;--amber:#C98A0C;--cyan:#1F7F95;--rose:#B0476A;--ok:#2F7D4F;--warn:#B8621B;--bad:#B3261E;--chip-ok:#E3F1E8;--chip-warn:#FBEEDD;--chip-bad:#F8E1DF;
+  --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--read:"Literata",Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}}
+:root[data-theme="dark"]{--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}*,*::before,*::after{box-sizing:inherit}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px}h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}.lede{font-family:var(--read);font-size:18px;max-width:84ch;color:var(--muted)}.read{font-family:var(--read);max-width:84ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:16px 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}.seg.sm button{font-size:13px;padding:4px 10px;font-weight:500}
+select{font:inherit;font-size:14px;padding:4px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);min-height:48px}
+.stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(340px,1fr);gap:18px;align-items:start;margin-top:14px}
+@media (max-width:1050px){.stage{grid-template-columns:1fr}}
+.views{background:#000;border-radius:10px;padding:10px;display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+@media (max-width:640px){.views{grid-template-columns:1fr}}
+.view{position:relative}.view .cv{position:relative;width:100%}
+.view canvas{display:block;width:100%;height:auto;image-rendering:auto;cursor:crosshair}
+.view .ov{position:absolute;inset:0;pointer-events:none}
+.vlab{color:#dfe6ea;font-size:13px;display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-variant-numeric:tabular-nums}
+.vlab input[type=range]{flex:1;accent-color:var(--amber)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.ovl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:#dfe6ea;font-size:13px;grid-column:1/-1}.ovl label{display:flex;gap:5px;align-items:center}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.grp{font-size:12.5px;color:var(--muted);margin:12px 0 4px;font-weight:700}.grp:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:132px 1fr 60px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:13px}.ctl input[type=range]{width:100%;accent-color:var(--amber)}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:14px;margin:6px 0}
+.tbl{overflow-x:auto}.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tbl th{font-size:12.5px;color:var(--muted);font-weight:600}
+.big{font-family:var(--read);font-size:22px;font-weight:600}
+.g0{color:var(--ok)}.g1{color:var(--warn)}.g2{color:var(--bad)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px}.card p{font-family:var(--read);line-height:1.6;margin:0 0 8px;font-size:15px}
+.report{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-family:var(--read);font-size:15px;line-height:1.6;white-space:pre-wrap}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.drills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.drill{font:inherit;text-align:left;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.drill[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}.drill.done{background:var(--chip-ok)}.drill small{display:block;color:var(--muted);font-size:12px}
+.task{background:var(--panel);border-left:4px solid var(--amber);border-radius:4px;padding:12px 15px;margin-top:10px;font-family:var(--read)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.choices button{font:inherit;font-size:13.5px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.fb{font-size:14px;margin-top:8px;padding:8px 10px;border-radius:6px;font-family:var(--ui)}.fb.ok{background:var(--chip-ok)}.fb.no{background:var(--chip-warn)}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-bottom:10px}.quiz .q p{font-family:var(--read);margin-bottom:8px}
+.quiz .opts{display:flex;flex-direction:column;gap:6px}.quiz .opts button{font:inherit;font-size:14px;text-align:left;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.quiz .opts button.right{background:var(--chip-ok);border-color:var(--ok)}.quiz .opts button.wrong{background:var(--chip-bad);border-color:var(--bad)}.quiz .ex{font-size:14px;color:var(--muted);margin-top:8px}
+ol.refs{font-size:14px;color:var(--muted);padding-left:24px;max-width:98ch;line-height:1.55}ol.refs li{margin-bottom:6px}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:92ch}.hint{font-size:12.5px;color:var(--muted)}
+.sc select{font-size:13px;max-width:100%}
+</style>
+<style>
+.views2{background:#000;border-radius:10px;padding:10px}
+.slicewrap{position:relative;width:100%;aspect-ratio:360/270}
+.slicewrap canvas{position:absolute;inset:0;width:100%;height:100%}
+#slice{cursor:crosshair}
+.scrub{display:flex;align-items:center;gap:10px;margin-top:8px;color:#dfe6ea;font-size:13px;flex-wrap:wrap}
+.scrub input[type=range]{flex:1;min-width:180px;accent-color:var(--amber)}
+.scrub button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid #3a4652;background:#1b242d;color:#dfe6ea;cursor:pointer}
+.scrub button[aria-pressed="true"]{background:#dfe6ea;color:#000}
+.tread{color:#fff;font-variant-numeric:tabular-nums;font-weight:600;flex:0 0 230px;width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phasebar{position:relative;height:16px;margin:2px 0 0;border-radius:3px;overflow:hidden;background:#1b242d}
+.phasebar span{position:absolute;top:0;bottom:0;font-size:10.5px;color:#0b1116;padding-left:3px;white-space:nowrap;overflow:hidden;line-height:16px}
+.curvebox{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;margin-top:6px}
+.legend label{display:flex;align-items:center;gap:5px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px}
+.matrix{background:#000;border-radius:10px;padding:10px;overflow-x:auto}
+.matrix table{border-collapse:separate;border-spacing:5px;margin:0 auto}
+.matrix th{color:#dfe6ea;font-size:12.5px;font-weight:600;padding:2px 4px;text-align:center;white-space:nowrap}
+.matrix th.rowh{text-align:right;color:#9fb0bb;font-weight:600;width:132px;min-width:132px}
+.matrix tr.now th.rowh{color:#F2C14E}
+.matrix td{padding:0;position:relative}
+.matrix canvas{display:block;width:92px;height:92px;border-radius:4px;border:2px solid transparent}
+.matrix tr.cur canvas{border-color:#F2C14E}
+.matrix td.hid canvas{visibility:hidden}
+.matrix td.hid::after{content:"";position:absolute;inset:0;border-radius:4px;background:#222b33}
+.mbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:#dfe6ea;font-size:13px;margin-bottom:6px}
+.mbar button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid #3a4652;background:#1b242d;color:#dfe6ea;cursor:pointer}
+.mbar label{display:flex;gap:5px;align-items:center}
+.lcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px;margin-bottom:14px}
+.lcard h3{font-size:18px;font-family:var(--read);margin-bottom:6px}
+.lcard .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px}
+@media (max-width:900px){.lcard .cols{grid-template-columns:1fr}}
+.lcard ul{margin:0 0 8px;padding-left:20px;font-family:var(--read);line-height:1.55;font-size:15px}
+.strip{display:flex;flex-wrap:wrap;gap:6px}
+.strip figure{margin:0;background:#000;border-radius:6px;overflow:hidden;cursor:zoom-in;width:132px}
+.strip img{display:block;width:132px;height:108px;object-fit:contain;background:#000}
+.strip figcaption{color:#dfe6ea;font-size:11.5px;padding:3px 6px 4px}
+.synth{display:flex;flex-wrap:wrap;gap:6px}
+.synth figure{margin:0;background:#000;border-radius:6px;overflow:hidden;width:88px}
+.synth canvas{display:block;width:88px;height:88px}
+.synth figcaption{color:#dfe6ea;font-size:11.5px;padding:3px 6px 4px}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.lb img{max-width:min(92vw,900px);max-height:82vh;border-radius:6px}
+.lb p{color:#fff;font-family:var(--ui);text-align:center;margin-top:8px}
+.lb div{display:flex;flex-direction:column;align-items:center}
+.algo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.algo{grid-template-columns:1fr}}
+.algo fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:0 0 10px;background:var(--panel)}
+.algo legend{font-size:13px;font-weight:700;color:var(--muted);padding:0 4px}
+.algo label{display:flex;gap:7px;align-items:center;font-size:14px;margin:3px 0}
+.ddx{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.ddx .bar{height:8px;border-radius:4px;background:var(--cyan);margin:2px 0 8px}
+.unk{display:flex;flex-wrap:wrap;gap:6px;background:#000;padding:8px;border-radius:8px;margin-top:8px}
+.unk figure{margin:0;width:104px}.unk canvas{width:104px;height:104px;display:block;border-radius:4px}.unk figcaption{color:#dfe6ea;font-size:11.5px;text-align:center}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:var(--muted);margin-left:6px;font-family:var(--ui);font-weight:500;vertical-align:middle}
+#les,#var{width:260px;max-width:72vw}
+#ro{min-height:44px}
+.slot{display:inline-grid}.slot>*{grid-area:1/1}
+.mech,.proto{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.mech svg{width:100%;max-width:680px;height:auto;display:block;margin:10px 0;color:var(--ink)}
+.proto svg{width:100%;max-width:820px;height:auto;display:block;margin:10px 0;color:var(--ink)}
+.strip figure.wide{width:272px}.strip figure.wide img{width:272px;height:136px}
+#agent button{font-size:15px}
+#func,#postop{max-width:80vw}
+</style>
+<style>
+/* ---- navigation and workbench layout (shared by lessons 1 and 2) ---- */
+.secnav{position:sticky;top:0;z-index:30;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin:14px -20px 0;padding:7px 20px}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a{flex:0 0 auto;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.secnav a:hover{color:var(--ink);background:var(--soft)}.secnav a.on{color:var(--bg);background:var(--ink)}
+h2[id],#viewer{scroll-margin-top:52px}
+h2 .totop{font-family:var(--ui);font-size:12.5px;font-weight:500;color:var(--muted);text-decoration:none;margin-left:12px;white-space:nowrap;vertical-align:middle}
+h2 .totop:hover{color:var(--amber)}
+/* viewer workbench: image stays put on the left, everything that drives it sits on the right */
+.stage{grid-template-columns:minmax(0,1.55fr) minmax(360px,1fr);margin-top:16px}
+.imgcol{position:sticky;top:50px}
+.imgcol .slicewrap{width:min(100%,max(420px,calc((100vh - 236px)*1.3333)));margin:0 auto}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.side .panel{margin:0}
+.ctlpanel .bar{margin:0;gap:8px 12px}.ctlpanel .bar+.bar{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ctlpanel select{max-width:100%}.ctlpanel label{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.side .task{margin:0}.side .note{margin:0}
+.insp{color:#dfe6ea;font-size:13px;line-height:1.45;margin-top:8px;padding:6px 4px 0;border-top:1px solid #26313b;min-height:40px}
+.insp .hint{color:#9fb0bb}.insp b{color:#fff}
+.miniT{display:flex;align-items:center;gap:8px;flex:1 1 260px}.miniT input{flex:1;min-width:120px;accent-color:#F2C14E}.miniT output{color:#F2C14E;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ddx{position:sticky;top:60px}
+.backpill{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:45;font:inherit;font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--ink);color:var(--bg);cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.backpill[hidden]{display:none}
+@media (max-width:1050px){
+  .stage{display:flex;flex-direction:column}
+  .side{display:contents}.side>*{order:2;width:100%;box-sizing:border-box}.side>.ctlpanel{order:-1}
+  .imgcol{position:static;width:100%}.imgcol .slicewrap{width:100%}
+  .ddx{position:static}
+}
+.ctlpanel .seg{flex-wrap:wrap}.ctlpanel .seg button{white-space:nowrap}
+.task button{font-family:var(--ui)}
+.proto,.mech{overflow-x:auto}
+@media (max-width:640px){.proto svg{min-width:600px}.mech svg{min-width:520px}}
+@media (max-width:1050px){.side>.task{order:-3}.side>.ctlpanel{order:-2}.imgcol{order:-1}}
+.ctlpanel label:has(>input[type=checkbox]){flex-wrap:nowrap;align-items:flex-start}
+@media (max-width:1050px){.ctlpanel label[style*="visibility: hidden"]{display:none}}
+.algo{align-items:start}
+</style>
+<style>.back{font-size:14px;margin:0 0 16px}.back a{color:var(--muted);text-decoration:none}.back a:hover{color:var(--ink);text-decoration:underline}.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>Hepatobiliary contrast agents</h1>
+<p class="lede">Gadoxetate (Eovist, Primovist) and gadobenate (MultiHance) next to a standard extracellular agent, on the same liver and the same lesions. Scrub from the arterial phase to two hours, watch hepatocytes take up the agent and excrete it into the bile, and see why FNH lights up, adenomas and metastases go dark, hemangiomas "wash out" when they do not, and an early HCC can show itself before it turns hypervascular.</p>
+
+<nav class="secnav" id="secnav" aria-label="Sections"><a href="#viewer">Viewer</a><a href="#matrixH">All together now</a><a href="#agentsH">Three agents</a><a href="#mechH">How it works</a><a href="#keyH">Key questions</a><a href="#protoH">Protocol</a><a href="#drillsH">Drills</a><a href="#quizH">Quiz</a><a href="#refsH">References</a></nav>
+
+<div class="stage" id="viewer">
+  <div class="imgcol">
+    <div class="views2">
+      <div class="slicewrap"><canvas id="cv" width="432" height="324" aria-label="Axial slice through the liver"></canvas><canvas id="ov" width="1296" height="972" style="pointer-events:none"></canvas></div>
+      <div class="scrub">
+        <button id="play" aria-label="Play">▶ Play</button>
+        <input type="range" id="t" min="0" max="1000" step="1" aria-label="Time after injection">
+        <span class="tread" id="tread"></span>
+      </div>
+      <div class="phasebar" id="pbar"></div>
+      <div class="scrub" id="phb">
+        <button data-t="0">Pre</button><button data-t="35">Arterial</button><button data-t="70">Portal venous</button><button data-t="180">3 min</button><button data-t="1200">20 min</button><button data-t="5400">90 min</button>
+        <label style="display:flex;gap:5px;align-items:center;margin-left:auto"><input type="checkbox" id="oLab" checked> Labels</label>
+      </div>
+      <div class="insp" id="insp"><span class="hint">Point inspector: click the image to identify a tissue, read its signal and see how much contrast sits inside hepatocytes.</span></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="task" id="task" hidden></div>
+    <div class="panel ctlpanel">
+<div class="bar">
+  <span class="seg" id="agent"><button data-v="eca">Extracellular</button><button data-v="gdx">Gadoxetate</button><button data-v="gdb">Gadobenate</button></span>
+  <span class="seg sm" id="seq"><button data-v="t1">T1 dynamic</button><button data-v="t2">T2 FS</button><button data-v="dwi">DWI b800</button><button data-v="adc">ADC</button><button data-v="ip">In-phase</button><button data-v="op">Opposed-phase</button></span>
+</div>
+<div class="bar" style="margin-top:0">
+  <label>Lesion <select id="les"></select></label>
+  <label>Variant <select id="var"></select></label>
+  <label id="multiL"><input type="checkbox" id="multi"> Multiple</label>
+  <span class="seg sm" id="bg"><button data-v="normal">Normal liver</button><button data-v="steatotic">Steatotic</button><button data-v="cirrhotic">Cirrhotic</button></span>
+</div>
+<div class="bar" style="margin-top:0">
+  <label>Hepatocyte function <select id="func"><option value="normal">Normal</option><option value="childA">Cirrhosis, Child-Pugh A</option><option value="childBC">Cirrhosis, Child-Pugh B–C</option><option value="chol">Cholestasis or high bilirubin</option></select></label>
+  <label>After cholecystectomy <select id="postop"><option value="none">No (gallbladder present)</option><option value="biloma">Collection: bile leak</option><option value="seroma">Collection: seroma</option></select></label>
+  <label id="tsmL"><input type="checkbox" id="tsm"> Transient severe motion (arterial phase)</label>
+</div>
+    </div>
+    <div class="note" id="note"></div>
+    <div class="curvebox">
+      <h3>Time–enhancement curves</h3>
+      <svg id="curve" viewBox="0 0 460 250" style="width:100%;height:auto;display:block;cursor:crosshair" role="img" aria-label="Enhancement curves over time"></svg>
+      <div class="legend" id="legend"></div>
+      <div id="ro" style="margin-top:10px;font-size:14px"></div>
+      <div id="agInfo" style="margin-top:10px;font-size:13.5px;line-height:1.5;min-height:62px"></div>
+      <div class="ctl" style="margin-top:8px"><label for="dly">Circulation delay</label><input type="range" id="dly" min="0" max="15" step="1"><output id="dlyo"></output></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="matrixH">All together now, with the hepatobiliary phase</h2>
+<p class="read">Lesson 1's matrix, extended to 20 and 90 minutes and two new columns: a dysplastic nodule or early HCC, and an arterioportal shunt. Switch the agent above and watch the late rows: with an extracellular agent they converge to gray, with gadoxetate the liver lights up at 20 minutes, and with gadobenate it does so later and more faintly. Click any tile to load it in the viewer.</p>
+<div class="matrix">
+  <div class="mbar">
+    <button id="mBuild">Build it row by row</button>
+    <label><input type="checkbox" id="mExtra"> Add T2 and DWI rows</label>
+    <label><input type="checkbox" id="mClean"> Clean (no noise or texture)</label>
+    <label class="miniT">Bottom row <input type="range" aria-label="Time for the bottom row"><output></output></label>
+    <span id="mInfo" style="color:#9fb0bb"></span>
+  </div>
+  <table id="mtx"></table>
+</div>
+
+<h2 id="agentsH">Three agents at a glance</h2>
+<div class="tbl"><table>
+  <tr><th></th><th>Extracellular (e.g., gadoterate, gadobutrol)</th><th>Gadoxetate (Eovist, Primovist)</th><th>Gadobenate (MultiHance)</th></tr>
+  <tr><td>Usual dose</td><td>0.1 mmol/kg</td><td>0.025 mmol/kg (0.1 mL/kg)</td><td>0.05–0.1 mmol/kg</td></tr>
+  <tr><td>T1 relaxivity</td><td>Standard</td><td>About twice standard</td><td>Higher than standard</td></tr>
+  <tr><td>Hepatocyte uptake and biliary excretion</td><td>None</td><td>About 50%</td><td>3–5%</td></tr>
+  <tr><td>Arterial phase</td><td>Strong</td><td>Weaker, shorter; transient severe motion in some patients</td><td>Strong</td></tr>
+  <tr><td>2–5 min</td><td>Delayed (equilibrium) phase</td><td>Transitional phase: not used for washout</td><td>Delayed phase</td></tr>
+  <tr><td>Hepatobiliary phase</td><td>None</td><td>About 20 min (later if function is poor)</td><td>1–3 h</td></tr>
+  <tr><td>Best for</td><td>Dynamic characterization, LI-RADS washout and capsule</td><td>FNH versus adenoma, small metastases, HBP-hypointense nodules in cirrhosis, bile leaks</td><td>A full dynamic study plus hepatocyte information on a later visit</td></tr>
+</table></div>
+
+<h2 id="mechH">How the hepatobiliary phase works</h2>
+<p class="read">Gadoxetate enters hepatocytes through OATP1B1 and OATP1B3 on the sinusoidal side and leaves into bile through MRP2; a little returns to the blood through MRP3. What a lesion looks like in the hepatobiliary phase depends on how much it takes in and how well it drains. Pick a tissue to see its transporters.</p>
+<div class="mech">
+  <div id="mechBtns" class="choices"></div>
+  <svg id="mechSvg" viewBox="0 0 640 300" role="img" aria-label="Hepatocyte transporter diagram"></svg>
+  <p id="mechTxt" class="read"></p>
+</div>
+
+<h2 id="keyH">Key questions, with presets</h2>
+<p class="read">Each card loads the viewer at the right lesion, agent and time. The text says what to look for.</p>
+<div class="cards" id="topics"></div>
+
+<h2 id="protoH">Protocol</h2>
+<p class="read">A practical sequence order for each agent. With gadoxetate, the T2-weighted and diffusion sequences fill the wait for the hepatobiliary phase. The yellow line follows the viewer's time scrubber.</p>
+<div class="proto">
+  <span class="seg sm" id="pAgent"><button data-v="eca">Extracellular</button><button data-v="gdx">Gadoxetate</button><button data-v="gdb">Gadobenate</button></span>
+  <label class="miniT" style="margin-top:10px;max-width:560px">Viewer time <input type="range" aria-label="Viewer time"><output></output></label>
+  <svg id="protoSvg" viewBox="0 0 760 330" role="img" aria-label="Protocol timeline"></svg>
+  <ul id="protoTips" class="read"></ul>
+</div>
+
+<h2 id="drillsH">Drills</h2>
+<div class="drills" id="drills"></div>
+
+<h2 id="quizH">Quick quiz</h2>
+<div class="quiz" id="quiz"></div>
+
+<h2 id="refsH">References</h2>
+<ol class="refs" id="refs"></ol>
+<p class="foot">Teaching simulation. Agent kinetics are idealized: uptake, excretion and timing vary with dose, injection rate, field strength, sequence parameters and liver function. LI-RADS and stepwise carcinogenesis are covered in the HCC lesson. For teaching only; not for clinical use.</p>
+</div>
+<div class="lb" id="lb" hidden><div><img id="lbImg" alt=""><p id="lbCap"></p></div></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+function h2(i,j,s){let h=(i*374761393+j*668265263+s*1442695041)|0;h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return (h>>>0)/4294967296;}
+function vnoise(x,y,s){const i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j;const ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy);
+  const a=h2(i,j,s),b=h2(i+1,j,s),c=h2(i,j+1,s),d=h2(i+1,j+1,s);return a+(b-a)*ux+(c-a)*uy+(a-b-c+d)*ux*uy;}
+function fbm(x,y,s){return 0.55*vnoise(x,y,s)+0.3*vnoise(x*2.03,y*2.03,s+7)+0.15*vnoise(x*4.1,y*4.1,s+13);}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+
+/* ---------------- contrast kinetics: three agents ---------------- */
+let DLY=0, AG='gdx', FUNC=1; // circulation delay (s), agent, hepatocyte function 0..1
+const AGENTS={
+  eca:{name:'Extracellular gadolinium',short:'Extracellular',sc:1,bw:1,dec:[.55,520,.45,5400],hmax:0,tau:1,t0:0,bmax:0,bd0:1e9,btau:1,renal:1},
+  gdx:{name:'Gadoxetate (Eovist, Primovist)',short:'Gadoxetate',sc:0.6,bw:0.72,dec:[.5,300,.5,2400],hmax:0.29,tau:520,t0:30,bmax:1.0,bd0:420,btau:480,renal:0.55},
+  gdb:{name:'Gadobenate (MultiHance)',short:'Gadobenate',sc:1.12,bw:1,dec:[.55,520,.45,5000],hmax:0.11,tau:1900,t0:40,bmax:0.22,bd0:2400,btau:1800,renal:0.95}};
+const AGO=()=>AGENTS[AG];
+const gv=(t,t0,tp,a)=>{if(t<=t0)return 0;const x=(t-t0)/tp;return Math.pow(x,a)*Math.exp(a*(1-x));};
+const gvb=(t,t0,tp,a)=>gv(t,t0,tp*AGO().bw,a); // first-pass terms: narrower for the small gadoxetate bolus
+function eqA(t){if(t<=16)return 0;let d=AGO().dec;const u=Math.max(0,t-60);
+  if(AG==='gdx'){const w=0.55*FUNC;d=[w,300,1-w,2400+5000*(1-FUNC)];} // poor hepatocyte function: more gadoxetate stays in the blood
+  return 0.3*(1-Math.exp(-(t-16)/22))*(d[0]*Math.exp(-u/d[1])+d[2]*Math.exp(-u/d[3]));}
+const Ca=t=>gvb(t,14,11,3)+0.28*gv(t,30,20,2.2)+eqA(t);
+const Cp=t=>0.55*gv(t,21,30,2.4)+eqA(t-8);
+const Chv=t=>0.42*gv(t,30,34,2.4)+eqA(t-14);
+const Cl=t=>0.05*Ca(t-2)+0.22*Cp(t-3)+0.25*eqA(t-20);
+const rise=(t,t0,tau)=>t<=t0?0:1-Math.exp(-(t-t0)/tau);
+const hf=(t,t0,tau,g)=>t<=t0?0:1-Math.exp(-Math.pow((t-t0)/tau,g));
+const HEMF={classic:t=>hf(t,18,61,1.6),flash:t=>hf(t,14,7,1.3),slow:t=>hf(t,20,190,1.5),giant:t=>hf(t,18,72,1.6)};
+// hepatocyte uptake (OATP1B1/B3) and biliary excretion (MRP2)
+function Hep(t){const A=AGO();if(!A.hmax||t<=A.t0)return 0;const tau=A.tau/(0.3+0.7*FUNC);return A.hmax*Math.pow(FUNC,1.3)*(1-Math.exp(-(t-A.t0)/tau))*Math.exp(-Math.max(0,t-2400)/12000);}
+function Bile(t){const A=AGO();if(!A.bmax)return 0;const d0=A.bd0+(AG==='gdx'?900:2400)*(1-FUNC);return A.bmax*Math.pow(FUNC,1.5)*rise(t,d0,A.btau);}
+// relative hepatocyte uptake of each lesion (1 = normal liver)
+const LESU={'fnh.scar':2.2,'fnh.noscar':2.2,'aden.hnf':0.04,'aden.inflam':0.3,'aden.bcat':1.25,'hcc.classic':0.05,'hcc.fat':0.06,'hcc.small':0.1,'hcc.oatp':1.4,
+  'dn.lgdn':0.95,'dn.hgdn':0.35,'dn.nin':0.4,'aps.wedge':1};
+function comps(T,les){
+  const t=T-DLY,A=AGO(),a=Ca(t),p=Cp(t),hv=Chv(t),l=Cl(t),art=gvb(t,15,14,2.2);
+  const hv0=les&&les.type==='hem'?(HEMF[les.var]||HEMF.classic)(t):0;
+  const kc=0.75*Ca(t-1)+0.3*eqA(t),wN=rise(t,40,25),km=wN*1.05*kc+(1-wN)*0.5*gv(t,28,45,2);
+  const K={t,a,p,hv,l,art,ha:0.95*Ca(t-1),
+    ivc:0.45*hv+0.3*gv(t,22,14,2.5)+0.55*eqA(t-12), sv:0.6*gv(t,18,22,2.4)+eqA(t-5),
+    spl:0.3*Ca(t-2)+0.08*p+0.25*eqA(t-6),
+    kc, km, ku:1.3*A.renal*rise(t,110,80)*Math.exp(-Math.max(0,t-900)/4000),
+    pan:0.45*gv(t,16,18,2.4)+0.25*eqA(t-4), mus:0.05*Ca(t-3)+0.18*eqA(t-5),
+    gut:0.35*gv(t,16,20,2.2)+0.3*eqA(t), mar:0.12*Ca(t-3)+0.15*eqA(t),
+    fib:0.1*l+0.32*rise(t,30,110)*eqA(t)/0.3,
+    fnh:l+0.55*art, scar:0.02+0.3*rise(t,30,110)*eqA(t)/0.3,
+    adH:0.85*l+0.30*art, adI:0.95*l+0.5*art+0.07*rise(t,40,90),
+    hccA:0.75*gvb(t,15,15,2.2), hccB:0.2*l+0.15*eqA(t-15), cap:l+0.15*rise(t,50,80)*eqA(t)/0.3,
+    pool:0.95*Ca(t-3), eq:eqA(t),
+    metRim:0.35*l+0.3*gv(t,16,16,2.2)+0.12*eqA(t), metCore:0.22*rise(t,60,170)*eqA(t)/0.25,
+    netRim:0.2*l+0.75*gvb(t,15,13,2.2)+0.1*eqA(t),
+    iccRim:0.35*l+0.33*gv(t,16,16,2.2)+0.12*eqA(t), iccCore:0.4*rise(t,25,120)*eqA(t)/0.25,
+    thad:0.16*gvb(t,15,14,2.2), dn:0.9*l, aps:l+0.4*art};
+  for(const k in K)if(k!=='t')K[k]*=A.sc;
+  K.splArc=gv(t,14,18,2);K.hemF=hv0;
+  K.H=Hep(t);K.bile=Bile(t);K.u=les?(LESU[les.type+'.'+les.var]||0):0;
+  K.gb=AG==='gdx'?0.5*Bile(t-600):0.3*Bile(t-1200);K.biloma=0.9*Bile(t-200);
+  return K;
+}
+
+/* ---------------- tissues ---------------- */
+const TIS={AIR:0,FAT:1,MUS:2,BONE:3,MAR:4,CSF:5,AO:6,IVC:7,PV:8,HV:9,HA:10,SV:11,LIV:12,SPL:13,KC:14,KM:15,KU:16,PAN:17,GUTW:18,GFL:19,GB:20,ASC:21,
+  CYST:30,HEM:31,CLEFT:32,FNH:33,SCAR:34,ADH:35,ADBL:36,HCC:37,CAP:38,MRIM:39,MCORE:40,IRIM:41,ICORE:42,DUCT:43,CALC:44,ADI:45,HCCF:46,MMUC:47,NRIM:48,DN:49,DNF:50,APS:51,BD:52,BILOMA:53,SEROMA:54};
+const TNAME=['Air','Fat','Muscle','Cortical bone','Bone marrow','CSF','Aorta','Inferior vena cava','Portal vein','Hepatic vein','Hepatic artery','Splenic vein','Liver','Spleen','Renal cortex','Renal medulla','Urine / collecting system','Pancreas','Bowel wall','Stomach contents','Gallbladder','Ascites'];
+Object.assign(TNAME,{30:'Cyst',31:'Hemangioma',32:'Hemangioma: non-filling central cleft',33:'FNH',34:'FNH central scar',35:'Adenoma (HNF1α, fat-containing)',36:'Adenoma: hemorrhage',37:'HCC',38:'HCC capsule / septum',39:'Metastasis: viable rim',40:'Metastasis: necrotic / fibrotic core',41:'Cholangiocarcinoma: cellular rim',42:'Cholangiocarcinoma: fibrous core',43:'Dilated bile duct',44:'Calcification',45:'Adenoma (inflammatory)',46:'HCC: fat-containing nodule',47:'Metastasis: mucinous core',48:'Metastasis: hypervascular rim',49:'Dysplastic nodule',50:'HCC focus inside the nodule',51:'Arterioportal shunt (normal liver, extra arterial flow)',52:'Bile duct',53:'Biloma (bile leak)',54:'Seroma'});
+TNAME[35]='Adenoma';
+//            t1fs  t2fs  adc  ip(T1 dual echo) w    f    hu
+const PROP=[];function P(id,t1,t2,adc,ip,w,f,hu){PROP[id]={t1,t2,adc,ip,w,f,hu};}
+P(0,0,0,0,0,0,0,-1000);P(1,.07,.07,1.5,.9,.05,.95,-105);P(2,.30,.16,1.4,.42,1,0,52);P(3,.03,.03,.3,.05,1,0,900);P(4,.22,.18,.5,.7,.52,.45,170);
+P(5,.05,.95,3.0,.12,1,0,8);for(const id of [6,7,8,9,10,11])P(id,.18,.05,2.0,.25,1,0,42);
+P(12,.38,.20,1.15,.55,.97,.03,58);P(13,.28,.45,.8,.45,1,0,48);P(14,.32,.40,2.0,.45,1,0,32);P(15,.22,.55,2.1,.38,1,0,30);P(16,.05,.95,2.8,.12,1,0,5);
+P(17,.55,.25,1.3,.6,.97,.03,45);P(18,.30,.22,1.3,.45,1,0,45);P(19,.06,.85,2.8,.1,1,0,10);P(20,.08,.92,2.9,.12,1,0,5);P(21,.05,.90,3.0,.1,1,0,6);
+P(30,.07,.97,3.0,.1,1,0,4);P(31,.16,.78,1.9,.25,1,0,40);P(32,.10,.95,2.4,.15,1,0,20);P(33,.34,.22,1.12,.5,.98,.02,56);P(34,.22,.55,1.5,.3,1,0,40);
+P(35,.35,.26,1.1,.62,.65,.35,30);P(36,.75,.50,.9,.7,1,0,65);P(37,.30,.32,.85,.48,.97,.03,48);P(38,.30,.30,1.2,.45,1,0,50);
+P(39,.24,.40,.85,.38,1,0,45);P(40,.18,.55,1.5,.3,1,0,30);P(41,.25,.45,.9,.4,1,0,45);P(42,.22,.28,1.2,.38,1,0,42);P(43,.06,.90,2.8,.12,1,0,8);
+P(44,.05,.05,.3,.05,1,0,450);P(45,.32,.42,1.15,.52,.97,.03,50);P(46,.30,.30,.9,.55,.72,.28,28);P(47,.10,.86,2.1,.15,1,0,22);P(48,.24,.42,.8,.38,1,0,44);P(49,.48,.17,1.1,.6,.97,.03,62);P(50,.30,.32,.85,.48,.97,.03,48);P(51,.38,.20,1.15,.55,.97,.03,58);P(52,.08,.6,2.5,.12,1,0,8);P(53,.06,.9,2.9,.1,1,0,8);P(54,.06,.9,2.9,.1,1,0,8);
+const LIVBASE={...PROP[12]};
+function applyBg(bg){Object.assign(PROP[12],LIVBASE);
+  if(bg==='steatotic'){PROP[12].w=.76;PROP[12].f=.24;PROP[12].hu=32;PROP[12].t1=.36;}
+  if(bg==='cirrhotic'){PROP[12].t1=.36;PROP[12].t2=.22;PROP[12].adc=1.0;PROP[12].hu=55;}
+}
+const LESION_FAMILY=new Set([30,31,32,33,34,35,36,37,38,39,40,41,42,44,45,46,47,48,49,50,51]);
+const MINOR=new Set([32,34,36,38,44,50]);
+const LESION_MAIN={30:1,31:1,33:1,35:1,37:1,39:1,41:1,45:1,46:1,48:1,40:1,42:1,47:1};
+
+/* ---------------- geometry ---------------- */
+function ell(x,y,cx,cy,rx,ry,rot){const c=Math.cos(rot||0),s=Math.sin(rot||0),dx=x-cx,dy=y-cy,u=(dx*c+dy*s)/rx,v=(-dx*s+dy*c)/ry;return Math.sqrt(u*u+v*v);}
+function segd(x,y,ax,ay,bx,by){const vx=bx-ax,vy=by-ay,wx=x-ax,wy=y-ay;const t=clamp((wx*vx+wy*vy)/(vx*vx+vy*vy),0,1);const dx=wx-t*vx,dy=wy-t*vy;return Math.sqrt(dx*dx+dy*dy);}
+// tapered, gently curved tube: returns distance scaled so that the radius shrinks to 70% at the far end
+function segt(x,y,s){const ax=s[0],ay=s[1],bx=s[2],by=s[3],vx=bx-ax,vy=by-ay,L2=vx*vx+vy*vy;let t=clamp(((x-ax)*vx+(y-ay)*vy)/L2,0,1);const L=Math.sqrt(L2),nx=-vy/L,ny=vx/L,bow=0.12*L*Math.sin(Math.PI*t)*(s[4]>0.3?0.3:1)*Math.sin(ax*3+by);
+  const px=ax+t*vx+nx*bow,py=ay+t*vy+ny*bow;return Math.hypot(x-px,y-py)/(1-0.3*t);}
+function smin(a,b,k){const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*0.25;}
+const BODY={cx:0,cy:0.4,rx:16.5,ry:12.5};
+const PVS=[[-0.6,1.8,-2.8,1.0,.62],[-2.8,1.0,-6.0,1.3,.48],[-6.0,1.3,-10.5,3.2,.32],[-10.5,3.2,-12.6,4.6,.2],[-6.0,1.3,-5.6,-1.5,.28],[-5.6,-1.5,-5.4,-4.5,.2],
+  [-2.8,1.0,-0.8,-1.6,.36],[-0.8,-1.6,0.4,-3.8,.34],[0.4,-3.8,3.6,-4.6,.2],[0.4,-3.8,2.2,-6.6,.17],[-8.4,2.4,-9.0,5.6,.18]];
+const HAS=[[-4.0,0.55,.12],[-0.4,-1.1,.11],[-5.2,-1.6,.09],[-8.0,2.0,.09]];
+const HVS=[[-3.6,2.6,-8.0,6.0,.3],[-8.0,6.0,-11.5,7.6,.2],[-4.2,-0.4,-4.8,-3.3,.26],[-12.4,-1.0,-13.4,1.6,.22],[1.6,-2.2,4.6,-2.8,.2]];
+function liverF(x,y,cirr){
+  const q1=cirr?ell(x,y,-6.6,0.9,7.0,8.9,0):ell(x,y,-7.0,0.9,7.9,9.7,0);
+  const q2=cirr?ell(x,y,1.6,-5.0,7.6,3.5,-0.18):ell(x,y,1.2,-5.0,6.8,3.1,-0.18);
+  const q3=cirr?ell(x,y,-1.5,1.6,2.7,2.8,0):ell(x,y,-1.6,1.6,1.9,2.1,0);
+  let f=smin(smin(q1,q2,0.3),q3,0.25);
+  if(cirr)f+=0.09*(vnoise(x*0.95+3,y*0.95,5)-0.5)+0.04*(vnoise(x*2.2,y*2.2,9)-0.5);
+  return f;
+}
+const LESDEF={
+  cyst:{name:'Simple cyst',cx:-8.4,cy:-2.6,R:1.05,lob:0.02,vars:{simple:'Simple cyst'}},
+  hem:{name:'Hemangioma',cx:-8.4,cy:-2.6,R:1.9,lob:0.07,vars:{classic:'Classic (centripetal fill-in)',flash:'Flash-filling (small)',slow:'Slow-filling',giant:'Giant with central cleft'}},
+  fnh:{name:'Focal nodular hyperplasia',cx:-8.4,cy:-2.6,R:1.9,lob:0.06,vars:{scar:'Classic with central scar',noscar:'Small, no visible scar'}},
+  aden:{name:'Hepatocellular adenoma',cx:-8.4,cy:-2.6,R:2.1,lob:0.03,vars:{hnf:'HNF1α-inactivated (fat)',inflam:'Inflammatory',bcat:'β-catenin-activated'}},
+  hcc:{name:'Hepatocellular carcinoma',cx:-8.4,cy:-2.6,R:1.8,lob:0.05,vars:{classic:'Classic (washout + capsule)',small:'Small, no capsule',oatp:'OATP-expressing (HBP iso/hyperintense)'}},
+  dn:{name:'Dysplastic nodule / early HCC',cx:-8.4,cy:-2.6,R:1.1,lob:0.03,vars:{lgdn:'Low-grade dysplastic nodule',hgdn:'High-grade DN / early HCC (hypovascular)',nin:'Nodule-in-nodule (HCC focus inside a DN)'}},
+  met:{name:'Colorectal metastasis',cx:-8.4,cy:-2.6,R:1.45,lob:0.08,vars:{crc:'Colorectal (rim, target)',muc:'Mucinous colorectal',net:'Hypervascular (e.g., neuroendocrine)'}},
+  icc:{name:'Intrahepatic cholangiocarcinoma',cx:-8.85,cy:-3.4,R:2.2,lob:0.12,vars:{mass:'Mass-forming'}},
+  aps:{name:'Arterioportal shunt (pseudolesion)',cx:-9.7,cy:-3.7,R:1.25,lob:0,vars:{wedge:'Wedge-shaped perfusion alteration'}}
+};
+const LORDER=['cyst','hem','fnh','aden','hcc','dn','met','icc','aps'];
+const LSHORT={cyst:'Cyst',hem:'Hemangioma',fnh:'FNH',aden:'Adenoma',hcc:'HCC',dn:'DN / early HCC',met:'Metastasis',icc:'iCCA',aps:'AP shunt'};
+const EXTRA_METS=[[-3.6,-4.2,.55],[-11.6,2.4,.9],[1.8,-5.6,.4],[-5.6,4.6,.65],[-12.2,-2.6,.32]];
+function buildCfg(type,vr,bg,multi,opt){
+  const d=LESDEF[type];vr=vr in d.vars?vr:Object.keys(d.vars)[0];
+  let R=d.R;if(type==='hem'&&vr==='flash')R=0.8;if(type==='hem'&&vr==='giant')R=2.5;if(type==='hcc'&&vr==='small')R=0.85;if(type==='fnh'&&vr==='noscar')R=1.15;
+  const L={type,var:vr,cx:d.cx,cy:d.cy,R,lob:d.lob,seed:LORDER.indexOf(type)*17+3,s1:1.3+LORDER.indexOf(type),s2:0.4+LORDER.indexOf(type)*0.7};
+  const les=[L];
+  if(type==='met'&&multi)for(const [x,y,r] of EXTRA_METS)les.push({type:'met',var:vr,cx:x,cy:y,R:r,lob:.06,seed:Math.round(x*7+y*3+50),s1:x,s2:y,extra:true});
+  const cfg={type,var:vr,bg,cirr:bg==='cirrhotic',les,main:L,opt:opt||{},postop:(opt&&opt.postop)||'none'};
+  if(type==='aps'){L.dir=[-0.6,-0.8];L.apex=[L.cx+0.6*2.0,L.cy+0.8*2.0];}
+  if(type==='dn'&&vr==='nin')L.focus=[L.cx+0.3*L.R,L.cy-0.2*L.R,0.42*L.R];
+  if(type==='hem'){ // peripheral nodule centers
+    const rnd=mulberry(L.seed);L.blobs=[];const n=vr==='flash'?3:6;for(let k=0;k<n;k++){const a=k/n*6.283+(rnd()-0.5)*0.9,rr=0.74+rnd()*0.14;L.blobs.push([Math.cos(a)*rr,Math.sin(a)*rr,0.09+rnd()*0.13]);}
+  }
+  if(type==='hcc'){const rnd=mulberry(L.seed+5);L.cells=[];const n=vr==='small'?3:9;for(let k=0;k<n;k++){const a=rnd()*6.283,r=Math.sqrt(rnd())*0.8;L.cells.push([Math.cos(a)*r*L.R,Math.sin(a)*r*L.R,rnd()]);}}
+  if(type==='icc'){ // capsular retraction point and upstream ducts
+    const dx=-0.35,dy=-0.94;let s=L.R*0.6;while(s<8&&liverF(L.cx+dx*s,L.cy+dy*s,cfg.cirr)<1&&bq(L.cx+dx*s,L.cy+dy*s,2.35,1.55)<1)s+=0.05;
+    L.ret=[L.cx+dx*(s+0.15),L.cy+dy*(s+0.15)];L.retS=s;
+    L.ducts=[[L.cx-1.6,L.cy+1.3,-13.0,-0.6,.2],[-13.0,-0.6,-13.8,0.8,.15],[L.cx-0.4,L.cy+2.1,-11.6,0.9,.22],[-11.6,0.9,-12.2,3.0,.15],[L.cx-2.0,L.cy+0.2,-13.2,-3.0,.16]];
+  }
+  return cfg;
+}
+function lesionRR(L,x,y){const dx=x-L.cx,dy=y-L.cy,r=Math.sqrt(dx*dx+dy*dy),th=Math.atan2(dy,dx);
+  const Rt=L.R*(1+L.lob*(0.6*Math.sin(3*th+L.s1)+0.4*Math.sin(5*th+L.s2)));return [r/Rt,th,r,dx,dy];}
+function classLesion(L,x,y,cfg,out){
+  if(L.type==='aps'){const ux=x-L.apex[0],uy=y-L.apex[1],d=ux*L.dir[0]+uy*L.dir[1],lat=Math.abs(-ux*L.dir[1]+uy*L.dir[0]);if(d>0&&d<3.4&&lat<d*0.36+0.05*Math.sin(d*5)){out[0]=TIS.APS;out[1]=0;out[2]=0;return true;}return false;}
+  const [rr,th,r,dx,dy]=lesionRR(L,x,y);const capOut=L.type==='hcc'&&L.var!=='small'?1.07:1;
+  if(rr>=capOut)return false;
+  out[1]=0;out[2]=0;
+  switch(L.type){
+    case 'cyst':out[0]=TIS.CYST;return true;
+    case 'hem':{
+      if(L.var==='giant'&&rr<0.36*(1+0.35*Math.sin(4*th+1)+0.15*Math.sin(7*th))){out[0]=TIS.CLEFT;return true;}
+      let bd=9;for(const b of L.blobs){const ux=dx/L.R-b[0],uy=dy/L.R-b[1];bd=Math.min(bd,Math.sqrt(ux*ux+uy*uy)/b[2]);}
+      out[0]=TIS.HEM;out[1]=Math.min(0.16+(1-rr)+0.04*Math.sin(7*th+L.s1),0.10*bd);return true;}
+    case 'fnh':{
+      if(L.var==='scar'){if(rr<0.14){out[0]=TIS.SCAR;return true;}
+        if(rr<0.8){for(let k=0;k<5;k++){let a=th-(k*1.2566+0.3);a=Math.atan2(Math.sin(a),Math.cos(a));if(Math.abs(a)*r<0.05+0.09*(1-rr/0.8)){out[0]=TIS.SCAR;return true;}}}}
+      out[0]=TIS.FNH;return true;}
+    case 'aden':{
+      if(L.var==='hnf'){out[0]=TIS.ADH;return true;}
+      if(L.var==='hemor'){const q=ell(x,y,L.cx+0.35*L.R,L.cy+0.15*L.R,0.5*L.R,0.38*L.R,0.6)+0.12*(vnoise(x*3,y*3,4)-0.5);if(q<1){out[0]=TIS.ADBL;return true;}}
+      out[0]=TIS.ADI;out[1]=rr;return true;}
+    case 'hcc':{
+      if(L.var!=='small'&&rr>0.95){out[0]=TIS.CAP;return true;}
+      let d1=99,d2=99,v=0;for(const c of L.cells){const ux=dx-c[0],uy=dy-c[1],d=Math.sqrt(ux*ux+uy*uy);if(d<d1){d2=d1;d1=d;v=c[2];}else if(d<d2)d2=d;}
+      if(L.var!=='small'&&d2-d1<0.07&&rr<0.93){out[0]=TIS.HCC;out[1]=-0.3;return true;} // septa: dark in the arterial mosaic, never enhancing late
+      out[0]=(L.var==='fat'&&v<0.45)?TIS.HCCF:TIS.HCC;out[1]=v;return true;}
+    case 'met':{
+      const core=L.var==='net'?0.38:0.62;const edge=core+0.08*Math.sin(4*th+L.s1);
+      if(L.var==='muc'&&rr<edge&&fbm(x*5,y*5,L.seed)>0.74){out[0]=TIS.CALC;return true;}
+      if(rr<edge&&L.R>0.45){out[0]=L.var==='muc'?TIS.MMUC:TIS.MCORE;return true;}
+      out[0]=L.var==='net'?TIS.NRIM:TIS.MRIM;return true;}
+    case 'icc':{out[0]=rr>0.72+0.06*Math.sin(5*th)?TIS.IRIM:TIS.ICORE;return true;}
+    case 'dn':{if(L.focus&&Math.hypot(x-L.focus[0],y-L.focus[1])<L.focus[2]){out[0]=TIS.DNF;out[1]=0.8;return true;}out[0]=TIS.DN;return true;}
+  }
+  return false;
+}
+// returns tissue in out[0], params out[1], out[2]
+// body outline with a thinner posterior wall (so the kidneys sit in fat, clear of the back muscles)
+function bq(x,y,ia,ip){return ell(x,y,BODY.cx,BODY.cy,BODY.rx-ia,y>BODY.cy?BODY.ry-ip:BODY.ry-ia,0);}
+function polyD(x,y,P){let best=1e9,bs=0,acc=0,tot=0;for(let i=1;i<P.length;i++)tot+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+  for(let i=1;i<P.length;i++){const ax=P[i-1][0],ay=P[i-1][1],vx=P[i][0]-ax,vy=P[i][1]-ay,L=Math.hypot(vx,vy);const t=clamp(((x-ax)*vx+(y-ay)*vy)/(L*L),0,1);const d=Math.hypot(x-ax-t*vx,y-ay-t*vy);if(d<best){best=d;bs=(acc+t*L)/tot;}acc+=L;}
+  return [best,bs];}
+const PANC=[[1.3,2.15],[3.2,1.7],[5.4,1.9],[7.3,2.45],[8.5,3.1]];
+const SVP=[[2.3,3.35],[3.4,3.15],[5.5,3.35],[7.4,3.95],[8.7,4.55]];
+const HACURVE=[[-0.3,1.0],[-1.1,0.45],[-2.0,0.2],[-2.7,0.12]];
+function classify(x,y,cfg,out){
+  out[1]=0;out[2]=0;
+  const qb=ell(x,y,BODY.cx,BODY.cy,BODY.rx,BODY.ry,0);
+  if(qb>1){out[0]=TIS.AIR;return;}
+  // ribs, in the muscle layer
+  for(const a of RIBS){const rx=Math.cos(a)*14.65,ry=BODY.cy+Math.sin(a)*(a>0?11.2:10.6);const q=ell(x,y,rx,ry,0.62,0.36,a+1.5708);if(q<1){out[0]=q>0.62?TIS.BONE:TIS.MAR;return;}}
+  if(bq(x,y,1.4,1.0)>1){out[0]=TIS.FAT;return;}
+  // spine and back muscles
+  const qv=ell(x,y,0,7.6,2.0,1.65,0);if(qv<1){out[0]=qv>0.88?TIS.BONE:TIS.MAR;return;}
+  const qc=ell(x,y,0,10.05,0.75,0.68,0);if(qc<1){out[0]=TIS.CSF;return;}
+  if((Math.abs(Math.abs(x)-1.05)<0.32&&y>8.9&&y<10.3)||(ell(x,y,0,10.2,1.55,1.25,0)<1&&y>10.05)||ell(x,y,0,11.8,0.32,0.95,0)<1){out[0]=TIS.BONE;return;}
+  if(ell(x,y,-3.5,10.9,2.4,1.6,0.15)<1||ell(x,y,3.5,10.9,2.4,1.6,-0.15)<1){out[0]=TIS.MUS;return;}
+  if(ell(x,y,-6.4,11.0,2.0,0.5,0.1)<1||ell(x,y,6.4,11.0,2.0,0.5,-0.1)<1){out[0]=TIS.MUS;return;}
+  if(bq(x,y,2.35,1.55)>1){out[0]=TIS.MUS;return;}
+  // crura
+  if(ell(x,y,-1.3,5.6,0.55,2.0,0.35)<1||ell(x,y,2.4,5.8,0.5,1.9,-0.35)<1){out[0]=TIS.MUS;return;}
+  // aorta, IVC
+  const qao=ell(x,y,0.9,4.4,1.1,1.1,0);if(qao<1){out[0]=TIS.AO;return;}if(qao<1.25){out[0]=TIS.FAT;return;}
+  if(ell(x,y,-2.6,3.4,1.35,1.0,0.3)<1){out[0]=TIS.IVC;return;}
+  // kidneys, each in a full rim of perirenal fat
+  for(const K of KIDS){const q=ell(x,y,K.cx,K.cy,K.rx,K.ry,K.rot);if(q<1.3){if(q>=1){out[0]=TIS.FAT;return;}
+      const dx=x-K.cx,dy=y-K.cy,th=Math.atan2(dy,dx),hd=Math.atan2(Math.sin(th-K.hil),Math.cos(th-K.hil));
+      const hw=Math.abs(hd);
+      if(q<0.24&&hw<1.4){out[0]=TIS.KU;return;}
+      if(hw<0.42&&q>0.3){out[0]=(q>0.9&&hw<0.2)?TIS.IVC:TIS.FAT;return;}
+      if(q<0.42&&hw<1.5){out[0]=TIS.FAT;return;}
+      const pa=th-K.hil;if(q<0.8&&q>0.36&&Math.cos(6*pa+0.5)>-0.25+1.1*(0.8-q)/0.44){out[0]=TIS.KM;return;}
+      out[0]=TIS.KC;return;}}
+  // spleen
+  const qs=cfg.cirr?ell(x,y,10.6,4.1,3.6,6.9,0.55):ell(x,y,10.4,4.6,2.8,5.2,0.55);
+  if(qs<1){out[0]=TIS.SPL;out[1]=0.5+0.5*Math.sin((x*1.7+y*1.1)*1.5+5*fbm(x*0.6,y*0.6,21));return;}
+  // stomach: body plus a lateral extension curving toward the spleen
+  const qg=smin(ell(x,y,5.8,-2.4,3.5,2.6,0.3),ell(x,y,9.2,-2.1,2.4,2.8,0.45),0.35);
+  if(qg<1){if(qs<1.07){out[0]=TIS.FAT;return;}if(qg>0.86){out[0]=TIS.GUTW;return;}out[0]=y<-3.4?TIS.AIR:TIS.GFL;return;}
+  // pancreas body and tail, with the splenic vein running behind it
+  const [dp,sp]=polyD(x,y,PANC);const pw=(0.95-0.25*sp)*(1+0.07*Math.sin(x*4.3+y*2)+0.035*Math.sin(x*7.3));
+  if(dp<pw){out[0]=TIS.PAN;return;}
+  const [dv]=polyD(x,y,SVP);if(dv<0.32){out[0]=TIS.SV;return;}
+  // gallbladder (or, after cholecystectomy, a collection in the gallbladder fossa)
+  if(cfg.postop==='none'){if(ell(x,y,-3.0,-5.4,1.25,2.9,-0.3)<1&&bq(x,y,2.35,1.55)<1){out[0]=TIS.GB;return;}}
+  else if(ell(x,y,-2.8,-5.0,1.7,2.3,-0.45)+0.06*Math.sin(x*3+y*2)<1&&bq(x,y,2.35,1.55)<1){out[0]=cfg.postop==='biloma'?TIS.BILOMA:TIS.SEROMA;return;}
+  // liver
+  const lf=liverF(x,y,cfg.cirr);
+  const M=cfg.main;
+  if(lf<1){
+    if(M.type==='icc'&&M.ret){const ux=x-M.ret[0],uy=y-M.ret[1];const along=Math.abs(ux*0.94-uy*0.35);const q=Math.hypot(ux,uy)+0.5*along;if(q<1.35){out[0]=cfg.cirr?TIS.ASC:TIS.FAT;return;}}
+    for(const L of cfg.les){if(classLesion(L,x,y,cfg,out))return;}
+    for(const s of PVS){if(segt(x,y,s)<s[4]*(cfg.cirr?1.15:1)){out[0]=TIS.PV;return;}}
+    for(const s of HVS){if(segt(x,y,s)<s[4]*(cfg.cirr?0.8:1)){out[0]=TIS.HV;return;}}
+    if(polyD(x,y,HACURVE)[0]<0.15){out[0]=TIS.HA;return;}
+    for(const b of BDS){if(segt(x,y,b)<b[4]){out[0]=TIS.BD;return;}}
+    for(const s of HAS){if(Math.hypot(x-s[0],y-s[1])<s[2]){out[0]=TIS.HA;return;}}
+    if(M.type==='icc'&&M.ducts){for(const s of M.ducts){const d=segd(x,y,s[0],s[1],s[2],s[3]);if(d<s[4]*(1+0.25*Math.sin((x+y)*5))){out[0]=TIS.DUCT;return;}}}
+    out[0]=TIS.LIV;
+    if(cfg.cirr){const v=vnoise(x*1.25+11,y*1.25,31),v2=vnoise(x*2.3,y*2.3+5,37);const a1=(v-0.5)/0.045,a2=(v2-0.5)/0.04;out[1]=Math.min(1,0.62*Math.exp(-a1*a1)+0.36*Math.exp(-a2*a2));}
+    // perilesional transient enhancement (metastases)
+    for(const L of cfg.les){if(L.type!=='met'&&!(L.type==='hcc'&&cfg.opt.thad))continue;const [rr,,r]=lesionRR(L,x,y);const dout=(rr-1)*L.R;if(dout<1.0)out[2]=Math.max(out[2],Math.exp(-dout/0.25)*(L.type==='met'&&L.var==='net'?0.5:1));}
+    return;
+  }
+  if(cfg.cirr){ // ascites hugging liver and spleen
+    if(lf<1.17&&x<1&&y<6)return void(out[0]=TIS.ASC);
+    if(qs<1.18&&y<6.5)return void(out[0]=TIS.ASC);
+  }
+  out[0]=TIS.FAT;
+}
+// bile ducts: common hepatic duct at the hilum plus intrahepatic ducts running beside portal branches
+const BDS=[[-3.6,0.05,-2.6,-0.45,.26]].concat([1,2,4,6,7].map(i=>{const s=PVS[i],vx=s[2]-s[0],vy=s[3]-s[1],L=Math.hypot(vx,vy),nx=-vy/L*(s[4]+0.36),ny=vx/L*(s[4]+0.36);return [s[0]+nx+vx*0.12,s[1]+ny+vy*0.12,s[2]+nx,s[3]+ny,0.2];}));
+const RIBS=[-2.75,-2.35,-1.95,-1.2,-0.55,0.35,0.85,2.75,2.3,1.95];
+const KIDS=[{cx:-6.4,cy:7.25,rx:2.2,ry:1.95,rot:0.5,hil:-0.6},{cx:6.4,cy:7.05,rx:2.2,ry:1.95,rot:-0.5,hil:-2.5}];
+
+/* ---------------- grids ---------------- */
+function makeGrid(w,h,x0,y0,scale,cfg,seed){
+  const n=w*h,G={w,h,x0,y0,scale,cfg,tis:new Uint8Array(n),p1:new Float32Array(n),p2:new Float32Array(n),tex:new Float32Array(n),nA:new Float32Array(n),nB:new Float32Array(n)};
+  const out=[0,0,0],rnd=mulberry(seed||7);
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){const k=j*w+i,x=x0+(i+0.5)/scale,y=y0+(j+0.5)/scale;classify(x,y,cfg,out);G.tis[k]=out[0];G.p1[k]=out[1];G.p2[k]=out[2];
+    G.tex[k]=(fbm(x*2.6,y*2.6,3)-0.5)*2;}
+  for(let k=0;k<n;k++){const u=rnd()||1e-9,v=rnd();const m=Math.sqrt(-2*Math.log(u));G.nA[k]=m*Math.cos(6.283*v);G.nB[k]=m*Math.sin(6.283*v);}
+  return G;
+}
+function lesionC(id,p1,p2,K){
+  switch(id){
+    case 20:return K.gb;
+    case 0:case 1:case 3:case 5:case 19:case 21:case 30:case 43:case 44:return 0;
+    case 2:return K.mus;case 4:return K.mar;case 6:return K.a;case 7:return K.ivc;case 8:return K.p;case 9:return K.hv;case 10:return K.ha;case 11:return K.sv;
+    case 12:return (1-p1)*K.l+p1*K.fib+p2*K.thad+K.H*(1-0.7*p1);
+    case 49:return K.dn+K.u*K.H;case 50:return K.hccA+K.hccB+0.05*K.H;case 51:return K.aps+K.H;case 52:return K.bile;case 53:return K.biloma;case 54:return 0;
+    case 13:return Math.max(0,K.spl*(1+1.3*K.splArc*(p1-0.5)));
+    case 14:return K.kc;case 15:return K.km;case 16:return K.ku;case 17:return K.pan;case 18:return K.gut;
+    case 31:{const e=1/(1+Math.exp(-(K.hemF-p1)/0.025));return e*K.pool+(1-e)*0.03*K.eq;}
+    case 32:return 0.02*K.eq;
+    case 33:return K.fnh+K.u*K.H;case 34:return K.scar;case 35:return K.adH+K.u*K.H;case 36:return 0;case 45:return K.adI+K.u*K.H;
+    case 37:case 46:return K.hccA*Math.max(0,0.3+1.0*p1)+K.hccB+(p1<0?0:K.u*K.H);
+    case 38:return K.cap;case 39:return K.metRim;case 40:return K.metCore;case 47:return 0.45*K.metCore;case 48:return K.netRim;
+    case 41:return K.iccRim;case 42:return K.iccCore;
+  }return 0;
+}
+const SEQS={t1:'T1 fat-sat GRE (dynamic)',t2:'T2 fat-sat',dwi:'DWI b800',adc:'ADC map',ip:'T1 in-phase',op:'T1 opposed-phase'};
+function boxBlur(a,w,h,passes){const tmp=new Float32Array(a.length);for(let p=0;p<passes;p++){
+  for(let j=0;j<h;j++){const r=j*w;for(let i=0;i<w;i++){const l=i>0?i-1:i,rr=i<w-1?i+1:i;tmp[r+i]=(a[r+l]+a[r+i]+a[r+rr])/3;}}
+  for(let j=0;j<h;j++){const u=j>0?j-1:j,d=j<h-1?j+1:j;for(let i=0;i<w;i++)a[j*w+i]=(tmp[u*w+i]+tmp[j*w+i]+tmp[d*w+i])/3;}}}
+const WIN={soft:[400,50],liver:[170,80]};
+// value (before noise) for one pixel
+function pixVal(id,p1,p2,tex,K,seq,mod,cfg){
+  const pr=PROP[id];
+  if(mod==='ct'){if(id===0)return -1000;let hu=pr.hu;if(id===12&&p1>0)hu=hu*(1-p1)+48*p1;
+    const k=(id>=6&&id<=11)?380:(id===16?320:320);let v=hu+k*lesionC(id,p1,p2,K);
+    if(id===12||id===13||id===17||id===33||id===37)v+=4*tex;return v;}
+  let t1=pr.t1,t2=pr.t2,adc=pr.adc;
+  if(id===12&&p1>0){t1=t1*(1-p1)+0.25*p1;t2=t2*(1-p1)+0.4*p1;adc=adc*(1-p1)+1.25*p1;}
+  if(id===45&&p1>0.86)t2+=0.2;
+  if(id===37&&p1>0.7)t2+=0.06;
+  const tx=(id===12||id===13||id===33||id===35||id===37||id===45||id===46||id===31)?1+0.035*tex:1;
+  switch(seq){
+    case 't1':{const C=lesionC(id,p1,p2,K);return (1-Math.exp(Math.log(1-t1)-6*C))*tx;}
+    case 't2':return t2*tx;
+    case 'dwi':return t2*Math.exp(-0.8*adc)*tx;
+    case 'adc':return t2<0.1?adc*t2/0.1:adc;
+  }
+  return 0;
+}
+// render to gray bytes
+function renderGrid(G,seq,T,mod,opt){
+  opt=opt||{};const n=G.w*G.h,cfg=G.cfg,K=comps(T,cfg.main),out=new Float32Array(n);
+  const clean=!!opt.clean;
+  if(mod!=='ct'&&(seq==='ip'||seq==='op')){
+    const Wa=new Float32Array(n),Fa=new Float32Array(n);
+    for(let k=0;k<n;k++){const id=G.tis[k],pr=PROP[id];let w=pr.w,f=pr.f;const tx=(id===12||id===13)?1+0.03*G.tex[k]:1;Wa[k]=pr.ip*w*tx;Fa[k]=pr.ip*f*tx;}
+    boxBlur(Wa,G.w,G.h,2);boxBlur(Fa,G.w,G.h,2);
+    for(let k=0;k<n;k++)out[k]=seq==='ip'?Wa[k]+Fa[k]:Math.abs(Wa[k]-Fa[k]);
+  } else {
+    for(let k=0;k<n;k++)out[k]=pixVal(G.tis[k],G.p1[k],G.p2[k],clean?0:G.tex[k],K,seq,mod,cfg);
+    boxBlur(out,G.w,G.h,opt.blur==null?2:opt.blur);
+    if(opt.tsm&&AG==='gdx'&&seq==='t1'){const am=gv(T-DLY,17,10,2);if(am>0.02){const dy=Math.round(G.h*0.17),src=out.slice();
+      for(let j=0;j<G.h;j++)for(let i=0;i<G.w;i++){const k=j*G.w+i,u=j-dy,d=j+dy;out[k]=src[k]*(1-0.36*am)+0.18*am*((u>=0?src[u*G.w+i]:0)+(d<G.h?src[d*G.w+i]:0));}
+      boxBlur(out,G.w,G.h,Math.round(2*am));}}
+  }
+  const g=new Uint8ClampedArray(n);
+  if(mod==='ct'){const [W,L]=WIN[opt.win||'soft'];const lo=L-W/2;for(let k=0;k<n;k++){const v=out[k]+(clean?0:8*G.nA[k]);g[k]=255*clamp((v-lo)/W,0,1);}return {g,raw:out,K};}
+  let hiT1=.95;if(seq==='t1'){let sm=0,nn=0;for(let k=0;k<n;k+=5)if(G.tis[k]===12){sm+=out[k];nn++;}if(nn)hiT1=Math.max(.95,1.15*sm/nn);} // scanner-like auto-window (matters in the hepatobiliary phase)
+  const sig={t1:.016,t2:.018,dwi:.008,adc:.07,ip:.016,op:.016}[seq],hi={t1:hiT1,t2:.9,dwi:.22,adc:3.0,ip:.95,op:.95}[seq],gam={t1:.75+.25*clamp((hiT1-.95)/.07,0,1),t2:.85,dwi:.9,adc:1,ip:.85,op:.85}[seq];
+  for(let k=0;k<n;k++){let v=out[k];if(!clean){const a=v+sig*G.nA[k],b=sig*G.nB[k];v=seq==='adc'?v+sig*G.nA[k]:Math.sqrt(a*a+b*b);}g[k]=255*Math.pow(clamp(v/hi,0,1),gam);}
+  return {g,raw:out,K};
+}
+function putGray(ctx,G,g){const im=ctx.createImageData(G.w,G.h),d=im.data;for(let k=0;k<g.length;k++){const v=g[k];d[4*k]=v;d[4*k+1]=v;d[4*k+2]=v;d[4*k+3]=255;}ctx.putImageData(im,0,0);}
+// lesion vs adjacent liver contrast from a rendered grid (raw values, pre-noise)
+function lesionContrast(G,raw,mod){
+  const L=G.cfg.main;let sl=0,nl=0,sv=0,nv=0;
+  for(let j=0;j<G.h;j+=1)for(let i=0;i<G.w;i+=1){const k=j*G.w+i,x=G.x0+(i+0.5)/G.scale,y=G.y0+(j+0.5)/G.scale;const [rr]=lesionRR(L,x,y);const id=G.tis[k];
+    if(rr<0.85&&LESION_FAMILY.has(id)&&!MINOR.has(id)){sl+=raw[k];nl++;}else if(rr>1.35&&rr<1.35+1.6/L.R&&id===12){sv+=raw[k];nv++;}}
+  if(!nl||!nv)return null;const a=sl/nl,b=sv/nv;
+  if(mod==='ct')return {les:a,liv:b,d:a-b,rel:(a-b)/40};
+  return {les:a,liv:b,d:a-b,rel:(a-b)/Math.max(0.05,b)};
+}
+const NOTES={
+ cyst:{pre:['Cyst: uniformly dark on T1, like fluid.','Cyst: water density (about 0–10 HU), the same as the gallbladder.'],
+  ea:'No enhancement. A cyst never changes from its pre-contrast appearance.',
+  la:'No enhancement. Any measurable enhancement (on CT, more than about 10–20 HU) excludes a simple cyst.',
+  pv:'Still no enhancement, and the cyst is most conspicuous now against the fully enhanced liver. The wall is imperceptible, with no septa or nodules.',
+  del:'No enhancement on delayed images either. Compare with a hemangioma, which keeps filling in.',
+  t2:'Very bright on T2, as bright as the gallbladder and CSF, with a sharp margin. On heavily T2-weighted images (long TE) it stays bright while solid lesions fade.',
+  dwi:'Free water: the cyst loses signal at b800. Any residual brightness is T2 shine-through, so always check the ADC.',
+  adc:'Very high ADC (bright), about 3 × 10⁻³ mm²/s, like free water.',
+  ip:'In-phase: dark, like fluid.',op:'No signal change from in-phase: no fat.'},
+ hem:{pre:['Hemangioma: T1 dark and well defined.','Hemangioma: hypoattenuating, with about the same density as blood in the aorta.'],
+  ea:'The first peripheral nodules appear: discontinuous, at the very edge of the lesion.',
+  la:'Peripheral, discontinuous, nodular enhancement, with each nodule as bright as the aorta. That match to the blood pool is the key.',
+  pv:'Centripetal fill-in: the nodules grow and merge toward the center, still matching the blood pool.',
+  del:'Near-complete fill-in, still as bright as the blood pool and brighter than liver. No washout.',
+  t2:'"Light-bulb" bright on T2: close to fluid, but usually a little less bright than a cyst.',
+  dwi:'Bright at b800, mostly T2 shine-through.',adc:'High ADC (bright), unlike solid malignant tumors.',
+  ip:'In-phase: dark, well-defined lesion.',op:'No signal drop on opposed-phase: no fat.'},
+ 'hem.flash':{ea:'Flash-filling: the whole lesion is already enhancing in the early arterial phase.',
+  la:'Uniform, intense enhancement as bright as the aorta. This mimics a hypervascular tumor (HCC, adenoma, neuroendocrine metastasis).',
+  pv:'Still bright and still matching the blood pool, with no washout. That, plus light-bulb T2 signal, is the clue.',
+  del:'Still isointense to the blood pool. Transient perilesional enhancement from arterioportal shunting is common around flash-filling hemangiomas.'},
+ 'hem.slow':{pv:'Slow filling: only the periphery has filled so far. Delayed images will show progressive fill-in.',
+  del:'Still incomplete at 3 minutes. Slow-filling hemangiomas may need 10 minutes or more, so add a later delayed acquisition.'},
+ 'hem.giant':{del:'Fill-in is complete except for a central cleft (cystic degeneration or fibrosis), which stays dark and never enhances.',
+  t2:'Very bright, with an even brighter central cleft from degeneration.'},
+ fnh:{pre:['FNH: nearly isointense to liver on T1 ("liver looks like liver"), with a slightly darker central scar.','FNH: nearly isodense to liver, and easily missed without contrast.'],
+  ea:'The FNH lights up homogeneously ahead of the liver.',
+  la:'Intense, homogeneous arterial hyperenhancement, everywhere except the central scar, which stays dark.',
+  pv:'Fading to isointense with liver: the lesion "disappears". No washout.',
+  del:'Isointense to liver, with delayed enhancement of the central stellate scar (fibrous tissue with a large interstitium).',
+  t2:'Iso- to slightly hyperintense on T2, with a T2-bright central scar. (The scar of fibrolamellar carcinoma is typically T2 dark.)',
+  dwi:'DWI helps detection, not characterization: FNH is often mildly bright.',adc:'ADC close to that of liver.',
+  ip:'In-phase: nearly isointense to liver.',op:'No signal drop on opposed-phase: no fat.'},
+ 'fnh.noscar':{la:'Homogeneous arterial hyperenhancement. FNHs under 3 cm often have no visible scar.',
+  del:'Isointense to liver. Without a scar, the hepatobiliary phase on gadoxetate MRI is the problem-solver (next lesson).'},
+ aden:{pre:['Adenoma: around isointense on T1.','Adenoma: slightly hypodense when it contains fat.'],
+  ea:'Arterial enhancement begins.',
+  la:'Mild-to-moderate arterial hyperenhancement. HNF1α adenomas are less vascular than inflammatory ones.',
+  pv:'Iso to slightly hypointense. Mild "washout" can occur in adenomas, so washout alone does not mean HCC in a non-cirrhotic liver.',
+  del:'Iso to slightly hypointense.',
+  t2:'Iso to mildly hyperintense on T2.',dwi:'Mildly bright.',adc:'ADC similar to that of liver.',
+  ip:'In-phase: similar to or brighter than liver.',
+  op:'Diffuse, homogeneous signal drop on opposed-phase: intracellular fat, the hallmark of the HNF1α subtype. Do not confuse it with the India-ink artifact, the thin black line at every fat–water boundary.'},
+ 'aden.inflam':{la:'Strong arterial hyperenhancement.',
+  pv:'Enhancement persists into the portal venous phase, typical of the inflammatory subtype (dilated sinusoids).',
+  del:'Persistent delayed enhancement, typical of the inflammatory subtype.',
+  t2:'Markedly T2 hyperintense, often with a brighter peripheral rim (the "atoll" sign).',
+  op:'No signal drop on opposed-phase: inflammatory adenomas usually contain no fat.'},
+ 'aden.hemor':{pre:['Adenoma with hemorrhage: a T1-bright area (methemoglobin) on fat-suppressed T1 before contrast.','Adenoma with hemorrhage: a hyperdense area of recent blood.'],
+  la:'The viable tissue enhances strongly and the hemorrhagic part does not. When a lesion is bright before contrast, use subtraction images.',
+  pv:'Persistent enhancement of the viable part; the hemorrhage stays unenhanced.',del:'Persistent enhancement of the viable part.',
+  t2:'Heterogeneous: bright inflammatory tissue and mixed-signal blood products.',op:'No fat in the viable tissue.'},
+ hcc:{pre:['HCC: mildly T1 hypointense and mosaic.','HCC: hypo- to isoattenuating.'],
+  ea:'Too early: the tumor is only beginning to enhance. That is why liver protocols aim for the late arterial phase.',
+  la:'Non-rim arterial hyperenhancement with a mosaic pattern: nodules within the nodule, separated by septa.',
+  pv:'Washout: the whole tumor turns darker than liver, and an enhancing capsule starts to appear at its periphery.',
+  del:'Complete washout of the whole tumor, with only the peripheral capsule enhancing (a smooth rim brighter than liver). In a cirrhotic liver this pattern is diagnostic.',
+  t2:'Mildly to moderately T2 hyperintense, never as bright as a cyst or hemangioma.',
+  dwi:'Restricted diffusion: bright at b800.',adc:'Low ADC (dark) relative to liver.',
+  ip:'In-phase: mosaic nodule.',op:'No signal drop in this variant.'},
+ 'hcc.fat':{op:'Patchy signal drop on opposed-phase in some compartments: intralesional fat. In a cirrhotic liver, fat favors HCC (or a dysplastic nodule) over other malignancies.'},
+ 'hcc.small':{la:'Small, homogeneous arterial hyperenhancing nodule.',
+  pv:'Washout, but no capsule. Small HCCs often lack a capsule, and washout may be clear only on delayed images.',
+  del:'Hypointense to liver, with no capsule.'},
+ met:{pre:['Colorectal metastasis: T1 hypointense.','Colorectal metastasis: hypoattenuating.'],
+  ea:'A thin rim of enhancement starts, with a halo of transient enhancement in the liver around it.',
+  la:'Continuous rim enhancement with a perilesional halo; the center does not enhance.',
+  pv:'Hypovascular: dark against the fully enhanced liver. This is the phase for finding metastases.',
+  del:'Peripheral washout (the rim fades below liver) while the fibrotic center slowly fills in: a target pattern.',
+  t2:'Moderately T2 hyperintense with a brighter necrotic center ("target" or "doughnut"), not as bright as a cyst or hemangioma.',
+  dwi:'Restricted diffusion of the viable rim. DWI is the most sensitive sequence for small metastases.',
+  adc:'Low-ADC rim around a higher-ADC necrotic center.',
+  ip:'In-phase: hypointense lesion.',op:'No signal drop on opposed-phase: no fat.'},
+ 'met.muc':{pre:['Mucinous metastasis: T1 dark.','Mucinous metastasis: hypodense, with punctate calcifications.'],
+  t2:'Mucinous metastases are very T2 bright and can mimic a cyst or hemangioma, but they enhance at the periphery.',
+  del:'Mild, peripheral and progressive enhancement.'},
+ 'met.net':{la:'Hypervascular metastasis: strong arterial enhancement (neuroendocrine, renal cell, thyroid, melanoma). This is the phase in which to find these metastases.',
+  pv:'Rapid washout.',del:'Hypointense, washed out.'},
+ icc:{pre:['Intrahepatic cholangiocarcinoma: lobulated, T1 hypointense mass.','Intrahepatic cholangiocarcinoma: lobulated hypoattenuating mass.'],
+  ea:'A thin rim of peripheral enhancement starts.',
+  la:'Irregular rim enhancement; the fibrous center stays dark.',
+  pv:'The rim fades while the center begins to fill.',
+  del:'Progressive central enhancement as contrast leaks into the abundant fibrous stroma. Look for capsular retraction and dilated ducts upstream.',
+  t2:'Hyperintense cellular periphery and a darker fibrous center. The ducts upstream are dilated.',
+  dwi:'Restricted diffusion at the periphery (target).',adc:'Lower ADC at the periphery.',
+  ip:'In-phase: hypointense mass.',op:'No signal drop on opposed-phase: no fat.'}
+};
+/* ---------------- Lesson 2 teaching text (extends the Lesson 1 notes) ---------------- */
+function ext(k,o){NOTES[k]=Object.assign(NOTES[k]||{},o);}
+const GENERIC={
+ 'gdx.trans':'Transitional phase: contrast is still in the vessels and interstitium while hepatocytes start taking it up, so the liver brightens. Lesions without functioning hepatocytes look darker than liver here even without true washout.',
+ 'gdx.hbp':'Hepatobiliary phase: functioning hepatocytes hold the agent and excrete it into the bile ducts. Anything without functioning hepatocytes is dark.',
+ 'eca.late':'Late delayed images with an extracellular agent: contrast keeps leaving blood and tissue together. There is no hepatocyte phase, so liver and vessels converge.',
+ 'gdb.late':'Gadobenate behaves like an extracellular agent for the first minutes. Only 3–5% enters hepatocytes, so its hepatobiliary phase comes much later, at 1–3 hours.',
+ 'gdb.hbp':'Gadobenate hepatobiliary phase (1–3 h): the liver is modestly brighter than the vessels and the bile ducts start to opacify. Weaker than gadoxetate, but the same logic applies.'};
+ext('cyst',{'gdx.trans':'Dark: no enhancement and no hepatocytes.','gdx.hbp':'Dark, like fluid. Any lesion without hepatocytes is dark in this phase, so the hepatobiliary phase alone cannot tell a cyst from a metastasis: use T2 and the dynamic phases.'});
+ext('hem',{'gdx.pv':'The puddles still follow the blood pool, but with gadoxetate the blood pool fades faster, so the fill-in is less striking than with an extracellular agent.',
+ 'gdx.trans':'Pseudo-washout: the hemangioma follows the fading blood pool while the liver brightens from hepatocyte uptake, so it now looks darker than liver. This is not washout; check T2 and the earlier phases.',
+ 'gdx.hbp':'Hypointense, like any lesion without hepatocytes. The light-bulb T2 signal and the early nodular puddles make the diagnosis.',
+ 'gdb.hbp':'Hypointense to liver at 1–3 h, less markedly than with gadoxetate.'});
+ext('hem.flash',{'gdx.trans':'Pseudo-washout: darker than the brightening liver in the transitional phase, which makes a flash-filling hemangioma look even more like an HCC. Very bright T2 signal and blood-pool matching in the arterial and portal venous phases are the clues.'});
+ext('fnh',{'gdx.trans':'Isointense, and brightening along with the liver as hepatocytes take up gadoxetate.',
+ 'gdx.hbp':'Iso- to hyperintense: functioning hepatocytes with malformed biliary drainage retain the agent. The central scar stays dark. This separates FNH from most adenomas.',
+ 'gdb.hbp':'Iso- to hyperintense at 1–3 h with gadobenate as well; the classic gadobenate study separated FNH from adenoma with about 98% accuracy.'});
+ext('aden',{'gdx.trans':'Already slightly darker than the brightening liver.',
+ 'gdx.hbp':'Hypointense: adenoma hepatocytes express little OATP. With intracellular fat, this is a typical HNF1α adenoma.',
+ 'gdb.hbp':'Hypointense at 1–3 h.'});
+ext('aden.inflam',{'gdx.hbp':'Mostly hypointense, but some inflammatory adenomas are partly iso- or hyperintense (or show a rim) in the hepatobiliary phase and can mimic FNH. T2 brightness and the atoll sign help.'});
+ext('aden.bcat',{la:'Arterial hyperenhancement.',pv:'Iso- to slightly hyperintense.',del:'Isointense.',t2:'Mildly T2 hyperintense, often heterogeneous.',op:'No signal drop on opposed-phase.',ip:'In-phase: similar to liver.',
+ 'gdx.trans':'Isointense to liver.',
+ 'gdx.hbp':'Iso- or hyperintense: β-catenin activation upregulates OATP1B3. A bright adenoma is not reassuring here, because this subtype carries the highest risk of malignant transformation.',
+ 'gdb.hbp':'Iso- or hyperintense at 1–3 h.'});
+ext('hcc',{'gdx.pv':'Washout in the portal venous phase. With gadoxetate, LI-RADS calls washout only in this phase.',
+ 'gdx.trans':'Darker than liver, but in the transitional phase LI-RADS does not call this washout, because the liver is brightening from uptake.',
+ 'gdx.hbp':'Hypointense: most HCCs lose OATP1B3. The bile ducts are bright and the tumor is dark.',
+ 'gdb.hbp':'Hypointense at 1–3 h.'});
+ext('hcc.small',{'gdx.hbp':'Small and dark; often more conspicuous here than in any dynamic phase.'});
+ext('hcc.oatp',{'gdx.trans':'Close to isointense: this tumor takes up the agent.',
+ 'gdx.hbp':'Iso- or hyperintense: about 10–15% of HCCs overexpress OATP1B3 (often β-catenin-mutated). Arterial hyperenhancement and portal venous washout still make the diagnosis.',
+ 'gdb.hbp':'Iso- or hyperintense at 1–3 h.'});
+ext('dn',{pre:'Dysplastic nodule: mildly T1 hyperintense (glycogen, copper or fat), common in cirrhotic nodules.',
+ ea:'No arterial hyperenhancement: the portal supply is still preserved.',la:'No arterial hyperenhancement: the blood supply is still mostly portal.',
+ pv:'Isointense to liver.',del:'Isointense to liver.',t2:'Iso- to mildly T2 hypointense. T2 hyperintensity would suggest progression to HCC.',
+ dwi:'No restricted diffusion.',adc:'ADC similar to liver.',ip:'Iso- to mildly hyperintense.',op:'No signal drop.',
+ 'gdx.trans':'Isointense.','gdx.hbp':'Isointense: low-grade dysplastic nodules keep their OATP expression.','gdb.hbp':'Isointense at 1–3 h.'});
+ext('dn.hgdn',{'gdx.trans':'Slightly darker than liver.',
+ 'gdx.hbp':'Hypointense, yet with no arterial hyperenhancement or washout. OATP loss comes before the arterial switch in stepwise carcinogenesis, so this hypovascular, hepatobiliary-hypointense nodule may be a high-grade dysplastic nodule or early HCC, with a high risk of becoming hypervascular.',
+ 'gdb.hbp':'Mildly hypointense at 1–3 h.'});
+ext('dn.nin',{la:'A small focus of arterial hyperenhancement inside the nodule: an HCC growing within a dysplastic nodule (nodule-in-nodule).',
+ pv:'The inner focus washes out; the outer nodule stays isointense.',t2:'The inner focus is mildly T2 hyperintense; the outer nodule is iso- to hypointense.',
+ 'gdx.hbp':'The outer nodule is mildly hypointense and the inner focus is darker still.'});
+ext('met',{'gdx.trans':'Dark against the brightening liver.',
+ 'gdx.hbp':'Hypointense and sharply outlined against the bright liver. The hepatobiliary phase plus DWI is the most sensitive way to find small metastases, especially under 1 cm.',
+ 'gdb.hbp':'Hypointense at 1–3 h.'});
+ext('icc',{'gdx.trans':'The fibrous center still fills slowly, but the brightening liver masks it: with gadoxetate the classic delayed central enhancement is harder to see.',
+ 'gdx.hbp':'Hypointense, often with a target: a central cloud of retained extracellular contrast in the fibrous stroma.'});
+ext('aps',{pre:'Invisible before contrast: this is normal liver.',ea:'Wedge-shaped arterial hyperenhancement reaching the liver surface: extra arterial inflow through an arterioportal shunt.',
+ la:'Wedge-shaped hyperenhancement with no mass effect; vessels run straight through it.',pv:'Isointense: the extra arterial flow has equilibrated.',del:'Isointense.',
+ t2:'Normal liver on T2.',dwi:'No restricted diffusion.',adc:'Normal liver ADC.',ip:'Normal liver.',op:'Normal liver.',
+ 'gdx.trans':'Isointense.','gdx.hbp':'Isointense: these are normal hepatocytes. This confirms a perfusion alteration rather than a tumor.','gdb.hbp':'Isointense at 1–3 h.'});
+const AGINFO={
+ eca:'<b>Extracellular gadolinium.</b> 0.1 mmol/kg. Distributes in blood and interstitium only; excreted by the kidneys. No hepatobiliary phase.',
+ gdx:'<b>Gadoxetate.</b> 0.025 mmol/kg (0.1 mL/kg), with about twice the T1 relaxivity. About 50% is taken up by hepatocytes (OATP1B1/B3) and excreted into bile (MRP2); the rest by the kidneys. Hepatobiliary phase at about 20 min.',
+ gdb:'<b>Gadobenate.</b> 0.05–0.1 mmol/kg, with higher relaxivity than standard agents. Dynamic phases behave like an extracellular agent; only 3–5% is taken up and excreted into bile. Hepatobiliary phase at 1–3 h.'};
+const CASEDIR='cases/';
+const SHOW_CASES=false; // real patient case images are not published on this site (see CLAUDE.md)
+const TOPICS=[
+ {t:'FNH versus adenoma',p:'With extracellular agents both are hypervascular and fade to near isointensity. In the hepatobiliary phase, FNH is iso- or hyperintense in over 90% of cases, while most adenomas are hypointense. Exceptions: some inflammatory and β-catenin adenomas take up the agent.',
+  b:[['FNH, hepatobiliary phase',{type:'fnh',var:'scar',ag:'gdx',t:1200}],['HNF1α adenoma, hepatobiliary phase',{type:'aden',var:'hnf',ag:'gdx',t:1200}],['β-catenin adenoma, hepatobiliary phase',{type:'aden',var:'bcat',ag:'gdx',t:1200}],['FNH with gadobenate at 90 min',{type:'fnh',var:'scar',ag:'gdb',t:5400}]]},
+ {t:'Dysplastic nodule versus HCC',p:'Along stepwise carcinogenesis, OATP expression falls before the arterial switch. A nodule that is dark in the hepatobiliary phase but not hypervascular may be a high-grade dysplastic nodule or early HCC. The cirrhosis lesson covers this sequence and LI-RADS in depth.',
+  b:[['Low-grade DN',{type:'dn',var:'lgdn',ag:'gdx',t:1200,bg:'cirrhotic'}],['HBP-hypointense, hypovascular nodule',{type:'dn',var:'hgdn',ag:'gdx',t:1200,bg:'cirrhotic'}],['Nodule-in-nodule, arterial',{type:'dn',var:'nin',ag:'gdx',t:35,bg:'cirrhotic'}],['Progressed HCC, hepatobiliary phase',{type:'hcc',var:'classic',ag:'gdx',t:1200,bg:'cirrhotic'}]]},
+ {t:'Finding metastases',p:'Hepatobiliary-phase images plus DWI detect more and smaller metastases than the dynamic phases or CT, especially those under 1 cm, which changes surgical planning.',
+  b:[['Portal venous, extracellular',{type:'met',var:'crc',ag:'eca',t:70,multi:true}],['Hepatobiliary phase, gadoxetate',{type:'met',var:'crc',ag:'gdx',t:1200,multi:true}],['DWI',{type:'met',var:'crc',ag:'gdx',seq:'dwi',multi:true}]]},
+ {t:'Hemangioma pseudo-washout',p:'With gadoxetate, the blood pool fades quickly while the liver brightens, so a hemangioma turns darker than liver from the transitional phase on. A flash-filling hemangioma can then mimic HCC. T2 signal and blood-pool matching in early phases resolve it.',
+  b:[['3 min, extracellular',{type:'hem',var:'classic',ag:'eca',t:180}],['3 min, gadoxetate',{type:'hem',var:'classic',ag:'gdx',t:180}],['Flash-filling, transitional',{type:'hem',var:'flash',ag:'gdx',t:180}],['T2',{type:'hem',var:'classic',ag:'gdx',seq:'t2'}]]},
+ {t:'Washout: portal venous phase only',p:'With gadoxetate, hypointensity in the transitional or hepatobiliary phase is not washout for LI-RADS, because any lesion lacking hepatocytes darkens as the liver takes up the agent. Call washout only in the portal venous phase.',
+  b:[['HCC, portal venous',{type:'hcc',var:'classic',ag:'gdx',t:70,bg:'cirrhotic'}],['HCC, transitional',{type:'hcc',var:'classic',ag:'gdx',t:180,bg:'cirrhotic'}],['Hemangioma, transitional',{type:'hem',var:'classic',ag:'gdx',t:180}]]},
+ {t:'Arterial-phase problems',p:'The small gadoxetate dose gives a weaker, shorter arterial bolus, so timing matters more (bolus tracking, multiple arterial phases). Some patients develop transient severe motion, a short-lived breathing problem right after injection that blurs the arterial phase only.',
+  b:[['Arterial, extracellular',{type:'hcc',var:'classic',ag:'eca',t:35,bg:'cirrhotic'}],['Arterial, gadoxetate',{type:'hcc',var:'classic',ag:'gdx',t:35,bg:'cirrhotic'}],['Transient severe motion',{type:'hcc',var:'classic',ag:'gdx',t:28,bg:'cirrhotic',tsm:true}]]},
+ {t:'Perfusion pseudolesions',p:'Arterioportal shunts are wedge-shaped, arterial-only and without mass effect. They are isointense in the hepatobiliary phase because their hepatocytes are normal.',
+  b:[['Arterial',{type:'aps',var:'wedge',ag:'gdx',t:35}],['Hepatobiliary phase',{type:'aps',var:'wedge',ag:'gdx',t:1200}]]},
+ {t:'Liver function and timing',p:'Uptake and excretion depend on hepatocyte function. In advanced cirrhosis or cholestasis the liver enhances weakly, the bile ducts may not fill, and lesion-to-liver contrast drops. An adequate hepatobiliary phase needs the liver to be brighter than the hepatic vessels; delay further or switch agents if not.',
+  b:[['Normal, 20 min',{type:'met',var:'crc',ag:'gdx',t:1200,func:'normal'}],['Child B–C, 20 min',{type:'met',var:'crc',ag:'gdx',t:1200,func:'childBC',bg:'cirrhotic'}],['Cholestasis, 20 min',{type:'met',var:'crc',ag:'gdx',t:1200,func:'chol'}]]},
+ {t:'Bile leaks',p:'Gadoxetate is excreted into bile, so a collection that fills with contrast in the hepatobiliary phase is a biloma from an active leak. A seroma or abscess stays dark. Delay longer if excretion is slow.',
+  b:[['Collection, portal venous',{type:'cyst',var:'simple',ag:'gdx',t:70,postop:'biloma'}],['Biloma, 20 min',{type:'cyst',var:'simple',ag:'gdx',t:1200,postop:'biloma'}],['Seroma, 20 min',{type:'cyst',var:'simple',ag:'gdx',t:1200,postop:'seroma'}]]},
+ {t:'Gadobenate',p:'Gadobenate gives a full-strength, extracellular-like dynamic study (good for arterial phase and washout) and a weaker hepatobiliary phase at 1–3 hours. It is useful for FNH versus adenoma when a second visit is acceptable.',
+  b:[['FNH, 3 min',{type:'fnh',var:'scar',ag:'gdb',t:180}],['FNH, 90 min',{type:'fnh',var:'scar',ag:'gdb',t:5400}],['Adenoma, 90 min',{type:'aden',var:'hnf',ag:'gdb',t:5400}]]}
+];
+const CASES2=[
+ ['Hepatocellular adenoma',[['ad2-t2','T2'],['ad2-ip','In-phase'],['ad2-op','Opposed-phase'],['ad2-art','Arterial'],['ad2-pv','Portal venous'],['ad2-hbp','Hepatobiliary: hypointense']]],
+ ['Multiple adenomas (annotated figure)',[['fig-ad-hbp','Arterial, portal venous and transitional (top); hepatobiliary with standard VIBE and CAIPIRINHA (bottom): hypointense']]],
+ ['HCC with extracapsular extension',[['hcc2-t2','T2'],['hcc2-dwi','DWI'],['hcc2-pre','T1 pre-contrast'],['hcc2-art','Arterial'],['hcc2-pv','Portal venous'],['hcc2-hbp','Hepatobiliary: hypointense tumor, bile ducts opacified'],['hcc3-pre','Another level: pre-contrast'],['hcc3-art','Another level: arterial'],['hcc3-pv','Another level: portal venous'],['hcc3-tr','Another level: transitional'],['hcc3-hbp','Another level: hepatobiliary']]],
+ ['Small HCC',[['hcc4-pre','Pre-contrast'],['hcc4-art','Arterial'],['hcc4-pv','Portal venous'],['hcc4-tr','Transitional'],['hcc4-hbp','Hepatobiliary']]],
+ ['Small HCCs (annotated figure)',[['fig-hcc-hbp','Arterial, portal venous and hepatobiliary (standard VIBE and CAIPIRINHA)']]],
+ ['Giant FNH',[['fnh2-pre','Pre-contrast'],['fnh2-art','Arterial'],['fnh2-pv','Portal venous'],['fnh2-hbp','Hepatobiliary: iso- to hyperintense']]],
+ ['FNH (annotated figure)',[['fig-fnh-hbp','T2, arterial, portal venous, transitional and hepatobiliary phases']]],
+ ['Melanoma metastases (annotated figure)',[['fig-met-hbp','Small metastases far more conspicuous in the hepatobiliary phase and on DWI than in the dynamic phases']]],
+ ['Hemangioma (annotated figure)',[['fig-hem-hbp','Pseudo-washout in the transitional and hepatobiliary phases']]]
+];
+// transporter expression (relative to normal liver) for the mechanism diagram
+const MECH=[
+ ['Normal liver',1,1,0.15,'Bright: uptake through OATP1B1/B3, excretion into bile through MRP2.'],
+ ['FNH',1.15,0.35,0.15,'Iso- or hyperintense: normal uptake, but malformed ductules drain poorly, so the agent is retained.'],
+ ['HNF1α adenoma',0.05,0.3,0.1,'Dark: almost no OATP.'],
+ ['Inflammatory adenoma',0.35,0.4,0.25,'Usually dark, sometimes partly iso- or hyperintense.'],
+ ['β-catenin adenoma',1.1,0.4,0.2,'Often iso- or hyperintense: β-catenin upregulates OATP1B3.'],
+ ['Typical HCC',0.08,0.5,0.6,'Dark: OATP1B3 is lost early in carcinogenesis.'],
+ ['OATP-expressing HCC',1.3,0.3,0.2,'Iso- or hyperintense in 10–15% of HCCs, usually β-catenin-mutated.'],
+ ['HGDN / early HCC',0.35,0.8,0.3,'Mildly dark: OATP falls before the arterial switch.'],
+ ['Metastasis, cyst, hemangioma, cholangiocarcinoma',0,0,0,'Dark: no hepatocytes at all.'],
+ ['Cholestasis / high bilirubin',0.3,0.15,0.6,'Weak liver enhancement and little biliary excretion: bilirubin competes for OATP and MRP2 is impaired.']];
+const PROTO={
+ gdx:{inj:6,end:28,rows:[['Coronal T2',0,1.5,'s'],['Axial T2 FS',1.5,2.5,'s'],['T1 in/opposed-phase',4,1,'s'],['T1 pre',5.4,0.5,'d'],['Arterial',6.5,0.4,'d'],['Portal venous',7.2,0.4,'d'],['Transitional',9,0.4,'d'],['Axial T2 (triggered)',10,4,'s'],['DWI (triggered)',14.2,5.5,'s'],['HBP standard VIBE',26,0.5,'h'],['HBP CAIPIRINHA',26.6,0.4,'h']],
+  tips:['T2 and DWI after gadoxetate fill the 20-minute wait; their effect on the images is minimal.','Hepatobiliary phase about 20 min after injection (10 min may suffice with normal function; later with poor function); a higher flip angle (about 20–30°) improves liver-to-lesion contrast.','CAIPIRINHA acceleration allows thinner sections or a shorter breath-hold for the hepatobiliary phase.','Arterial phase: bolus tracking or multiple arterial phases, a slow injection (about 1 mL/s) with a saline flush, and breath-hold coaching.','Total table time: about 25–30 min.']},
+ eca:{inj:14,end:19,rows:[['Coronal T2',0,1.5,'s'],['Axial T2 FS',1.5,2.5,'s'],['T1 in/opposed-phase',4,1,'s'],['DWI',5.2,5.5,'s'],['Axial T2',10.9,2.5,'s'],['T1 pre',13.5,0.5,'d'],['Arterial',14.6,0.4,'d'],['Portal venous',15.2,0.4,'d'],['Delayed 3 min',17,0.4,'d']],
+  tips:['All non-contrast sequences come first; the dynamic study ends with a 3–5 min delayed phase.','A full dose gives a strong arterial phase; washout and capsule are judged on portal venous and delayed images.','Total table time: about 20 min. No hepatobiliary phase.']},
+ gdb:{inj:14,end:19,late:'Return at 60–120 min for the hepatobiliary phase (the patient can leave the table).',rows:[['Coronal T2',0,1.5,'s'],['Axial T2 FS',1.5,2.5,'s'],['T1 in/opposed-phase',4,1,'s'],['DWI',5.2,5.5,'s'],['Axial T2',10.9,2.5,'s'],['T1 pre',13.5,0.5,'d'],['Arterial',14.6,0.4,'d'],['Portal venous',15.2,0.4,'d'],['Delayed 3 min',17,0.4,'d']],
+  tips:['Dynamic phases as with an extracellular agent, at full strength.','Hepatobiliary phase on a second, short visit at 1–3 hours.','Useful when you need both a robust arterial phase and hepatocyte information.']}};
+const QZ=[
+ {q:'Which transporters take gadoxetate into hepatocytes?',o:['MRP2','OATP1B1 and OATP1B3','MRP3','Na+/taurocholate cotransporter'],a:1,e:'OATP1B1/B3 on the sinusoidal membrane take it up; MRP2 excretes it into bile, and MRP3 returns some to the sinusoids.'},
+ {q:'Why is the arterial phase weaker with gadoxetate?',o:['It is purely intracellular','A quarter of the usual gadolinium dose in a small volume','It binds to albumin','It is excreted by the liver'],a:1,e:'0.025 mmol/kg in about 10 mL makes a short, weaker bolus despite the higher relaxivity, so timing and technique matter more.'},
+ {q:'With gadoxetate, in which phase does LI-RADS assess washout?',o:['Portal venous only','Transitional','Hepatobiliary','Any phase after the arterial phase'],a:0,e:'In the transitional and hepatobiliary phases the liver brightens from uptake, so any lesion without hepatocytes looks dark. That is not washout.'},
+ {q:'A hemangioma looks darker than liver 3 minutes after gadoxetate. Why?',o:['It has washed out','The blood pool fades while the liver takes up the agent (pseudo-washout)','Thrombosis','Hepatocyte uptake by the hemangioma'],a:1,e:'The hemangioma tracks the blood pool. Check the very bright T2 signal and the early nodular puddles.'},
+ {q:'Which is iso- or hyperintense in the hepatobiliary phase in most cases?',o:['HNF1α adenoma','FNH','Colorectal metastasis','Cholangiocarcinoma'],a:1,e:'FNH has functioning hepatocytes and poor biliary drainage, so it retains the agent. Most adenomas are hypointense.'},
+ {q:'A cirrhotic nodule is hypointense in the hepatobiliary phase but has no arterial hyperenhancement. What does it suggest?',o:['Regenerative nodule','A high-grade dysplastic nodule or early HCC','Hemangioma','Arterioportal shunt'],a:1,e:'OATP expression falls before the arterial switch. These nodules carry a high risk of progressing to hypervascular HCC.'},
+ {q:'When is the hepatobiliary phase with gadobenate?',o:['20 minutes','5 minutes','1–3 hours','24 hours'],a:2,e:'Only 3–5% of gadobenate enters hepatocytes, so the hepatobiliary phase is much later than with gadoxetate (about 50%).'},
+ {q:'What makes a gadoxetate hepatobiliary phase adequate for LI-RADS?',o:['Contrast in the gallbladder','The liver is brighter than the hepatic vessels','20 minutes have passed','The kidneys are dark'],a:1,e:'Biliary excretion is not required. If the liver is not brighter than the vessels, delay further or interpret with caution.'},
+ {q:'A wedge-shaped arterial hyperenhancement at the liver surface is isointense in the hepatobiliary phase. What is it?',o:['Small HCC','Arterioportal shunt (perfusion pseudolesion)','Adenoma','Metastasis'],a:1,e:'Normal hepatocytes take up the agent, so a perfusion alteration is isointense in the hepatobiliary phase.'},
+ {q:'After cholecystectomy, a fluid collection fills with contrast 20 minutes after gadoxetate. What does it mean?',o:['Seroma','Active bile leak (biloma)','Abscess','Hematoma'],a:1,e:'Gadoxetate is excreted into bile; contrast entering the collection proves communication with the biliary tree.'}
+];
+const REFS=[
+ 'Van Beers BE, Pastor CM, Hussain HK. Primovist, Eovist: what to expect? J Hepatol. 2012;57(2):421–429.',
+ 'Seale MK, Catalano OA, Saini S, Hahn PF, Sahani DV. Hepatobiliary-specific MR contrast agents: role in imaging the liver and biliary tree. RadioGraphics. 2009;29(6):1725–1748. doi:10.1148/rg.296095515',
+ 'Grazioli L, Morana G, Kirchin MA, Schneider G. Accurate differentiation of focal nodular hyperplasia from hepatic adenoma at gadobenate dimeglumine-enhanced MR imaging: prospective study. Radiology. 2005;236(1):166–177.',
+ 'Grazioli L, Bondioni MP, Haradome H, et al. Hepatocellular adenoma and focal nodular hyperplasia: value of gadoxetic acid-enhanced MR imaging in differential diagnosis. Radiology. 2012;262(2):520–529.',
+ 'Kitao A, Zen Y, Matsui O, et al. Hepatocellular carcinoma: signal intensity at gadoxetic acid-enhanced MR imaging—correlation with molecular transporters and histopathologic features. Radiology. 2010;256(3):817–826. doi:10.1148/radiol.10092214',
+ 'Davenport MS, Viglianti BL, Al-Hawary MM, et al. Comparison of acute transient dyspnea after intravenous administration of gadoxetate disodium and gadobenate dimeglumine: effect on arterial phase image quality. Radiology. 2013;266(2):452–461. doi:10.1148/radiol.12120826',
+ 'Hope TA, Fowler KJ, Sirlin CB, et al. Hepatobiliary agents and their role in LI-RADS. Abdom Imaging. 2015;40(3):613–625. doi:10.1007/s00261-014-0227-5',
+ 'Hussain SM, Reinhold C, Mitchell DG. Cirrhosis and lesion characterization at MR imaging. RadioGraphics. 2009;29(6):1637–1652.',
+ 'Katabathina VS, Menias CO, Shanbhogue AK, et al. Genetics and imaging of hepatocellular adenomas: 2011 update. RadioGraphics. 2011;31(6):1529–1543. doi:10.1148/rg.316115527',
+ 'Chernyak V, Fowler KJ, Kamaya A, et al. Liver Imaging Reporting and Data System (LI-RADS) version 2018: imaging of hepatocellular carcinoma in at-risk patients. Radiology. 2018;289(3):816–830.'
+];
+/* ---------------- state ---------------- */
+const S={mod:'mri',seq:'t1',bg:'normal',type:'fnh',var:'scar',multi:false,t:35,lab:true,playing:false,drill:null,unknown:false,marks:[],reveal:null,extra:false,clean:false,lockPh:false,lockAg:false,tsm:false,postop:'none',func:'normal'};
+const FUNCS={normal:[1,'Normal liver function'],childA:[0.75,'Cirrhosis, Child-Pugh A'],childBC:[0.45,'Cirrhosis, Child-Pugh B–C'],chol:[0.18,'Cholestasis or high bilirubin']};
+const MAIN={w:432,h:324,x0:-18,y0:-13.5,sc:12};
+let CFG,G,SAMPLE=[],LASTRAW=null,CURVES=null,IDX={liv:[],pv:[],bd:[]};
+const cv=$('#cv'),ctx=cv.getContext('2d'),ov=$('#ov'),octx=ov.getContext('2d');
+const TMAX=7200;
+// slider: first half linear 0–300 s, second half logarithmic 5 min – 2 h
+const v2t=v=>v<=500?v*0.6:300*Math.pow(TMAX/300,(v-500)/500);
+const t2v=t=>t<=300?t/0.6:500+500*Math.log(t/300)/Math.log(TMAX/300);
+const fmtT=t=>t<300?`${Math.round(t)} s`:t<3600?`${Math.floor(t/60)} min${Math.round(t%60)>=30&&t<600?' 30 s':''}`:`${Math.floor(t/3600)} h ${Math.round((t%3600)/60)} min`;
+function phaseKey(t){const tt=t-DLY;if(tt<15)return 'pre';if(tt<27)return 'ea';if(tt<50)return 'la';if(tt<110)return 'pv';
+  if(AG==='gdx')return tt<600?'trans':'hbp';if(AG==='gdb')return tt<600?'del':tt<3600?'late':'hbp';return tt<600?'del':'late';}
+function phName(k){return {pre:'Pre-contrast',ea:'Early arterial',la:'Late arterial',pv:'Portal venous',del:'Delayed (equilibrium)',trans:'Transitional',hbp:'Hepatobiliary',late:AG==='gdb'?'Late (before the hepatobiliary phase)':'Late delayed (no hepatocyte phase)'}[k];}
+function seqNow(){return S.seq;}
+function setFunc(){FUNC=FUNCS[S.func][0];}
+
+function rebuild(){
+  setFunc();applyBg(S.bg);CFG=buildCfg(S.type,S.var,S.bg,S.multi,{postop:S.postop});S.var=CFG.var;
+  G=makeGrid(MAIN.w,MAIN.h,MAIN.x0,MAIN.y0,MAIN.sc,CFG,7);
+  SAMPLE=[];const L=CFG.main;const idx=[];IDX={liv:[],pv:[],bd:[]};
+  for(let k=0;k<G.tis.length;k++){const id=G.tis[k];if(id===12&&k%7===0)IDX.liv.push(k);if(id===8)IDX.pv.push(k);if(id===52)IDX.bd.push(k);
+    if(!LESION_FAMILY.has(id))continue;const i=k%G.w,j=(k/G.w)|0;const [rr]=lesionRR(L,MAIN.x0+(i+.5)/MAIN.sc,MAIN.y0+(j+.5)/MAIN.sc);if(rr<1.08||L.type==='aps')idx.push(k);}
+  const step=Math.max(1,Math.floor(idx.length/500));for(let n=0;n<idx.length;n+=step){const k=idx[n];SAMPLE.push([G.tis[k],G.p1[k],G.p2[k]]);}
+  syncControls();computeCurves();buildMatrix();draw();
+}
+/* ---------------- curves (piecewise time axis) ---------------- */
+const CCOL={a:'#C0392B',p:'#2E6FD8',l:'#B07A12',h:'#E0A526',b:'#2F8F4E',les:'#D0457A',c1:'#E89AB8',c2:'#2E9E8F'};
+function compDefs(){const L=CFG.main;switch(L.type){
+  case 'hem':return [['Filled vascular spaces',K=>K.pool,'c1']];
+  case 'fnh':return L.var==='scar'?[['Central scar',K=>K.scar,'c2']]:[];
+  case 'hcc':return L.var!=='small'?[['Capsule',K=>K.cap,'c2']]:[];
+  case 'met':return [['Rim',K=>L.var==='net'?K.netRim:K.metRim,'c1'],['Core',K=>K.metCore,'c2']];
+  case 'icc':return [['Rim',K=>K.iccRim,'c1'],['Core',K=>K.iccCore,'c2']];
+} return [];}
+function lesionMean(K){if(!SAMPLE.length)return 0;let s=0;for(const [id,p1,p2] of SAMPLE)s+=lesionC(id,p1,p2,K);return s/SAMPLE.length;}
+function computeCurves(){const ts=[];for(let t=0;t<=300;t+=3)ts.push(t);for(let i=1;i<=70;i++)ts.push(300*Math.pow(TMAX/300,i/70));
+  const o={a:[],p:[],l:[],h:[],b:[],les:[],comp:compDefs().map(()=>[])};const cd=compDefs();
+  for(const t of ts){const K=comps(t,CFG.main);o.a.push(K.a);o.p.push(K.p);o.l.push(K.l+K.H);o.h.push(K.H);o.b.push(K.bile*0.5);o.les.push(lesionMean(K));o.comp.forEach((arr,i)=>arr.push(cd[i][1](K)));}
+  CURVES={ts,...o};drawCurve();}
+const CP={l:34,r:10,t:16,b:30,W:460,H:250,ymax:0.8};
+const cx=t=>{const w=(CP.W-CP.l-CP.r)/2;return t<=300?CP.l+(t/300)*w:CP.l+w+Math.log(t/300)/Math.log(TMAX/300)*w;};
+const xinv=x=>{const w=(CP.W-CP.l-CP.r)/2,u=x-CP.l;return u<=w?clamp(u/w*300,0,300):300*Math.pow(TMAX/300,clamp((u-w)/w,0,1));};
+const cy=v=>CP.H-CP.b-(Math.min(v,CP.ymax)/CP.ymax)*(CP.H-CP.t-CP.b);
+function bandsNow(){const b=[[15,27,'#C98A0C','EA'],[27,50,'#C98A0C','LA'],[50,110,'#1F7F95','PV']];
+  if(AG==='gdx')b.push([110,600,'#6B5BA8','Trans.'],[600,TMAX,'#2F8F4E','Hepatobiliary']);
+  else if(AG==='gdb')b.push([110,600,'#6B5BA8','Delayed'],[3600,TMAX,'#2F8F4E','HBP']);
+  else b.push([110,600,'#6B5BA8','Delayed']);return b;}
+function drawCurve(){
+  const sv=$('#curve');let h='';
+  bandsNow().forEach(([a,b,c,n],i)=>{const x1=cx(Math.min(TMAX,a+DLY)),x2=cx(Math.min(TMAX,b+DLY));h+=`<rect x="${x1}" y="${CP.t}" width="${Math.max(0,x2-x1)}" height="${CP.H-CP.t-CP.b}" fill="${c}" opacity="${i===0?0.07:0.12}"/><text x="${(x1+x2)/2}" y="${CP.t-4}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".7">${n}</text>`;});
+  const xm=cx(300);h+=`<line x1="${xm}" x2="${xm}" y1="${CP.t}" y2="${CP.H-CP.b}" stroke="currentColor" opacity=".35" stroke-dasharray="2 3"/>`;
+  for(let v=0;v<=0.8;v+=0.2){h+=`<line x1="${CP.l}" x2="${CP.W-CP.r}" y1="${cy(v)}" y2="${cy(v)}" stroke="currentColor" opacity=".12"/><text x="${CP.l-5}" y="${cy(v)+3}" font-size="10" text-anchor="end" fill="currentColor" opacity=".7">${v.toFixed(1)}</text>`;}
+  for(const [t,l] of [[0,'0'],[60,'60 s'],[120,''],[180,'3 min'],[240,''],[600,'10'],[1200,'20 min'],[3600,'1 h'],[7200,'2 h']])h+=`<text x="${cx(t)}" y="${CP.H-CP.b+14}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".7">${l}</text>`;
+  h+=`<text x="${cx(150)}" y="${CP.H-3}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">first 5 min, linear</text><text x="${cx(1470)}" y="${CP.H-3}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">then logarithmic to 2 h</text>`;
+  h+=`<text transform="translate(10 ${(CP.H-CP.b+CP.t)/2}) rotate(-90)" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".8">contrast (a.u.)</text>`;
+  const path=(arr,col,w,dash)=>`<path d="${arr.map((v,i)=>(i?'L':'M')+cx(CURVES.ts[i]).toFixed(1)+' '+cy(v).toFixed(1)).join('')}" fill="none" stroke="${col}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+  h+=path(CURVES.a,CCOL.a,1.6)+path(CURVES.p,CCOL.p,1.6)+path(CURVES.l,CCOL.l,2.6);
+  if(AG!=='eca')h+=path(CURVES.h,CCOL.h,1.4,'5 3')+path(CURVES.b,CCOL.b,1.6,'2 2');
+  const cd=compDefs();CURVES.comp.forEach((arr,i)=>h+=path(arr,CCOL[cd[i][2]],1.4,'5 3'));
+  h+=path(CURVES.les,CCOL.les,2.8);
+  h+=`<line id="cur" y1="${CP.t}" y2="${CP.H-CP.b}" stroke="currentColor" stroke-width="1.5"/>`;
+  sv.innerHTML=h;
+  const nm=S.unknown?'Lesion (mean)':LSHORT[S.type]+' (mean)';
+  const items=[['Aorta',CCOL.a,''],['Portal vein',CCOL.p,''],['Liver (total)',CCOL.l,'']].concat(AG!=='eca'?[['Hepatocyte uptake',CCOL.h,'dash'],['Bile (×0.5)',CCOL.b,'dash']]:[]).concat([[nm,CCOL.les,'']]).concat(S.unknown?[]:cd.map(c=>[c[0],CCOL[c[2]],'dash']));
+  $('#legend').innerHTML=items.map(([n,c,d])=>`<label><i style="background:${d?`repeating-linear-gradient(90deg,${c} 0 5px,transparent 5px 8px)`:c}"></i>${n}</label>`).join('');
+  moveCursor();
+}
+function moveCursor(){const l=$('#cur');if(l){l.setAttribute('x1',cx(S.t));l.setAttribute('x2',cx(S.t));}}
+(function(){const sv=$('#curve');let drag=false;const go=e=>{const r=sv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*CP.W;setT(xinv(x),true);};
+  sv.addEventListener('pointerdown',e=>{drag=true;sv.setPointerCapture(e.pointerId);go(e);});sv.addEventListener('pointermove',e=>{if(drag)go(e);});sv.addEventListener('pointerup',()=>drag=false);})();
+
+/* ---------------- main view ---------------- */
+function setT(t,forceDyn){S.t=clamp(t,0,TMAX);if(forceDyn&&S.seq!=='t1'){S.seq='t1';syncControls();}draw();}
+function draw(){
+  const seq=seqNow();const r=renderGrid(G,seq,S.t,'mri',{tsm:S.tsm});LASTRAW=r.raw;putGray(ctx,G,r.g);
+  drawOverlay();updateNote();updateReadout(r.raw);moveCursor();updateTimeUI();updateMatrixNow();if(typeof protoCursor==='function')protoCursor();
+}
+const LABELS=[['Aorta',0.9,4.4,3.4,5.9],['IVC',-2.6,3.4,-2.2,5.6],['Portal vein',-2.4,1.1,-0.6,3.0],['Hepatic vein',-6.4,4.6,-9.8,6.2],['Spleen',10.8,5.6,11.0,1.4],['Stomach',6.0,-2.0,6.0,-1.6],['Gallbladder',-3.2,-6.6,-6.4,-9.0],['Kidney',-6.4,7.25,-8.9,10.2],['Kidney',6.4,7.05,8.9,10.2],['Pancreas',4.6,1.7,3.6,-0.4],['Hepatic artery',-1.1,0.45,-1.8,-1.6],['Bile duct',-3.1,-0.2,-6.2,-0.9]];
+function c2o(x,y){const k=ov.width/MAIN.w;return [(x-MAIN.x0)*MAIN.sc*k,(y-MAIN.y0)*MAIN.sc*k];}
+function drawOverlay(){
+  octx.clearRect(0,0,ov.width,ov.height);const fk=Math.min(1.45,Math.max(1,10.5*ov.width/(28*(ov.clientWidth||ov.width))));octx.font=`600 ${Math.round(28*fk)}px "Instrument Sans",system-ui,sans-serif`;octx.lineWidth=2;
+  const txt=(s,x,y,c)=>{octx.strokeStyle='rgba(0,0,0,.85)';octx.lineWidth=6;octx.strokeText(s,x,y);octx.fillStyle=c;octx.fillText(s,x,y);};
+  if(S.lab&&!S.unknown&&S.drill!=='find'){
+    for(let [n,ax,ay,lx,ly] of LABELS){if(n==='Gallbladder'&&S.postop!=='none')n='Collection';const [px,py]=c2o(ax,ay),[tx,ty]=c2o(lx,ly);if(n==='Stomach'){octx.textAlign='center';txt(n,tx,ty,'#9fd3e0');continue;}
+      octx.textAlign='center';octx.strokeStyle='rgba(159,211,224,.8)';octx.lineWidth=2;octx.beginPath();octx.moveTo(px,py);octx.lineTo(tx,ty-(ty>py?22:-8));octx.stroke();txt(n,tx,ty,'#9fd3e0');}
+    const L=CFG.main,[px,py]=c2o(L.cx-L.R*0.75,L.cy-L.R*0.75),[tx,ty]=c2o(L.cx-L.R-1.6,L.cy-L.R-1.4);
+    octx.strokeStyle='#F2C14E';octx.lineWidth=3;octx.beginPath();octx.moveTo(tx+20,ty+8);octx.lineTo(px,py);octx.stroke();octx.textAlign='center';txt(LSHORT[S.type],tx,ty,'#F2C14E');
+  }
+  for(const m of S.marks){const [px,py]=c2o(m[0],m[1]);octx.lineWidth=4;octx.strokeStyle=m[2]?'#6CC08D':'#F07A70';octx.beginPath();if(m[2])octx.arc(px,py,m[3]*MAIN.sc*3+10,0,6.283);else{octx.moveTo(px-12,py-12);octx.lineTo(px+12,py+12);octx.moveTo(px+12,py-12);octx.lineTo(px-12,py+12);}octx.stroke();}
+  const sq=seqNow(),agn=S.lockAg?'unknown agent':AGO().short.toLowerCase();
+  const txtc=`MRI · ${SEQS[sq]}${sq==='t1'?' · '+agn+' · '+phName(phaseKey(S.t)).toLowerCase():''}`;
+  octx.textAlign='left';octx.font=`500 ${Math.round(25*fk)}px "Instrument Sans",system-ui,sans-serif`;txt(txtc,18,36*fk,'#dfe6ea');
+  if(sq==='t1'){octx.textAlign='right';txt(`t = ${fmtT(S.t)}`,ov.width-18,36*fk,'#dfe6ea');}
+  octx.textAlign='left';txt('R',18,ov.height/2,'#9fb0bb');octx.textAlign='right';txt('L',ov.width-18,ov.height/2,'#9fb0bb');
+}
+function noteKey(){const sq=seqNow();return sq==='t1'?phaseKey(S.t):sq;}
+function getNote(type,vr,key){
+  const o=NOTES[type+'.'+vr]||{},b=NOTES[type]||{};
+  const pick=k=>{let n=o[k]||b[k];if(Array.isArray(n))n=n[0];return n;};
+  let n=pick(AG+'.'+key);
+  if(!n&&AG==='gdb'&&key==='del')n=pick('eca.del');
+  if(!n&&(key==='del'))n=pick('del');
+  if(!n)n=pick(key);
+  if(!n)n=GENERIC[AG+'.'+key]||'';
+  return n;
+}
+function updateNote(){
+  if(S.unknown){$('#note').innerHTML='<b>Unknown case.</b> Scrub through the phases, including the late ones, and switch sequences as you would on a workstation, then answer in the drill box.';return;}
+  const key=noteKey();let n=getNote(S.type,S.var,key);let extra='';
+  if(AG==='gdx'&&(key==='ea'||key==='la'))extra=' <span class="hint">Gadoxetate: a quarter of the usual gadolinium dose in a small volume, so the arterial phase is weaker and shorter.</span>';
+  if(S.postop!=='none'&&(key==='hbp'||key==='trans'))extra+=` <span class="hint">${S.postop==='biloma'?'The collection in the gallbladder fossa is filling with excreted contrast: an active bile leak.':'The collection in the gallbladder fossa stays dark while the bile ducts fill: no bile leak.'}</span>`;
+  if(FUNC<0.5&&AG!=='eca'&&key==='hbp')extra+=' <span class="hint">Poor hepatocyte function: weak liver enhancement and little or no biliary excretion. Delay the hepatobiliary phase, or consider an extracellular agent.</span>';
+  $('#note').innerHTML=`<b>${LESDEF[S.type].name}${Object.keys(LESDEF[S.type].vars).length>1?' · '+LESDEF[S.type].vars[S.var]:''}.</b> ${n}${extra}`;
+}
+function meanIdx(raw,arr){if(!arr.length)return 0;let s=0;for(const k of arr)s+=raw[k];return s/arr.length;}
+function updateReadout(raw){
+  const c=lesionContrast(G,raw,'mri');let h='';
+  if(c){let word,cls;const th=0.06;if(c.rel>th){word='hyperintense';cls='g1';}else if(c.rel<-th){word='hypointense';cls='g2';}else{word='isointense';cls='g0';}
+    h+=`Lesion compared with the adjacent liver: <b class="${cls}">${word}</b> <span class="hint">${c.rel>0?'+':''}${Math.round(c.rel*100)}%</span>`;}
+  if(seqNow()==='t1'&&S.t-DLY>=110){const liv=meanIdx(raw,IDX.liv),pv=meanIdx(raw,IDX.pv),bd=meanIdx(raw,IDX.bd);const r=liv/Math.max(.01,pv);
+    const ok=r>=1.5,mid=r>1.12&&!ok,bok=bd>liv*0.85;
+    h+=`<br>Liver versus portal vein: <b class="${ok?'g0':mid?'g1':'g2'}">${ok?'clearly brighter':mid?'slightly brighter':'not brighter'}</b> <span class="hint">(${r.toFixed(2)}×)</span> · bile ducts: <b class="${bok?'g0':''}">${bok?'opacified':'not opacified'}</b>`;
+    if(phaseKey(S.t)==='hbp'||(AG!=='eca'&&S.t-DLY>=600))h+=`<br><span class="hint">${ok?'Adequate hepatobiliary phase: the liver is clearly brighter than the hepatic vessels.':'Not yet an adequate hepatobiliary phase: the liver is not clearly brighter than the vessels.'}</span>`;}
+  $('#ro').innerHTML=h;
+}
+function updateTimeUI(){
+  $('#t').value=t2v(S.t);const dyn=seqNow()==='t1';
+  $('#tread').innerHTML=dyn?`${fmtT(S.t)} · ${phName(phaseKey(S.t))}`:`<span style="color:#9fb0bb">${SEQS[S.seq]}: no time axis</span>`;
+  $('#t').style.opacity=dyn?1:.45;
+  $$('#phb button[data-t]').forEach(b=>{const v=+b.dataset.t;b.setAttribute('aria-pressed',dyn&&Math.abs(S.t-(v+(v?DLY:0)))<1);b.disabled=S.lockPh;b.style.opacity=S.lockPh?.4:1;});
+  const b3=$('#phb button[data-t="180"]');if(b3)b3.textContent=AG==='gdx'?'3 min (transitional)':'3 min (delayed)';
+  const pb=$('#pbar');const segs=[[0,15,'#3a4652','Pre'],[15,50,'#E8B23A','Art'],[50,110,'#4FB6CC','PV']].concat(AG==='gdx'?[[110,600,'#9C8FD6','Transitional'],[600,TMAX,'#6CC08D','Hepatobiliary']]:AG==='gdb'?[[110,600,'#9C8FD6','Delayed'],[600,3600,'#5d6b78','Late'],[3600,TMAX,'#6CC08D','HBP']]:[[110,600,'#9C8FD6','Delayed'],[600,TMAX,'#5d6b78','Late (no hepatocyte phase)']]);
+  pb.innerHTML=segs.map(([a,b,c,n],i)=>{const x1=i===0?0:t2v(Math.min(TMAX,a+DLY))/10,x2=i===segs.length-1?100:t2v(Math.min(TMAX,b+DLY))/10;return `<span style="left:${x1}%;width:${x2-x1}%;background:${c}">${n}</span>`;}).join('')+`<span style="left:calc(${t2v(S.t)/10}% - 1px);width:2px;background:#fff;padding:0"></span>`;
+}
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect();const i=Math.floor((e.clientX-r.left)/r.width*MAIN.w),j=Math.floor((e.clientY-r.top)/r.height*MAIN.h);
+  const x=MAIN.x0+(i+.5)/MAIN.sc,y=MAIN.y0+(j+.5)/MAIN.sc;
+  if(S.drill==='find'){drillFindClick(x,y);return;}
+  const k=j*MAIN.w+i,id=G.tis[k];let nm=TNAME[id]||'Tissue';if(S.unknown&&LESION_FAMILY.has(id))nm='Lesion';
+  const v=LASTRAW?LASTRAW[k]:0;const sq=seqNow();
+  const val=sq==='adc'?`ADC ≈ ${v.toFixed(2)} × 10⁻³ mm²/s`:`signal ${v.toFixed(2)} (a.u.)`;
+  let extra='';if(sq==='t1'&&id){const K=comps(S.t,CFG.main),C=lesionC(id,G.p1[k],G.p2[k],K);extra=` <span class="hint">· Contrast now: ${C.toFixed(2)} a.u.${AG!=='eca'&&[12,33,35,45,49,51].includes(id)?`, of which inside hepatocytes ${(id===12?K.H:(id===51?K.H:K.u*K.H)).toFixed(2)}`:''}</span>`;}
+  $('#insp').innerHTML=`<b>${nm}</b> · ${val}${extra}`;
+});
+/* fixed-height note */
+function sizeNote(){const n=$('#note');const m=n.cloneNode(false);m.removeAttribute('id');m.style.cssText=`position:absolute;visibility:hidden;left:-9999px;top:0;min-height:0;height:auto;width:${n.offsetWidth}px`;document.body.appendChild(m);
+  const tail=' <span class="hint">Gadoxetate: a quarter of the usual gadolinium dose in a small volume, so the arterial phase is weaker and shorter.</span> <span class="hint">Poor hepatocyte function: weak liver enhancement and little or no biliary excretion. Delay the hepatobiliary phase, or consider an extracellular agent.</span>';let mx=0;const ag0=AG;
+  for(const ag of ['eca','gdx','gdb']){AG=ag;for(const k of LORDER){for(const v of Object.keys(LESDEF[k].vars)){for(const key of ['pre','ea','la','pv','del','trans','late','hbp','t2','dwi','adc','ip','op']){
+    m.innerHTML=`<b>${LESDEF[k].name} · ${LESDEF[k].vars[v]}.</b> ${getNote(k,v,key)}${tail}`;mx=Math.max(mx,m.offsetHeight);}}}}
+  AG=ag0;m.remove();n.style.minHeight=n.style.height=mx+'px';}
+let rsT=0;window.addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(sizeNote,150);});
+/* ---------------- controls ---------------- */
+function seg(id,key,after){$$(id+' button').forEach(b=>b.onclick=()=>{if(b.disabled)return;S[key]=b.dataset.v;after?after():0;syncControls();});}
+seg('#seq','seq',()=>draw());
+seg('#bg','bg',()=>{if(S.bg==='cirrhotic'&&S.func==='normal')S.func='childA';if(S.bg!=='cirrhotic'&&S.func.startsWith('child'))S.func='normal';rebuild();});
+$$('#agent button').forEach(b=>b.onclick=()=>{if(S.lockAg)return;AG=b.dataset.v;if(AG!=='gdx')S.tsm=false;syncControls();computeCurves();buildMatrix();draw();if(typeof drawProto==='function')drawProto();});
+function syncControls(){
+  $$('#seq button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.seq));
+  $$('#bg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.bg));
+  $$('#agent button').forEach(b=>{b.setAttribute('aria-pressed',!S.lockAg&&b.dataset.v===AG);b.disabled=S.lockAg;});
+  const ls=$('#les');if(!ls.options.length)LORDER.forEach(k=>ls.add(new Option(LESDEF[k].name,k)));{const q=ls.querySelector('option[value="?"]');if(S.unknown){if(!q)ls.add(new Option('Unknown','?'));ls.value='?';}else{if(q)q.remove();ls.value=S.type;}}ls.disabled=S.unknown;
+  const vs=$('#var');vs.innerHTML='';const vv=LESDEF[S.type].vars;Object.keys(vv).forEach(k=>vs.add(new Option(vv[k],k)));vs.value=S.var;vs.disabled=S.unknown||Object.keys(vv).length<2;
+  vs.parentElement.style.visibility=S.unknown?'hidden':'visible';
+  $('#multiL').style.visibility=(S.type!=='met'||S.unknown)?'hidden':'visible';$('#multi').checked=S.multi;
+  $('#func').value=S.func;$('#postop').value=S.postop;$('#tsm').checked=S.tsm;$('#tsm').disabled=AG!=='gdx';$('#tsmL').style.opacity=AG==='gdx'?1:.45;
+  $('#oLab').checked=S.lab;$('#dly').value=DLY;$('#dlyo').textContent=DLY+' s';
+  $('#play').textContent=S.playing?'❚❚ Pause':'▶ Play';
+  const ai=$('#agInfo');if(ai)ai.innerHTML=S.lockAg?'<span class="hint">Agent hidden for this drill.</span>':AGINFO[AG];
+}
+$('#les').onchange=e=>{S.type=e.target.value;S.var=Object.keys(LESDEF[S.type].vars)[0];S.multi=false;if(S.type==='dn'||S.type==='hcc'){if(S.bg!=='cirrhotic'){S.bg='cirrhotic';S.func='childA';}}rebuild();};
+$('#var').onchange=e=>{S.var=e.target.value;rebuild();};
+$('#multi').onchange=e=>{S.multi=e.target.checked;rebuild();};
+$('#func').onchange=e=>{S.func=e.target.value;setFunc();computeCurves();buildMatrix();draw();};
+$('#postop').onchange=e=>{S.postop=e.target.value;rebuild();};
+$('#tsm').onchange=e=>{S.tsm=e.target.checked;draw();};
+$('#oLab').onchange=e=>{S.lab=e.target.checked;draw();};
+$('#t').oninput=e=>setT(v2t(+e.target.value),true);
+$$('#phb button[data-t]').forEach(b=>b.onclick=()=>{const v=+b.dataset.t;setT(v+(v?DLY:0),true);});
+$('#dly').oninput=e=>{DLY=+e.target.value;$('#dlyo').textContent=DLY+' s';computeCurves();buildMatrix();draw();};
+let lastF=0;
+function tick(ts){if(!S.playing)return;const dt=lastF?(ts-lastF)/1000:0;lastF=ts;let v=t2v(S.t)+dt*40;if(v>=1000){v=1000;S.playing=false;syncControls();}S.t=v2t(v);draw();if(S.playing)requestAnimationFrame(tick);}
+$('#play').onclick=()=>{S.playing=!S.playing;if(S.playing){if(S.t>=TMAX-1)S.t=0;if(S.seq!=='t1')S.seq='t1';lastF=0;requestAnimationFrame(tick);}syncControls();};
+
+/* ---------------- matrix ---------------- */
+let MG={},MCELLS=[];
+function matrixRows(){const dyn=[['Pre','t1',0],['Arterial 35 s','t1',35],['Portal venous 70 s','t1',70],[AG==='gdx'?'3 min transitional':'3 min delayed','t1',180],['20 min','t1',1200],['90 min','t1',5400]];
+  const st=[['T2 FS','t2',0],['DWI b800','dwi',0]];
+  return (S.extra?st:[]).concat(dyn).concat([['Now','now',0]]);}
+function buildMatrix(){
+  MG={};for(const k of LORDER){const vr=k===S.type?S.var:Object.keys(LESDEF[k].vars)[0];const bg=(k==='dn'||k==='hcc')?'cirrhotic':S.bg;const cfg=buildCfg(k,vr,bg,false,{});const L=cfg.main;
+    const fov=clamp(L.R*2*2.3,4.8,11.5),N=96;MG[k]=makeGrid(N,N,L.cx-fov/2,L.cy-fov/2,N/fov,cfg,11+LORDER.indexOf(k));}
+  const rows=matrixRows(),tb=$('#mtx');MCELLS=[];
+  let h='<tr><th></th>'+LORDER.map(k=>`<th>${LSHORT[k]}</th>`).join('')+'</tr>';
+  rows.forEach((r,ri)=>{h+=`<tr data-r="${ri}"><th class="rowh">${r[0]==='Now'?'<span id="nowLab">Now</span>':r[0]}</th>`+LORDER.map((k,ci)=>`<td data-r="${ri}" data-c="${ci}"><canvas width="96" height="96" title="${LESDEF[k].name}, ${r[0]}"></canvas></td>`).join('')+'</tr>';});
+  tb.innerHTML=h;
+  $$('#mtx td').forEach(td=>{const ri=+td.dataset.r,ci=+td.dataset.c;MCELLS.push({td,ri,ci,cx:td.querySelector('canvas').getContext('2d')});td.onclick=()=>matrixPick(ri,ci);});
+  renderMatrix(false);
+  $('#mInfo').textContent=`${S.lockAg?'Agent hidden':AGO().name} · ${FUNCS[S.func][1].toLowerCase()} · DN and HCC columns in a cirrhotic liver`;
+}
+function renderTile(c,row){const k=LORDER[c.ci],Gm=MG[k];let seq=row[1],t=row[2];if(seq==='now'){seq=seqNow();t=S.t;}else if(seq==='t1'&&t)t+=DLY;
+  applyBg(Gm.cfg.bg);const r=renderGrid(Gm,seq,t,'mri',{clean:S.clean,blur:1});putGray(c.cx,Gm,r.g);applyBg(S.bg);}
+function renderMatrix(onlyNow){const rows=matrixRows();for(const c of MCELLS){const row=rows[c.ri];if(onlyNow&&row[1]!=='now')continue;renderTile(c,row);}applyReveal();highlightRow();}
+function updateMatrixNow(){if(!MCELLS.length)return;renderMatrix(true);const nl=$('#nowLab');if(nl)nl.textContent=seqNow()==='t1'?`Now ${fmtT(S.t)}`:`Now (${SEQS[S.seq].split(' ')[0]})`;}
+function highlightRow(){const rows=matrixRows(),sq=seqNow(),tt=S.t-DLY;
+  let want=null;if(sq==='t1'){const opts=[0,35,70,180,1200,5400];let best=1e9;for(const o of opts){const d=Math.abs(Math.log((tt+20)/(o+20)));if(d<best){best=d;want=o;}}}
+  $$('#mtx tr[data-r]').forEach(tr=>{const r=rows[+tr.dataset.r];const cur=sq==='t1'?(r[1]==='t1'&&r[2]===want):(r[1]===sq);tr.classList.toggle('cur',cur);tr.classList.toggle('now',r[1]==='now');});}
+function applyReveal(){for(const c of MCELLS)c.td.classList.toggle('hid',S.reveal!=null&&c.ri>=S.reveal);
+  const n=matrixRows().length;$('#mBuild').textContent=S.reveal==null?'Build it row by row':S.reveal>=n?'Start again':`Reveal next row (${S.reveal}/${n})`;}
+$('#mBuild').onclick=()=>{const n=matrixRows().length;if(S.reveal==null||S.reveal>=n)S.reveal=0;else S.reveal++;applyReveal();};
+$('#mExtra').onchange=e=>{S.extra=e.target.checked;S.reveal=null;buildMatrix();};
+$('#mClean').onchange=e=>{S.clean=e.target.checked;renderMatrix(false);};
+function matrixPick(ri,ci){if(S.drill)return;const row=matrixRows()[ri];const k=LORDER[ci];
+  if(k!==S.type){S.type=k;S.var=Object.keys(LESDEF[k].vars)[0];S.multi=false;}
+  if(k==='dn'||k==='hcc'){S.bg='cirrhotic';if(S.func==='normal')S.func='childA';}
+  if(row[1]==='t1'){S.seq='t1';S.t=row[2]+(row[2]?DLY:0);}else if(row[1]!=='now'){S.seq=row[1];}
+  rebuild();goViewer('the matrix');}
+/* ---------------- presets ---------------- */
+function applyPreset(o,scroll,keep){
+  if(S.drill&&!keep)exitDrill(true);
+  S.type=o.type;S.var=o.var||Object.keys(LESDEF[o.type].vars)[0];AG=o.ag||AG;S.seq=o.seq||'t1';S.t=o.t!=null?o.t+(o.t?DLY:0):S.t;
+  S.bg=o.bg||(o.type==='dn'||o.type==='hcc'?'cirrhotic':'normal');S.func=o.func||(S.bg==='cirrhotic'?'childA':'normal');
+  S.postop=o.postop||'none';S.multi=!!o.multi;S.tsm=!!o.tsm;PAG=AG;
+  rebuild();drawProto();if(scroll!==false)goViewer(typeof scroll==='string'?scroll:null);
+}
+function mkTopics(){const h=$('#topics');h.innerHTML='';
+  TOPICS.forEach(tp=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<h3>${tp.t}</h3><p>${tp.p}</p><div class="row"></div>`;
+    const r=d.querySelector('.row');tp.b.forEach(([n,o])=>{const b=document.createElement('button');b.className='mini';b.textContent=n;b.onclick=()=>applyPreset(o,'key questions');r.appendChild(b);});h.appendChild(d);});}
+/* ---------------- mechanism diagram ---------------- */
+let MSEL=0;
+function mkMech(){const h=$('#mechBtns');h.innerHTML='';MECH.forEach((m,i)=>{const b=document.createElement('button');b.textContent=m[0];b.setAttribute('aria-pressed',i===MSEL);b.onclick=()=>{MSEL=i;mkMech();};h.appendChild(b);});drawMech();}
+function drawMech(){
+  const [name,oatp,mrp2,mrp3,txt]=MECH[MSEL];const none=oatp===0&&mrp2===0;
+  const sig=none?0:Math.min(1.3,oatp*(1.15-0.3*mrp2-0.3*mrp3)),ref=0.8;
+  const w=v=>(2+11*v).toFixed(1);
+  const cell=none?'none':`rgba(232,178,58,${(0.12+0.6*Math.min(1,sig/1.3)).toFixed(2)})`;
+  let s=`<defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>`;
+  s+=`<rect x="20" y="16" width="470" height="52" rx="10" fill="#C0392B" opacity=".18"/><text x="34" y="47" font-size="14" fill="currentColor">Sinusoid (blood, gadoxetate)</text>`;
+  for(let i=0;i<14;i++)s+=`<circle cx="${210+i*19}" cy="${30+(i%3)*12}" r="3.2" fill="#C0392B" opacity=".75"/>`;
+  s+=`<rect x="120" y="104" width="330" height="112" rx="16" fill="${cell}" stroke="currentColor" stroke-opacity=".5" ${none?'stroke-dasharray="6 5"':''}/>`;
+  s+=`<text x="285" y="${none?166:136}" font-size="14" text-anchor="middle" fill="currentColor">${none?'No hepatocytes':'Hepatocyte'}</text>`;
+  if(!none){const n=Math.round(sig*10);for(let i=0;i<n;i++)s+=`<circle cx="${160+(i%7)*42}" cy="${160+Math.floor(i/7)*26}" r="3.6" fill="#B07A12"/>`;}
+  s+=`<rect x="20" y="246" width="470" height="40" rx="10" fill="#2F8F4E" opacity=".2"/><text x="34" y="271" font-size="14" fill="currentColor">Bile canaliculus</text>`;
+  const arr=(x,y1,y2,v,col)=>{const dir=y2>y1?1:-1,hy=y2-dir*12,sw=2+10*v;return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${hy}" stroke="${col}" stroke-width="${sw.toFixed(1)}"/><path d="M${x-8-sw/3},${hy} L${x+8+sw/3},${hy} L${x},${y2} z" fill="${col}"/>`;};
+  if(!none){
+    s+=arr(180,70,102,oatp,'#C0392B')+`<text x="${180-16}" y="90" font-size="12.5" text-anchor="end" fill="currentColor">OATP1B1/B3 ×${oatp.toFixed(2)}</text>`;
+    s+=arr(285,218,244,mrp2,'#2F8F4E')+`<text x="305" y="236" font-size="12.5" fill="currentColor">MRP2 ×${mrp2.toFixed(2)}</text>`;
+    s+=arr(400,102,72,mrp3,'#7A5BC4')+`<text x="418" y="92" font-size="12.5" fill="currentColor">MRP3 ×${mrp3.toFixed(2)}</text>`;}
+  const bh=180,by=40,val=Math.min(1.3,sig)/1.3;
+  s+=`<text x="560" y="28" font-size="12.5" text-anchor="middle" fill="currentColor">HBP signal</text><rect x="535" y="${by}" width="50" height="${bh}" rx="6" fill="none" stroke="currentColor" stroke-opacity=".4"/>`;
+  s+=`<rect x="537" y="${by+bh-2-(bh-4)*val}" width="46" height="${(bh-4)*val}" rx="4" fill="#E8B23A"/>`;
+  const ry=by+bh-2-(bh-4)*ref/1.3;s+=`<line x1="528" x2="592" y1="${ry}" y2="${ry}" stroke="currentColor" stroke-dasharray="4 3"/><text x="598" y="${ry+4}" font-size="11.5" fill="currentColor">liver</text>`;
+  s+=`<text x="560" y="${by+bh+22}" font-size="12.5" text-anchor="middle" fill="currentColor">${sig>ref*1.08?'hyper':sig>ref*0.85?'iso':'hypo'}</text>`;
+  $('#mechSvg').innerHTML=s;$('#mechTxt').innerHTML=`<b>${name}.</b> ${txt}`;
+}
+/* ---------------- protocol timeline ---------------- */
+let PAG='gdx';
+$$('#pAgent button').forEach(b=>b.onclick=()=>{PAG=b.dataset.v;drawProto();});
+function drawProto(){
+  $$('#pAgent button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===PAG));
+  const P=PROTO[PAG],x0=180,sc=18,rh=24,y0=30;const X=m=>x0+m*sc;
+  let s='';for(let m=0;m<=30;m+=5){s+=`<line x1="${X(m)}" x2="${X(m)}" y1="${y0-8}" y2="${y0+P.rows.length*rh+4}" stroke="currentColor" opacity=".12"/><text x="${X(m)}" y="${y0-12}" font-size="11" text-anchor="middle" fill="currentColor" opacity=".75">${m} min</text>`;}
+  const col={s:'#4FB6CC',d:'#E8B23A',h:'#6CC08D'};
+  P.rows.forEach(([n,st,du,k],i)=>{const y=y0+i*rh;s+=`<text x="${x0-10}" y="${y+15}" font-size="12.5" text-anchor="end" fill="currentColor">${n}</text><rect x="${X(st)}" y="${y+3}" width="${Math.max(5,du*sc)}" height="${rh-8}" rx="4" fill="${col[k]}"/>`;});
+  const yb=y0+P.rows.length*rh+4;
+  s+=`<line x1="${X(P.inj)}" x2="${X(P.inj)}" y1="${y0-6}" y2="${yb}" stroke="#C0392B" stroke-width="2"/><text x="${X(P.inj)+4}" y="${yb+14}" font-size="11.5" fill="#C0392B">injection</text>`;
+  s+=`<text x="${X(P.end)}" y="${yb+14}" font-size="11.5" text-anchor="middle" fill="currentColor" opacity=".8">end ≈ ${P.end} min</text>`;
+  if(P.late)s+=`<text x="${X(20)}" y="${yb+34}" font-size="12.5" fill="currentColor">→ ${P.late}</text>`;
+  s+=`<line id="pcur" x1="0" x2="0" y1="${y0-6}" y2="${yb}" stroke="#F2C14E" stroke-width="2.5" visibility="hidden"/>`;
+  s+=`<g font-size="11.5" fill="currentColor"><rect x="${x0}" y="${yb+44}" width="12" height="10" fill="${col.s}"/><text x="${x0+16}" y="${yb+53}">non-contrast or post-contrast T2/DWI</text><rect x="${x0+250}" y="${yb+44}" width="12" height="10" fill="${col.d}"/><text x="${x0+266}" y="${yb+53}">dynamic T1</text><rect x="${x0+360}" y="${yb+44}" width="12" height="10" fill="${col.h}"/><text x="${x0+376}" y="${yb+53}">hepatobiliary T1</text></g>`;
+  $('#protoSvg').innerHTML=s;$('#protoTips').innerHTML=P.tips.map(t=>`<li>${t}</li>`).join('');protoCursor();
+}
+function protoCursor(){const l=document.getElementById('pcur');if(!l)return;const P=PROTO[PAG];const m=P.inj+(S.t-DLY)/60;const x=180+m*18;
+  if(PAG===AG&&!S.lockAg&&m<=30.5&&seqNow()==='t1'){l.setAttribute('x1',x);l.setAttribute('x2',x);l.setAttribute('visibility','visible');}else l.setAttribute('visibility','hidden');}
+/* ---------------- cases ---------------- */
+function mkCases(){if(!SHOW_CASES)return;const host=$('#cases2');host.innerHTML='';
+  CASES2.forEach(([title,imgs])=>{const d=document.createElement('div');d.className='lcard';
+    d.innerHTML=`<h3>${title}</h3><div class="strip">${imgs.map(([f,cap])=>`<figure data-src="${CASEDIR}${f}.jpg" data-cap="${title}: ${cap}" class="${f.startsWith('fig-')?'wide':''}"><img src="${CASEDIR}${f}.jpg" alt="${title}, ${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('')}</div>`;host.appendChild(d);});
+  host.querySelectorAll('figure[data-src]').forEach(f=>f.onclick=()=>{$('#lbImg').src=f.dataset.src;$('#lbImg').alt=f.dataset.cap;$('#lbCap').textContent=f.dataset.cap;$('#lb').hidden=false;});}
+$('#lb').onclick=()=>$('#lb').hidden=true;document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#lb').hidden=true;});
+/* ---------------- drills ---------------- */
+const DONE=new Set();let FB='';
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function setCase(o,extra){applyPreset(o,false,true);Object.assign(S,extra||{});syncControls();computeCurves();buildMatrix();draw();}
+const sigOf=(t1,C)=>1-Math.exp(Math.log(1-t1)-6*C);
+function hbpRatio(t){const K=comps(t,null);return sigOf(PROP[12].t1,K.l+K.H)/sigOf(0.18,K.p);}
+function firstAdequate(){for(let v=t2v(110+DLY);v<=1000;v+=2){const t=v2t(v);if(hbpRatio(t)>=1.5)return t;}return null;}
+const DR=[
+ {id:'fnhad',t:'FNH or adenoma?',s:'Use the hepatobiliary phase',
+  setup(){const c=pick([['fnh','scar'],['fnh','noscar'],['aden','hnf'],['aden','inflam']]);setCase({type:c[0],var:c[1],ag:'gdx',t:35},{unknown:true});},
+  task:'A young woman with a hypervascular liver lesion, imaged with gadoxetate. Look through the phases, including the hepatobiliary phase, and decide.',choices:()=>['FNH','Adenoma'],
+  ans:()=>S.type==='fnh'?'FNH':'Adenoma',why:()=>S.type==='fnh'?'Iso- to hyperintense in the hepatobiliary phase, with a dark scar if present.':(S.var==='hnf'?'Hypointense in the hepatobiliary phase, and it also drops on opposed-phase (HNF1α).':'Hypointense in the hepatobiliary phase and T2 bright with a rim (inflammatory adenoma).')},
+ {id:'find',t:'Find every metastasis',s:'Hepatobiliary phase, gadoxetate',
+  setup(){setCase({type:'met',var:'crc',ag:'gdx',t:1200,multi:true},{lab:false,marks:[]});},
+  task:'Colorectal cancer, preoperative mapping. Click the center of every metastasis on this hepatobiliary-phase image. Some are under 1 cm.'},
+ {id:'dn',t:'Which nodule is this?',s:'Cirrhosis, gadoxetate',
+  setup(){const c=pick([['dn','lgdn'],['dn','hgdn'],['dn','nin'],['hcc','classic']]);setCase({type:c[0],var:c[1],ag:'gdx',t:35,bg:'cirrhotic'},{unknown:true});},
+  task:'A new nodule in a cirrhotic liver. Use the arterial, portal venous and hepatobiliary phases.',choices:()=>['Low-grade dysplastic nodule','Hypovascular, HBP-hypointense nodule (HGDN or early HCC)','Nodule-in-nodule','Progressed HCC'],
+  ans:()=>({'dn.lgdn':'Low-grade dysplastic nodule','dn.hgdn':'Hypovascular, HBP-hypointense nodule (HGDN or early HCC)','dn.nin':'Nodule-in-nodule','hcc.classic':'Progressed HCC'})[S.type+'.'+S.var],
+  why:()=>getNote(S.type,S.var,'gdx.hbp')||getNote(S.type,S.var,'hbp')},
+ {id:'pseudo',t:'Washout or pseudo-washout?',s:'The transitional-phase trap',
+  setup(){const c=pick([['hem','classic','normal'],['hem','flash','normal'],['hcc','classic','cirrhotic'],['hcc','small','cirrhotic']]);setCase({type:c[0],var:c[1],ag:'gdx',t:180,bg:pick(['normal','cirrhotic'])},{unknown:true});},
+  task:'Three minutes after gadoxetate, this lesion is darker than liver. Look at the earlier phases and at T2, then decide.',choices:()=>['True washout (HCC)','Pseudo-washout (hemangioma)'],
+  ans:()=>S.type==='hcc'?'True washout (HCC)':'Pseudo-washout (hemangioma)',why:()=>S.type==='hcc'?'It is already darker than liver in the portal venous phase, and only mildly T2 bright.':'It matched the blood pool in the arterial and portal venous phases and is very T2 bright; it darkens only because the liver brightens.'},
+ {id:'hbptime',t:'When is the hepatobiliary phase adequate?',s:'Impaired liver function',
+  setup(){setCase({type:'met',var:'crc',ag:'gdx',t:70,func:pick(['normal','childA','childBC','chol']),bg:'cirrhotic'},{lockPh:true});this.tstar=firstAdequate();},
+  task:'Liver function varies from patient to patient, and the phase buttons are off. Move the time scrubber to the earliest time when the hepatobiliary phase is adequate (the readout under the curves says when the liver is clearly brighter than the portal vein), then press Check. If it never becomes adequate within 2 hours, choose that answer instead.',
+  choices:()=>['Never adequate within 2 hours'],ans:()=>firstAdequate()==null?'Never adequate within 2 hours':'__',
+  why:()=>'Liver function is too poor: the liver never clearly outshines the vessels. Interpret with caution, or use an extracellular agent next time.',
+  check(){const ts=firstAdequate();const r=hbpRatio(S.t);if(ts==null)return [false,'The liver never becomes clearly brighter than the vessels here. Use the "Never adequate" answer.'];
+    const ok=seqNow()==='t1'&&r>=1.5&&S.t<=ts*1.5+60;const rel=ts<900?'earlier than':ts<=1500?'close to':'later than';return [ok,ok?`Yes: adequate from about ${fmtT(ts)} (liver ${r.toFixed(2)}× portal vein), ${rel} the usual 20 minutes for ${FUNCS[S.func][1].toLowerCase()}.`:r<1.5?`Not yet adequate: liver only ${r.toFixed(2)}× portal vein.`:`Adequate, but later than needed: it was already adequate at about ${fmtT(ts)}.`];}},
+ {id:'leak',t:'Bile leak or seroma?',s:'After cholecystectomy',
+  setup(){setCase({type:'cyst',var:'simple',ag:'gdx',t:70,postop:pick(['biloma','seroma'])},{unknown:true});},
+  task:'Pain and a fluid collection in the gallbladder fossa after cholecystectomy. Scrub to the hepatobiliary phase and decide.',choices:()=>['Bile leak (biloma)','Seroma'],
+  ans:()=>S.postop==='biloma'?'Bile leak (biloma)':'Seroma',why:()=>S.postop==='biloma'?'Excreted gadoxetate fills the collection: it communicates with the bile ducts.':'The bile ducts fill but the collection stays dark.'},
+ {id:'agent',t:'Which agent was injected?',s:'Read the late phases',
+  setup(){const a=pick(['eca','gdx','gdb']);setCase({type:'fnh',var:'scar',ag:a,t:1200},{unknown:true,lockAg:true});},
+  task:'Same FNH, unknown agent. The viewer starts at 20 minutes. Compare liver, vessels and bile ducts, and look later if you need to.',choices:()=>['Extracellular','Gadoxetate','Gadobenate'],
+  ans:()=>({eca:'Extracellular',gdx:'Gadoxetate',gdb:'Gadobenate'})[AG],why:()=>({eca:'Liver and vessels converge and nothing reaches the bile ducts, even at 2 hours.',gdx:'At 20 minutes the liver is bright, the vessels dark and the bile ducts full.',gdb:'At 20 minutes it still looks extracellular; the liver outshines the vessels and the bile ducts fill only at 1–2 hours.'})[AG]},
+ {id:'bright',t:'Bright in the hepatobiliary phase',s:'Not always benign',
+  setup(){const c=pick([['fnh','scar','normal'],['aden','bcat','normal'],['hcc','oatp','cirrhotic']]);setCase({type:c[0],var:c[1],ag:'gdx',t:1200,bg:c[2]},{unknown:true});},
+  task:'This lesion is iso- or hyperintense in the hepatobiliary phase. Use the background liver and the dynamic phases to decide what it is.',choices:()=>['FNH','β-catenin-activated adenoma','OATP-expressing HCC'],
+  ans:()=>({fnh:'FNH',aden:'β-catenin-activated adenoma',hcc:'OATP-expressing HCC'})[S.type],why:()=>({fnh:'Normal liver, a central scar that is dark in the hepatobiliary phase, and no washout.',aden:'Normal liver, no scar; β-catenin upregulates OATP1B3. This subtype has the highest malignant potential.',hcc:'Cirrhotic liver, arterial hyperenhancement with portal venous washout and a capsule: HCC, even though it takes up the agent.'})[S.type]}
+];
+function mkDrills(){$('#drills').innerHTML='';DR.forEach(d=>{const b=document.createElement('button');b.className='drill'+(DONE.has(d.id)?' done':'');b.innerHTML=`${d.t}<small>${d.s}${DONE.has(d.id)?' · solved':''}</small>`;b.setAttribute('aria-pressed',S.drill===d.id);b.onclick=()=>startDrill(d.id);$('#drills').appendChild(b);});}
+function startDrill(id){const d=DR.find(x=>x.id===id);if(S.drill)resetDrillState();S.drill=id;S.playing=false;d.setup();syncControls();computeCurves();buildMatrix();draw();
+  const t=$('#task');t.hidden=false;const ch=d.choices?d.choices():[];
+  t.innerHTML=`<b>${d.t}${/[?.]$/.test(d.t)?"":"."}</b> ${d.task}${ch.length?`<div class="choices" id="chs">${ch.map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div>`:''}<div class="row" style="margin-top:8px">${d.check?'<button class="mini primary" id="chk">Check</button>':''}<button class="mini" id="nxt">New case</button><button class="mini" id="ext">Exit drill</button></div><div id="fb"></div>`;
+  t.querySelectorAll('#chs button').forEach(b=>b.onclick=()=>{t.querySelectorAll('#chs button').forEach(x=>x.setAttribute('aria-pressed',x===b));const ok=b.dataset.c===d.ans();fb(ok,ok?`Correct. ${d.why()}`:'Not quite. Look again at every phase, including the late ones, then try another answer.');if(ok)solved(d.id);});
+  if(d.check)$('#chk').onclick=()=>{const [ok,msg]=d.check();fb(ok,msg);if(ok)solved(d.id);};
+  $('#nxt').onclick=()=>startDrill(id);$('#ext').onclick=()=>exitDrill();mkDrills();
+  if(id==='find')updateFind();
+  hidePill();goViewer();
+}
+function fb(ok,msg){FB=(ok?'ok:':'no:')+msg;const f=$('#fb');if(f)f.innerHTML=`<div class="fb ${ok?'ok':'no'}">${msg}</div>`;}
+function solved(id){DONE.add(id);mkDrills();}
+function resetDrillState(){S.unknown=false;S.lockPh=false;S.lockAg=false;S.marks=[];S.lab=true;}
+function exitDrill(quiet){resetDrillState();S.drill=null;$('#task').hidden=true;FB='';if(!quiet){rebuild();mkDrills();}}
+function updateFind(){const n=CFG.les.length,f=S.marks.filter(m=>m[2]).length,miss=S.marks.filter(m=>!m[2]).length;const t=$('#task');let st=t.querySelector('.fstat');if(!st){st=document.createElement('div');st.className='fstat hint';st.style.marginTop='6px';t.insertBefore(st,t.querySelector('.row'));}st.textContent=`Found ${f} of ${n}${miss?` · ${miss} click${miss>1?'s':''} on normal tissue`:''}`;}
+function drillFindClick(x,y){
+  let hit=-1;CFG.les.forEach((L,i)=>{if(lesionRR(L,x,y)[0]<1.3+0.25/L.R)hit=i;});
+  if(hit>=0){if(!S.marks.some(m=>m[4]===hit)){const L=CFG.les[hit];S.marks.push([L.cx,L.cy,true,L.R,hit]);}}else S.marks.push([x,y,false,0,-1]);
+  drawOverlay();updateFind();const f=S.marks.filter(m=>m[2]).length;
+  if(f===CFG.les.length){const miss=S.marks.filter(m=>!m[2]).length;fb(true,`All ${f} found${miss?` (with ${miss} false-positive click${miss>1?'s':''})`:''}. In the hepatobiliary phase every metastasis is dark against a bright liver, and vessels are dark too, so check that a dark dot is round and not a vessel seen end-on.`);solved('find');}
+  else if(hit<0)fb(false,'That is normal tissue: in the hepatobiliary phase the vessels are dark as well. Follow it on adjacent phases; a vessel connects, a metastasis is round.');
+  else fb(true,`Found one. ${CFG.les.length-f} to go.`);
+}
+/* ---------------- quiz and references ---------------- */
+function mkQuiz(){const h=$('#quiz');h.innerHTML='';QZ.forEach((q,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p><b>${i+1}.</b> ${q.q}</p><div class="opts"></div><div class="ex" hidden></div>`;const op=d.querySelector('.opts');q.o.forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{op.querySelectorAll('button').forEach((x,k)=>{x.disabled=true;if(k===q.a)x.classList.add('right');});if(j!==q.a)b.classList.add('wrong');const ex=d.querySelector('.ex');ex.hidden=false;ex.textContent=(j===q.a?'Correct. ':'Not quite. ')+q.e;};op.appendChild(b);});h.appendChild(d);});}
+$('#refs').innerHTML=REFS.map(r=>`<li>${r}</li>`).join('');
+/* ---------------- init ---------------- */
+$$('#agent button').forEach(b=>{const f=b.onclick;b.onclick=()=>{f();PAG=AG;drawProto();};});
+mkTopics();mkMech();mkCases();mkDrills();mkQuiz();rebuild();drawProto();sizeNote();if(document.fonts)document.fonts.ready.then(sizeNote);
+/* ---------------- section navigation, back links, return pill ---------------- */
+(function(){
+  $$('h2[id]').forEach(h=>{const a=document.createElement('a');a.href='#viewer';a.className='totop';a.textContent='↑ viewer';h.appendChild(a);});
+  const links=$$('#secnav a'),hs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1)));let last=-1;
+  const upd=()=>{let cur=0;hs.forEach((h,i)=>{if(h&&h.getBoundingClientRect().top<120)cur=i;});links.forEach((a,i)=>a.classList.toggle('on',i===cur));
+    if(cur!==last){last=cur;const n=$('#secnav'),on=links[cur];n.scrollTo({left:on.offsetLeft-n.clientWidth/2+on.offsetWidth/2,behavior:'smooth'});}};
+  let tk=0;window.addEventListener('scroll',()=>{if(!tk){tk=1;requestAnimationFrame(()=>{tk=0;upd();pillCheck();});}},{passive:true});upd();
+  links.forEach(a=>a.addEventListener('click',()=>hidePill()));
+})();
+let PILL=null;
+function goViewer(label){const y=window.scrollY;document.getElementById('viewer').scrollIntoView({behavior:'smooth',block:'start'});
+  if(!label)return;let p=$('#backpill');if(!p){p=document.createElement('button');p.id='backpill';p.className='backpill';document.body.appendChild(p);p.onclick=()=>{const t=PILL;hidePill();if(t)window.scrollTo({top:t.y,behavior:'smooth'});};}
+  p.textContent='↓ Back to '+label;p.hidden=false;PILL={y,armed:false};setTimeout(()=>{if(PILL)PILL.armed=true;},900);}
+function hidePill(){PILL=null;const p=$('#backpill');if(p)p.hidden=true;}
+function pillCheck(){if(PILL&&PILL.armed&&Math.abs(window.scrollY-PILL.y)<250)hidePill();}
+/* mini time scrubbers mirror the viewer's scrubber */
+(function(){const main=$('#t');$$('.miniT input').forEach(i=>{i.min=main.min;i.max=main.max;i.step=main.step;i.oninput=e=>{main.value=e.target.value;main.dispatchEvent(new Event('input'));};});
+  const _u=updateTimeUI;updateTimeUI=function(){_u.apply(this,arguments);const tr=$('#tread').textContent;$$('.miniT').forEach(m=>{m.querySelector('input').value=main.value;m.querySelector('output').textContent=tr;});};updateTimeUI();})();
+{let ro=0;window.addEventListener('resize',()=>{clearTimeout(ro);ro=setTimeout(()=>{if(typeof drawOverlay==='function')drawOverlay();},160);});}
+</script>
+</body></html>

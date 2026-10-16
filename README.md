@@ -24,6 +24,9 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 | mr-defecography | MR defecography for pelvic floor weakness | https://claude.ai/artifact/E7kUTeVnJvGz8vixKjKhNV |
 | mri-fistula-in-ano | MRI of fistula-in-ano: anatomy, classification and reporting | https://claude.ai/artifact/J1ScdgcjmVJjAsu4FZvjd8 |
 | prostate-mri-anatomy | Prostate anatomy on MRI: zones, measurements, BPH and treatment changes | https://claude.ai/artifact/14HDbdsaSSdSfHh4Mp1y9X |
+| hepatobiliary-agents | Hepatobiliary contrast agents | https://claude.ai/artifact/AvmQgDjFGmYPohLZg9eMcw |
+| focal-liver-lesions | Focal liver lesions: dynamic enhancement | https://claude.ai/artifact/ABPPBwCKYVt1aBToHCdEJf |
+| hcc-lirads | HCC: from fibrosis to LI-RADS and treatment | https://claude.ai/artifact/SuejPDaoWnjFrSF4t1F7CW |
 
 The repo copies are snapshots taken Oct 1, 2026. The claude.ai artifacts remain
 the originals if you want to regenerate a lesson in chat.
