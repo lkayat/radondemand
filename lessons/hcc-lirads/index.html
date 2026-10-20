@@ -283,7 +283,7 @@ h2 .totop:hover{color:var(--amber)}
 </div>
 
 <h2 id="secD">4. Treatment response (LI-RADS v2024)</h2>
-<p class="read">Since 2024 there are two CT/MRI algorithms: one after nonradiation therapies (ablation, TACE, bland embolization) and one after radiation-based therapies (TARE/Y-90, SBRT). Viability is now any masslike enhancement in any phase; washout is no longer required. Radiation-treated tumors keep enhancing for months, hence the "nonprogressing" category.</p>
+<p class="read">Since 2024 there are two CT/MRI algorithms: one after nonradiation therapies (ablation, TACE, bland embolization) and one after radiation-based therapies (TARE/Y-90, SBRT). Viability is now any masslike enhancement in any phase; washout is no longer required. Radiation-treated tumors keep enhancing for months, hence the "nonprogressing" category. Restricted diffusion and mild–moderate T2 hyperintensity at the same site are optional ancillary features, used at the radiologist's discretion: the base category follows the enhancement, and the lesson shows the category you would reach if you choose to apply the upgrade. After radiation, only features that are new or increased over time can be used.</p>
 <div class="sec">
   <div class="ctrls">
     <span class="seg sm" id="trMode"><button data-v="nonrad">Nonradiation (ablation, TACE)</button><button data-v="rad">Radiation (TARE, SBRT)</button></span>
@@ -291,12 +291,13 @@ h2 .totop:hover{color:var(--amber)}
     <label id="trChgL">Over time <span class="seg sm" id="trChg"><button data-v="new">New or increasing</button><button data-v="stable">Stable or decreasing</button></span></label>
   </div>
   <div class="ctrls">
-    <label><input type="checkbox" id="trDwi"> Restricted diffusion at that site</label>
-    <label><input type="checkbox" id="trT2"> Mild–moderate T2 hyperintensity at that site</label>
+    <label>Restricted diffusion at that site <span class="seg sm" id="trDwi"><button data-v="no">Absent</button><button data-v="yes">Present</button><button data-v="new">New or increased</button></span></label>
+    <label>Mild–moderate T2 hyperintensity at that site <span class="seg sm" id="trT2"><button data-v="no">Absent</button><button data-v="yes">Present</button><button data-v="new">New or increased</button></span></label>
     <label><input type="checkbox" id="trRim"> Smooth perilesional enhancement</label>
     <label><input type="checkbox" id="trNE"> Image degradation (nonevaluable)</label>
   </div>
   <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px;margin-top:6px;min-height:58px"><span id="trBadge" class="badge"></span><span id="trWhat" class="out" style="flex:1;min-width:240px"></span></div>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:6px;min-height:58px"><span id="trBadge2" class="badge"></span><span id="trUp" class="out" style="flex:1;min-width:240px"></span></div>
   <div id="trMgmt" class="out" style="margin-top:6px;min-height:46px"></div>
   <div class="strip2" id="trStrip" style="margin-top:10px"></div>
 </div>
@@ -866,17 +867,23 @@ function lirads(o){
   return fin(cat,{table:t,growth,base:t.cat});
 }
 // treatment response v2024
+const feat=v=>v===true?'yes':(v||'no'); // ancillary feature state: 'no' | 'yes' (present) | 'new' (new or increased); booleans from older code
 function trCat(o){
+  const dw=feat(o.dwi),t2=feat(o.t2),any=dw!=='no'||t2!=='no';
+  const list=(a,b)=>[a?'restricted diffusion':'',b?'mild–moderate T2 hyperintensity':''].filter(Boolean).join(' and ');
   if(o.ne)return {cat:'Nonevaluable',why:'Image degradation or omission prevents assessment.',mg:'Repeat or alternative imaging in 3 months or less.'};
   if(o.mode==='nonrad'){
     if(o.mass==='none')return {cat:'Nonviable',why:'No masslike enhancement in or along the treated lesion. Smooth perilesional enhancement is expected after treatment and does not count.',mg:'Continue post-treatment imaging, about every 3 months at first.'};
     if(o.mass==='viable')return {cat:'Viable',why:'Masslike enhancement (any degree, any phase) in or along the treated lesion. Washout is no longer required.',mg:'Multidisciplinary discussion; usually retreatment.'};
-    if(o.dwi||o.t2)return {cat:'Viable',why:`Uncertain masslike enhancement, upgraded by an ancillary feature at the same site (${[o.dwi?'restricted diffusion':'',o.t2?'mild–moderate T2 hyperintensity':''].filter(Boolean).join(' and ')}).`,mg:'Multidisciplinary discussion; usually retreatment.'};
-    return {cat:'Equivocal',why:'Uncertain whether there is masslike enhancement, for example mild, smooth, asymmetric thickening of the marginal enhancement without a nodule.',mg:'Repeat imaging in about 3 months rather than immediate retreatment.'};}
+    const r={cat:'Equivocal',why:'Uncertain whether there is masslike enhancement, for example mild, smooth, asymmetric thickening of the marginal enhancement without a nodule.',mg:'Repeat imaging in about 3 months rather than immediate retreatment.'};
+    if(any)r.up={cat:'Viable',why:`Ancillary features at the same site (${list(dw!=='no',t2!=='no')}) may be used, at the radiologist's discretion, to upgrade Equivocal to Viable.`,mg:'Multidisciplinary discussion; usually retreatment.'};
+    return r;}
   if(o.mass==='none')return {cat:'Nonviable',why:'No masslike enhancement in or along the treated lesion.',mg:'Continue post-treatment imaging about every 3 months.'};
   if(o.mass==='viable'&&o.chg==='new')return {cat:'Viable',why:'Masslike enhancement that is new or increasing over time.',mg:'Multidisciplinary discussion; consider retreatment.'};
-  if(o.dwi||o.t2)return {cat:'Viable',why:'Persistent masslike enhancement upgraded by restricted diffusion or mild–moderate T2 hyperintensity at the same site.',mg:'Multidisciplinary discussion; consider retreatment.'};
-  return {cat:'Nonprogressing',why:o.mass==='equivocal'?'Questionable enhancement after radiation is categorized as nonprogressing.':'Masslike enhancement that is stable or shrinking: radiation effect takes months, so this is expected.',mg:'Follow up in about 3 months; the category lasts as long as residual enhancement persists.'};
+  const r={cat:'Nonprogressing',why:o.mass==='equivocal'?'Questionable enhancement after radiation is categorized as nonprogressing.':'Masslike enhancement that is stable or shrinking: radiation effect takes months, so this is expected.',mg:'Follow up in about 3 months; the category lasts as long as residual enhancement persists.'};
+  if(dw==='new'||t2==='new')r.up={cat:'Viable',why:`New or increased ${list(dw==='new',t2==='new')} at the same site as the stable or decreasing enhancement may be used, at the radiologist's discretion, to upgrade Nonprogressing to Viable.`,mg:'Multidisciplinary discussion; consider retreatment.'};
+  else if(any)r.upNote='Ancillary features that are present but unchanged cannot be used to upgrade after radiation: only new or increased restricted diffusion or T2 hyperintensity counts.';
+  return r;
 }
 // US surveillance v2024
 function usCat(o){
@@ -1096,9 +1103,9 @@ function initC(){
   lrUpdate();}
 
 /* ================= D. treatment response ================= */
-const TR={mode:'nonrad',mass:'viable',chg:'new',dwi:false,t2:false,rim:true,ne:false};
+const TR={mode:'nonrad',mass:'viable',chg:'new',dwi:'no',t2:'no',rim:true,ne:false};
 function trStripRender(host,o){
-  host.innerHTML='';applyBg('cirrhotic');const tr={mass:o.mass,rim:o.rim,dwi:o.dwi,t2:o.t2,fs:0.55};const cfg=buildCfg('treat',null,'cirrhotic',false,{tr});const L=cfg.main;const G=patchGrid(cfg,6.4,118,L.cx+0.3,L.cy,41);
+  host.innerHTML='';applyBg('cirrhotic');const tr={mass:o.mass,rim:o.rim,dwi:feat(o.dwi)!=='no',t2:feat(o.t2)!=='no',fs:0.55};const cfg=buildCfg('treat',null,'cirrhotic',false,{tr});const L=cfg.main;const G=patchGrid(cfg,6.4,118,L.cx+0.3,L.cy,41);
   const cols=[['Pre','t1',0],['Arterial','t1',35],['Portal venous','t1',70],['Subtraction (arterial − pre)','sub',0],['T2','t2',0],['DWI b800','dwi',0]];
   const opt=o.ne?{blur:4}:{blur:1};
   for(const [n,sq,t] of cols){const cv=tile(host,n,118);applyBg('cirrhotic');AG='eca';FUNC=0.8;
@@ -1106,11 +1113,21 @@ function trStripRender(host,o){
     else{const r=renderGrid(G,sq,t,'mri',opt);if(o.ne)for(let k=0;k<r.g.length;k++)r.g[k]=clamp(r.g[k]+40*G.nA[k],0,255);putGray(cv.getContext('2d'),G,r.g);}}
   if(o.mode==='rad'&&o.mass!=='none'){const pr={...tr,fs:o.chg==='new'?0.3:0.75};const c2=buildCfg('treat',null,'cirrhotic',false,{tr:pr});const G2=patchGrid(c2,6.4,118,L.cx+0.3,L.cy,41);applyBg('cirrhotic');paint(tile(host,'Prior exam, arterial',118),G2,'t1',35,'eca',0.8);}
 }
-function trUpdate(){segSync('#trMode',TR.mode);segSync('#trMass',TR.mass);segSync('#trChg',TR.chg);$('#trChgL').style.visibility=TR.mode==='rad'&&TR.mass!=='none'?'visible':'hidden';
-  const r=trCat(TR);const cls={Viable:'b-5',Equivocal:'b-3',Nonviable:'b-1',Nonprogressing:'b-4',Nonevaluable:'b-NC'}[r.cat];$('#trBadge').className='badge '+cls;$('#trBadge').textContent='LR-TR '+r.cat;$('#trWhat').textContent=r.why;$('#trMgmt').innerHTML='<b>Management:</b> '+r.mg+(TR.mode==='rad'?' <span class="hint">Radiation algorithm: first assessment usually 1–3 months after TARE and about 3 months after SBRT.</span>':' <span class="hint">Nonradiation algorithm: first assessment about 1 month after treatment, then about every 3 months.</span>');
+function trUpdate(){
+  if(TR.mode!=='rad'){if(TR.dwi==='new')TR.dwi='yes';if(TR.t2==='new')TR.t2='yes';}
+  segSync('#trMode',TR.mode);segSync('#trMass',TR.mass);segSync('#trChg',TR.chg);segSync('#trDwi',TR.dwi);segSync('#trT2',TR.t2);
+  $$('#trDwi [data-v="new"],#trT2 [data-v="new"]').forEach(b=>b.hidden=TR.mode!=='rad');
+  $('#trChgL').style.visibility=TR.mode==='rad'&&TR.mass!=='none'?'visible':'hidden';
+  const r=trCat(TR),cls=c=>({Viable:'b-5',Equivocal:'b-3',Nonviable:'b-1',Nonprogressing:'b-4',Nonevaluable:'b-NC'}[c]);
+  $('#trBadge').className='badge '+cls(r.cat);$('#trBadge').textContent='LR-TR '+r.cat;$('#trWhat').innerHTML='<b>Base category.</b> '+r.why;
+  const B2=$('#trBadge2');
+  if(r.up){B2.hidden=false;B2.className='badge '+cls(r.up.cat);B2.textContent='LR-TR '+r.up.cat;$('#trUp').innerHTML='<b>If you apply the optional ancillary-feature upgrade.</b> '+r.up.why;}
+  else{B2.hidden=true;$('#trUp').innerHTML='<span class="hint">'+(r.upNote||'No optional ancillary-feature upgrade is available for this combination.')+'</span>';}
+  $('#trMgmt').innerHTML='<b>Management'+(r.up?' (base category)':'')+':</b> '+r.mg+(r.up?' <span class="hint">If the upgrade is applied: '+r.up.mg+'</span>':'')+(TR.mode==='rad'?' <span class="hint">Radiation algorithm: first assessment usually 1–3 months after TARE and about 3 months after SBRT.</span>':' <span class="hint">Nonradiation algorithm: first assessment about 1 month after treatment, then about every 3 months.</span>');
   trStripRender($('#trStrip'),TR);}
 function initD(){segInit('#trMode',()=>TR.mode,v=>{TR.mode=v;trUpdate();});segInit('#trMass',()=>TR.mass,v=>{TR.mass=v;trUpdate();});segInit('#trChg',()=>TR.chg,v=>{TR.chg=v;trUpdate();});
-  for(const k of ['dwi','t2','rim','ne']){const id={dwi:'#trDwi',t2:'#trT2',rim:'#trRim',ne:'#trNE'}[k];$(id).checked=TR[k];$(id).onchange=e=>{TR[k]=e.target.checked;trUpdate();};}trUpdate();}
+  segInit('#trDwi',()=>TR.dwi,v=>{TR.dwi=v;trUpdate();});segInit('#trT2',()=>TR.t2,v=>{TR.t2=v;trUpdate();});
+  for(const k of ['rim','ne']){const id={rim:'#trRim',ne:'#trNE'}[k];$(id).checked=TR[k];$(id).onchange=e=>{TR[k]=e.target.checked;trUpdate();};}trUpdate();}
 
 /* ================= E. ultrasound ================= */
 const US={find:'pos',vis:'A',prevC:false,risk:false,afp:'norm'};
@@ -1198,10 +1215,10 @@ const DR=[
   text(){return 'A 30-mm observation in a cirrhotic liver. Look at the arterial pattern, how it washes out, and the DWI.';},choices:['LR-5','LR-M'],ans:o=>o.m?'LR-M':'LR-5',
   why:o=>o.m?'Rim arterial enhancement, peripheral washout, delayed central enhancement and a targetoid DWI pattern: LR-M. Think of intrahepatic cholangiocarcinoma or combined HCC-CCA; biopsy is usually needed.':'Nonrim arterial hyperenhancement, nonperipheral washout and an enhancing capsule at ≥20 mm: LR-5.'},
  {id:'tr',t:'Treatment response category',s:'LI-RADS v2024',
-  gen(){const mode=pick(['nonrad','rad']);return {mode,mass:pick(['none','equivocal','viable']),chg:pick(['new','stable']),dwi:Math.random()<0.3,t2:false,rim:true,ne:false};},
+  gen(){const mode=pick(['nonrad','rad']);return {mode,mass:pick(['none','equivocal','viable']),chg:pick(['new','stable']),dwi:mode==='rad'?pick(['no','no','yes','new']):(Math.random()<0.35?'yes':'no'),t2:'no',rim:true,ne:false};},
   show(o){trStripRender(ds(),o);},
-  text(o){return `After ${o.mode==='nonrad'?'microwave ablation (nonradiation algorithm)':'Y-90 radioembolization (radiation algorithm)'}.${o.mode==='rad'&&o.mass!=='none'?` Compared with the prior exam, the enhancing tissue is ${o.chg==='new'?'larger':'the same size or smaller'}.`:''}`;},
-  choices:['Nonviable','Equivocal','Viable','Nonprogressing'],ans:o=>trCat(o).cat,why:o=>trCat(o).why},
+  text(o){return `After ${o.mode==='nonrad'?'microwave ablation (nonradiation algorithm)':'Y-90 radioembolization (radiation algorithm)'}.${o.mode==='rad'&&o.mass!=='none'?` Compared with the prior exam, the enhancing tissue is ${o.chg==='new'?'larger':'the same size or smaller'}.`:''} Give the base category; ancillary-feature upgrades are optional.`;},
+  choices:['Nonviable','Equivocal','Viable','Nonprogressing'],ans:o=>trCat(o).cat,why:o=>{const r=trCat(o);return r.why+(r.up?` Optional upgrade available: LR-TR ${r.up.cat}. ${r.up.why}`:(r.upNote?' '+r.upNote:''));}},
  {id:'bclc',t:'Stage it: BCLC 2022',s:'From the report to the stage',
   gen(){return pick([{n:1,s:1.6,ps:'0',lf:'pres',vi:0,eh:0},{n:1,s:4.2,ps:'0',lf:'pres',vi:0,eh:0},{n:3,s:2.4,ps:'0',lf:'pres',vi:0,eh:0},{n:5,s:3.5,ps:'0',lf:'pres',vi:0,eh:0},{n:2,s:4,ps:'0',lf:'pres',vi:0,eh:0},{n:1,s:6,ps:'0',lf:'pres',vi:1,eh:0},{n:2,s:3,ps:'1',lf:'pres',vi:0,eh:0},{n:1,s:3,ps:'0',lf:'pres',vi:0,eh:1},{n:2,s:2.5,ps:'0',lf:'end',vi:0,eh:0}]);},
   show(){hideStrip();},
@@ -1241,13 +1258,15 @@ const QZ=[
  {q:'Ancillary features favoring malignancy can upgrade an observation to…',o:['LR-5','At most LR-4','LR-M','LR-TIV'],a:1,e:'Ancillary features may upgrade by one category, but never to LR-5.'},
  {q:'Along stepwise carcinogenesis, which usually changes first?',o:['Arterial hyperenhancement','Loss of OATP1B3 expression (hepatobiliary hypointensity)','Capsule formation','Washout'],a:1,e:'OATP expression and portal supply fall in high-grade dysplastic nodules and early HCC, before the arterial switch.'},
  {q:'Why can a poorly differentiated HCC be hypovascular?',o:['Its portal supply increases','Its unpaired arterial supply falls again','It contains fat','It is necrotic in all cases'],a:1,e:'Arterial supply peaks in moderately differentiated HCC and decreases in poorly differentiated tumors.'},
- {q:'After microwave ablation there is uncertain enhancement at the margin that restricts diffusion. LR-TR category (v2024)?',o:['Nonviable','Equivocal','Viable','Nonprogressing'],a:2,e:'In the nonradiation algorithm, restricted diffusion or mild–moderate T2 hyperintensity at the same site upgrades Equivocal to Viable.'},
+ {q:'After microwave ablation there is uncertain masslike enhancement at the margin with corresponding restricted diffusion. Under LI-RADS TRA v2024, which statement is correct?',o:['The category is LR-TR Viable, because restricted diffusion always upgrades the category','The base category is LR-TR Equivocal; restricted diffusion may optionally be used to upgrade it to LR-TR Viable','The category is LR-TR Nonviable, because ancillary features are not used in treatment response','The category is LR-TR Nonprogressing'],a:1,e:'Restricted diffusion and mild–moderate T2 hyperintensity are optional ancillary features, used at the radiologist\'s discretion. They can upgrade Equivocal to Viable in the nonradiation algorithm; they do not change the base category on their own.'},
+ {q:'After Y-90 the masslike enhancement is stable, and restricted diffusion at the same site is new compared with the prior exam. Under the radiation algorithm:',o:['Viable, automatically','The base category is LR-TR Nonprogressing; the new restricted diffusion may optionally upgrade it to Viable','Nonviable','Restricted diffusion cannot be used after radiation'],a:1,e:'After radiation, ancillary features can be used only when they are new or increased over time and colocalize with the stable or decreasing enhancement; even then the upgrade is optional.'},
  {q:'Three months after Y-90, the treated tumor still enhances but is smaller. Category?',o:['Viable','Nonprogressing','Equivocal','Nonviable'],a:1,e:'In the radiation algorithm, persistent masslike enhancement that is stable or decreasing is LR-TR Nonprogressing.'},
  {q:'A surveillance US shows no lesion but is VIS-C for the second time. Next step?',o:['Routine US in 6 months','Repeat US in 3 months','Alternative surveillance, such as abbreviated or contrast-enhanced MRI or CT','Biopsy'],a:2,e:'Repeated VIS-C means ultrasound is failing this patient: switch strategy.'},
  {q:'A single 4-cm HCC, ECOG 0, preserved liver function, no vascular invasion. BCLC stage?',o:['0','A','B','C'],a:1,e:'BCLC A: single tumor of any size, or up to three ≤3 cm, with preserved liver function and ECOG 0.'}];
 const REFS=[
  'American College of Radiology. CT/MRI LI-RADS v2018 Core. acr.org/LI-RADS.',
  'Chernyak V, Fowler KJ, Kamaya A, et al. Liver Imaging Reporting and Data System (LI-RADS) version 2018: imaging of hepatocellular carcinoma in at-risk patients. Radiology. 2018;289(3):816–830.',
+ 'American College of Radiology. CT/MRI LI-RADS Nonradiation and Radiation Treatment Response Assessment (TRA) v2024 Core. acr.org/LI-RADS.',
  'Aslam A, Chernyak V, Miller FH, et al. CT/MRI LI-RADS 2024 update: treatment response assessment. Radiology. 2024;313(2):e232408. doi:10.1148/radiol.232408',
  'Kamaya A, Fetzer DT, Seow JH, et al. LI-RADS US surveillance version 2024 for surveillance of hepatocellular carcinoma: an update to the American College of Radiology US LI-RADS. Radiology. 2024;313(3):e240169. doi:10.1148/radiol.240169',
  'Kierans AS, Fowler KJ, Chernyak V. LI-RADS in 2024: recent updates, planned refinements, and future directions. Abdom Radiol. 2025. doi:10.1007/s00261-024-04730-w',
