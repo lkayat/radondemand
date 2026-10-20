@@ -253,7 +253,7 @@ ol.qa li b{font-family:var(--ui)}
 <p class="eqline">S(b<sub>calc</sub>) = S₀,fit · e<sup>−ADC·b<sub>calc</sub></sup></p>
 <div class="cards">
   <div class="card"><h3>Advantages</h3>
-    <p>No extra scan time. No longer TE, so no extra T2 decay or distortion. No Rician noise floor, so background prostate is properly dark. Perfect registration with the ADC map, and any b-value can be generated after the fact.</p></div>
+    <p>No extra scan time. Because no separate high-b acquisition is needed, there is no extra TE-related signal loss or distortion. It avoids the noise floor of an acquired very-high-b image, so background prostate is dark, but it is not noise-free (see the next card). It is inherently co-registered with the source ADC data, and any b-value can be generated after the fact.</p></div>
   <div class="card"><h3>What it inherits</h3>
     <p>Everything in the source images: their noise (amplified, because an error in ADC is multiplied by b), their artifacts and distortion, and their T2 weighting, so shine-through persists. Including b 0 adds perfusion bias that darkens tissue on the calculated image.</p></div>
   <div class="card"><h3>What it assumes</h3>

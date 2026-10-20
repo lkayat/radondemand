@@ -187,7 +187,7 @@ ol.refs{font-size:13.5px;color:var(--muted);padding-left:22px;max-width:90ch;lin
 <tr><td>Slice thickness ↑</td><td>↑ (∝ thickness)</td><td>↓ coverage cost</td><td>↓ through-plane</td><td>Partial volume hides small lesions</td></tr>
 <tr><td>TR ↑</td><td>↑ (more T1 recovery)</td><td>↑</td><td>–</td><td>Less T1 weighting; more slices per TR in 2D</td></tr>
 <tr><td>TE ↑</td><td>↓ (T2 / T2* decay)</td><td>–</td><td>–</td><td>More T2 weighting; in DWI often forced by b and matrix</td></tr>
-<tr><td>Bandwidth ↓</td><td>↑ (∝ 1 / √BW)</td><td>↑ (longer readout, TR, ETL spacing)</td><td>–</td><td>Chemical shift ↑, susceptibility distortion, blurring in TSE</td></tr>
+<tr><td>Bandwidth ↓</td><td>↑ (∝ 1 / √BW)</td><td>Not a direct term. ↑ when the longer readout raises minimum TE, TR or echo spacing and TR is already at its minimum (breath-hold GRE), or fewer slices fit per TR (TSE)</td><td>–</td><td>Chemical shift ↑, susceptibility distortion, blurring in TSE</td></tr>
 <tr><td>NEX ↑</td><td>↑ (∝ √NEX)</td><td>↑ (∝ NEX)</td><td>–</td><td>Reduces motion ghosts; never improves SNR efficiency</td></tr>
 <tr><td>Phase oversampling ↑</td><td>↑ (more lines, √)</td><td>↑</td><td>–</td><td>Removes wrap; costs time</td></tr>
 <tr><td>Partial Fourier ↓</td><td>↓ (√ fraction)</td><td>↓</td><td>slight blurring</td><td>Shorter TE in EPI</td></tr>
@@ -492,7 +492,7 @@ const SCN={
   {seq:"t1",label:"Halve the slice (3 → 1.5 mm)",set:{thk:1.5},note:"Thinner partitions halve voxel volume and SNR. The small liver lesion gains contrast because it no longer averages with surrounding liver, but coverage also halves; restoring it needs twice the partitions and breaks the breath hold."},
   {seq:"t1",label:"Breath-hold too long",set:{Nz:96,R:1},note:"More partitions without parallel imaging: SNR rises (√Nz, √R) but the scan runs well past 20 s. The patient breathes, and breathing ghosts replicate the abdominal wall across the liver. Noise was never the real enemy here."},
   {seq:"t1",label:"Higher matrix (320 → 448)",set:{Nx:448,Ny:384},note:"Finer in-plane pixels cost SNR through voxel volume, only partly repaid by the extra phase lines, and the extra lines push the breath hold to about 30 s. Breathing ghosts follow."},
-  {seq:"t1",label:"Narrow bandwidth",set:{BW:150},note:"Bandwidth from 450 to 150 Hz/px buys √3 in SNR, but the longer readout raises minimum TE and TR (longer breath hold) and fat now shifts several pixels along the frequency direction at every fat–water interface."},
+  {seq:"t1",label:"Narrow bandwidth",set:{BW:150},note:"Bandwidth from 450 to 150 Hz/px buys √3 in SNR, but it lengthens the readout and raises the minimum TE and TR. In this breath-hold 3D GRE the TR sits close to its minimum, so the longer readout forces a longer TR and scan time rises too; receiver bandwidth is not a scan-time term in itself, and the effect depends on whether TR or echo spacing is the limit. Fat also now shifts several pixels along the frequency direction at every fat–water interface."},
   {seq:"t1",label:"3 T",set:{B0:3},note:"SNR roughly doubles, partly offset by longer T1 at the same TR and flip angle. Chemical shift in pixels doubles at the same bandwidth. Spend the gain on resolution or a shorter breath hold."},
   {seq:"t1",label:"Body coil only",set:{coil:"body"},note:"Without the phased-array coil the image is three times noisier at the same time and resolution. The array is the single cheapest SNR gain available."}],
  abd_t2:[],

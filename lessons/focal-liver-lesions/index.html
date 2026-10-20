@@ -570,7 +570,7 @@ function lesionContrast(G,raw,mod){
 const NOTES={
  cyst:{pre:['Cyst: uniformly dark on T1, like fluid.','Cyst: water density (about 0–10 HU), the same as the gallbladder.'],
   ea:'No enhancement. A cyst never changes from its pre-contrast appearance.',
-  la:'No enhancement. Any measurable enhancement (on CT, more than about 10–20 HU) excludes a simple cyst.',
+  la:'No true internal enhancement. On CT, a small measured attenuation increase, particularly in a small lesion, may be pseudoenhancement from technical and partial-volume effects. Definite internal enhancement excludes a simple cyst; if enhancement is equivocal, use morphology and multiphase behavior and consider ultrasound or MRI to confirm.',
   pv:'Still no enhancement, and the cyst is most conspicuous now against the fully enhanced liver. The wall is imperceptible, with no septa or nodules.',
   del:'No enhancement on delayed images either. Compare with a hemangioma, which keeps filling in.',
   t2:'Very bright on T2, as bright as the gallbladder and CSF, with a sharp margin. On heavily T2-weighted images (long TE) it stays bright while solid lesions fade.',
@@ -624,7 +624,7 @@ const NOTES={
   ea:'Too early: the tumor is only beginning to enhance. That is why liver protocols aim for the late arterial phase.',
   la:'Non-rim arterial hyperenhancement with a mosaic pattern: nodules within the nodule, separated by septa.',
   pv:'Washout: the whole tumor turns darker than liver, and an enhancing capsule starts to appear at its periphery.',
-  del:'Complete washout of the whole tumor, with only the peripheral capsule enhancing (a smooth rim brighter than liver). In a cirrhotic liver this pattern is diagnostic.',
+  del:'Complete washout of the whole tumor, with only the peripheral capsule enhancing (a smooth rim brighter than liver). In an at-risk liver this pattern is highly characteristic of HCC, but a noninvasive LR-5 diagnosis still depends on observation size, nonrim arterial phase hyperenhancement and the LI-RADS major-feature algorithm. Observations under 10 mm cannot be LR-5.',
   t2:'Mildly to moderately T2 hyperintense, never as bright as a cyst or hemangioma.',
   dwi:'Restricted diffusion: bright at b800.',adc:'Low ADC (dark) relative to liver.',
   ip:'In-phase: mosaic nodule.',op:'No signal drop in this variant.'},
@@ -657,7 +657,7 @@ const NOTES={
 };
 const CASEDIR='cases/';
 const CARDS={
- cyst:{lead:'No enhancement, fluid on every sequence.',b:['Present in 5–14% of the population. Lined by biliary-type epithelium but contains no bile.','CT: water density, below 10 HU (below 20 HU on multidetector CT). MRI: T1 dark, very T2 bright.','No enhancement in any phase, no wall, no septa, no nodules. Ultrasound is often enough.','Polycystic liver disease: consider it when there are more than 10 cysts. Cysts may bleed (T1 bright, fluid levels) or calcify.'],
+ cyst:{lead:'No enhancement, fluid on every sequence.',b:['Present in 5–14% of the population. Lined by biliary-type epithelium but contains no bile.','CT: water density, about 0–10 HU (up to about 20 HU on multidetector CT) and nonenhancing; small cysts can show a few HU of apparent enhancement (pseudoenhancement). MRI: T1 dark, very T2 bright.','No enhancement in any phase, no wall, no septa, no nodules. Ultrasound is often enough.','Polycystic liver disease: consider it when there are more than 10 cysts. Cysts may bleed (T1 bright, fluid levels) or calcify.'],
   p:['Septations, nodules or a thick wall: think of a biliary cystic neoplasm or an abscess, not a simple cyst.','Lesions too small to characterize on CT: MRI with heavily T2-weighted images solves most of them.'],
   cases:[['Case',[['cyst-t2','T2'],['cyst-t1pre','T1 pre-contrast'],['cyst-art','Arterial'],['cyst-pv','Portal venous']]]]},
  hem:{lead:'Peripheral, discontinuous, nodular, progressive centripetal enhancement that matches the blood pool.',b:['The most common benign liver tumor (up to 5% at autopsy): vascular spaces lined by endothelium, separated by fibrous septa.','MRI: T1 dark and markedly T2 bright ("light bulb"), stays bright on heavily T2-weighted images.','Enhancing parts match the aorta or blood pool in every phase, and the lesion never washes out.','Variants: flash-filling (small, uniform arterial enhancement), slow-filling, giant with a central cleft, and sclerosing (may cause capsular retraction).','Board pearl: Kasabach–Merritt phenomenon, a consumptive coagulopathy with large vascular tumors, mostly in infants.'],
