@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 No build, lint, or test tooling exists. Preview with `python3 -m http.server 8000` (or `python -m http.server 8000` on Windows) and open http://localhost:8000. Deploys via Vercel (Framework Preset: Other); `vercel.json` sets clean URLs and trailing slashes, so lesson links end in `/`.
 
 ## Structure
-- `index.html`: landing page (title "RadOnDemand: Abdominal radiology"); a filterable card grid driven by the flat `LESSONS` array in its script. Each entry has `area` (physics, ultrasound or clinical), `organs`, `sub` (subspecialty, "abdominal" for now), `badge`, `added` (YYYY-MM-DD, first publish date), `desc`, `covers`, `glyph`.
+- `index.html`: landing page (title "RadOnDemand: Abdominal radiology"); a filterable card grid driven by the flat `LESSONS` array in its script. Each entry has `areas` (one or more of physics, ultrasound, fluoro, clinical, anatomy), `organs`, `sub` (subspecialty, "abdominal" for now), `badge`, `added` (YYYY-MM-DD, first publish date), `desc`, `covers`, `glyph`.
 - `lessons/<slug>/index.html`: one self-contained lesson each (inline CSS/JS, no shared assets).
-- Adding a lesson: create the file, then add a `LESSONS` entry (title, fullTitle, url `lessons/<slug>/`, area, sub, organs, badge, added, desc, covers, glyph) and a thumbnail in `G`. Also add a row to the README lessons table.
+- Adding a lesson: create the file, then add a `LESSONS` entry (title, fullTitle, url `lessons/<slug>/`, areas, sub, organs, badge, added, desc, covers, glyph) and a thumbnail in `G`. Also add a row to the README lessons table.
 
 ## Context
 
@@ -44,5 +44,6 @@ When Leo hands over a revised lesson file (exported from claude.ai), re-apply th
 - Vercel Web Analytics snippet before `</head>` (the `window.va` stub plus `<script defer src="/_vercel/insights/script.js"></script>`), as on every page.
 - Footer disclaimer ends with "For teaching only; not for clinical use."
 - Doppler submodules are added inside `lessons/doppler-console/` (one catalog entry); no placeholder entries on the landing page.
-- Landing page filters are Type (physics, ultrasound, clinical) and Organ; the "New" badge is automatic for lessons whose `added` date is within `NEW_DAYS` (10) days.
+- Landing page filters are Type (physics, ultrasound, fluoroscopy, clinical, anatomy; a lesson can have several) and Organ; the "New" badge is automatic for lessons whose `added` date is within `NEW_DAYS` (10) days.
 - When re-exporting the three liver lessons, refresh their `cases/` folder from the artifact's published files too (Artifact `read` with `paths`), and check the filenames stay generic.
+- `postsurgical-upper-gi` loads three.js r128 from cdnjs (the only runtime script dependency on the site, besides Google Fonts); the 3D pane falls back to a message if it cannot load.

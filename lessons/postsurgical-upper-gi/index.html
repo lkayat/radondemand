@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Upper GI operations animated in 3D from normal anatomy, with synthetic fluoroscopy, evidence-based contrast choice, complications, drills and a quiz.">
+<title>Postsurgical Upper GI Anatomy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+/* layout: sticky imaging workbench on the left (3D + fluoro), every control that drives it on the right; teaching sections below */
+:root{--bg:#EDF0F1;--panel:#FFFFFF;--ink:#18222C;--muted:#5A6874;--line:#CFD6DB;--soft:#F5F7F8;--amber:#C98A0C;--cyan:#1F7F95;--rose:#B0476A;--ok:#2F7D4F;--warn:#B8621B;--bad:#B3261E;--chip-ok:#E3F1E8;--chip-warn:#FBEEDD;--chip-bad:#F8E1DF;
+  --stage:#0b1015;--stage-ink:#dfe6ea;--stage-mute:#9fb0bb;--stage-line:#26313b;--stage-btn:#1b242d;--stage-hi:#F2C14E;
+  --food:#22A38A;--bp:#8B62CC;--common:#3B7ED8;--excl:#8D979F;--spec:#C9483E;
+  --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--read:"Literata",Georgia,"Times New Roman",serif;box-sizing:border-box;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10161C;--panel:#18212A;--ink:#E4EAEE;--muted:#9AA8B3;--line:#2C3843;--soft:#1E2833;--amber:#E8B23A;--cyan:#4FB6CC;--rose:#E07FA0;--ok:#6CC08D;--warn:#E39B53;--bad:#F07A70;--chip-ok:#1D3327;--chip-warn:#3A2A16;--chip-bad:#3D1E1C;color-scheme:dark}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}*,*::before,*::after{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
+.wrap{max-width:1360px;margin:0 auto;padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--read);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.12;margin:0 0 10px;text-wrap:balance}
+h2{font-family:var(--read);font-weight:600;font-size:27px;margin:46px 0 8px;text-wrap:balance}h3{font-size:15px;margin:0 0 8px;font-weight:600}
+p{margin:0 0 12px}.lede{font-family:var(--read);font-size:18px;max-width:84ch;color:var(--muted)}.read{font-family:var(--read);max-width:80ch;line-height:1.65}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible,a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:13.5px;font-weight:600;padding:5px 11px;border:0;background:transparent;color:var(--ink);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}.seg.sm button{font-size:12.5px;padding:4px 9px;font-weight:500}
+select{font:inherit;font-size:14px;padding:5px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:100%}
+.note{background:var(--panel);border-left:4px solid var(--amber);padding:11px 15px;border-radius:4px;font-family:var(--read);font-size:15px;line-height:1.55}
+.note b{font-family:var(--ui)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.grp{font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px}.row+.row{margin-top:9px}
+.row label{display:flex;gap:6px;align-items:center}
+.rl{font-size:12.5px;color:var(--muted);min-width:74px}
+.hint{font-size:12.5px;color:var(--muted)}
+/* section nav */
+.secnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin:14px 0 0;padding:7px 0}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a{flex:0 0 auto;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.secnav a:hover{color:var(--ink);background:var(--soft)}.secnav a.on{color:var(--bg);background:var(--ink)}
+h2[id],#viewer{scroll-margin-top:56px}
+/* workbench */
+.stage{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(340px,1fr);gap:18px;align-items:start;margin-top:16px}
+.imgcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 52px);min-width:0}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.vbox{background:var(--stage);border-radius:10px;padding:10px;color:var(--stage-ink)}
+.vtop{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:8px;font-size:13px}
+.vtop .seg{background:var(--stage-btn);border-color:#3a4652}.vtop .seg button{color:var(--stage-ink)}.vtop .seg button[aria-pressed="true"]{background:var(--stage-ink);color:#000}
+.vtitle{font-weight:600;font-size:14px;margin-left:auto;color:var(--stage-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.panes{display:grid;gap:8px;grid-template-columns:1fr}
+.panes.both{grid-template-columns:1fr 1fr}
+.pane{position:relative;aspect-ratio:1/1;max-height:calc(100vh - 250px);margin:0 auto;width:100%;background:#000;border-radius:6px;overflow:hidden}
+.panes.both .pane{max-height:none;aspect-ratio:4/5}
+#c3{inset:0 0 34px 0!important;height:calc(100% - 34px)!important}#ov3{bottom:34px}
+#cf,#cfo{object-fit:contain}
+.pane canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#c3{cursor:grab;touch-action:none}#c3:active{cursor:grabbing}
+.ov{position:absolute;inset:0;pointer-events:none}
+.ptag{position:absolute;left:8px;top:6px;font-size:11.5px;color:var(--stage-mute);letter-spacing:.04em;text-transform:uppercase;pointer-events:none}
+.icons3,.labs3{position:absolute;inset:0;pointer-events:none}
+.ic3{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:1px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.9))}
+.ic3 svg{stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.ic3 b{font-size:11.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.55);padding:0 5px;border-radius:3px;letter-spacing:.03em}
+.k-scissors .bl1{transform-origin:20px 20px;transform:rotate(calc(var(--ph) * 18deg - 9deg))}.k-scissors .bl2{transform-origin:20px 20px;transform:rotate(calc(9deg - var(--ph) * 18deg))}
+.k-stapler .stp{stroke:#F2C14E}.k-needle .thr{stroke:#9fd3ff}.k-grasper .jaw{stroke:#fff}
+.lab3{position:absolute;transform:translate(-50%,-140%);font-size:11.5px;font-weight:600;color:#fff;background:rgba(10,14,18,.72);border:1px solid rgba(255,255,255,.18);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.p3ctl{position:absolute;left:6px;right:6px;bottom:5px;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none;z-index:2}
+.p3ctl label{pointer-events:auto;display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--stage-ink);background:rgba(10,14,18,.72);border:1px solid rgba(255,255,255,.16);padding:2px 8px 2px 6px;border-radius:999px;cursor:pointer;user-select:none}
+.p3ctl input{margin:0;width:13px;height:13px;accent-color:var(--stage-hi)}
+.nogl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--stage-mute);font-size:14px}
+.flmsg{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:13px;color:#fff;pointer-events:none;padding:0 16px}
+.flmsg span{background:rgba(0,0,0,.7);padding:4px 10px;border-radius:5px;display:inline-block}
+.warnbar{position:absolute;left:8px;right:8px;top:30px;font-size:12.5px;color:#fff;background:rgba(179,38,30,.88);padding:5px 9px;border-radius:5px;pointer-events:none}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-top:8px;font-size:13px;color:var(--stage-ink)}
+.ctl button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid #3a4652;background:var(--stage-btn);color:var(--stage-ink);cursor:pointer;white-space:nowrap}
+.ctl button[aria-pressed="true"]{background:var(--stage-ink);color:#000}.ctl button:disabled{opacity:.4;cursor:default}
+.ctl input[type=range]{flex:1;min-width:140px;accent-color:var(--stage-hi)}
+.tread{font-variant-numeric:tabular-nums;font-weight:600;color:#fff;min-width:78px}
+.dots{display:flex;gap:4px;flex:1;min-width:120px;align-items:center}
+.dots button{flex:1;height:8px;min-width:6px;padding:0;border-radius:4px;border:0;background:#2b3742;cursor:pointer}
+.dots button.done{background:#5d6d7a}.dots button.cur{background:var(--stage-hi)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--stage-mute);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+/* step list */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:280px;overflow:auto}
+.steps button{font:inherit;font-size:13.5px;text-align:left;width:100%;padding:5px 8px;border-radius:6px;border:0;background:transparent;color:var(--ink);cursor:pointer;display:flex;gap:8px}
+.steps button span{color:var(--muted);font-variant-numeric:tabular-nums;min-width:18px}
+.steps button.cur{background:var(--ink);color:var(--bg)}.steps button.cur span{color:var(--bg)}
+.steps button:hover:not(.cur){background:var(--soft)}
+.chip{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:var(--muted);font-weight:600}
+.chip.warn{background:var(--chip-warn);color:var(--warn);border-color:transparent}.chip.ok{background:var(--chip-ok);color:var(--ok);border-color:transparent}.chip.bad{background:var(--chip-bad);color:var(--bad);border-color:transparent}
+.adv{font-family:var(--read);font-size:14.5px;line-height:1.55}.adv p{margin:6px 0 0}
+.adv .h{font-family:var(--ui);font-weight:700;font-size:13px}
+.task{background:var(--panel);border-left:4px solid var(--cyan);border-radius:4px;padding:12px 15px;font-family:var(--read)}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.choices button{font:inherit;font-family:var(--ui);font-size:13.5px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.choices button.right{background:var(--chip-ok);border-color:var(--ok)}.choices button.wrong{background:var(--chip-bad);border-color:var(--bad)}
+.fb{font-size:14px;margin-top:8px;padding:8px 10px;border-radius:6px;font-family:var(--ui)}.fb.ok{background:var(--chip-ok)}.fb.no{background:var(--chip-warn)}
+.mini{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}.mini.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* teaching sections */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px}.card p,.card li{font-family:var(--read);line-height:1.6;font-size:15px}.card p{margin:0 0 8px}.card ul{margin:0;padding-left:19px}
+.card .src{font-family:var(--ui);font-size:12.5px;color:var(--muted)}
+.tbl{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:10px}.tbl table{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
+.tbl th,.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tbl th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--soft)}
+.tbl tr:last-child td{border-bottom:0}.tbl td:first-child{font-weight:600}
+.flow{overflow-x:auto;margin-top:12px}.flow svg{min-width:640px;width:100%;height:auto;display:block}
+.ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:10px}
+.opc{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.opc .th{background:#000;aspect-ratio:1/1;position:relative}.opc canvas{width:100%;height:100%;display:block}
+.opc .bd{padding:10px 12px;font-size:13.5px;display:flex;flex-direction:column;gap:5px;flex:1}
+.opc h3{font-size:15px;margin:0}.opc .k{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.opc .bd p{margin:0;font-family:var(--read);font-size:14px;line-height:1.5}
+.opc button{margin-top:auto;align-self:flex-start}
+.drills{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.drill{font:inherit;text-align:left;font-size:14px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.drill small{display:block;color:var(--muted);font-size:12.5px}.drill b{display:block}
+.score{font-size:13px;color:var(--muted);margin-top:8px}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-bottom:10px}.quiz .q p{font-family:var(--read);margin-bottom:8px}
+.quiz .opts{display:flex;flex-direction:column;gap:6px}.quiz .opts button{font:inherit;font-size:14px;text-align:left;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.quiz .opts button.right{background:var(--chip-ok);border-color:var(--ok)}.quiz .opts button.wrong{background:var(--chip-bad);border-color:var(--bad)}.quiz .ex{font-size:14px;color:var(--muted);margin-top:8px}
+ol.refs{font-size:14px;color:var(--muted);padding-left:24px;max-width:100ch;line-height:1.55}ol.refs li{margin-bottom:6px}ol.refs a{color:var(--cyan)}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:92ch}
+.backpill{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:45;font:inherit;font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--ink);color:var(--bg);cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+body.drill #oppanel,body.drill #cap,body.drill #stepspanel,body.drill #comppanel,body.drill #advice,body.drill #mode,body.drill #stepctl,body.drill #legend{display:none}
+@media (max-width:1100px){.stage{grid-template-columns:1fr}.imgcol{position:static}.pane{max-height:none}}
+@media (max-width:640px){.panes.both{grid-template-columns:1fr}.vtitle{max-width:100%;margin-left:0}.tbl table{min-width:640px}}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>.back{font-size:14px;margin:0 0 16px}.back a{color:var(--muted);text-decoration:none}.back a:hover{color:var(--ink);text-decoration:underline}.back a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="back"><a href="../../">&larr; All lessons</a></nav>
+<h1>Postsurgical upper GI anatomy</h1>
+<p class="lede">Watch each operation take shape from normal anatomy, in 3D, then image the result the way you would at the fluoroscopy table: choose the contrast, the projection and the patient's position, run a cine swallow, and switch on the complications that matter, from anastomotic leaks to strictures, fistulas and slipped wraps.</p>
+
+<nav class="secnav" id="secnav" aria-label="Sections"><a href="#viewer">Viewer</a><a href="#contrastH">Choosing the contrast</a><a href="#viewsH">Views</a><a href="#opsH">Operations at a glance</a><a href="#drillsH">Drills</a><a href="#quizH">Quiz</a><a href="#refsH">References</a></nav>
+
+<div class="stage" id="viewer">
+  <div class="imgcol">
+    <div class="vbox">
+      <div class="vtop">
+        <span class="seg sm" id="mode" role="group" aria-label="View"><button data-v="3d">3D anatomy</button><button data-v="both">Both</button><button data-v="fluoro">Fluoroscopy</button></span>
+        <span class="vtitle" id="vtitle"></span>
+      </div>
+      <div class="panes" id="panes">
+        <div class="pane" id="pane3"><canvas id="c3" aria-label="3D model of the upper GI tract; drag to rotate, scroll or pinch to zoom, double-click to reset"></canvas><div class="ov" id="ov3"></div><span class="ptag">3D · drag to rotate</span><div class="p3ctl" role="group" aria-label="3D display"><label title="Color the limbs by what they carry"><input type="checkbox" id="limbs" checked> Limb colors</label><label title="Show liver, spleen and diaphragm"><input type="checkbox" id="ctx" checked> Organs</label><label><input type="checkbox" id="lab3" checked> Labels</label><label title="Color the lumen as contrast arrives, following the cine"><input type="checkbox" id="fill3"> Contrast</label></div></div>
+        <div class="pane" id="paneF"><canvas id="cf" width="440" height="440" aria-label="Synthetic fluoroscopy image"></canvas><canvas id="cfo" width="880" height="880" class="ov"></canvas><span class="ptag" id="ftag">Fluoroscopy</span><div class="warnbar" id="warn" hidden></div><div class="flmsg" id="flmsg" hidden></div></div>
+      </div>
+      <div class="ctl" id="stepctl">
+        <button id="prev" aria-label="Previous step">◀</button><button id="play">▶ Play operation</button><button id="next" aria-label="Next step">▶</button>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div class="ctl" id="cinectl">
+        <button id="cine">▶ Cine</button>
+        <input type="range" id="t" min="0" max="120" step=".5" value="37" aria-label="Time after the first swallow">
+        <span class="tread" id="tread"></span>
+        <button data-dt="300">5 min</button><button data-dt="900">15 min</button><button id="spot" aria-pressed="false" title="Low-noise spot image">Spot</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="task" id="task" hidden></div>
+    <div class="panel" id="oppanel">
+      <div class="grp">Operation</div>
+      <select id="op" aria-label="Operation"></select>
+      <p class="hint" id="blurb" style="margin:8px 0 0"></p>
+      <div class="row" style="margin-top:8px"><span id="varwrap"></span><button class="mini" id="jjbtn" hidden>Jejunojejunostomy close-up</button></div>
+    </div>
+    <div class="note" id="cap"></div>
+    <div class="panel" id="stepspanel">
+      <div class="grp">Steps</div>
+      <ol class="steps" id="steps"></ol>
+    </div>
+    <div class="panel" id="flpanel">
+      <div class="grp">Fluoroscopy</div>
+      <div class="row" id="srcrow" hidden><span class="rl">Study</span><span class="seg sm" id="src"><button data-v="oral">Oral contrast</button><button data-v="chol">Cholangiogram via drain</button></span></div>
+      <div class="row"><span class="rl">Contrast</span><select id="agent" aria-label="Contrast agent"></select></div>
+      <div class="row"><span class="rl">Timing</span><span class="seg sm" id="pod"><button data-v="early">Early, days 1–7</button><button data-v="late">Weeks or later</button></span></div>
+      <div class="row"><span class="rl">Position</span><span class="seg sm" id="post"><button data-v="upright">Upright</button><button data-v="supine">Supine</button></span></div>
+      <div class="row"><span class="rl">Projection</span><span class="seg sm" id="proj"><button data-v="AP">AP</button><button data-v="LPO">LPO</button><button data-v="RPO">RPO</button><button data-v="LAT">Lateral</button></span></div>
+      <div class="row"><span class="rl">Field</span><span class="seg sm" id="field"><button data-v="chest">Chest</button><button data-v="upper">Upper abdomen</button><button data-v="abd">Abdomen</button></span></div>
+      <div class="row"><label><input type="checkbox" id="flab" checked> Labels</label><label><input type="checkbox" id="white"> Contrast white</label><label><input type="checkbox" id="link"> Turn 3D to match</label></div>
+    </div>
+    <div class="panel" id="comppanel">
+      <div class="grp">Complication</div>
+      <select id="comp" aria-label="Complication"></select>
+      <p class="adv" id="compdesc" style="margin:8px 0 0"></p>
+    </div>
+    <div class="panel adv" id="advice"></div>
+  </div>
+</div>
+
+<h2 id="contrastH">Choosing the contrast</h2>
+<p class="read">Early after surgery, the study usually starts with water-soluble iodinated contrast, because barium that leaks out of the bowel stays there. Water-soluble contrast is safer if it escapes, but it is less dense, does not coat the mucosa, and misses small leaks. Most protocols therefore run water-soluble contrast first and, if no leak is seen and concern remains, finish with thin barium. Later studies, done to look for strictures, ulcers or function, use barium from the start. Follow your department's protocol; the evidence behind this approach is summarized below.</p>
+<div class="flow" aria-label="Decision diagram for choosing oral contrast after upper GI surgery">
+<svg viewBox="0 0 900 300" role="img">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="fa"/></marker></defs>
+  <style>.fb1{fill:var(--panel);stroke:var(--line);stroke-width:1.5}.fq{fill:var(--soft);stroke:var(--amber);stroke-width:1.5}.ft{fill:var(--ink);font:600 13px var(--ui)}.fs{fill:var(--muted);font:12px var(--ui)}.fl{stroke:var(--muted);stroke-width:1.5;fill:none}.fa{fill:var(--muted)}.fy{fill:var(--ok);font:700 12px var(--ui)}.fn{fill:var(--bad);font:700 12px var(--ui)}</style>
+  <rect x="8" y="112" width="184" height="70" rx="8" class="fq"/><text x="100" y="140" text-anchor="middle" class="ft">Could there be a leak?</text><text x="100" y="160" text-anchor="middle" class="fs">early study, fever, pain, drain</text>
+  <path d="M192 132 L250 82" class="fl" marker-end="url(#ah)"/><text x="206" y="98" class="fy">Yes</text>
+  <path d="M192 166 L250 214" class="fl" marker-end="url(#ah)"/><text x="204" y="208" class="fn">No</text>
+  <rect x="252" y="44" width="212" height="70" rx="8" class="fq"/><text x="358" y="72" text-anchor="middle" class="ft">Aspiration risk?</text><text x="358" y="92" text-anchor="middle" class="fs">esophagectomy, weak swallow</text>
+  <path d="M464 62 L516 36" class="fl" marker-end="url(#ah)"/><text x="478" y="40" class="fy">Yes</text>
+  <path d="M464 98 L516 122" class="fl" marker-end="url(#ah)"/><text x="480" y="126" class="fn">No</text>
+  <rect x="518" y="10" width="188" height="50" rx="8" class="fb1"/><text x="612" y="31" text-anchor="middle" class="ft">Iohexol</text><text x="612" y="49" text-anchor="middle" class="fs">low-osmolar, nonionic</text>
+  <rect x="518" y="100" width="188" height="50" rx="8" class="fb1"/><text x="612" y="121" text-anchor="middle" class="ft">Iohexol or diatrizoate</text><text x="612" y="139" text-anchor="middle" class="fs">water-soluble, first</text>
+  <path d="M706 35 L746 66" class="fl" marker-end="url(#ah)"/><path d="M706 125 L746 94" class="fl" marker-end="url(#ah)"/>
+  <rect x="748" y="44" width="146" height="72" rx="8" class="fb1"/><text x="821" y="66" text-anchor="middle" class="ft">No leak seen?</text><text x="821" y="85" text-anchor="middle" class="fs">follow with thin barium</text><text x="821" y="101" text-anchor="middle" class="fs">if concern remains</text>
+  <rect x="252" y="196" width="454" height="74" rx="8" class="fb1"/><text x="479" y="220" text-anchor="middle" class="ft">Barium from the start</text><text x="479" y="240" text-anchor="middle" class="fs">strictures, ulcers, wrap problems, emptying</text><text x="479" y="257" text-anchor="middle" class="fs">high-density barium for mucosal detail</text>
+</svg></div>
+<div class="cards">
+  <div class="card"><h3>Why water-soluble first</h3><p>Barium outside the bowel is not absorbed. In the mediastinum or peritoneum it can cause mediastinitis or peritonitis, granulomas and adhesions, and it lingers on later CT. Water-soluble iodinated contrast is absorbed if it leaks.</p><p class="src">Federle et al, Abdom Radiol 2017</p></div>
+  <div class="card"><h3>Why water-soluble is not enough</h3><p>Iodinated contrast is less dense and does not coat. In 18 patients with a negative water-soluble study for suspected esophageal perforation, barium then showed a perforation in 4 (22%), with no complications from the barium.</p><p>A surgical series used dilute barium alone for postoperative esophageal leaks and saw no mediastinitis over months of follow-up.</p><p class="src">Buecker et al, Radiology 1997 · Gollub and Bains, Radiology 1997</p></div>
+  <div class="card"><h3>Which iodinated agent</h3><p>Diatrizoate (Gastrografin) is hyperosmolar and ionic. Aspirated into the lungs, it can cause pulmonary edema. When aspiration is likely, as after esophagectomy, use a low-osmolar nonionic agent such as iohexol, and give a test sip first.</p><p>Hyperosmolar contrast also draws water into the bowel, so it fades as it moves distally. Try diatrizoate in the viewer and watch the small bowel.</p><p class="src">Federle et al 2017 · Radiopaedia, fluoroscopic evaluation of oesophagectomy</p></div>
+  <div class="card"><h3>Know the limits</h3><p>A swallow study can miss a leak that matters. After esophagectomy, barium detected 13 of 36 clinically significant leaks (sensitivity 36%, specificity 97%). In 277 sleeve gastrectomies, the routine upper GI series detected none of the leaks or strictures; the one leak was found on CT after discharge. Clinical signs, drains and CT carry equal weight.</p><p class="src">Roh et al, Korean J Thorac Cardiovasc Surg 2016 · Rossi and Lutfi, SAGES abstract</p></div>
+</div>
+<div class="tbl"><table>
+  <thead><tr><th>Agent</th><th>Type</th><th>Density and coating</th><th>If it leaks</th><th>If aspirated</th><th>Typical use</th></tr></thead>
+  <tbody>
+    <tr><td>Iohexol</td><td>Iodinated, low-osmolar, nonionic</td><td>Moderate density, no coating</td><td>Absorbed</td><td>Well tolerated</td><td>First study when a leak is possible and aspiration risk is high</td></tr>
+    <tr><td>Diatrizoate</td><td>Iodinated, high-osmolar, ionic</td><td>Moderate density, no coating; dilutes distally</td><td>Absorbed</td><td>Pulmonary edema risk</td><td>First study when a leak is possible and aspiration risk is low</td></tr>
+    <tr><td>Thin barium</td><td>Barium sulfate suspension</td><td>Dense, coats</td><td>Not absorbed; mediastinitis or peritonitis risk</td><td>Usually tolerated in small amounts</td><td>After a negative water-soluble study; routine later studies</td></tr>
+    <tr><td>High-density barium</td><td>Barium sulfate, double contrast</td><td>Densest, best mucosal detail</td><td>Not absorbed</td><td>Avoid in poor swallowers</td><td>Ulcers, mucosal detail, stricture morphology</td></tr>
+  </tbody></table></div>
+
+<h2 id="viewsH">Views for each anastomosis</h2>
+<p class="read">Take a scout film first to see drains, clips and staple lines. Leaks hide behind dense contrast in a single projection, so turn the patient, and repeat images after the contrast has moved on.</p>
+<div class="tbl"><table>
+  <thead><tr><th>Operation</th><th>Where to look</th><th>Best views</th><th>Tip</th></tr></thead>
+  <tbody>
+    <tr><td>Gastrojejunostomy, Billroth II</td><td>Stoma, afferent and efferent limbs, duodenal stump</td><td>AP, LPO, RPO; supine and upright</td><td>Reflux into the afferent limb is normal. A dilated afferent limb that holds contrast is not.</td></tr>
+    <tr><td>Roux-en-Y gastrectomy</td><td>Esophagojejunostomy and its blind end</td><td>Lateral and both obliques with cine</td><td>The short blind end fills normally; look beyond its tip.</td></tr>
+    <tr><td>Whipple</td><td>Gastrojejunostomy or duodenojejunostomy; afferent limb reflux</td><td>AP, LPO; delayed 15–30 min</td><td>Delayed emptying is common; pancreatic leaks are usually a CT and drain diagnosis.</td></tr>
+    <tr><td>Roux-en-Y hepaticojejunostomy</td><td>Hepaticojejunostomy</td><td>Cholangiogram through a drain, AP and obliques</td><td>Oral contrast and air in the bile ducts are expected.</td></tr>
+    <tr><td>Roux-en-Y gastric bypass</td><td>Pouch, gastrojejunostomy, blind end, excluded stomach</td><td>Cine of the pouch in AP and LPO; delayed to the jejunojejunostomy</td><td>Any contrast in the excluded stomach means a gastro-gastric fistula.</td></tr>
+    <tr><td>Fundoplication</td><td>Wrap, gastroesophageal junction, hiatus</td><td>Upright AP and lateral; prone or supine for reflux</td><td>Locate the junction relative to the wrap and the diaphragm.</td></tr>
+    <tr><td>Sleeve gastrectomy</td><td>Top of the staple line, incisura</td><td>Upright AP, LPO and lateral</td><td>Leaks cluster at the angle of His; rotate to unmask a twist.</td></tr>
+    <tr><td>Esophagectomy</td><td>Anastomosis (neck or chest), conduit, pylorus</td><td>Cine in lateral and both obliques; upright delayed</td><td>Use iohexol first; aspiration is common.</td></tr>
+  </tbody></table></div>
+
+<h2 id="opsH">Operations at a glance</h2>
+<p class="read">The normal postoperative study for every operation, rendered from the same model. Open any one in the viewer to watch it being built.</p>
+<div class="ops" id="ops"></div>
+
+<h2 id="drillsH">Drills</h2>
+<p class="read">Each drill loads a case into the viewer with the labels off. Answer in the panel beside the image.</p>
+<div class="drills" id="drills">
+  <button class="drill" data-d="name"><b>Name the operation</b><small>A normal postoperative study. Which operation was done?</small></button>
+  <button class="drill" data-d="normal"><b>Normal or not?</b><small>Decide whether the study is normal for this anatomy.</small></button>
+  <button class="drill" data-d="leak"><b>Find the leak</b><small>Click on the image where contrast is escaping.</small></button>
+  <button class="drill" data-d="agent"><b>Pick the contrast</b><small>A clinical scenario. Which agent do you start with?</small></button>
+</div>
+<p class="score" id="score"></p>
+
+<h2 id="quizH">Quiz</h2>
+<div class="quiz" id="quiz"></div>
+
+<h2 id="refsH">References</h2>
+<ol class="refs">
+  <li>Federle MP, Jaffe TA, Davis PL, Al-Hawary MM, Levine MS. Contrast media for fluoroscopic examinations of the GI and GU tracts: current challenges and recommendations. <i>Abdom Radiol</i>. 2017;42:90–100. <a href="https://doi.org/10.1007/s00261-016-0861-1" target="_blank" rel="noopener">doi:10.1007/s00261-016-0861-1</a></li>
+  <li>Buecker A, Wein BB, Neuerburg JM, Guenther RW. Esophageal perforation: comparison of use of aqueous and barium-containing contrast media. <i>Radiology</i>. 1997;202(3):683–686. <a href="https://doi.org/10.1148/radiology.202.3.9051016" target="_blank" rel="noopener">doi:10.1148/radiology.202.3.9051016</a></li>
+  <li>Gollub MJ, Bains MS. Barium sulfate: a new (old) contrast agent for diagnosis of postoperative esophageal leaks. <i>Radiology</i>. 1997;202(2). <a href="https://doi.org/10.1148/radiology.202.2.9015057" target="_blank" rel="noopener">doi:10.1148/radiology.202.2.9015057</a></li>
+  <li>Roh S, Iannettoni MD, Keech JC, Bashir M, Gruber PJ, Parekh KR. Role of barium swallow in diagnosing clinically significant anastomotic leak following esophagectomy. <i>Korean J Thorac Cardiovasc Surg</i>. 2016;49(2):99–106. <a href="https://doi.org/10.5090/kjtcs.2016.49.2.99" target="_blank" rel="noopener">doi:10.5090/kjtcs.2016.49.2.99</a></li>
+  <li>Rossi MT, Lutfi R. Routine upper gastrointestinal series is not necessary in the postoperative evaluation of laparoscopic sleeve gastrectomies. SAGES annual meeting abstract. <a href="https://www.sages.org/meetings/annual-meeting/abstracts-archive/routine-upper-gastrointestinal-series-is-not-necessary-in-the-post-operative-evaluation-of-laparoscopic-sleeve-gastrectomies/" target="_blank" rel="noopener">sages.org</a></li>
+  <li>Levine MS, Carucci LR. Imaging of bariatric surgery: normal anatomy and postoperative complications. <i>Radiology</i>. 2014;270(2):327–341. <a href="https://doi.org/10.1148/radiol.13122520" target="_blank" rel="noopener">doi:10.1148/radiol.13122520</a></li>
+  <li>Carbo AI, Kim RH, Gates T, D'Agostino HR. Imaging findings of successful and failed fundoplication. <i>RadioGraphics</i>. 2014;34(7):1873–1884. <a href="https://doi.org/10.1148/rg.347130104" target="_blank" rel="noopener">doi:10.1148/rg.347130104</a></li>
+  <li>Kim TJ, Lee KH, Kim YH, et al. Postoperative imaging of esophageal cancer: what chest radiologists need to know. <i>RadioGraphics</i>. 2007;27(2):409–429. <a href="https://doi.org/10.1148/rg.272065034" target="_blank" rel="noopener">doi:10.1148/rg.272065034</a></li>
+  <li>Raman SP, Horton KM, Cameron JL, Fishman EK. CT after pancreaticoduodenectomy: spectrum of normal findings and complications. <i>AJR</i>. 2013;201(1):2–13. <a href="https://pubmed.ncbi.nlm.nih.gov/23789653/" target="_blank" rel="noopener">PubMed 23789653</a></li>
+  <li>Radiopaedia. Fluoroscopic evaluation of oesophagectomy. <a href="https://radiopaedia.org/articles/fluoroscopic-evaluation-of-oesophagectomy" target="_blank" rel="noopener">radiopaedia.org</a></li>
+</ol>
+<p class="foot">All images are synthetic, rendered live from a schematic 3D model; they are not patient images. Anatomy is simplified and limb lengths are shortened to fit the field of view. Real lengths: Roux limb 50–150 cm, biliopancreatic limb 30–50 cm in gastric bypass, up to 200 cm in a mini gastric bypass. For teaching only; not for clinical use.</p>
+</div>
+<script>
+/* ================= geometry core: curves, radius profiles, state interpolation ================= */
+const V={
+  add:(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sub:(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],
+  mul:(a,s)=>[a[0]*s,a[1]*s,a[2]*s],dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+  cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],
+  len:a=>Math.hypot(a[0],a[1],a[2]),norm:a=>{const l=Math.hypot(a[0],a[1],a[2])||1;return[a[0]/l,a[1]/l,a[2]/l];},
+  lerp:(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t],dist:(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])
+};
+const clamp=(x,a,b)=>x<a?a:x>b?b:x,lerp=(a,b,t)=>a+(b-a)*t,smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
+const ease=t=>{t=clamp(t,0,1);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;};
+function crp(p0,p1,p2,p3,t){const t2=t*t,t3=t2*t;return[0,1,2].map(i=>.5*((2*p1[i])+(-p0[i]+p2[i])*t+(2*p0[i]-5*p1[i]+4*p2[i]-p3[i])*t2+(-p0[i]+3*p1[i]-3*p2[i]+p3[i])*t3));}
+/* dense Catmull-Rom polyline through control points */
+function dense(pts,per=12){
+  if(pts.length<2)return pts.slice();
+  const P=[V.sub(V.mul(pts[0],2),pts[1]),...pts,V.sub(V.mul(pts[pts.length-1],2),pts[pts.length-2])],out=[];
+  for(let i=1;i<P.length-2;i++)for(let k=0;k<per;k++)out.push(crp(P[i-1],P[i],P[i+1],P[i+2],k/per));
+  out.push(pts[pts.length-1]);return out;
+}
+const DCACHE=new WeakMap();
+function arcTable(pts){let c=DCACHE.get(pts);if(c)return c;const d=dense(pts),L=[0];for(let i=1;i<d.length;i++)L.push(L[i-1]+V.dist(d[i],d[i-1]));c={d,L,len:L[L.length-1]};DCACHE.set(pts,c);return c;}
+function curveAt(pts,u){const {d,L,len}=arcTable(pts);const s=clamp(u,0,1)*len;let lo=0,hi=L.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(L[m]<s)lo=m;else hi=m;}
+  const seg=L[hi]-L[lo]||1;return V.lerp(d[lo],d[hi],(s-L[lo])/seg);}
+function curveLen(pts){return arcTable(pts).len;}
+function resample(pts,n,u0=0,u1=1){const o=[];for(let i=0;i<n;i++)o.push(curveAt(pts,u0+(u1-u0)*i/(n-1)));return o;}
+function sub(pts,u0,u1,n=10){return resample(pts,n,u0,u1);}
+/* nearest u on a curve to a point */
+function nearestU(pts,p){const {d,L,len}=arcTable(pts);let best=1e9,bi=0;for(let i=0;i<d.length;i++){const q=V.dist(d[i],p);if(q<best){best=q;bi=i;}}return L[bi]/len;}
+/* radius profile: number or [[u,r],...] */
+function radAt(r,u){if(typeof r==='number')return r;if(u<=r[0][0])return r[0][1];for(let i=1;i<r.length;i++)if(u<=r[i][0]){const a=r[i-1],b=r[i];return lerp(a[1],b[1],(u-a[0])/((b[0]-a[0])||1));}return r[r.length-1][1];}
+const RG=[0,.04,.08,.12,.16,.2,.25,.3,.35,.4,.45,.5,.55,.6,.65,.7,.75,.8,.84,.88,.92,.96,1];
+function radLerp(a,b,t){if(typeof a==='number'&&typeof b==='number')return lerp(a,b,t);return RG.map(u=>[u,lerp(radAt(a,u),radAt(b,u),t)]);}
+/* parallel-transport frames along polyline */
+function frames(P){const n=P.length,T=[],N=[],B=[];
+  for(let i=0;i<n;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)];T.push(V.norm(V.sub(b,a)));}
+  let up=Math.abs(T[0][1])<.9?[0,1,0]:[1,0,0];let nn=V.norm(V.cross(T[0],up));nn=V.norm(V.cross(nn,T[0]));
+  for(let i=0;i<n;i++){if(i>0){const ax=V.cross(T[i-1],T[i]),s=V.len(ax);if(s>1e-6){const k=V.norm(ax),ang=Math.asin(clamp(s,-1,1))*(V.dot(T[i-1],T[i])<0?-1:1);nn=rotAxis(nn,k,Math.atan2(s,V.dot(T[i-1],T[i])));}}
+    N.push(nn);B.push(V.cross(T[i],nn));}
+  return{T,N,B};}
+function rotAxis(v,k,a){const c=Math.cos(a),s=Math.sin(a),d=V.dot(k,v),kx=V.cross(k,v);return[v[0]*c+kx[0]*s+k[0]*d*(1-c),v[1]*c+kx[1]*s+k[1]*d*(1-c),v[2]*c+kx[2]*s+k[2]*d*(1-c)];}
+/* seeded random */
+function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296;};}
+
+/* ================= surgical state machinery =================
+   A tube state: {pts, r, clip:[u0,u1], alpha, show, role}
+   A step patch merges into the previous step's state. */
+const NRES=28;
+function normTube(id,p,prev){const lib=p.lib||(prev&&prev.lib)||id,L=LIB[lib]||{};
+  const base=prev?Object.assign({},prev):{pts:L.pts,r:L.r,clip:[0,1],alpha:L.alpha??1,role:L.role||'n',cap:L.cap||[1,1],lib};
+  const o=Object.assign(base,p);delete o.from;o.lib=lib;return o;}
+function buildStates(op){
+  const states=[];let cur={tubes:{},rings:[],staples:[],masses:{},liver:0,diaph:1,labels:[],flow:null,drains:[],clips:[],hiatus:1};
+  op.steps.forEach((st,i)=>{
+    const nx={tubes:Object.assign({},cur.tubes),rings:cur.rings.slice(),staples:cur.staples.slice(),masses:Object.assign({},cur.masses),liver:st.liver??cur.liver,diaph:st.diaph??cur.diaph,
+      labels:st.labels||[],flow:st.flow||cur.flow,drains:st.drains||cur.drains,clips:st.clips||cur.clips,hiatus:st.hiatus??cur.hiatus,drop:st.drop||[],enter:{}};
+    if(i===0){BASE_IDS.forEach(id=>{nx.tubes[id]=normTube(id,{},null);});}
+    (st.drop||[]).forEach(id=>delete nx.tubes[id]);
+    Object.entries(st.tubes||{}).forEach(([id,p])=>{if(p===null){delete nx.tubes[id];return;}
+      const prev=(p.lib||!cur.tubes[id]||(st.drop||[]).includes(id))?null:cur.tubes[id];
+      nx.tubes[id]=normTube(id,p,prev);if(!prev&&!cur.tubes[id])nx.enter[id]=p.from||{alpha:0};});
+    (st.rings||[]).forEach(r=>nx.rings.push(Object.assign({born:i},r)));
+    (st.staples||[]).forEach(s=>nx.staples.push(Object.assign({born:i},s)));
+    Object.entries(st.masses||{}).forEach(([k,m])=>{if(m===null)delete nx.masses[k];else nx.masses[k]=m;});
+    nx.step=st;nx.idx=i;states.push(nx);cur=nx;});
+  return states;
+}
+/* blend two step states for display; t in 0..1 */
+function blendStates(A,B,t){
+  const e=ease(t),tubes={};
+  const ids=new Set([...Object.keys(A.tubes).filter(id=>!B.drop.includes(id)),...Object.keys(B.tubes)]);
+  ids.forEach(id=>{const a=A.tubes[id],b=B.tubes[id];let x;
+    if(a&&b)x=tubeLerp(a,b,e);
+    else if(b){const from=Object.assign({},b,B.enter[id]||{alpha:0});x=tubeLerp(from,b,e);}
+    else x=tubeLerp(a,Object.assign({},a,{alpha:0}),e);
+    if(x&&x.alpha>0.003)tubes[id]=x;});
+  const masses={};new Set([...Object.keys(A.masses),...Object.keys(B.masses)]).forEach(k=>{const a=A.masses[k],b=B.masses[k];
+    const m=b||a;masses[k]=Object.assign({},m,{r:lerp(a?a.r:0,b?b.r:0,e)});});
+  return{tubes,rings:B.rings,staples:B.staples,masses,liver:lerp(A.liver,B.liver,e),diaph:lerp(A.diaph,B.diaph,e),
+    labels:t>.97?B.labels:[],ringT:t,step:B.step,idx:B.idx,drains:t>.5?B.drains:A.drains,clips:B.clips,hiatus:lerp(A.hiatus,B.hiatus,e)};
+}
+function tubeLerp(a,b,t){
+  if(a.pts===b.pts)return{pts:a.pts,r:a.r===b.r?a.r:radLerp(a.r,b.r,t),clip:[lerp(a.clip[0],b.clip[0],t),lerp(a.clip[1],b.clip[1],t)],
+    alpha:lerp(a.alpha,b.alpha,t),role:t<.5?a.role:b.role,cap:b.cap||a.cap,lib:b.lib||a.lib};
+  const A=resample(a.pts,NRES,a.clip[0],a.clip[1]),B=resample(b.pts,NRES,b.clip[0],b.clip[1]);
+  const r=RG.map(u=>[u,lerp(radAt(a.r,a.clip[0]+u*(a.clip[1]-a.clip[0])),radAt(b.r,b.clip[0]+u*(b.clip[1]-b.clip[0])),t)]);
+  return{pts:A.map((p,i)=>V.lerp(p,B[i],t)),r,clip:[0,1],remap:b.clip,alpha:lerp(a.alpha,b.alpha,t),role:t<.5?a.role:b.role,cap:b.cap||a.cap,lib:b.lib||a.lib};
+}
+/* map a u in the target tube's own parameter to the displayed (possibly remapped) tube */
+function dispU(ts,u){if(!ts.remap)return u;const[c0,c1]=ts.remap;return clamp((u-c0)/((c1-c0)||1),0,1);}
+/* sample a tube state into points + radii over its clip */
+function tubeSamples(ts,n){const P=[],R=[],U=[];for(let i=0;i<n;i++){const u=ts.clip[0]+(ts.clip[1]-ts.clip[0])*i/(n-1);P.push(curveAt(ts.pts,u));R.push(radAt(ts.r,u));U.push(u);}return{P,R,U};}
+function tubePoint(ts,u){return curveAt(ts.pts,u);}
+/* ================= anatomy library =================
+   Coordinates in cm. x = patient left (+), y = superior (+), z = anterior (+). */
+const E0=[[0.2,27,-3],[0,21,-4],[0.4,15,-4.6],[1,9,-4.4],[1.9,4,-3.4],[2.6,1.5,-2.4],[3.6,0.4,-1.4]];
+const S0=[[6.2,3.8,-2.6],[7.6,1.6,-1.4],[8.1,-1.8,0.4],[7.3,-5.6,2.0],[5,-8.6,3.1],[2,-9.6,3.5],[-0.3,-8.3,3.0],[-1.9,-6.6,2.2]];
+const SR=[[0,2.3],[.08,3.2],[.3,3.3],[.55,2.9],[.75,2.2],[.9,1.6],[.97,.9],[1,.6]];
+const D0=[[-1.9,-6.6,2.2],[-3.3,-5.9,1.2],[-4.8,-6.4,-0.2],[-5.6,-8.6,-0.9],[-5.5,-11.6,-1.1],[-3.4,-13.1,-1.4],[0,-13.1,-1.9],[2.6,-12.1,-2],[3.6,-9.8,-1.8]];
+const DR=[[0,.75],[.04,1.45],[.13,1.5],[.2,1.2],[1,1.2]];
+const J0=[[3.6,-9.8,-1.8],[5.6,-10.6,0],[8,-11.6,1.4],[9.4,-14,2],[7,-15.8,2.8],[3.4,-15.4,3.2],[1.2,-17.2,3],[3.6,-19.4,2.6],[7.6,-18.8,2],[10.2,-17.4,1],[10.8,-20.4,0],[7.6,-22.2,0.6],[3,-22.8,1.2],[-0.6,-21.6,2],[-2.6,-18.6,2.4]];
+const JTAIL=[[7,-16.2,3],[3.4,-15.8,3.2],[1.2,-17.6,3],[3.6,-19.8,2.6],[7.6,-19.2,2],[10.2,-17.8,1],[10.8,-20.8,0],[7.6,-22.6,0.6],[3,-23.2,1.2],[-0.6,-22,2],[-2.6,-19,2.4]];
+const P0=[[-4.4,-10.6,0.2],[-3.6,-8.8,0.8],[-1.6,-8.2,1.0],[1.6,-7.4,0],[4.8,-6.2,-1.2],[7.8,-4.6,-2.4],[9.4,-3.4,-3]];
+const B0=[[-3.4,-0.8,0.4],[-3.7,-2.6,0.2],[-4.1,-4.8,0],[-4.5,-7,-0.3],[-4.9,-8.6,-0.6],[-5.3,-9.4,-0.85]];
+const RHD=[[-3.4,-0.8,0.4],[-5.4,0.3,0.2],[-7.6,1.3,0.4],[-9.6,2.5,0.1]],LHD=[[-3.4,-0.8,0.4],[-1.8,0.1,1.2],[0,1,2.2],[1.8,1.9,3]];
+const GB0=[[-3.9,-3.6,0.2],[-4.6,-3.9,1.2],[-5.2,-4.6,2.6],[-5.6,-5.6,3.6]];
+const C0=[[-10,-6,1],[-7.5,-11,4],[-3,-13.4,5.6],[2,-13.8,6],[6.5,-12,5.2],[9.8,-7,3],[10.9,-2.6,0.5],[11.3,-7,-2.4],[11.5,-15,-3.2]];
+const POUCH_PLACE=[[0,0,0],[0,-1,0]];
+const LIB={
+  esoph:{name:'Esophagus',pts:E0,r:.85,color:'#D9967E',kind:'lumen',clear:1,speed:9},
+  stom:{name:'Stomach',pts:S0,r:SR,color:'#E0A487',kind:'lumen',res:1,gas:.28},
+  duod:{name:'Duodenum',pts:D0,r:DR,color:'#E3B08C',kind:'lumen',speed:4},
+  jej:{name:'Jejunum',pts:J0,r:1.15,color:'#E8B994',kind:'lumen',speed:3.2},
+  panc:{name:'Pancreas',pts:P0,r:[[0,1.6],[.2,1.8],[.32,1.3],[.6,1.2],[1,.9]],color:'#E9CF7A',kind:'solid'},
+  bile:{name:'Bile duct',pts:B0,r:.33,color:'#6FAF5A',kind:'duct',speed:2},
+  rhd:{name:'Right hepatic duct',pts:RHD,r:[[0,.3],[1,.16]],color:'#6FAF5A',kind:'duct',speed:2},
+  lhd:{name:'Left hepatic duct',pts:LHD,r:[[0,.3],[1,.16]],color:'#6FAF5A',kind:'duct',speed:2},
+  gb:{name:'Gallbladder',pts:GB0,r:[[0,.22],[.3,.3],[.45,.9],[.8,1.3],[1,1.1]],color:'#7DBA61',kind:'solid'},
+  pouch:{name:'Gastric pouch',pts:POUCH_PLACE,r:1.5,color:'#E0A487',kind:'lumen',speed:5,gas:.35,transit:1,resid:.35},
+  sleeve:{name:'Sleeve',pts:POUCH_PLACE,r:1.3,color:'#E0A487',kind:'lumen',speed:6,gas:.3,transit:1,resid:.3},
+  conduit:{name:'Gastric conduit',pts:POUCH_PLACE,r:1.9,color:'#E0A487',kind:'lumen',speed:7,gas:.55,transit:1,resid:.2},
+  cuff:{name:'Duodenal cuff',pts:POUCH_PLACE,r:1.4,color:'#E3B08C',kind:'lumen',speed:4},
+  colon:{name:'Transverse colon',pts:C0,r:1.9,color:'#C9B79A',kind:'ctx',alpha:.32}
+};
+const BASE_IDS=['esoph','stom','duod','jej','panc','bile','rhd','lhd','gb','colon'];
+const ROLEC={food:'#22A38A',bp:'#8B62CC',common:'#3B7ED8',excl:'#8D979F',spec:'#C9483E',wrap:'#D5A05A',bougie:'#4C8FD6'};
+const ROLEN={food:'Food (alimentary) limb',bp:'Biliopancreatic or afferent limb',common:'Common channel',excl:'Excluded segment (no contrast normally)',spec:'Resected specimen',wrap:'Fundoplication wrap'};
+const sh=(pts,d)=>pts.map(p=>V.add(p,d));
+const at=(pts,u)=>curveAt(pts,u);
+function ringPath(c,axis,R,a0,sweep,n=18){axis=V.norm(axis);let u=V.norm(V.cross(axis,Math.abs(axis[1])<.9?[0,1,0]:[1,0,0]));const v=V.cross(axis,u);const o=[];
+  for(let i=0;i<n;i++){const t=a0+sweep*i/(n-1);o.push(V.add(c,V.add(V.mul(u,R*Math.cos(t)),V.mul(v,R*Math.sin(t)))));}return o;}
+function extend(pts,...more){return pts.concat(more);}
+
+const CAM0={tg:[0,-5,0],d:62,az:-18,el:12};
+const NORMAL_FLOW={src:['esoph',0],c:[['esoph',1,'stom',.12,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']]};
+function normalStep(extra){return Object.assign({title:'Normal anatomy',cap:'Start from the normal upper GI tract: esophagus, stomach, duodenal C-loop, and jejunum beyond the duodenojejunal flexure. Rotate the model; every operation below begins here.',dur:1.2,cam:CAM0,fluoro:1,flow:NORMAL_FLOW,
+  labels:[['esoph',.55,'Esophagus'],['stom',.35,'Stomach'],['duod',.45,'Duodenum'],['jej',.2,'Jejunum'],['panc',.6,'Pancreas'],['bile',.6,'Bile duct']]},extra||{});}
+
+/* ---------------- A. Gastrojejunostomy ---------------- */
+const J_GJ=[[3.6,-9.8,-1.8],[4.6,-11.4,0.2],[3.6,-12.6,3.4],[3.8,-11.2,4.6],[6.2,-10.8,4.3],[8.4,-10.6,3.2],[10,-12.6,2.4],[9.4,-14.8,2.6],...JTAIL];
+function opGJ(){return{id:'gj',code:'A',name:'Gastrojejunostomy',group:'Bypass and reconstruction',
+ blurb:'A loop of proximal jejunum is joined side to side to the stomach, bypassing an obstructed pylorus or duodenum. Nothing is resected.',
+ steps:[normalStep(),
+  {title:'Indication: gastric outlet obstruction',cap:'A periampullary or duodenal mass narrows the second part of the duodenum. The stomach dilates upstream. A gastrojejunostomy gives the stomach a second exit without removing the mass.',dur:1.6,
+   tubes:{duod:{r:[[0,.75],[.04,1.45],[.13,1.5],[.2,.9],[.26,.35],[.4,.35],[.46,1.0],[1,1.15]]},stom:{r:SR.map(([u,r])=>[u,r*1.12])}},masses:{m1:{at:[-4.4,-9.0,0.9],r:2.0,c:'#B77DA0'}},cam:{tg:[-1,-8,1],d:52,az:-30,el:14},
+   labels:[['duod',.33,'Obstructed duodenum'],['stom',.4,'Dilated stomach']],fluoro:1},
+  {title:'Retract and expose',cap:'The liver is retracted upward and the transverse colon is lifted to find a loop of proximal jejunum about 30 cm beyond the ligament of Treitz.',dur:1.4,liver:1,icons:[{k:'retractor',at:[-4,-3.6,7.4],to:[-4,-1,7.6]}]},
+  {title:'Bring a jejunal loop up',cap:'The loop is brought up in front of the colon (antecolic) and laid along the dependent greater curvature of the stomach. Its upstream end is the afferent limb; its downstream end is the efferent limb.',dur:2.2,
+   tubes:{jej:{pts:J_GJ,role:[[0,'bp'],[.24,'food']]}},icons:[{k:'grasper',at:[7,-15,4],to:[6.2,-10.8,4.6]}],cam:{tg:[4,-10,2],d:46,az:-8,el:18}},
+  {title:'Open stomach and jejunum',cap:'A gastrotomy and a matching enterotomy are made, side by side.',dur:1.4,icons:[{k:'scalpel',at:[5,-10.3,4.8],to:[7.4,-10.2,4.2]}]},
+  {title:'Sew the anastomosis',cap:'The gastrojejunostomy is completed with staples or sutures. This anastomosis, and the jejunum just beyond it, are where leaks and marginal ulcers occur.',dur:2,rings:[{t:'jej',u:[6.2,-10.8,4.3],s:1.25}],icons:[{k:'needle',at:{ring:0},orbit:1}]},
+  {title:'Completed gastrojejunostomy',cap:'Contrast leaves the stomach through the stoma and fills the efferent limb. Some contrast refluxing into the afferent limb is normal. With the outlet obstructed, little passes through the pylorus.',dur:1.6,liver:0,cam:{tg:[2,-8,1],d:56,az:-14,el:12},fluoro:1,
+   labels:[['jej',.1,'Afferent limb'],['jej',.42,'Efferent limb'],['stom',.4,'Stomach']],
+   flow:{src:['esoph',0],c:[['esoph',1,'stom',.12,'open'],['stom',1,'duod',0,'pylx'],['stom',[6.2,-9.4,3.6],'jej',[6.2,-10.8,4.3],'stoma'],['duod',1,'jej',0,'open']]}}],
+ comps:[
+  {id:'leak',name:'Anastomotic leak',early:1,desc:'Contrast escapes at the gastrojejunostomy and pools beside it. Leaks show on the first images after the stoma fills; take delayed and oblique views to see a small one.',mods:{leak:[{t:'jej',u:[6.2,-10.8,4.3],dir:[.6,-.4,.6],size:1,kind:'contained'}]}},
+  {id:'strict',name:'Stomal stricture or edema',desc:'The stoma is narrow. Contrast waits in the stomach and trickles into the efferent limb late. Early edema resolves; a fixed stricture persists.',mods:{connMod:[{i:2,delay:45,cap:.6}],r:[{t:'stom',u0:.3,u1:.8,mul:1.12}]}},
+  {id:'ulcer',name:'Marginal ulcer',desc:'A small, persistent collection projects from the jejunal side of the anastomosis: an ulcer niche. Best seen in profile on oblique views, with barium.',mods:{ulcer:[{t:'jej',u:[7.1,-10.7,3.9],dir:[0,-1,.3]}]}},
+  {id:'eff',name:'Efferent loop obstruction',desc:'The efferent limb fills, dilates and stops. Nothing passes the cutoff on delayed images.',mods:{block:[{t:'jej',u:.5}],r:[{t:'jej',u0:.26,u1:.5,mul:1.5}]}},
+  {id:'aff',name:'Afferent loop syndrome',desc:'The afferent limb is dilated and retains refluxed contrast without emptying. Often the afferent loop does not fill at all, so a normal-looking study does not exclude it.',mods:{r:[{t:'jej',u0:0,u1:.22,mul:1.8}],revCap:{jej:1},stasis:[{t:'jej',u0:0,u1:.22}]}}]
+};}
+
+/* ---------------- B. Billroth II (and Braun) ---------------- */
+const S_REM2=extend(sub(S0,0,.58,8),[6.6,-7.8,2.8]);
+const J_B2=[[3.6,-9.8,-1.8],[3.8,-11.6,0.6],[4.2,-12.2,1.8],[4.4,-10.4,2.8],[5.6,-8.8,3],[7.4,-8.8,2.8],[8.4,-10.2,2.6],[6.6,-11.6,2.4],[5.4,-12.4,2.2],[7,-14.4,2.6],...JTAIL];
+function opB2(braun){return{id:braun?'b2braun':'b2',code:braun?'C':'B',name:braun?'Billroth II with Braun anastomosis':'Billroth II',group:'Bypass and reconstruction',variantOf:braun?'b2':null,
+ blurb:braun?'A Billroth II plus a side-to-side jejunojejunostomy between the afferent and efferent limbs, which diverts bile away from the gastric remnant.':'The distal stomach is resected, the duodenal stump is closed, and the gastric remnant is joined end to side to a loop of jejunum.',
+ steps:[normalStep(),
+  {title:'Indication: distal gastric disease',cap:'An antral ulcer or tumor. The distal stomach, pylorus and duodenal bulb will be removed.',dur:1.4,masses:{m1:{at:[2.4,-9.6,4.6],r:1.3,c:'#B77DA0'}},labels:[['stom',.8,'Antral lesion']],cam:{tg:[2,-8,2],d:50,az:-12,el:16},fluoro:1},
+  {title:'Retract and expose',cap:'The liver is retracted to expose the stomach and duodenum.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-4,-3.6,7.4],to:[-4,-1,7.6]}]},
+  {title:'Divide the duodenum',cap:'A stapler divides the duodenum just beyond the pylorus. The closed end that stays behind is the duodenal stump, a classic leak site.',dur:1.6,drop:['duod'],
+   tubes:{duodSt:{lib:'duod',pts:D0,r:DR,clip:[.08,1],from:{alpha:1}},specD:{lib:'duod',pts:D0,r:DR,clip:[0,.08],role:'spec',from:{alpha:1}}},staples:[{t:'duodSt',end:0,dir:[0,1,1]}],icons:[{k:'stapler',at:at(D0,.08),to:V.add(at(D0,.08),[0,0,1])}]},
+  {title:'Divide the stomach',cap:'A second staple line crosses the stomach, leaving the proximal remnant.',dur:1.6,drop:['stom'],
+   tubes:{stomRem:{lib:'stom',pts:S0,r:SR,clip:[0,.58],from:{alpha:1},cap:[1,0]},specS:{lib:'stom',pts:S0,r:SR,clip:[.58,1],role:'spec',from:{alpha:1}}},icons:[{k:'stapler',at:V.add(at(S0,.58),[-2.4,1.4,0]),to:V.add(at(S0,.58),[2.4,-1.4,0])}]},
+  {title:'Remove the specimen',cap:'Distal stomach, pylorus and bulb are removed.',dur:1.4,tubes:{specS:{pts:sh(S0,[0,-2,12]),alpha:0},specD:{pts:sh(D0,[0,-2,12]),alpha:0}},masses:{m1:null}},
+  {title:'Bring a jejunal loop up',cap:'A loop of proximal jejunum is brought up to the gastric remnant. The limb coming from the duodenal stump is the afferent limb; the one leaving is the efferent limb.',dur:2.2,
+   tubes:{jej:{pts:J_B2,role:[[0,'bp'],[.205,'food']]},stomRem:{pts:S_REM2,r:[[0,2.3],[.13,3.2],[.5,3.3],[.92,2.9],[1,2.6]],clip:[0,1]}},icons:[{k:'grasper',at:[7.4,-14,3],to:[6.4,-9,3.4]}],cam:{tg:[3,-8,1],d:46,az:-10,el:18}},
+  ...(braun?[{title:'Braun enteroenterostomy',cap:'A side-to-side jejunojejunostomy joins the afferent and efferent limbs below the gastrojejunostomy, so bile can bypass the remnant.',dur:1.6,rings:[{t:'jej',u:[4.4,-12.1,1.9],s:.95}],icons:[{k:'needle',at:{ring:'last'},orbit:1}]}]:[]),
+  {title:'Sew the gastrojejunostomy',cap:'The end of the remnant is joined to the side of the jejunal loop. The staple line across the rest of the remnant is visible on radiographs.',dur:1.8,rings:[{t:'jej',u:[6.5,-8.8,2.9],s:1.6}],staples:[{t:'stomRem',u0:.86,u1:.99,dir:[-1,.6,0]}],icons:[{k:'needle',at:{ring:'last'},orbit:1}]},
+  {title:braun?'Completed Billroth II with Braun':'Completed Billroth II',cap:'Contrast fills the remnant and empties into the efferent limb. Reflux into the afferent limb is normal and may outline the duodenal stump.'+(braun?' With a Braun anastomosis, contrast in the afferent limb can short-circuit into the efferent limb.':''),dur:1.4,liver:0,fluoro:1,cam:{tg:[2,-8,1],d:56,az:-14,el:12},
+   labels:[['stomRem',.35,'Gastric remnant'],['duodSt',.25,'Duodenal stump'],['jej',.1,'Afferent limb'],['jej',.34,'Efferent limb']],
+   flow:{src:['esoph',0],c:[['esoph',1,'stomRem',.12,'open'],['stomRem',1,'jej',[6.5,-8.8,2.9],'stoma'],['duodSt',1,'jej',0,'open'],...(braun?[['jej',[4.3,-12.2,1.9],'jej',[5.4,-12.4,2.2],'open']]:[])]}}],
+ comps:[
+  {id:'stump',name:'Duodenal stump leak',early:1,desc:'Contrast refluxes up the afferent limb to the stump and escapes into the right upper quadrant. Many stump leaks never fill from above, so CT or a drain study may be needed.',mods:{leak:[{t:'duodSt',u:.02,dir:[-.6,.6,.4],size:.9,kind:'free'}],revCap:{jej:1,duodSt:1}}},
+  {id:'leak',name:'Gastrojejunal anastomotic leak',early:1,desc:'Extraluminal contrast at the anastomosis or along the remnant staple line.',mods:{leak:[{t:'stomRem',u:.97,dir:[.8,-.2,.6],size:1,kind:'contained'}]}},
+  {id:'aff',name:'Afferent loop syndrome',desc:'The afferent limb is dilated and holds contrast that does not drain. The duodenal stump balloons. Mechanical causes are kinking, adhesions, internal hernia or recurrent tumor.',mods:{r:[{t:'jej',u0:0,u1:.19,mul:1.8},{t:'duodSt',u0:0,u1:1,mul:1.5}],revCap:{jej:1,duodSt:1},stasis:[{t:'jej',u0:0,u1:.19},{t:'duodSt',u0:0,u1:1}]}},
+  {id:'eff',name:'Efferent loop obstruction',desc:'The efferent limb fills to a cutoff and dilates.',mods:{block:[{t:'jej',u:.36}],r:[{t:'jej',u0:.21,u1:.36,mul:1.5}]}},
+  {id:'ulcer',name:'Marginal ulcer',desc:'An ulcer niche on the jejunal side of the anastomosis.',mods:{ulcer:[{t:'jej',u:[7.3,-8.9,2.8],dir:[.2,-1,.3]}]}},
+  {id:'intus',name:'Jejunogastric intussusception',desc:'Jejunum telescopes back through the stoma into the remnant, a rare emergency. Contrast outlines a coiled-spring filling defect in the remnant.',mods:{defect:[{t:'stomRem',u:.8,r:2.0,coil:1}]}}]
+};}
+
+/* ---------------- D. Roux-en-Y total gastrectomy ---------------- */
+const ROUX_D=[[5.2,1.0,-1.2],[3.7,0.4,-1.4],[2.4,-1.2,-0.6],[1.6,-4,0.6],[1.8,-8,1.2],[2.6,-11.4,1.4],[3.8,-14.4,1.8],[6.4,-16,2.6],[3.4,-17,3.2],[1.2,-18.6,3],[3.6,-20.4,2.6],[7.6,-19.8,2],[10.2,-18.4,1],[10.6,-21.2,0],[7.6,-22.8,0.6],[3,-23.4,1.2],[-0.6,-22.2,2]];
+const BPL_D=[[3.6,-9.8,-1.8],[5.2,-11.4,-0.6],[5.6,-13.6,0.6],[4.6,-14.4,1.4]];
+function opRYG(){const ej=[3.7,0.4,-1.4],jj=[4.2,-14.5,1.7];return{id:'ryg',code:'D',name:'Roux-en-Y gastrectomy',group:'Bypass and reconstruction',
+ blurb:'The whole stomach is removed. A Roux limb of jejunum is brought up to the esophagus, and the biliopancreatic limb is joined to it lower down.',
+ steps:[normalStep(),
+  {title:'Indication: gastric cancer',cap:'A tumor of the gastric body. A total gastrectomy removes the whole stomach.',dur:1.4,masses:{m1:{at:[9.4,-3.6,2.4],r:1.8,c:'#B77DA0'}},labels:[['stom',.45,'Gastric tumor']],fluoro:1},
+  {title:'Retract and expose',cap:'Liver retracted; the stomach is mobilized.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-4,-3.6,7.4],to:[-4,-1,7.6]}]},
+  {title:'Divide the duodenum',cap:'The duodenum is stapled just past the pylorus, leaving a closed duodenal stump.',dur:1.5,drop:['duod'],tubes:{duodSt:{lib:'duod',pts:D0,r:DR,clip:[.07,1],from:{alpha:1}},specD:{lib:'duod',pts:D0,r:DR,clip:[0,.07],role:'spec',from:{alpha:1}},stom:{role:'spec'}},staples:[{t:'duodSt',end:0,dir:[0,1,1]}],icons:[{k:'stapler',at:at(D0,.07),to:V.add(at(D0,.07),[0,0,1])}]},
+  {title:'Divide the esophagus',cap:'The esophagus is divided at the gastroesophageal junction.',dur:1.4,drop:['esoph'],tubes:{esoR:{lib:'esoph',pts:E0,clip:[0,.965],from:{alpha:1},cap:[1,0]}},icons:[{k:'scissors',at:[3.4,1.2,-0.6]}],cam:{tg:[3,0,0],d:44,az:-16,el:14}},
+  {title:'Remove the stomach',cap:'The whole stomach, with the tumor, is removed.',dur:1.4,tubes:{stom:{pts:sh(S0,[2,0,12]),alpha:0},specD:{pts:sh(D0,[0,0,12]),alpha:0}},masses:{m1:null},cam:CAM0},
+  {title:'Divide the jejunum',cap:'The jejunum is stapled about 15 to 40 cm beyond the ligament of Treitz. The upstream piece will be the biliopancreatic limb; the downstream piece becomes the Roux limb.',dur:1.5,drop:['jej'],
+   tubes:{bpl:{lib:'jej',pts:J0,clip:[0,.16],role:'bp',from:{alpha:1},cap:[1,1]},roux:{lib:'jej',pts:J0,clip:[.16,1],role:'food',from:{alpha:1}},duodSt:{role:'bp'}},icons:[{k:'stapler',at:at(J0,.16),to:V.add(at(J0,.16),[0,0,1.2])}]},
+  {title:'Bring the Roux limb up',cap:'The Roux limb is brought up behind the colon (retrocolic) to reach the esophagus.',dur:2.4,tubes:{roux:{pts:ROUX_D,clip:[0,1]}},icons:[{k:'grasper',at:[8,-11,2],to:[4.6,0.6,-0.6]}],cam:{tg:[2,-6,0],d:56,az:-10,el:14}},
+  {title:'Esophagojejunostomy',cap:'The esophagus is joined end to side to the Roux limb, a few centimeters from its closed end. This is the anastomosis most at risk of leak.',dur:1.8,rings:[{t:'roux',u:ej,s:1.0}],staples:[{t:'roux',end:0,dir:[0,1,0]}],icons:[{k:'stapler',at:[3.6,-1.4,-1],to:[3.7,0.2,-1.4]}],cam:{tg:[3,-1,-1],d:36,az:-20,el:12}},
+  {title:'Jejunojejunostomy',cap:'The biliopancreatic limb is joined to the side of the Roux limb 40 to 60 cm below the esophagojejunostomy. Below this point is the common channel.',dur:1.8,tubes:{bpl:{pts:BPL_D,clip:[0,1]},roux:{role:[[0,'food'],[.37,'common']]}},rings:[{t:'roux',u:jj,s:1.15}],icons:[{k:'needle',at:{ring:'last'},orbit:1}],cam:{tg:[4,-13,1],d:34,az:-10,el:18},jjClose:1},
+  {title:'Completed Roux-en-Y gastrectomy',cap:'Contrast passes from the esophagus straight into the Roux limb, past its short blind end. The biliopancreatic limb and duodenal stump do not fill, or fill only by a little reflux.',dur:1.4,liver:0,fluoro:1,cam:CAM0,drains:[[[14,-8,2],[11,-3,1],[7,0,-.4],[5.4,1.2,-0.8]]],
+   labels:[['esoR',.7,'Esophagus'],['roux',.2,'Roux limb'],['bpl',.5,'Biliopancreatic limb'],['roux',.6,'Common channel'],['duodSt',.25,'Duodenal stump']],
+   flow:{src:['esoph',0],c:[['esoR','end','roux',ej,'open'],['bpl',1,'roux',jj,'open'],['duodSt',1,'bpl',0,'open']]}}],
+ comps:[
+  {id:'leak',name:'Esophagojejunal anastomotic leak',early:1,desc:'Contrast escapes at the esophagojejunostomy, often posterior and to the left, and may track to the drain. Image in the lateral and both obliques.',mods:{leak:[{t:'roux',u:ej,dir:[.5,-.3,-.7],size:1,kind:'track',drain:0}]}},
+  {id:'blind',name:'Leak from the Roux limb blind end',early:1,desc:'The short closed end of the Roux limb beyond the anastomosis fills normally; contrast escaping from its tip is a leak.',mods:{leak:[{t:'roux',u:.002,dir:[1,.3,.2],size:.7,kind:'contained'}]}},
+  {id:'strict',name:'Anastomotic stricture',desc:'A short narrowing at the esophagojejunostomy with a dilated esophagus above and slow passage.',mods:{r:[{t:'esoR',u0:.6,u1:.97,mul:1.45}],narrow:[{t:'roux',u:ej,len:1.6,r:.3}],hold:[{t:'esoR',u:.965,len:9,delay:22}]}},
+  {id:'stump',name:'Duodenal stump leak',early:1,desc:'Usually not reached by oral contrast; suspect it from a right upper quadrant collection. Shown here with reflux all the way to the stump.',mods:{leak:[{t:'duodSt',u:.02,dir:[-.6,.6,.4],size:.9,kind:'free'}],revCap:{roux:1,bpl:1,duodSt:1}}},
+  {id:'jjobs',name:'Obstruction at the jejunojejunostomy',desc:'The Roux limb is dilated down to the jejunojejunostomy and contrast is slow to enter the common channel.',mods:{r:[{t:'roux',u0:.04,u1:.36,mul:1.5}],block:[{t:'roux',u:.37,delay:120}]}}]
+};}
+
+/* ---------------- E. Whipple (classic or pylorus-preserving) ---------------- */
+const JL_W=[[-0.6,-10.6,0.2],[-2.3,-8.9,0.6],[-3.6,-6.4,0.2],[-3.9,-3.5,0.6],[-5.2,-4.4,1.4],[-6,-7.6,2.4],[-4.8,-11,3.4],[-1.6,-12.4,4.4],[1.6,-11.8,5],[3.2,-10.8,4.6],[5,-12,4],[7,-14,3.2],[6.6,-16,3.2],[3.4,-15.8,3.4],[1.2,-17.6,3],[3.6,-19.8,2.6],[7.6,-19.2,2],[10.2,-17.8,1],[10.6,-20.8,0],[7.6,-22.6,0.6],[3,-23,1.2]];
+const JL_P=[[-0.6,-10.6,0.2],[-2.3,-8.9,0.6],[-3.6,-6.4,0.2],[-3.9,-3.5,0.6],[-5.2,-4.4,1.4],[-5.4,-7,2.4],[-3.4,-8.8,3.4],[-1,-11,4.2],[2,-12,4.6],[5,-12.6,4],[7,-14.4,3.2],[6.6,-16,3.2],[3.4,-15.8,3.4],[1.2,-17.6,3],[3.6,-19.8,2.6],[7.6,-19.2,2],[10.2,-17.8,1],[10.6,-20.8,0],[7.6,-22.6,0.6],[3,-23,1.2]];
+function opWhipple(pp){const pj=[-2.3,-8.9,0.6],hj=[-3.9,-3.5,0.6],gj=pp?[-3.4,-8.8,3.4]:[3.2,-10.8,4.6];
+ const remPts=pp?extend(sub(D0,0,.1,4),[-3.6,-7.4,2.6]):extend(sub(S0,0,.8,9),[3.2,-10,4.0]);
+ return{id:pp?'ppw':'whip',code:pp?'F':'E',name:pp?'Pylorus-preserving Whipple':'Classic Whipple',group:'Bypass and reconstruction',variantOf:pp?'whip':null,
+ blurb:pp?'As the classic Whipple, but the whole stomach, pylorus and first centimeters of the duodenum are kept, and a duodenojejunostomy replaces the gastrojejunostomy.':'Pancreatic head, duodenum, distal bile duct, gallbladder and distal stomach are removed. One jejunal limb receives the pancreas, then the bile duct, then the stomach.',
+ steps:[normalStep(),
+  {title:'Indication: pancreatic head mass',cap:'A mass in the pancreatic head obstructs the bile duct, which dilates upstream.',dur:1.5,masses:{m1:{at:[-3.8,-9.6,0.8],r:1.9,c:'#B77DA0'}},tubes:{bile:{r:.55},rhd:{r:[[0,.45],[1,.25]]},lhd:{r:[[0,.45],[1,.25]]}},cam:{tg:[-3,-7,0],d:42,az:-28,el:14},labels:[['bile',.5,'Dilated bile duct'],['panc',.15,'Head mass']],fluoro:1},
+  {title:'Retract; remove the gallbladder',cap:'The liver is retracted and the gallbladder removed.',dur:1.5,liver:1,tubes:{gb:{alpha:0,pts:sh(GB0,[-1,0,8])}},icons:[{k:'retractor',at:[-4,-3.6,7.4],to:[-4,-1,7.6]},{k:'scissors',at:at(GB0,.1),a:.4,b:1}]},
+  {title:'Divide the common hepatic duct',cap:'The bile duct is cut above the mass. The upper end will be sewn to the jejunum.',dur:1.4,drop:['bile'],tubes:{bileUp:{lib:'bile',pts:B0,r:.55,clip:[0,.3],from:{alpha:1},cap:[1,0]},specB:{lib:'bile',pts:B0,r:.55,clip:[.3,1],role:'spec',from:{alpha:1}}},icons:[{k:'scissors',at:at(B0,.3)}]},
+  pp?{title:'Divide the duodenum',cap:'The duodenum is divided 2 to 3 cm beyond the pylorus, keeping the whole stomach and pylorus.',dur:1.5,drop:['duod'],tubes:{cuff:{lib:'cuff',pts:D0,r:DR,clip:[0,.1],from:{alpha:1},cap:[1,0]},specD:{lib:'duod',pts:D0,r:DR,clip:[.1,1],role:'spec',from:{alpha:1}}},icons:[{k:'stapler',at:at(D0,.1),to:V.add(at(D0,.1),[0,0,1])}]}
+    :{title:'Divide the stomach',cap:'The distal stomach (antrum and pylorus) is stapled off.',dur:1.5,drop:['stom','duod'],tubes:{stomRem:{lib:'stom',pts:S0,r:SR,clip:[0,.8],from:{alpha:1},cap:[1,0]},specS:{lib:'stom',pts:S0,r:SR,clip:[.8,1],role:'spec',from:{alpha:1}},specD:{lib:'duod',pts:D0,r:DR,role:'spec',from:{alpha:1}}},icons:[{k:'stapler',at:V.add(at(S0,.8),[-1.6,1.6,0]),to:V.add(at(S0,.8),[1.6,-1.6,0])}]},
+  {title:'Divide the pancreatic neck',cap:'The pancreas is transected at the neck, over the portal vein.',dur:1.4,drop:['panc'],tubes:{pancRem:{lib:'panc',pts:P0,clip:[.34,1],from:{alpha:1}},specP:{lib:'panc',pts:P0,clip:[0,.34],role:'spec',from:{alpha:1}},...(pp?{specD:{role:'spec'}}:{})},icons:[{k:'scalpel',at:V.add(at(P0,.34),[0,1.6,.6]),to:V.add(at(P0,.34),[0,-1.6,.6])}]},
+  {title:'Divide the jejunum',cap:'The jejunum is divided just beyond the ligament of Treitz.',dur:1.3,drop:['jej'],tubes:{jl:{lib:'jej',pts:J0,clip:[.05,1],from:{alpha:1}},specJ:{lib:'jej',pts:J0,clip:[0,.05],role:'spec',from:{alpha:1}}},icons:[{k:'stapler',at:at(J0,.05),to:V.add(at(J0,.05),[0,0,1.2])}]},
+  {title:'Remove the specimen',cap:'Pancreatic head, duodenum, distal bile duct and '+(pp?'proximal jejunum':'distal stomach')+' come out together.',dur:1.5,masses:{m1:null},tubes:{specB:{pts:sh(B0,[-6,0,10]),alpha:0},specP:{pts:sh(P0,[-6,0,10]),alpha:0},specD:{pts:sh(D0,[-6,0,10]),alpha:0},specJ:{pts:sh(J0,[-6,0,10]),alpha:0},...(pp?{}:{specS:{pts:sh(S0,[-4,0,10]),alpha:0}})}},
+  {title:'Bring the jejunal limb up',cap:'The divided end of the jejunum is passed behind the colon into the right upper quadrant.',dur:2.4,tubes:{jl:{pts:pp?JL_P:JL_W,clip:[0,1]}},icons:[{k:'grasper',at:[6,-14,3],to:[-1,-10,0.6]}],cam:{tg:[-2,-7,1],d:48,az:-24,el:16}},
+  {title:'Pancreaticojejunostomy',cap:'First, the pancreatic remnant is sewn to the jejunum near its closed end. Pancreatic leak (fistula) here is the most common serious complication.',dur:1.8,rings:[{t:'jl',u:pj,s:1.25}],icons:[{k:'needle',at:{ring:'last'},orbit:1}],staples:[{t:'jl',end:0,dir:[1,0,0]}]},
+  {title:'Hepaticojejunostomy',cap:'About 10 cm downstream, the bile duct is sewn end to side to the same limb.',dur:1.8,rings:[{t:'jl',u:hj,s:.8}],icons:[{k:'needle',at:{ring:'last'},orbit:1}]},
+  {title:pp?'Duodenojejunostomy':'Gastrojejunostomy',cap:(pp?'The duodenal cuff':'The gastric remnant')+' is joined to the limb further down. Upstream of this anastomosis is the afferent limb; downstream is the efferent limb.',dur:1.8,
+   tubes:pp?{cuff:{pts:remPts,clip:[0,1],r:[[0,.75],[.2,1.45],[1,1.4]]}}:{stomRem:{pts:remPts,clip:[0,1],r:[[0,2.3],[.08,3.2],[.3,3.3],[.55,2.9],[.75,2.2],[.92,2.0],[1,1.8]]}},
+   rings:[{t:'jl',u:gj,s:pp?1.1:1.3}],icons:[{k:'needle',at:{ring:'last'},orbit:1}],cam:{tg:[0,-9,2],d:44,az:-14,el:16}},
+  {title:pp?'Completed pylorus-preserving Whipple':'Completed classic Whipple',cap:'Contrast fills the '+(pp?'stomach, crosses the pylorus into the cuff':'gastric remnant')+' and leaves through the efferent limb. Reflux up the afferent limb toward the bile and pancreatic anastomoses is normal, and air or contrast in the bile ducts (pneumobilia) is expected.',dur:1.4,liver:0,fluoro:1,cam:CAM0,drains:[[[-15,-10,2],[-11,-8,1.5],[-6,-7.6,1.6],[-3,-6,1.4]]],
+   tubes:{jl:{role:[[0,'bp'],[pp?.32:.45,'food']]}},
+   labels:[['jl',.12,'Afferent limb'],['jl',pp?.5:.6,'Efferent limb'],['pancRem',.4,'Pancreatic remnant'],['bileUp',.3,'Hepaticojejunostomy'],pp?['stom',.4,'Stomach']:['stomRem',.4,'Gastric remnant']],
+   flow:{src:['esoph',0],c:pp?[['esoph',1,'stom',.12,'open'],['stom',1,'cuff',0,'pyl'],['cuff',1,'jl',gj,'stoma'],['jl',hj,'bileUp','end','duct'],['bileUp',0,'rhd',0,'open'],['bileUp',0,'lhd',0,'open']]
+     :[['esoph',1,'stomRem',.12,'open'],['stomRem',1,'jl',gj,'stoma'],['jl',hj,'bileUp','end','duct'],['bileUp',0,'rhd',0,'open'],['bileUp',0,'lhd',0,'open']]}}],
+ comps:[
+  {id:'dge',name:'Delayed gastric emptying',desc:'The commonest problem after a Whipple, with either reconstruction. Contrast sits in the stomach with little passing at 15 to 30 minutes, without a mechanical obstruction.',mods:{empty:{[pp?'stom':'stomRem']:4000},connMod:[{i:1,delay:240,cap:.5}],r:[{t:pp?'stom':'stomRem',u0:.2,u1:.9,mul:1.15}]}},
+  {id:'leak',name:(pp?'Duodenojejunal':'Gastrojejunal')+' leak',early:1,desc:'Extraluminal contrast at the anastomosis.',mods:{leak:[{t:'jl',u:gj,dir:pp?[-.8,0,.6]:[.6,.3,.7],size:1,kind:'contained'}]}},
+  {id:'pj',name:'Pancreaticojejunal leak',early:1,desc:'Usually a CT and drain diagnosis. On fluoroscopy it shows only if refluxed contrast reaches the anastomosis and escapes, often toward the drain.',mods:{leak:[{t:'jl',u:pj,dir:[.2,.4,.9],size:.8,kind:'track',drain:0}],revCap:{jl:1}}},
+  {id:'aff',name:'Afferent limb obstruction',desc:'The afferent limb is dilated and holds refluxed contrast; bile ducts may dilate. Causes: kinking, adhesions, recurrent tumor.',mods:{r:[{t:'jl',u0:0,u1:pp?.31:.44,mul:1.7}],revCap:{jl:1},stasis:[{t:'jl',u0:0,u1:pp?.31:.44}]}},
+  {id:'ulcer',name:'Marginal ulcer',desc:'An ulcer niche on the jejunal side of the '+(pp?'duodenojejunostomy':'gastrojejunostomy')+'.',mods:{ulcer:[{t:'jl',u:pp?[-2.2,-9.9,3.8]:[4,-11.4,4.4],dir:[0,-1,.3]}]}}]
+};}
+
+/* ---------------- G. Roux-en-Y hepaticojejunostomy ---------------- */
+const ROUX_G=[[-1.8,-2.6,1.0],[-3.6,-3.2,0.4],[-5.4,-4.6,1.2],[-5.8,-8,2.4],[-4,-11.4,3.4],[-0.6,-12.8,3.6],[2.6,-13.4,2.8],[5.6,-14.6,2.6],[7,-16.4,3.2],[3.4,-16,3.4],[1.2,-17.8,3],[3.6,-20,2.6],[7.6,-19.4,2],[10.2,-18,1],[10.6,-21,0],[7.6,-22.8,0.6],[3,-23.4,1.2]];
+const BPL_G=[[3.6,-9.8,-1.8],[6,-11,0.6],[6.6,-13.2,1.6],[4.2,-13.8,2.6]];
+function opHJ(){const hj=[-3.6,-3.2,0.4],jj=[2.8,-13.4,2.8];return{id:'hj',code:'G',name:'Roux-en-Y hepaticojejunostomy',group:'Bypass and reconstruction',
+ blurb:'The bile duct is joined to a Roux limb of jejunum. The stomach and duodenum are untouched, so oral contrast follows the normal route and enters the Roux limb only by reflux.',
+ steps:[normalStep(),
+  {title:'Indication: bile duct stricture',cap:'A benign stricture of the common hepatic duct, here after a bile duct injury at cholecystectomy. The ducts above it dilate.',dur:1.5,tubes:{gb:{alpha:0},bile:{r:[[0,.6],[.3,.6],[.36,.14],[.46,.14],[.52,.33],[1,.33]]},rhd:{r:[[0,.5],[1,.28]]},lhd:{r:[[0,.5],[1,.28]]}},cam:{tg:[-3,-4,0],d:34,az:-26,el:14},labels:[['bile',.4,'Stricture'],['rhd',.5,'Dilated ducts']],fluoro:1,clips:[[-3.9,-3.8,0.6]]},
+  {title:'Retract and expose',cap:'The liver is retracted to reach the hilum.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-4,-3.6,7.4],to:[-4,-1,7.6]}]},
+  {title:'Excise the stricture',cap:'The duct is cut above the stricture; the distal duct is oversewn.',dur:1.8,drop:['bile'],tubes:{bileUp:{lib:'bile',pts:B0,r:.6,clip:[0,.3],from:{alpha:1},cap:[1,0]},specB:{lib:'bile',pts:B0,r:.14,clip:[.3,.5],role:'spec',from:{alpha:1}},bileLo:{lib:'bile',pts:B0,clip:[.5,1],from:{alpha:1}}},icons:[{k:'scissors',at:at(B0,.3)},{k:'needle',at:at(B0,.5),a:.5,b:1}]},
+  {title:'Divide the jejunum',cap:'The jejunum is divided about 20 cm beyond the ligament of Treitz.',dur:1.4,drop:['jej'],tubes:{specB:{alpha:0,pts:sh(B0,[-4,0,8])},bpl:{lib:'jej',pts:J0,clip:[0,.2],role:'bp',from:{alpha:1},cap:[1,1]},roux:{lib:'jej',pts:J0,clip:[.2,1],role:'food',from:{alpha:1}}},icons:[{k:'stapler',at:at(J0,.2),to:V.add(at(J0,.2),[0,0,1.2])}]},
+  {title:'Bring the Roux limb to the hilum',cap:'The Roux limb is brought up behind the colon to the hepatic hilum.',dur:2.4,tubes:{roux:{pts:ROUX_G,clip:[0,1],role:'bp'}},icons:[{k:'grasper',at:[8,-12,2],to:[-2.4,-3,1]}],cam:{tg:[-2,-7,1],d:46,az:-24,el:16}},
+  {title:'Hepaticojejunostomy',cap:'The bile duct is sewn end to side to the Roux limb near its closed end.',dur:1.8,rings:[{t:'roux',u:hj,s:.75}],staples:[{t:'roux',end:0,dir:[0,1,0]}],icons:[{k:'needle',at:{ring:'last'},orbit:1}],cam:{tg:[-3,-3.4,0.5],d:26,az:-30,el:12}},
+  {title:'Jejunojejunostomy',cap:'The biliopancreatic limb is joined to the side of the Roux limb 40 to 60 cm below the hepaticojejunostomy. Food and bile meet in the common channel.',dur:1.8,tubes:{bpl:{pts:BPL_G,clip:[0,1]},roux:{role:[[0,'bp'],[.35,'common']]}},rings:[{t:'roux',u:jj,s:1.15}],icons:[{k:'needle',at:{ring:'last'},orbit:1}],cam:{tg:[3,-13,2],d:32,az:-10,el:18},jjClose:1},
+  {title:'Completed Roux-en-Y hepaticojejunostomy',cap:'Oral contrast passes the stomach and duodenum normally and joins the Roux limb at the jejunojejunostomy. Reflux up the Roux limb and into the bile ducts is common and normal. To test the anastomosis itself, contrast is injected through a biliary drain (cholangiogram source).',dur:1.4,liver:0,fluoro:1,cam:CAM0,cholangio:1,
+   tubes:{bpl:{role:'food'},duod:{role:'food'},stom:{role:'food'}},
+   labels:[['roux',.18,'Roux limb (biliary)'],['bpl',.5,'Biliopancreatic limb'],['roux',.6,'Common channel'],['bileUp',.4,'Hepaticojejunostomy']],
+   flow:{src:['esoph',0],c:[['esoph',1,'stom',.12,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'bpl',0,'open'],['bpl',1,'roux',jj,'open'],['roux',hj,'bileUp','end','duct'],['bileUp',0,'rhd',0,'open'],['bileUp',0,'lhd',0,'open']]}}],
+ comps:[
+  {id:'hjs',name:'Hepaticojejunostomy stricture',chol:1,desc:'On a cholangiogram, dilated ducts drain slowly through a tight anastomosis. On an oral study, the absence of reflux is not specific.',mods:{r:[{t:'bileUp',u0:0,u1:1,mul:1.5},{t:'rhd',u0:0,u1:1,mul:1.5},{t:'lhd',u0:0,u1:1,mul:1.5}],connMod:[{i:5,delay:60,cap:.5}],hold:[{t:'bileUp',u:.99,len:4,delay:60}]}},
+  {id:'hjl',name:'Hepaticojejunal leak',chol:1,early:1,desc:'On the cholangiogram, contrast escapes at the hilum and tracks into the right upper quadrant.',mods:{leak:[{t:'roux',u:hj,dir:[-.5,-.4,.8],size:1,kind:'free'}]}},
+  {id:'rlo',name:'Roux limb obstruction',desc:'The Roux limb is dilated and drains slowly into the common channel; bile ducts may dilate.',mods:{r:[{t:'roux',u0:.02,u1:.34,mul:1.6}],block:[{t:'roux',u:.345,delay:120}],revCap:{roux:1}}}]
+};}
+
+/* ---------------- H. Roux-en-Y gastric bypass (and mini bypass variants) ---------------- */
+const POUCH=[[4.1,0.6,-1.4],[4.6,-0.8,-0.6],[4.9,-2.4,0.2],[4.8,-3.4,0.8]];
+const ROUX_H=[[3.0,-2.8,2.2],[4.6,-4.2,1.6],[5.4,-5.8,4.8],[4.8,-8.6,6.8],[3.8,-12.4,8.6],[3.4,-15.6,6],[4.6,-17.6,3.6],[7.6,-18.4,2.6],[10.2,-17.6,1.4],[10.8,-20.4,0.2],[7.6,-22.4,0.6],[3.4,-23,1.2],[-0.4,-21.8,2],[-2.4,-19,2.6]];
+const ROUX_IH=[[3.0,-2.8,2.2],[4.6,-4.2,1.6],[5.4,-5.8,4.8],[4.8,-8.6,6.8],[3.8,-12.4,8.6],[3.4,-15.6,6],[4.6,-17.6,3.6],[7.4,-14.6,1.2],[9.6,-10.6,0.2],[7.4,-8,-1.6],[9.8,-6.6,-2.6],[11,-9.8,-1.6],[8.6,-12,-2.4],[6.6,-10.4,-3.2],[8.8,-8.4,-3.8]];
+const BPL_H=[[3.6,-9.8,-1.8],[6.4,-11.4,-0.2],[7.6,-14,1],[6.4,-16.4,2.2],[5,-17.4,3.2]];
+const REM_H=sh(S0,[1.0,-.2,.2]);
+function opRYGB(){const gj=[4.6,-4.2,1.6],jj=[4.6,-17.6,3.6];return{id:'rygb',code:'H',name:'Roux-en-Y gastric bypass',group:'Bypass and reconstruction',
+ blurb:'A small gastric pouch is stapled off the stomach and joined to a Roux limb. The rest of the stomach, the duodenum and the biliopancreatic limb are bypassed and stay in place.',
+ steps:[normalStep({cap:'Start from the normal anatomy. Gastric bypass is done for obesity, so there is no abnormal anatomy to correct.'}),
+  {title:'Retract the liver',cap:'The left lobe of the liver is lifted to expose the gastroesophageal junction.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-1,-1.4,7],to:[-1,1.2,7.2]}],cam:{tg:[4,-2,0],d:40,az:-14,el:16}},
+  {title:'Create the gastric pouch',cap:'Staple lines across and then up the stomach create a pouch of about 30 mL along the lesser curvature. The rest of the stomach, the excluded remnant, stays in place, closed.',dur:2.4,
+   tubes:{pouch:{lib:'pouch',pts:POUCH,r:[[0,1.1],[.3,1.7],[.8,1.7],[1,1.2]],clip:[0,1],from:{clip:[0,.01],alpha:1},role:'food',cap:[1,1]},stom:{pts:REM_H,role:'excl'}},staples:[{t:'pouch',u0:.1,u1:.98,dir:[1,0,0]},{t:'stom',u0:.06,u1:.3,dir:[-1,0,0]}],icons:[{k:'stapler',at:[4.4,-3.6,1.6],to:[5.4,1.4,-1.6]}]},
+  {title:'Divide the jejunum',cap:'The jejunum is divided 30 to 50 cm beyond the ligament of Treitz.',dur:1.4,drop:['jej'],tubes:{bpl:{lib:'jej',pts:J0,clip:[0,.14],role:'bp',from:{alpha:1},cap:[1,1]},roux:{lib:'jej',pts:J0,clip:[.14,1],role:'food',from:{alpha:1}},duod:{role:'excl'}},icons:[{k:'stapler',at:at(J0,.14),to:V.add(at(J0,.14),[0,0,1.2])}],cam:CAM0},
+  {title:'Bring the Roux limb up',cap:'The Roux (alimentary) limb is brought up in front of the colon and the remnant stomach (antecolic, antegastric) to the pouch.',dur:2.4,tubes:{roux:{pts:ROUX_H,clip:[0,1]}},icons:[{k:'grasper',at:[8,-12,3],to:[4.4,-3.4,2.6]}]},
+  {title:'Gastrojejunostomy',cap:'The pouch is joined to the side of the Roux limb. The few centimeters of limb beyond the anastomosis form a short blind end (the candy cane).',dur:1.8,rings:[{t:'roux',u:gj,s:1.0}],staples:[{t:'roux',end:0,dir:[0,1,0]}],icons:[{k:'stapler',at:[4.6,-6.6,1.6],to:[4.7,-4.2,1.4]}],cam:{tg:[4.4,-3,1],d:30,az:-14,el:12}},
+  {title:'Jejunojejunostomy',cap:'The biliopancreatic limb is joined to the Roux limb 75 to 150 cm downstream. Below it is the common channel.',dur:1.8,tubes:{bpl:{pts:BPL_H,clip:[0,1]},roux:{role:[[0,'food'],[.42,'common']]}},rings:[{t:'roux',u:jj,s:1.15}],icons:[{k:'needle',at:{ring:'last'},orbit:1}],cam:{tg:[5,-16,2],d:32,az:-10,el:18},jjClose:1},
+  {title:'Close the mesenteric defects',cap:'The gap behind the Roux limb (Petersen space) and the defect at the jejunojejunostomy are sewn shut. Open defects are where internal hernias form.',dur:1.8,icons:[{k:'needle',at:[3.2,-10.6,5.6],orbit:.6,a:0,b:.5},{k:'needle',at:[5.6,-16.4,2.2],orbit:.6,a:.5,b:1}],cam:{tg:[4,-12,3],d:42,az:-8,el:18}},
+  {title:'Completed Roux-en-Y gastric bypass',cap:'Contrast fills the small pouch and passes promptly into the Roux limb, filling the short blind end. The excluded stomach, duodenum and biliopancreatic limb do not fill; the remnant often shows only a gas bubble.',dur:1.4,liver:0,fluoro:1,cam:CAM0,
+   labels:[['pouch',.5,'Pouch'],['stom',.45,'Excluded stomach'],['roux',.2,'Roux limb'],['bpl',.5,'Biliopancreatic limb'],['roux',.62,'Common channel']],
+   flow:{src:['esoph',0],c:[['esoph',1,'pouch',.06,'open'],['pouch',1,'roux',gj,'stoma'],['bpl',1,'roux',jj,'open'],['duod',1,'bpl',0,'open'],['stom',1,'duod',0,'pyl']]}}],
+ comps:[
+  {id:'leak',name:'Gastrojejunal anastomotic leak',early:1,desc:'The commonest leak site. Contrast escapes at the anastomosis, usually to the left upper quadrant, and may outline the remnant or track to a drain.',mods:{leak:[{t:'roux',u:gj,dir:[.8,-.1,.4],size:1,kind:'free'}]}},
+  {id:'pouchl',name:'Pouch staple-line leak',early:1,desc:'A leak from the pouch staple line, near the angle of His.',mods:{leak:[{t:'pouch',u:.25,dir:[.8,.5,-.2],size:.8,kind:'contained'}]}},
+  {id:'blind',name:'Blind-end (candy cane) leak',early:1,desc:'The blind end beyond the anastomosis fills normally; contrast escaping from its tip is a leak.',mods:{leak:[{t:'roux',u:.004,dir:[-.6,.5,.4],size:.7,kind:'contained'}]}},
+  {id:'strict',name:'Gastrojejunal stricture',desc:'A narrow stoma, usually weeks after surgery: the pouch distends and empties slowly.',mods:{narrow:[{t:'roux',u:gj,len:1.2,r:.28}],connMod:[{i:1,delay:40,cap:.7}],r:[{t:'pouch',u0:0,u1:1,mul:1.4}]}},
+  {id:'ulcer',name:'Marginal ulcer',desc:'A niche on the jejunal side of the anastomosis.',mods:{ulcer:[{t:'roux',u:[5.0,-5.0,2.6],dir:[.6,-.4,.6]}]}},
+  {id:'ggf',name:'Gastro-gastric fistula',desc:'Contrast passes from the pouch into the excluded stomach, which should never fill. Look early in the run, in the frontal and left oblique views.',mods:{fist:[{a:['pouch',.55],b:['stom',.12]}]}},
+  {id:'jjo',name:'Obstruction at the jejunojejunostomy',desc:'The Roux limb dilates down to the jejunojejunostomy, with slow entry into the common channel. Reflux can distend the biliopancreatic limb and remnant, which then shows only on CT.',mods:{r:[{t:'roux',u0:.04,u1:.41,mul:1.5}],block:[{t:'roux',u:.42,delay:150}]}},
+  {id:'ih',name:'Internal hernia',desc:'Small bowel loops cluster in the left upper quadrant, above the transverse colon, with abnormal limb position and slow transit. Fluoroscopy can look nearly normal; CT is the test of choice.',mods:{tubes:{roux:{pts:ROUX_IH}},r:[{t:'roux',u0:.45,u1:1,mul:1.25}],slow:{roux:.45}}}]
+};}
+const POUCH_M=[[4.1,0.6,-1.4],[4.4,-2.6,0],[4,-5.8,1.4],[3,-8.6,2.4],[2.2,-10.2,2.8]];
+const J_MGB=[[3.6,-9.8,-1.8],[6,-11.4,0],[8.6,-13.6,1.4],[9.4,-16.6,2.2],[6.6,-18,3],[3.4,-16.4,4.6],[1.8,-13.4,6.4],[1.8,-11.2,4.4],[0,-12,3.6],[-1.6,-14.6,3],[0.6,-17.6,2.6],[3.8,-20,2.2],[7.6,-20.6,1.4],[10.4,-19.2,.8],[10.8,-22,0],[7.4,-23.4,.6],[3,-23.6,1.2]];
+const SLEEVE=[[4.4,1.8,-2.0],[5.2,-0.6,-0.6],[5.4,-3.6,0.8],[4.6,-6.6,2.2],[3.2,-8.6,3.0],[1.6,-9.4,3.4],[-0.3,-8.3,3.0],[-1.9,-6.6,2.2]];
+const SLR=[[0,1.3],[.1,1.5],[.3,1.25],[.55,1.15],[.7,1.5],[.8,1.9],[.9,1.6],[.97,.9],[1,.6]];
+const J_SASI=[[3.6,-9.8,-1.8],[6,-11.4,0],[8.6,-13.6,1.4],[9.4,-16.6,2.2],[6.6,-18,3],[3.6,-16.6,4.8],[2.2,-13.8,5.8],[1.8,-11.6,4.6],[0,-12.4,3.6],[-1.6,-14.6,3],[0.6,-17.6,2.6],[3.8,-20,2.2],[7.6,-20.6,1.4],[10.4,-19.2,.8],[10.8,-22,0],[7.4,-23.4,.6],[3,-23.6,1.2]];
+function opMGB(sleeve){const gj=sleeve?[1.8,-11.6,4.6]:[1.8,-11.2,4.4];return{id:sleeve?'mgbs':'mgb',code:sleeve?'I':'J',name:sleeve?'Mini gastric bypass with sleeve':'Mini (one-anastomosis) gastric bypass',group:'Bypass and reconstruction',variantOf:'rygb',
+ blurb:sleeve?'A sleeve gastrectomy plus a single loop anastomosis between the antrum and the small bowel. Food has two exits: the pylorus and the loop.':'A long, narrow pouch along the lesser curvature is joined to a loop of jejunum about 150 to 200 cm downstream. There is one anastomosis and no Roux limb.',
+ steps:[normalStep(),
+  {title:'Retract the liver',cap:'The left lobe of the liver is lifted.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-1,-1.4,7],to:[-1,1.2,7.2]}]},
+  sleeve?{title:'Sleeve the stomach',cap:'The greater curvature is stapled off along a bougie, leaving a narrow tube with the antrum and pylorus intact.',dur:2.4,tubes:{sleeve:{lib:'sleeve',pts:SLEEVE,r:SLR,role:'food',from:{alpha:1}},stom:{role:'spec',alpha:.35}},staples:[{t:'sleeve',u0:.02,u1:.7,dir:[1,0,.3]}],icons:[{k:'stapler',at:at(SLEEVE,.7),to:at(SLEEVE,.03)}]}
+    :{title:'Create the long pouch',cap:'A long, narrow pouch is stapled along the lesser curvature, starting below the crow\'s foot. The rest of the stomach is excluded.',dur:2.4,tubes:{pouch:{lib:'pouch',pts:POUCH_M,r:[[0,1.1],[.2,1.35],[.9,1.25],[1,1.0]],from:{clip:[0,.01],alpha:1},role:'food'},stom:{pts:sh(S0,[1.6,0,0]),role:'excl'}},staples:[{t:'pouch',u0:.05,u1:.98,dir:[1,-.2,0]}],icons:[{k:'stapler',at:[2.2,-11,3],to:[5,1.4,-1.6]}]},
+  ...(sleeve?[{title:'Remove the greater curvature',cap:'The stapled-off greater curvature is removed.',dur:1.2,tubes:{stom:{alpha:0,pts:sh(S0,[6,0,8])}}}]:[]),
+  {title:'Bring a jejunal loop up',cap:'A loop of small bowel, '+(sleeve?'well downstream':'150 to 200 cm beyond the ligament of Treitz')+', is brought up in front of the colon.',dur:2.4,tubes:{jej:{pts:sleeve?J_SASI:J_MGB,role:[[0,'bp'],[.52,'common']]}},icons:[{k:'grasper',at:[3,-18,3],to:[1.8,-11.6,5]}]},
+  {title:'Loop anastomosis',cap:'One side-to-side anastomosis joins the '+(sleeve?'antrum':'end of the pouch')+' to the loop.',dur:1.8,rings:[{t:'jej',u:gj,s:1.1}],icons:[{k:'stapler',at:[0,-11.6,4.6],to:[2.6,-11.4,4.4]}]},
+  {title:sleeve?'Completed mini gastric bypass with sleeve':'Completed mini gastric bypass',cap:sleeve?'Contrast flows down the sleeve and leaves by two routes: through the pylorus into the duodenum, and through the loop anastomosis into the efferent limb.':'Contrast runs down the long pouch and into the efferent limb. Some reflux into the long afferent (biliopancreatic) limb is common; bile reflux into the pouch is a known drawback.',dur:1.4,liver:0,fluoro:1,cam:CAM0,
+   labels:sleeve?[['sleeve',.4,'Sleeve'],['jej',.25,'Afferent limb'],['jej',.62,'Efferent limb'],['duod',.4,'Duodenum']]:[['pouch',.5,'Long pouch'],['stom',.45,'Excluded stomach'],['jej',.25,'Afferent limb'],['jej',.62,'Efferent limb']],
+   flow:sleeve?{src:['esoph',0],c:[['esoph',1,'sleeve',.06,'open'],['sleeve',1,'duod',0,'pyl'],['sleeve',[1.7,-9.8,3.6],'jej',gj,'stoma'],['duod',1,'jej',0,'open']]}
+     :{src:['esoph',0],c:[['esoph',1,'pouch',.04,'open'],['pouch',1,'jej',gj,'stoma'],['duod',1,'jej',0,'open'],['stom',1,'duod',0,'pyl']]}}],
+ comps:[
+  {id:'leak',name:'Anastomotic leak',early:1,desc:'Extraluminal contrast at the loop anastomosis.',mods:{leak:[{t:'jej',u:gj,dir:[-.4,-.4,.8],size:1,kind:'contained'}]}},
+  {id:'reflux',name:'Afferent limb reflux',desc:'Contrast runs freely up the afferent limb, the radiographic counterpart of the bile reflux that can follow this operation.',mods:{revCap:{jej:1}}}]
+};}
+
+/* ---------------- Fundoplication with hiatal hernia repair ---------------- */
+const E_HH=[[0.2,27,-3],[0,21,-4],[0.4,15,-4.6],[1,10,-4.4],[2.2,6.6,-3.2]];
+const S_HH=[[2.6,7.4,-2.8],[3.6,5.6,-2.8],[3.6,3.2,-2.4],[5.6,0.2,-1.2],[7.4,-2.6,0.4],[7,-5.8,2],[5,-8.6,3.1],[2,-9.6,3.5],[-0.3,-8.3,3.0],[-1.9,-6.6,2.2]];
+const SR_HH=[[0,1.3],[.06,2.3],[.14,2.0],[.22,2.4],[.32,3.1],[.55,2.9],[.75,2.2],[.9,1.6],[.97,.9],[1,.6]];
+const EF=[[0.2,27,-3],[0,21,-4],[0.4,15,-4.6],[1,9,-4.4],[1.9,4,-3.4],[2.6,1.2,-2.4],[3.4,-0.4,-1.4]];
+const SF=sh(S0,[0,-.8,0]);
+const ESOAX=V.norm(V.sub(at(EF,.93),at(EF,.99)));
+function wrapPts(c,sweep,ax){return ringPath(c,ax||ESOAX,1.55,Math.PI*.35,sweep,20);}
+const WRAP_C=V.add(at(EF,.965),[0,0,0]),SLIP_C=[5.3,-3.0,-.1];
+function opFundo(toupet){const sw=toupet?Math.PI*1.5:Math.PI*2*.97;return{id:toupet?'toupet':'fundo',name:toupet?'Toupet (partial) fundoplication':'Nissen fundoplication with hiatal hernia repair',group:'Non-bypass operations',variantOf:toupet?'fundo':null,
+ blurb:toupet?'A 270-degree posterior wrap. It controls reflux with less dysphagia than a full wrap; on fluoroscopy the narrowing is milder.':'The hernia is reduced, the crura are closed, and the fundus is wrapped 360 degrees around the distal esophagus.',
+ steps:[normalStep({fluoro:1,cam:{tg:[2,2,-1],d:46,az:-24,el:10}}),
+  {title:'The abnormal state: sliding hiatal hernia',cap:'The hiatus widens and the gastroesophageal junction and proximal stomach slide up into the chest. This is the anatomy the operation corrects.',dur:2.2,tubes:{esoph:{pts:E_HH},stom:{pts:S_HH,r:SR_HH}},hiatus:1.9,labels:[['stom',.07,'Herniated stomach'],['stom',.18,'Widened hiatus']],cam:{tg:[2,3,-1],d:40,az:-30,el:8},fluoro:1,flow:{src:['esoph',0],c:[['esoph',1,'stom',.02,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']]}},
+  {title:'Retract the liver',cap:'The left lobe of the liver is lifted to expose the hiatus.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-1,-1.4,7],to:[-1,1.2,7.2]}]},
+  {title:'Reduce the hernia',cap:'The stomach is pulled back into the abdomen and the hernia sac is dissected free, restoring 2 to 3 cm of intra-abdominal esophagus.',dur:2.2,tubes:{esoph:{pts:EF},stom:{pts:SF,r:SR}},icons:[{k:'grasper',at:[3.6,5.2,-1.6],to:[5.4,-1.2,0]},{k:'scissors',at:[2.8,2.4,-1.6],a:.6,b:1}]},
+  {title:'Close the crura',cap:'Sutures behind the esophagus narrow the hiatus.',dur:1.6,hiatus:.8,icons:[{k:'needle',at:[2.4,1.6,-3.6],orbit:.8}]},
+  {title:'Wrap the fundus',cap:toupet?'The fundus is passed behind the esophagus and fixed to each side, covering about 270 degrees and leaving the front open.':'The fundus is passed behind the esophagus and brought around in front of it: a full 360-degree wrap, 2 to 3 cm long.',dur:2.6,
+   tubes:{wrap:{lib:'stom',pts:wrapPts(WRAP_C,sw),r:.8,role:'wrap',from:{clip:[0,.02],alpha:1}}},icons:[{k:'grasper',at:at(wrapPts(WRAP_C,sw),.2),to:at(wrapPts(WRAP_C,sw),.95)}],cam:{tg:WRAP_C,d:22,az:-30,el:18}},
+  {title:'Suture the wrap',cap:'The wrap is sutured to itself'+(toupet?' and to the esophagus on each side':' in front of the esophagus')+'.',dur:1.6,icons:[{k:'needle',at:V.add(WRAP_C,[0,0,1.8]),orbit:.6}]},
+  {title:toupet?'Completed Toupet fundoplication':'Completed Nissen fundoplication',cap:'The distal esophagus narrows smoothly through the wrap, and the wrap indents the fundus as a smooth filling defect (the fundal pseudotumor). The gastroesophageal junction sits below the diaphragm.',dur:1.4,liver:0,fluoro:1,cam:{tg:[2,2,-1],d:46,az:-24,el:10},
+   labels:[['wrap',.5,toupet?'Partial wrap':'Wrap'],['esoph',.7,'Esophagus'],['stom',.45,'Stomach']],
+   flow:{src:['esoph',0],c:[['esoph',1,'stom',.12,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']]},wrapFx:{tight:toupet?.6:.48,defect:1}}],
+ comps:[
+  {id:'slip',name:'Slipped wrap',desc:'The wrap has slid down around the proximal stomach. A pouch of stomach sits above the narrowing (an hourglass), and the gastroesophageal junction is above the wrap.',mods:{tubes:{wrap:{pts:wrapPts(SLIP_C,sw,V.norm([.7,-.6,.4]))},slipP:{lib:'pouch',pts:[[3.4,-.4,-1.4],[4.4,-1.2,-1.0],[5.0,-2.2,-.5],[5.4,-3.3,0]],r:[[0,1.0],[.25,1.9],[.6,1.9],[.85,.5],[1,.5]],role:'food'}},flowc:[['esoph',1,'slipP',0,'open'],['slipP',1,'stom',.3,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']],wrapFx:{tight:1,defect:.5,center:SLIP_C}}},
+  {id:'hern',name:'Herniated (intrathoracic) wrap',desc:'The intact wrap has migrated above the diaphragm through a reopened hiatus.',mods:{tubes:{esoph:{pts:E_HH},stom:{pts:S_HH,r:SR_HH},wrap:{pts:wrapPts(V.add(at(E_HH,.97),[0,0,0]),sw)}},hiatus:1.9,flowc:[['esoph',1,'stom',.02,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']],wrapFx:{center:at(E_HH,.97)}}},
+  {id:'disr',name:'Disrupted wrap',desc:'The wrap has come undone: no narrowing, no fundal defect, a recurrent hernia and free reflux on supine views.',mods:{tubes:{wrap:{alpha:0},esoph:{pts:E_HH},stom:{pts:S_HH,r:SR_HH}},hiatus:1.9,flowc:[['esoph',1,'stom',.02,'open'],['stom',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']],wrapFx:{none:1},reflux:1}},
+  {id:'tight',name:'Wrap too tight',desc:'A long, tight narrowing through the wrap with a dilated esophagus above and a column of contrast that empties slowly. Upright timed images help.',mods:{wrapFx:{tight:.2},r:[{t:'esoph',u0:.55,u1:.9,mul:1.6}],hold:[{t:'esoph',u:.93,len:14,delay:40}]}},
+  {id:'leak',name:'Early leak or perforation',early:1,desc:'Contrast escapes near the gastroesophageal junction or wrap. Use water-soluble contrast first.',mods:{leak:[{t:'esoph',u:.98,dir:[.3,.4,-.8],size:.7,kind:'contained'}]}}]
+};}
+
+/* ---------------- Sleeve gastrectomy ---------------- */
+function opSleeve(){return{id:'sleeve',name:'Sleeve gastrectomy',group:'Non-bypass operations',
+ blurb:'About 80 percent of the stomach, along the greater curvature, is stapled off and removed, leaving a narrow tube. Pylorus and duodenum are untouched.',
+ steps:[normalStep({cap:'Start from the normal anatomy. Sleeve gastrectomy is done for obesity, so there is no abnormal anatomy to correct.'}),
+  {title:'Retract the liver',cap:'The left lobe of the liver is lifted.',dur:1.2,liver:1,icons:[{k:'retractor',at:[-1,-1.4,7],to:[-1,1.2,7.2]}],cam:{tg:[4,-3,0],d:46,az:-16,el:14}},
+  {title:'Free the greater curvature',cap:'The vessels along the greater curvature are divided with an energy device, from the antrum up to the angle of His.',dur:2,icons:[{k:'scissors',at:[8.6,-8.4,3.6],to:[9.2,3.6,-2]}]},
+  {title:'Place a bougie',cap:'A calibration tube (bougie) is passed through the mouth along the lesser curvature to set the width of the sleeve.',dur:1.6,tubes:{bougie:{lib:'stom',pts:extend(sub(E0,.4,1,6),...sub(SLEEVE,.04,.92,8)),r:.5,role:'bougie',from:{clip:[0,.02],alpha:1}}}},
+  {title:'Staple the sleeve',cap:'Firings of the stapler run from 4 to 6 cm above the pylorus up to the angle of His, alongside the bougie. The long staple line is the site of leaks, most often at its top.',dur:2.6,tubes:{sleeve:{lib:'sleeve',pts:SLEEVE,r:SLR,role:'food',from:{alpha:1}},stom:{role:'spec',alpha:.3}},staples:[{t:'sleeve',u0:.02,u1:.7,dir:[1,0,.3]}],icons:[{k:'stapler',at:at(SLEEVE,.7),to:at(SLEEVE,.03)}]},
+  {title:'Remove the specimen',cap:'The greater curvature is removed and the bougie withdrawn.',dur:1.5,tubes:{stom:{alpha:0,pts:sh(S0,[6,0,8])},bougie:{alpha:0}}},
+  {title:'Completed sleeve gastrectomy',cap:'A narrow tube runs from the gastroesophageal junction to a preserved antrum. Contrast should pass without delay, narrowing or leak; the antrum and duodenum fill normally.',dur:1.4,liver:0,fluoro:1,cam:CAM0,
+   labels:[['sleeve',.35,'Sleeve'],['sleeve',.82,'Antrum'],['duod',.4,'Duodenum']],
+   flow:{src:['esoph',0],c:[['esoph',1,'sleeve',.06,'open'],['sleeve',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']]}}],
+ comps:[
+  {id:'leak',name:'Leak at the angle of His',early:1,desc:'The classic sleeve leak, at the top of the staple line. Contrast collects in the left upper quadrant, near the spleen.',mods:{leak:[{t:'sleeve',u:.05,dir:[.9,.3,-.2],size:1,kind:'contained'}]}},
+  {id:'strict',name:'Stricture at the incisura',desc:'A short narrowing at the incisura angularis with a dilated sleeve above and delayed passage.',mods:{narrow:[{t:'sleeve',u:.58,len:1.6,r:.3}],r:[{t:'sleeve',u0:.08,u1:.52,mul:1.35}],hold:[{t:'sleeve',u:.56,len:10,delay:35}]}},
+  {id:'twist',name:'Twist (functional stenosis)',desc:'The sleeve rotates along its staple line, giving a spiral narrowing in the mid sleeve and slow passage. It is easy to miss in a single projection; rotate the patient.',mods:{tubes:{sleeve:{pts:[[4.4,1.8,-2.0],[5.2,-0.6,-0.6],[5.8,-3.4,1.4],[4.2,-5.4,0.6],[4.8,-6.8,2.8],[3.2,-8.6,3.0],[1.6,-9.4,3.4],[-0.3,-8.3,3.0],[-1.9,-6.6,2.2]]}},narrow:[{t:'sleeve',u:.44,len:3,r:.45}],hold:[{t:'sleeve',u:.4,len:8,delay:22}]}},
+  {id:'hh',name:'Reflux and intrathoracic migration',desc:'The top of the sleeve slides above the diaphragm and contrast refluxes up the esophagus on supine views.',mods:{tubes:{sleeve:{pts:[[2.8,5.2,-2.8],[3.8,2.6,-2.0],[5.2,-0.8,-0.4],[5.4,-3.6,0.8],[4.6,-6.6,2.2],[3.2,-8.6,3.0],[1.6,-9.4,3.4],[-0.3,-8.3,3.0],[-1.9,-6.6,2.2]]},esoph:{pts:E_HH}},hiatus:1.7,reflux:1,flowc:[['esoph',1,'sleeve',.02,'open'],['sleeve',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']]}}]
+};}
+
+/* ---------------- Esophagectomy with gastric pull-through ---------------- */
+const CONDUIT0=[[6.6,3.6,-2.8],[8.6,1,-1.4],[9.4,-2.4,0.4],[8.6,-6,2],[6,-9.4,3.2],[2.4,-10.4,3.6],[-0.3,-8.3,3.0],[-1.9,-6.6,2.2]];
+const CR=[[0,1.5],[.08,1.9],[.7,1.9],[.86,2.0],[.95,1.0],[1,.6]];
+const CONDUIT_IL=[[0.6,15.4,-4.2],[0.8,11,-4.5],[1.2,6.5,-4.2],[1.8,2.8,-3.2],[2.0,0.2,-2.0],[1.0,-2.6,-0.2],[-0.4,-4.4,1.2],[-1.6,-5.4,1.8]];
+const CONDUIT_MK=[[0.2,22.6,-3.6],[0.4,18,-4.4],[0.8,13,-4.6],[1.2,8,-4.4],[1.8,2.8,-3.2],[2,0.2,-2],[1,-2.6,-0.2],[-0.4,-4.4,1.2],[-1.6,-5.4,1.8]];
+const D_UP=[[-1.6,-5.4,1.8],[-3.2,-5.4,1.0],[-4.8,-6.4,-0.2],...D0.slice(3)];
+function opEsoph(mk){const cpts=mk?CONDUIT_MK:CONDUIT_IL,ecut=mk?.16:.43;return{id:mk?'mckeown':'esoph',name:mk?'McKeown esophagectomy (cervical anastomosis)':'Ivor Lewis esophagectomy with gastric pull-through',group:'Non-bypass operations',variantOf:mk?'esoph':null,
+ blurb:mk?'Three incisions: abdomen, right chest and neck. The anastomosis is in the neck, where a leak is easier to drain.':'The stomach is made into a tube (conduit), pulled up through the hiatus into the right chest, and joined to the remaining esophagus above the azygos vein.',
+ steps:[normalStep({cam:{tg:[1,4,-2],d:66,az:-34,el:8}}),
+  {title:'Indication: esophageal cancer',cap:'A tumor of the distal esophagus narrows the lumen with shouldered edges.',dur:1.5,tubes:{esoph:{r:[[0,.85],[.76,.85],[.8,.4],[.9,.4],[.93,.85],[1,.85]]}},masses:{m1:{at:[1.7,4.4,-3.5],r:1.35,c:'#B77DA0'}},labels:[['esoph',.85,'Tumor']],fluoro:1},
+  {title:'Mobilize the stomach',cap:'The stomach is freed, dividing the left gastric and short gastric vessels and keeping the right gastroepiploic arcade that will feed the conduit.',dur:2,liver:1,icons:[{k:'retractor',at:[-1,-1.4,7],to:[-1,1.2,7.2]},{k:'scissors',at:[4,-1,1],to:[1,-8,3.4],a:.3,b:1}],cam:{tg:[4,-3,0],d:48,az:-18,el:14}},
+  {title:'Create the gastric conduit',cap:'A stapler runs along the lesser curvature from the fundus toward the antrum, making a tube 4 to 5 cm wide along the greater curvature. Its long staple line is visible on radiographs.',dur:2.6,tubes:{conduit:{lib:'conduit',pts:CONDUIT0,r:CR,role:'food',from:{alpha:1}},stom:{role:'spec',alpha:.3}},staples:[{t:'conduit',u0:.02,u1:.78,dir:[-1,0,0]}],icons:[{k:'stapler',at:[5.6,3,-2.2],to:[1,-8.6,3.8]}]},
+  {title:'Pyloric drainage',cap:'A pyloromyotomy or pyloroplasty (or a botulinum injection) helps the denervated conduit empty.',dur:1.2,icons:[{k:'needle',at:[-1.9,-6.6,3.4],orbit:.5}]},
+  {title:'Resect the esophagus',cap:'Through the right chest, the esophagus is divided '+(mk?'high, for a neck anastomosis':'above the azygos vein')+'. The tumor and the lesser-curvature strip are removed.',dur:1.8,drop:['esoph'],tubes:{esoR:{lib:'esoph',pts:E0,clip:[0,ecut],from:{alpha:1},cap:[1,0]},specE:{lib:'esoph',pts:E0,r:[[0,.85],[.76,.85],[.8,.4],[.9,.4],[.93,.85],[1,.85]],clip:[ecut,1],role:'spec',from:{alpha:1}}},icons:[{k:'scissors',at:at(E0,ecut)}],cam:{tg:[1,6,-2],d:60,az:-50,el:8}},
+  {title:'Remove the specimen',cap:'The specimen comes out.',dur:1.3,masses:{m1:null},tubes:{specE:{alpha:0,pts:sh(E0,[-8,0,6])},stom:{alpha:0,pts:sh(S0,[6,0,8])}}},
+  {title:'Pull the conduit up',cap:'The conduit is drawn up through the hiatus into the posterior mediastinum, in the bed of the esophagus.',dur:2.6,tubes:{conduit:{pts:cpts},duod:{pts:D_UP}},icons:[{k:'grasper',at:[7,2,-1],to:V.add(cpts[0],[0,1,0])}]},
+  {title:'Anastomosis',cap:'The remaining esophagus is joined to the top of the conduit, '+(mk?'in the neck':'in the right chest')+'.',dur:1.8,rings:[{t:'conduit',u:.03,s:1.0}],icons:[{k:'stapler',at:V.add(cpts[0],[0,-3,0]),to:V.add(cpts[0],[0,.4,0])}],cam:{tg:cpts[0],d:30,az:-50,el:10}},
+  {title:mk?'Completed McKeown esophagectomy':'Completed Ivor Lewis esophagectomy',cap:'Contrast crosses the anastomosis into a conduit that runs straight down the posterior mediastinum, through the hiatus to a pylorus just below the diaphragm. The conduit holds air and empties largely by gravity, so view it upright.',dur:1.4,liver:0,fluoro:1,cam:{tg:[1,4,-2],d:66,az:-34,el:8},
+   labels:[['esoR',.6,'Esophagus'],['conduit',.3,'Gastric conduit'],['conduit',.9,'Pylorus'],['duod',.4,'Duodenum']],
+   flow:{src:['esoph',0],c:[['esoR','end','conduit',.03,'open'],['conduit',1,'duod',0,'pyl'],['duod',1,'jej',0,'open']]},field:'chest'}],
+ comps:[
+  {id:'leak',name:'Anastomotic leak',early:1,desc:'Contrast escapes at the anastomosis into the '+(mk?'neck':'mediastinum')+'. Water-soluble contrast first; if negative, many centers follow with barium, which shows small leaks better.',mods:{leak:[{t:'conduit',u:.03,dir:mk?[.6,-.3,.7]:[-.7,-.5,-.3],size:.9,kind:'track'}]}},
+  {id:'sl',name:'Conduit staple-line leak',early:1,desc:'A leak from the long lesser-curvature staple line of the conduit.',mods:{leak:[{t:'conduit',u:.35,dir:[-1,0,.2],size:.8,kind:'contained'}]}},
+  {id:'strict',name:'Anastomotic stricture',desc:'A short narrowing at the anastomosis, usually weeks to months later, with dysphagia and a dilated esophagus above.',mods:{narrow:[{t:'conduit',u:.02,len:1.4,r:.3}],r:[{t:'esoR',u0:.3,u1:1,mul:1.5}],hold:[{t:'esoR',u:.99,len:8,delay:26}]}},
+  {id:'dce',name:'Delayed conduit emptying',desc:'The conduit is dilated with an air-fluid level and contrast that passes the pylorus slowly. Pyloric dysfunction is the usual cause.',mods:{r:[{t:'conduit',u0:.1,u1:.85,mul:1.4}],connMod:[{i:1,delay:260,cap:.5}],empty:{conduit:5000}}}]
+};}
+
+const OPS=[opGJ(),opB2(false),opB2(true),opRYG(),opWhipple(false),opWhipple(true),opHJ(),opRYGB(),opMGB(false),opMGB(true),opFundo(false),opFundo(true),opSleeve(),opEsoph(false),opEsoph(true)];
+OPS.forEach(o=>{o.states=null;});
+const OPMAP=Object.fromEntries(OPS.map(o=>[o.id,o]));
+['conduit','sleeve','pouch','stomRem','cuff'].forEach(id=>{});
+/* ================= synthetic fluoroscopy engine ================= */
+const AGENTS={
+  iohexol:{name:'Iohexol (low-osmolar, nonionic iodinated)',short:'Iohexol',mu:.72,coat:.02,dil:110,iod:1},
+  diatrizoate:{name:'Diatrizoate (high-osmolar, ionic iodinated)',short:'Diatrizoate',mu:.82,coat:.02,dil:45,iod:1},
+  thinba:{name:'Thin barium suspension',short:'Thin barium',mu:1.3,coat:.16,dil:1e9,ba:1},
+  hdba:{name:'High-density barium',short:'High-density barium',mu:1.75,coat:.24,dil:1e9,ba:1}
+};
+const FIELDS={chest:{cx:.8,cy:10,fs:34,name:'Chest'},upper:{cx:1.5,cy:-3,fs:34,name:'Upper abdomen'},abd:{cx:1.5,cy:-9.5,fs:34,name:'Abdomen'}};
+const VIEWS={AP:0,LPO:45,RPO:-45,LAT:-90};
+const SIPS=[0,9,18,27,36];
+const FW=440,FH=440;
+
+function kindOf(ts){if(ts.role==='wrap'||ts.role==='bougie')return'solid';return(LIB[ts.lib]||{}).kind||'lumen';}
+function resolveU(ts,u){if(u==='end')return ts.clip[1];if(u==='start')return ts.clip[0];if(Array.isArray(u))return clamp(nearestU(ts.pts,u),ts.clip[0],ts.clip[1]);return clamp(u,ts.clip[0],ts.clip[1]);}
+
+/* ---------- build the simulation for one state + complication ---------- */
+function prepareSim(state,comp,o){
+  const mods=(comp&&comp.mods)||{},st=state.step||{};
+  const tubes={};
+  Object.entries(state.tubes).forEach(([id,ts])=>{if(ts.alpha<.05)return;tubes[id]=Object.assign({},ts);});
+  Object.entries(mods.tubes||{}).forEach(([id,p])=>{if(tubes[id])Object.assign(tubes[id],p);else if(p.lib)tubes[id]=Object.assign({clip:[0,1],alpha:1,role:'food',cap:[1,1]},p);});
+  Object.keys(tubes).forEach(id=>{if(tubes[id].alpha<.05||kindOf(tubes[id])==='solid'||kindOf(tubes[id])==='ctx')delete tubes[id];});
+  const wf=Object.assign({},st.wrapFx||{},mods.wrapFx||{});
+  const sim={tubes,nodes:[],byTube:{},leaks:[],ulcers:[],defects:[],metal:[],state,comp,o,mods,wf,chol:o.src==='chol'};
+  /* radius modifiers */
+  const rfun=(id,u,r0)=>{let r=r0;(mods.r||[]).forEach(m=>{if(m.t===id&&u>=m.u0&&u<=m.u1){const e=Math.min(1,(u-m.u0)/.04,(m.u1-u)/.04);r*=lerp(1,m.mul,clamp(e,0,1));}});return r;};
+  /* nodes */
+  Object.entries(tubes).forEach(([id,ts])=>{
+    const L=curveLen(ts.pts)*(ts.clip[1]-ts.clip[0]),n=Math.max(4,Math.ceil(L/.45)),lib=LIB[ts.lib]||{};
+    const arr=[];for(let i=0;i<n;i++){const u=ts.clip[0]+(ts.clip[1]-ts.clip[0])*i/(n-1);
+      arr.push({id,u,i,P:curveAt(ts.pts,u),R:rfun(id,u,radAt(ts.r,u)),T:1e9,C:0,D:0,dwell:0,k:sim.nodes.length+i});}
+    arr.forEach((nd,i)=>{const a=arr[Math.max(0,i-1)].P,b=arr[Math.min(n-1,i+1)].P;nd.tan=V.norm(V.sub(b,a));});
+    sim.byTube[id]={nodes:arr,res:!!lib.res,clear:!!lib.clear,transit:!!lib.transit,resid:lib.resid||.3,gas:lib.gas||0,speed:(lib.speed||3)*((mods.slow||{})[id]||1),ds:L/(n-1),len:L};
+    sim.nodes.push(...arr);});
+  /* narrowings (strictures, wraps) */
+  const narrow=(id,u,len,r)=>{const bt=sim.byTube[id];if(!bt)return;const ts=tubes[id],uu=resolveU(ts,u),du=len/curveLen(ts.pts);
+    bt.nodes.forEach(nd=>{const d=Math.abs(nd.u-uu)/du;if(d<1.6){const w=d<1?1:1-(d-1)/.6;nd.R=lerp(nd.R,Math.min(nd.R,r),clamp(w,0,1));}});};
+  (mods.narrow||[]).forEach(m=>narrow(m.t,m.u,m.len,m.r));
+  if(sim.byTube.esoph&&state.tubes.wrap&&!wf.none&&state.tubes.wrap.alpha>.05&&!(mods.tubes&&mods.tubes.wrap&&mods.tubes.wrap.alpha===0)){
+    if(wf.tight!==1){const r=.85*(wf.tight??.48);narrow('esoph',.975,wf.tight<.3?3.4:2.2,r);}
+    const c=wf.center||WRAP_C;if(wf.defect!==0)sim.defects.push({c:V.add(c,[1.3,-.9,.6]),r:1.75,k:(wf.defect??1)*.72});}
+  /* edges */
+  const adj=sim.nodes.map(()=>[]);const E=(a,b,t,c)=>{adj[a.k].push([b.k,t,c]);};
+  const revC=mods.revCap||{};
+  Object.entries(sim.byTube).forEach(([id,bt])=>{const ns=bt.nodes;
+    for(let i=0;i<ns.length-1;i++){const a=ns[i],b=ns[i+1];let tf=bt.ds/(bt.res?14:bt.speed),cf=1,tr,cr;
+      if(bt.res){tr=tf;cr=1;}else if(bt.clear){tr=mods.reflux?tf*3:1e9;cr=mods.reflux?.8:0;}
+      else{tr=tf*(revC[id]?2.2:4);cr=revC[id]?1:.45;}
+      (mods.block||[]).forEach(m=>{if(m.t===id){const uu=resolveU(tubes[id],m.u);if(a.u<=uu&&b.u>uu){if(m.delay){tf+=m.delay;tr+=m.delay;}else{tf=1e9;tr=1e9;}}}});
+      (mods.hold||[]).forEach(m=>{if(m.t===id){const uu=resolveU(tubes[id],m.u);if(a.u<=uu&&b.u>uu)tf+=m.delay*.6;}});
+      if(tf<1e8)E(a,b,tf,cf);if(tr<1e8&&cr>0)E(b,a,tr,cr);}});
+  (mods.hold||[]).forEach(m=>{const bt=sim.byTube[m.t];if(!bt)return;const uu=resolveU(tubes[m.t],m.u),L=curveLen(tubes[m.t].pts);
+    bt.nodes.forEach(nd=>{const d=(uu-nd.u)*L;if(d>=0&&d<m.len)nd.dwell=Math.max(nd.dwell,m.delay*(1-d/m.len));});});
+  const near=(id,u)=>{const bt=sim.byTube[id];if(!bt)return null;const uu=resolveU(tubes[id],u);let best=null,bd=9;bt.nodes.forEach(nd=>{const d=Math.abs(nd.u-uu);if(d<bd){bd=d;best=nd;}});return best;};
+  sim.near=near;
+  const flow=(mods.flowc?{src:(state.flow||{}).src,c:mods.flowc}:state.flow)||NORMAL_FLOW;
+  const TY={open:[.3,1,2.5,.45],stoma:[1.2,1,3,.35],pyl:[9,1,6,.12],pylx:[55,.3,8,.1],duct:[3,.3,.6,1]};
+  flow.c.forEach((c,ci)=>{const a=near(c[0],c[1]),b=near(c[2],c[3]);if(!a||!b)return;let [d,cap,dr,crv]=TY[c[4]]||TY.open;
+    (mods.connMod||[]).forEach(m=>{if(m.i===ci){d+=m.delay||0;cap=m.cap??cap;}});
+    if(c[4]==='open'&&sim.byTube[c[0]]&&sim.byTube[c[0]].clear){crv=mods.reflux?.8:0;dr=mods.reflux?40:1e9;}
+    E(a,b,d,cap);if(crv>0)E(b,a,dr,crv);});
+  (mods.fist||[]).forEach(f=>{const a=near(f.a[0],f.a[1]),b=near(f.b[0],f.b[1]);if(!a||!b)return;
+    const mid=V.add(V.lerp(a.P,b.P,.5),[0,.6,.4]),pts=[a.P,mid,b.P];const fid='fist';const L=V.dist(a.P,mid)+V.dist(mid,b.P),n=Math.max(4,Math.ceil(L/.45));
+    const arr=[];for(let i=0;i<n;i++){const u=i/(n-1);arr.push({id:fid,u,i,P:curveAt(pts,u),R:.32,T:1e9,C:0,D:0,dwell:0,k:sim.nodes.length+i});}
+    arr.forEach((nd,i)=>{nd.tan=V.norm(V.sub(arr[Math.min(n-1,i+1)].P,arr[Math.max(0,i-1)].P));adj.push([]);});
+    sim.byTube[fid]={nodes:arr,res:0,clear:0,gas:0,speed:1.5,ds:L/(n-1),len:L};sim.nodes.push(...arr);
+    for(let i=0;i<n-1;i++){adj[arr[i].k].push([arr[i+1].k,L/(n-1)/1.5,1]);adj[arr[i+1].k].push([arr[i].k,L/(n-1)/1.5,1]);}
+    adj[a.k].push([arr[0].k,2,1]);adj[arr[n-1].k].push([b.k,1,1]);});
+  /* source */
+  let src;if(sim.chol){src=near('rhd',.8)||near('bileUp',.05);const s2=near('lhd',.8);if(s2&&src)adj[src.k].push([s2.k,4,1]);}
+  else{const s=(flow.src||['esoph',0]);src=near(s[0],s[1])||near('esoR',0);}
+  sim.src=src;
+  /* Dijkstra (binary heap) */
+  if(src){src.T=0;src.C=1;const H=[[0,src.k]];const N=sim.nodes;
+    const push=x=>{H.push(x);let i=H.length-1;while(i>0){const p=(i-1)>>1;if(H[p][0]<=H[i][0])break;[H[p],H[i]]=[H[i],H[p]];i=p;}};
+    const pop=()=>{const top=H[0],last=H.pop();if(H.length){H[0]=last;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;if(l<H.length&&H[l][0]<H[m][0])m=l;if(r<H.length&&H[r][0]<H[m][0])m=r;if(m===i)break;[H[m],H[i]]=[H[i],H[m]];i=m;}}return top;};
+    while(H.length){const [t,k]=pop();const a=N[k];if(t>a.T)continue;
+      for(const [bk,dt,cap] of adj[k]){const b=N[bk],nt=t+dt+(a.dwell||0)*.3,nc=Math.min(a.C,cap);
+        if(nt<b.T-1e-6||(Math.abs(nt-b.T)<1e-6&&nc>b.C)){b.T=nt;b.C=nc;b.D=a.D+V.dist(a.P,b.P);if(nt<4000)push([nt,bk]);}}}}
+  /* reservoirs: dependent ordering */
+  sim.posture=o.posture||'upright';
+  Object.entries(sim.byTube).forEach(([id,bt])=>{if(!bt.res)return;const ns=bt.nodes;let t0=1e9,cm=0;ns.forEach(n=>{if(n.C>=.3)t0=Math.min(t0,n.T);cm=Math.max(cm,n.C);});bt.t0=t0;bt.cm=cm;
+    const key=sim.posture==='upright'?(n=>n.P[1]):(n=>n.P[2]);const ord=ns.slice().sort((a,b)=>key(a)-key(b));let tot=0;ord.forEach(n=>{tot+=n.R*n.R;});let c=0;
+    ord.forEach(n=>{n.q=(c+n.R*n.R*.5)/tot;c+=n.R*n.R;});bt.ord=ord;
+    const vol=Math.PI*tot*bt.ds;bt.fmax=clamp(200/vol,.3,.9);bt.tau=(mods.empty||{})[id]||(id==='conduit'?900:700);});
+  /* leaks, ulcers, defects */
+  (mods.leak||[]).forEach((L,li)=>{const nd=near(L.t,L.u);if(!nd)return;const R=rng(7+li*31),n=Math.round(30*(L.size||1)),pf=[];
+    const dir=V.norm(L.dir||[1,0,0]);let drainPath=null;if(L.kind==='track'){const dr=(state.drains||[])[L.drain??0];if(dr)drainPath=dr.slice().reverse();}
+    const side=V.norm(V.cross(dir,[0,1,.001])),up=V.cross(side,dir);let walk=V.add(nd.P,V.mul(dir,nd.R+.4));
+    for(let k=0;k<n;k++){const f=(k+1)/n;let p;
+      if(L.kind==='contained'){const ang=R()*6.283,rad=Math.pow(R(),.6)*1.9*(L.size||1)*(.5+.5*f);p=V.add(nd.P,V.add(V.mul(dir,nd.R+.4+2.6*f*(L.size||1)*(.5+R()*.7)),V.add(V.mul(side,Math.cos(ang)*rad),V.mul(up,Math.sin(ang)*rad*.6))));}
+      else if(drainPath){const q=curveAt([nd.P,...drainPath.slice(-2).reverse()],f*.9);p=V.add(q,[(R()-.5)*1.2,(R()-.5)*1.2,(R()-.5)*1.2]);}
+      else{walk=V.add(walk,V.add(V.mul(dir,.32*(L.size||1)),V.add(V.mul(side,(R()-.5)*.9),V.mul(up,(R()-.5)*.7))));p=V.add(walk,V.add(V.mul(side,(R()-.5)*2.2*f),V.mul(up,(R()-.5)*1.6*f)));}
+      pf.push({p,s:.4+R()*.55,tb:(L.kind==='contained'?.9:.6)*k,w:(L.kind==='contained'?.13:.24)*(.6+R()*.8)});}
+    sim.leaks.push({nd,pf,L});});
+  (mods.ulcer||[]).forEach(U=>{const nd=near(U.t,U.u);if(!nd)return;const d=V.norm(U.dir);const perp=V.norm(V.sub(d,V.mul(nd.tan,V.dot(d,nd.tan))));sim.ulcers.push({nd,p:V.add(nd.P,V.mul(perp,nd.R+.32)),r:.42});});
+  (mods.defect||[]).forEach(D=>{const nd=near(D.t,D.u);if(nd)sim.defects.push({c:nd.P,r:D.r,k:.8,coil:D.coil});});
+  /* metal: staples, clips, drains, catheter */
+  (state.staples||[]).forEach(s=>{const ts=tubes[s.t]||state.tubes[s.t];if(!ts)return;staplePts(ts,s).forEach(q=>sim.metal.push({p:q.p,d:q.d,k:'staple'}));});
+  (state.clips||[]).forEach(c=>sim.metal.push({p:c,d:[1,0,0],k:'clip'}));
+  sim.drains=(state.drains||[]).slice();
+  if(sim.chol)sim.drains.push([[-15.5,2.4,1],[-12,2.6,.6],[-9.6,2.5,.1],[-7.6,1.3,.4]]);
+  return sim;
+}
+/* staple positions along a tube surface or across an end */
+function staplePts(ts,s){const out=[];const L=curveLen(ts.pts);
+  if(s.end!==undefined){const u=s.end===0?ts.clip[0]:ts.clip[1],P=curveAt(ts.pts,u),T=V.norm(V.sub(curveAt(ts.pts,clamp(u+.01,0,1)),curveAt(ts.pts,clamp(u-.01,0,1))));
+    let d=V.norm(V.sub(s.dir||[0,1,0],V.mul(T,V.dot(s.dir||[0,1,0],T))));const r=radAt(ts.r,u)*.95,n=Math.max(4,Math.round(r*2/.42));
+    for(let i=0;i<n;i++){const f=-1+2*i/(n-1);out.push({p:V.add(P,V.mul(d,f*r)),d:T});}return out;}
+  const n=Math.max(4,Math.round(L*(s.u1-s.u0)/.42));
+  for(let i=0;i<n;i++){const u=s.u0+(s.u1-s.u0)*i/(n-1),P=curveAt(ts.pts,u),T=V.norm(V.sub(curveAt(ts.pts,clamp(u+.01,0,1)),curveAt(ts.pts,clamp(u-.01,0,1))));
+    const w=s.dir||[1,0,0],d=V.norm(V.sub(w,V.mul(T,V.dot(w,T))));out.push({p:V.add(P,V.mul(d,radAt(ts.r,u)*.97)),d:T});}
+  return out;}
+
+/* ---------- fill model ---------- */
+function nodeFill(sim,bt,nd,t,agent){
+  if(nd.T>=1e8)return 0;const A=AGENTS[agent];
+  if(sim.chol){return nd.C*smooth((t-nd.T)/2.5);}
+  if(bt.clear){let f=0;for(const s of SIPS){const tau=t-s-nd.T;if(tau<0)continue;const dw=1.5+nd.dwell;f=Math.max(f,tau<dw?1:A.coat+(1-A.coat)*Math.exp(-(tau-dw)/.7));}
+    if(sim.mods.reflux&&sim.posture==='supine'){const L=bt.len,fromEnd=(1-nd.i/(bt.nodes.length-1))*L;[58,84].forEach(e=>{const tau=t-e;if(tau>0&&tau<7&&fromEnd<11)f=Math.max(f,.85*Math.min(1,tau*2)*Math.exp(-tau/3));});}
+    return f*nd.C;}
+  if(bt.res)return 0;/* reservoirs handled by level */
+  if(bt.transit){const res=Math.max(bt.resid,((sim.mods.empty||{})[nd.id]?.85:0),nd.dwell>0?.7:0);let f=0;for(const s of SIPS){const tau=t-s-nd.T;if(tau<0)continue;const dw=2.4+nd.dwell;f=Math.max(f,tau<dw?1:res+(1-res)*Math.exp(-(tau-dw)/1.4));}
+    if(t-nd.T>SIPS[SIPS.length-1]+20)f*=Math.max(.35,Math.exp(-(t-nd.T-SIPS[SIPS.length-1]-20)/((sim.mods.empty||{})[nd.id]||200)));return f*nd.C;}
+  const dil=1/(1+nd.D/A.dil);return nd.C*smooth((t-nd.T)/2.2)*dil;
+}
+function resLevel(sim,bt,t){if(bt.t0>=1e8)return 0;let F=bt.fmax*smooth((t-bt.t0)/30)*Math.min(1,bt.cm/.6);F*=Math.max(.18,Math.exp(-Math.max(0,t-bt.t0-25)/bt.tau));return F;}
+function fillAt(sim,id,u,t,agent){const bt=sim.byTube[id];if(!bt)return 0;const ns=bt.nodes;let best=ns[0],bd=9;for(const n of ns){const d=Math.abs(n.u-u);if(d<bd){bd=d;best=n;}}
+  if(bt.res){const F=resLevel(sim,bt,t);return best.q<F?1:0;}return nodeFill(sim,bt,best,t,agent);}
+
+/* ---------- projection helpers ---------- */
+function mkProj(angleDeg,field){const a=angleDeg*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),F=FIELDS[field],sc=FW/F.fs,x0=F.cx-F.fs/2,y0=F.cy+F.fs/2;
+  return{a,ca,sa,sc,x0,y0,F,
+    p:(P)=>[(P[0]*ca+P[2]*sa-x0)*sc,(y0-P[1])*sc,-P[0]*sa+P[2]*ca],
+    dir:(T)=>[T[0]*ca+T[2]*sa,T[1]]};}
+
+/* ---------- background (body, bones, lungs, bowel gas) ---------- */
+const BASECACHE={};
+function ellChordFn(pr){return(e,X,Y)=>{const dx0=X*pr.ca-e[0],dz0=X*pr.sa-e[2],A2=e[3]*e[3],C2=e[5]*e[5],dy=(Y-e[1])/e[4];
+  const qa=pr.sa*pr.sa/A2+pr.ca*pr.ca/C2,qb=-dx0*pr.sa/A2+dz0*pr.ca/C2,qc=dx0*dx0/A2+dz0*dz0/C2+dy*dy-1,disc=qb*qb-qa*qc;return disc>0?2*Math.sqrt(disc)/qa:0;};}
+function bodyAxes(y){if(y>24)return[5.8,5.8];if(y>20){const t=(y-20)/4;return[lerp(15,5.8,smooth(t)),lerp(10.6,5.8,smooth(t))];}const t=smooth((y+4)/10);return[lerp(14.6,15,t),lerp(10.4,10.6,t)];}
+function computeBase(angle,field){const key=angle+'|'+field;if(BASECACHE[key])return BASECACHE[key];
+  const pr=mkProj(angle,field),W=FW,H=FH,A=new Float32Array(W*H),bone=new Float32Array(W*H),air=new Float32Array(W*H),ch=ellChordFn(pr);
+  for(let j=0;j<H;j++){const Y=pr.y0-j/pr.sc;const[ax,az]=bodyAxes(Y);
+    for(let i=0;i<W;i++){const X=pr.x0+i/pr.sc;const vx=-pr.sa,vz=pr.ca,ux=pr.ca,uz=pr.sa;
+      const qa=vx*vx/(ax*ax)+vz*vz/(az*az),qb=2*X*(ux*vx/(ax*ax)+uz*vz/(az*az)),qc=X*X*(ux*ux/(ax*ax)+uz*uz/(az*az))-1,d=qb*qb-4*qa*qc;
+      A[j*W+i]=d>0?.085*Math.sqrt(d)/qa:0;}}
+  const ells=(list,buf,fn)=>{list.forEach(e=>{const cX=e[0]*pr.ca+e[2]*pr.sa,R=Math.max(e[3],e[5]);const i0=Math.max(0,Math.floor((cX-R-pr.x0)*pr.sc)),i1=Math.min(W-1,Math.ceil((cX+R-pr.x0)*pr.sc));
+    const j0=Math.max(0,Math.floor((pr.y0-(e[1]+e[4]))*pr.sc)),j1=Math.min(H-1,Math.ceil((pr.y0-(e[1]-e[4]))*pr.sc));
+    for(let j=j0;j<=j1;j++){const Y=pr.y0-j/pr.sc;for(let i=i0;i<=i1;i++){const c=ch(e,pr.x0+i/pr.sc,Y);if(c>0)fn(j*W+i,c,e);}}});};
+  /* lungs minus heart */
+  const lungs=[[-7,14,-1,5.8,11,7.2],[7.4,12.6,-1.4,5.6,10.2,7]],heart=[[1.8,6.2,2.4,5.6,4.6,4.8]];
+  const lu=new Float32Array(W*H);ells(lungs,lu,(k,c)=>{lu[k]+=c;});ells(heart,lu,(k,c)=>{lu[k]=Math.max(0,lu[k]-c*.9);});
+  for(let k=0;k<W*H;k++)A[k]-=.075*lu[k];
+  /* vertebrae */
+  const vb=[];for(let y=-31;y<31;y+=3.55){const s=y<-6?1.12:y>14?.8:1;vb.push({y,s});}
+  vb.forEach(({y,s})=>{const o=[0,y,-6.9,2.4*s,1.38,1.95*s],inn=[0,y,-6.9,2.0*s,1.15,1.6*s];
+    ells([o],bone,(k,c)=>{bone[k]+=.38*c;});ells([inn],bone,(k,c)=>{bone[k]-=.26*c;});
+    ells([[1.75*s,y+.2,-8.8,.55,.62,.95],[-1.75*s,y+.2,-8.8,.55,.62,.95],[0,y-.5,-10.6,.42,.95,1.7]],bone,(k,c)=>{bone[k]+=.3*c;});
+    if(y<-9)ells([[3.8*s,y,-8.7,1.7,.42,.5],[-3.8*s,y,-8.7,1.7,.42,.5]],bone,(k,c)=>{bone[k]+=.5*c;});});
+  /* pelvis and clavicles */
+  ells([[10,-28,-3,5.2,4.4,1.3],[-10,-28,-3,5.2,4.4,1.3]],bone,(k,c)=>{bone[k]+=.42*c;});
+  /* ribs and clavicles as splatted tubes */
+  const tmp=new Float32Array(W*H);
+  const ribs=[];for(let k=1;k<=12;k++){const yk=24.6-(k-1)*2.35,Rx=[6,9,11.5,13,13.8,14.2,14.3,14.2,13.9,13.4,12.6,11.8][k-1],Rz=[6,7.6,8.8,9.6,10,10.2,10.3,10.3,10.2,10,9.8,9.4][k-1],pm=[1.7,2.3,2.45,2.5,2.5,2.45,2.4,2.25,2.1,1.9,1.5,1.25][k-1],drop=k<11?[3,5,6.5,7.5,8,8.4,8.6,8.6,8.2,7.6][k-1]:2;
+    [1,-1].forEach(sg=>{const pts=[];for(let q=0;q<=16;q++){const ph=.1+(pm-.1)*q/16;pts.push([sg*(1.4+(Rx-1.4)*Math.sin(Math.min(ph,1.75))*(ph>1.75?1-(ph-1.75)*.55:1)),yk+.7*Math.sin(Math.min(ph,1.2)*1.3)-drop*smooth((ph-.95)/(pm-.95)),-7.6+Rz*(1-Math.cos(ph))*.95]);}ribs.push(pts);});}
+  ribs.push([[1.6,25.4,4.6],[6,26.4,4],[11,27.2,2.2],[15,27.6,0]],[[-1.6,25.4,4.6],[-6,26.4,4],[-11,27.2,2.2],[-15,27.6,0]]);
+  ribs.forEach(pts=>{const d=dense(pts,3),nodes=d.map(P=>({P,R:.5,v:1}));splatTube(pr,nodes,tmp,bone,.62,true);});
+  blur(bone,2);blur(bone,1);
+  /* bowel gas: colon */
+  const gas=[[-10.4,-6,1,2.0,1.8,1.6],[-9.6,-13,-1,1.7,2.4,1.5],[-10.6,-19,-1.5,1.6,2.2,1.4],[11,-2.4,.6,1.9,1.9,1.6],[11.4,-10,-2.6,1.4,2.6,1.3],[11.4,-18,-3,1.4,2.2,1.3],[-4,-13.6,5.4,1.5,1.3,1.3],[3.4,-14,5.8,1.7,1.2,1.3],[7.2,-11.6,5,1.3,1.1,1.1],[-1,-24,-.5,1.3,1.3,1.2]];
+  ells(gas,air,(k,c)=>{air[k]+=c;});
+  for(let k=0;k<W*H;k++)A[k]+=.42*bone[k]-.1*air[k];
+  /* display window from statistics */
+  const s=Array.from(A).filter(v=>v>.05).sort((a,b)=>a-b);const lo=s[Math.floor(s.length*.01)]||0,hi=s[Math.floor(s.length*.995)]||3;
+  const out={A,lo:lo-.15,hi:hi+2.5,pr};BASECACHE[key]=out;return out;}
+
+/* splat a chain of nodes ({P,R,v}) as a tube: max-blend into tmp, then add into dst */
+function splatTube(pr,nodes,tmp,dst,gain,fore,levelY,above,folds){
+  const W=FW,H=FH;let bx0=W,bx1=-1,by0=H,by1=-1;const Q=nodes.map(n=>{const q=pr.p(n.P);return[q[0],q[1],n.R*pr.sc,n.v];});
+  for(let s=0;s<Q.length-1;s++){const a=Q[s],b=Q[s+1];if(a[3]<=0&&b[3]<=0)continue;
+    let kf=1;if(fore){const T=V.sub(nodes[s+1].P,nodes[s].P),L=V.len(T)||1,d=pr.dir(T);const rho=Math.hypot(d[0],d[1])/L;kf=Math.min(3,1/Math.max(rho,.33));}
+    const rm=Math.max(a[2],b[2]),x0=Math.max(0,Math.floor(Math.min(a[0],b[0])-rm-1)),x1=Math.min(W-1,Math.ceil(Math.max(a[0],b[0])+rm+1)),y0=Math.max(0,Math.floor(Math.min(a[1],b[1])-rm-1)),y1=Math.min(H-1,Math.ceil(Math.max(a[1],b[1])+rm+1));
+    if(x1<x0||y1<y0)continue;bx0=Math.min(bx0,x0);bx1=Math.max(bx1,x1);by0=Math.min(by0,y0);by1=Math.max(by1,y1);
+    const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy||1e-6;
+    for(let y=y0;y<=y1;y++){if(levelY!==undefined){const Yp=pr.y0-y/pr.sc;if(above?Yp<levelY:Yp>=levelY)continue;}
+      for(let x=x0;x<=x1;x++){let s2=((x-a[0])*dx+(y-a[1])*dy)/l2;s2=s2<0?0:s2>1?1:s2;const px=a[0]+dx*s2-x,py=a[1]+dy*s2-y,d2=px*px+py*py,r=a[2]+(b[2]-a[2])*s2;
+        if(d2<r*r){let v=a[3]+(b[3]-a[3])*s2;if(folds){const Dd=folds[s].D+(folds[s+1].D-folds[s].D)*s2,e=Math.sqrt(d2)/r;v*=1-.34*Math.pow(.5+.5*Math.cos(6.283*(Dd/.34+.35*Math.sin(Dd*1.9))),4)*Math.pow(e,1.4);}const c=2*Math.sqrt(r*r-d2)/pr.sc*kf*v;const k=y*W+x;if(c>tmp[k])tmp[k]=c;}}}}
+  if(bx1>=bx0)for(let y=by0;y<=by1;y++){const o=y*W;for(let x=bx0;x<=bx1;x++){const k=o+x;if(tmp[k]){dst[k]+=tmp[k]*gain;tmp[k]=0;}}}
+}
+function splatGauss(pr,P,sig,w,dst){const q=pr.p(P),r=sig*pr.sc*2.6,x0=Math.max(0,Math.floor(q[0]-r)),x1=Math.min(FW-1,Math.ceil(q[0]+r)),y0=Math.max(0,Math.floor(q[1]-r)),y1=Math.min(FH-1,Math.ceil(q[1]+r)),s2=2*(sig*pr.sc)**2;
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const d=(x-q[0])**2+(y-q[1])**2;dst[y*FW+x]+=w*Math.exp(-d/s2);}}
+
+/* ---------- render one frame ---------- */
+const FBUF={C:new Float32Array(FW*FH),Air:new Float32Array(FW*FH),M:new Float32Array(FW*FH),tmp:new Float32Array(FW*FH),img:null};
+let METALKEY='',NOISE=null;
+function renderFluoro(ctx,sim,t,v){
+  const base=computeBase(v.angle,v.field),pr=base.pr,A=AGENTS[v.agent],C=FBUF.C,Air=FBUF.Air,M=FBUF.M,tmp=FBUF.tmp;C.fill(0);Air.fill(0);
+  if(sim){
+    Object.entries(sim.byTube).forEach(([id,bt])=>{const ns=bt.nodes;
+      if(bt.res){const F=resLevel(sim,bt,t);const up=sim.posture==='upright',gq=1-bt.gas;
+        let lvl=-1e9;if(up&&F>0){let best=null;for(const n of bt.ord){if(n.q<=F)best=n;}lvl=best?best.P[1]+best.R*.3:-1e9;}
+        const nodesC=ns.map(n=>({P:n.P,R:n.R,v:F<=0?0:up?(n.q<F+.1?1:0):smooth((F-n.q)/.03)}));
+        const nodesA=ns.map(n=>({P:n.P,R:n.R*.95,v:n.q>Math.max(gq,up?0:F)?1:0}));
+        if(up){if(F>0)splatTube(pr,nodesC,tmp,C,1,true,lvl,false);splatTube(pr,nodesA,tmp,Air,.85,true,lvl,true);}
+        else{if(F>0)splatTube(pr,nodesC,tmp,C,1,true);splatTube(pr,nodesA,tmp,Air,.7,true);}
+        return;}
+      const nodes=ns.map(n=>{const f=nodeFill(sim,bt,n,t,v.agent);let R=n.R;
+        if(!bt.clear&&!sim.chol&&f>0){const pw=Math.max(0,Math.sin(6.283*(n.D/9-t/5)));R*=1-.25*Math.pow(pw,6);}
+        if(bt.clear&&f>.5)R*=1.08;return{P:n.P,R,v:f};});
+      const lib=LIB[(sim.tubes[id]||{}).lib]||{};
+      splatTube(pr,nodes,tmp,C,1,true,undefined,undefined,lib===LIB.jej||lib===LIB.duod?ns:null);
+      if(bt.gas){const na=ns.map((n,i)=>({P:n.P,R:n.R*.9,v:bt.gas*Math.max(0,1-nodes[i].v*1.4)}));splatTube(pr,na,tmp,Air,.8,true);}});
+    /* filling defects (wrap pseudotumor, intussusception) */
+    sim.defects.forEach(D=>{const q=pr.p(D.c),r=D.r*pr.sc;for(let y=Math.max(0,Math.floor(q[1]-r));y<=Math.min(FH-1,Math.ceil(q[1]+r));y++)for(let x=Math.max(0,Math.floor(q[0]-r));x<=Math.min(FW-1,Math.ceil(q[0]+r));x++){
+      const d=Math.hypot(x-q[0],y-q[1])/r;if(d<1){let m=D.k*smooth((1-d)/.35);if(D.coil)m*=.55+.45*Math.sin((y-q[1])/r*18);C[y*FW+x]*=1-m;Air[y*FW+x]*=1-m*.9;}}});
+    /* leaks */
+    sim.leaks.forEach(L=>{const t0=L.nd.T+1.2;if(L.nd.T>=1e8)return;const absorb=A.iod?Math.exp(-Math.max(0,t-t0-200)/400):1;
+      L.pf.forEach(f=>{const tau=t-t0-f.tb;if(tau<=0)return;const w=f.w*Math.min(1,tau/2.5)*absorb*Math.max(.6,L.nd.C);splatGauss(pr,f.p,f.s,w*2.4,C);});});
+    sim.ulcers.forEach(U=>{if(U.nd.T>=1e8||t<U.nd.T+1)return;splatGauss(pr,U.p,U.r,.75,C);});
+    /* metal */
+    const mk=v.angle+v.field+sim.key;if(mk!==METALKEY){METALKEY=mk;M.fill(0);
+      sim.metal.forEach(m=>{const a=V.add(m.p,V.mul(m.d,m.k==='clip'?.35:.2)),b=V.sub(m.p,V.mul(m.d,m.k==='clip'?.35:.2));splatTube(pr,[{P:a,R:m.k==='clip'?.1:.055,v:1},{P:b,R:m.k==='clip'?.1:.055,v:1}],tmp,M,1,false);});
+      (sim.drains||[]).forEach(dr=>{const d=dense(dr,6);splatTube(pr,d.map(P=>({P,R:.28,v:.35})),tmp,M,1,true);splatTube(pr,d.map(P=>({P,R:.06,v:1})),tmp,M,1,true);});}
+  }else{M.fill(0);METALKEY='';}
+  /* compose */
+  if(!FBUF.img)FBUF.img=ctx.createImageData(FW,FH);const D=FBUF.img.data,B=base.A,lo=base.lo,hi=base.hi,iw=1/(hi-lo),mu=A.mu;
+  if(!NOISE){NOISE=new Float32Array(FW*FH*2);const R=rng(99);for(let k=0;k<NOISE.length;k++){const u=R()||1e-6,w=R();NOISE[k]=Math.sqrt(-2*Math.log(u))*Math.cos(6.283*w);}}
+  const nOff=v.spot?0:((Math.floor(t*7.5)*7919)%(FW*FH)),nAmp=v.spot?.006:.03,cx=FW/2,cy=FH/2,rr=FW*.5;
+  for(let k=0,j=0;j<FH;j++)for(let i=0;i<FW;i++,k++){
+    const att=B[k]+mu*C[k]+2.4*M[k]-.2*Air[k];let g=1-Math.pow(clamp((att-lo)*iw,0,1),.85);
+    g+=NOISE[(k+nOff)%NOISE.length]*nAmp*(.5+g*.7);
+    const dd=Math.hypot(i-cx,j-cy)/rr;if(dd>.9)g*=clamp((1.0-dd)/.1,0,1);
+    g=clamp(g,0,1);if(v.white)g=1-g;if(dd>1)g=0;
+    const c=Math.round(g*255),o=k*4;D[o]=c;D[o+1]=c;D[o+2]=c;D[o+3]=255;}
+  ctx.putImageData(FBUF.img,0,0);
+  return pr;
+}
+
+function blur(buf,r){const W=FW,H=FH,t=new Float32Array(W*H);for(let y=0;y<H;y++){let acc=0;const o=y*W;for(let x=-r;x<=r;x++)acc+=buf[o+clamp(x,0,W-1)];for(let x=0;x<W;x++){t[o+x]=acc/(2*r+1);acc+=buf[o+Math.min(W-1,x+r+1)]-buf[o+Math.max(0,x-r)];}}
+  for(let x=0;x<W;x++){let acc=0;for(let y=-r;y<=r;y++)acc+=t[clamp(y,0,H-1)*W+x];for(let y=0;y<H;y++){buf[y*W+x]=acc/(2*r+1);acc+=t[Math.min(H-1,y+r+1)*W+x]-t[Math.max(0,y-r)*W+x];}}}
+/* ================= real-time 3D anatomy view (three.js) ================= */
+const G3={ok:false,tubes:{},rings:[],cam:{tg:[0,-5,0],d:62,az:-18,el:12},camFrom:null,camTo:null,camT:1,user:false,dirty:true};
+const TM=60,TK=14,TC=4,TR=TM+2*(TC+1);
+function hex3(c){return new THREE.Color(c);}
+function init3D(canvas,overlay){
+  if(typeof THREE==='undefined'){overlay.innerHTML='<div class="nogl">3D view needs WebGL and could not start here. The fluoroscopy view still works.</div>';return;}
+  let R;try{R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,preserveDrawingBuffer:true});}catch(e){overlay.innerHTML='<div class="nogl">3D view needs WebGL and could not start here. The fluoroscopy view still works.</div>';return;}
+  G3.ok=true;G3.R=R;G3.canvas=canvas;G3.ov=overlay;R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.setClearColor(0x0e141a,1);
+  const S=G3.scene=new THREE.Scene();G3.camera=new THREE.PerspectiveCamera(41,1,1,400);
+  S.add(new THREE.HemisphereLight(0xf4f1ea,0x2a3440,.95));const dl=new THREE.DirectionalLight(0xffffff,.75);dl.position.set(20,40,60);S.add(dl);const dl2=new THREE.DirectionalLight(0x9fc3ff,.35);dl2.position.set(-40,-10,-30);S.add(dl2);
+  const mat=(c,o,extra)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:0,transparent:o<1,opacity:o,depthWrite:o>=.6},extra||{}));
+  /* spine */
+  const sp=new THREE.Group();for(let y=-30;y<29;y+=3.55){const m=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.1,2.6,20),mat(0xe8e1cf,.55));m.scale.set(1,1,.85);m.position.set(0,y,-6.9);sp.add(m);
+    const pr=new THREE.Mesh(new THREE.BoxGeometry(.8,1.4,3.2),mat(0xe8e1cf,.45));pr.position.set(0,y-.4,-9.8);sp.add(pr);}S.add(sp);
+  /* liver, spleen */
+  G3.liver=new THREE.Mesh(new THREE.SphereGeometry(1,36,24),mat(0x9b5546,.24,{depthWrite:false}));G3.liver.scale.set(8.8,5.6,7.4);S.add(G3.liver);
+  G3.spleen=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),mat(0x7a4a68,.4,{depthWrite:false}));G3.spleen.scale.set(2.4,4.4,2.2);G3.spleen.position.set(10.2,.6,-4);S.add(G3.spleen);
+  /* diaphragm and hiatus */
+  const dg=new THREE.SphereGeometry(9.2,40,16,0,Math.PI*2,0,Math.PI*.4);
+  const dmL=new THREE.Mesh(dg,mat(0xc77c6c,.13,{side:THREE.DoubleSide,depthWrite:false}));dmL.position.set(6.4,-5.8,-1.6);S.add(dmL);
+  const dmR=new THREE.Mesh(dg,mat(0xc77c6c,.13,{side:THREE.DoubleSide,depthWrite:false}));dmR.position.set(-6,-4,-.6);S.add(dmR);G3.diaph=[dmL,dmR];
+  G3.hiatus=new THREE.Mesh(new THREE.TorusGeometry(1.4,.2,10,36),mat(0xb5675a,.75));G3.hiatus.position.set(2.5,1.7,-2.5);G3.hiatus.rotation.x=Math.PI/2+.25;S.add(G3.hiatus);
+  /* staples, drains, masses, extravasation */
+  G3.staples=new THREE.InstancedMesh(new THREE.BoxGeometry(.34,.08,.08),new THREE.MeshStandardMaterial({color:0xd6dde2,metalness:.85,roughness:.28}),900);G3.staples.count=0;S.add(G3.staples);
+  G3.drainG=new THREE.Group();S.add(G3.drainG);G3.massG=new THREE.Group();S.add(G3.massG);G3.leakG=new THREE.Group();S.add(G3.leakG);G3.ringG=new THREE.Group();S.add(G3.ringG);
+  G3.leakMat=mat(0xf2b33d,.55,{depthWrite:false,emissive:0x5a3a00});G3.puffGeo=new THREE.SphereGeometry(1,12,8);
+  G3.torGeo=new THREE.TorusGeometry(1,.075,8,40);G3.stGeo=new THREE.BoxGeometry(.06,.06,.42);G3.ringMat=new THREE.MeshStandardMaterial({color:0xf3efe6,roughness:.4});G3.stMat=new THREE.MeshStandardMaterial({color:0x2a2f35});G3.masses={};
+  /* orbit */
+  let drag=null,pinch=null;
+  canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,id:e.pointerId};canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener('pointermove',e=>{if(!drag||pinch)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;G3.cam.az-=dx*.45;G3.cam.el=clamp(G3.cam.el+dy*.35,-80,80);G3.user=true;G3.camT=1;G3.dirty=true;if(G3.onUser)G3.onUser();});
+  canvas.addEventListener('pointerup',()=>{drag=null;});canvas.addEventListener('pointercancel',()=>{drag=null;});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();G3.cam.d=clamp(G3.cam.d*Math.pow(1.0015,e.deltaY),14,140);G3.user=true;G3.camT=1;G3.dirty=true;},{passive:false});
+  canvas.addEventListener('touchstart',e=>{if(e.touches.length===2){pinch={d:Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY),d0:G3.cam.d};}},{passive:true});
+  canvas.addEventListener('touchmove',e=>{if(pinch&&e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);G3.cam.d=clamp(pinch.d0*pinch.d/d,14,140);G3.dirty=true;}},{passive:true});
+  canvas.addEventListener('touchend',()=>{pinch=null;});
+  canvas.addEventListener('dblclick',()=>{G3.user=false;if(G3.onReset)G3.onReset();});
+  /* icons */
+  G3.iconLayer=document.createElement('div');G3.iconLayer.className='icons3';overlay.appendChild(G3.iconLayer);
+  G3.labLayer=document.createElement('div');G3.labLayer.className='labs3';overlay.appendChild(G3.labLayer);
+}
+function setCam3(c,instant){if(!G3.ok)return;const to={tg:c.tg||[0,-5,0],d:c.d||60,az:c.az??-18,el:c.el??12};
+  if(instant){G3.cam=JSON.parse(JSON.stringify(to));G3.camT=1;}else{G3.camFrom=JSON.parse(JSON.stringify(G3.cam));G3.camTo=to;G3.camT=0;}G3.dirty=true;}
+function stepCam(dt){if(G3.camT<1&&G3.camTo){G3.camT=Math.min(1,G3.camT+dt/1.1);const e=ease(G3.camT),a=G3.camFrom,b=G3.camTo;
+  let daz=b.az-a.az;while(daz>180)daz-=360;while(daz<-180)daz+=360;G3.cam={tg:V.lerp(a.tg,b.tg,e),d:lerp(a.d,b.d,e),az:a.az+daz*e,el:lerp(a.el,b.el,e)};G3.dirty=true;}}
+function resize3D(){if(!G3.ok)return;const c=G3.canvas,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;if(c.width!==Math.round(w*G3.R.getPixelRatio())||c.height!==Math.round(h*G3.R.getPixelRatio())){G3.R.setSize(w,h,false);}G3.camera.aspect=w/h;G3.camera.updateProjectionMatrix();G3.dirty=true;}
+
+/* ---- tube meshes ---- */
+function makeTubeMesh(){const g=new THREE.BufferGeometry(),n=TR*TK;g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3));g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*3),3));
+  const idx=[];for(let r=0;r<TR-1;r++)for(let k=0;k<TK;k++){const a=r*TK+k,b=r*TK+(k+1)%TK,c=(r+1)*TK+k,d=(r+1)*TK+(k+1)%TK;idx.push(a,c,b,b,c,d);}g.setIndex(idx);
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:0,transparent:true,opacity:1}));G3.scene.add(m);return m;}
+function roleAt(role,u){if(!Array.isArray(role))return role;let r=role[0][1];for(const [uu,rr] of role)if(u>=uu)r=rr;return r;}
+function updateTube(m,id,ts,o){const {P,R,U}=tubeSamples(ts,TM),F=frames(P),pos=m.geometry.attributes.position.array,col=m.geometry.attributes.color.array;
+  const lib=LIB[ts.lib]||{},base=hex3(lib.color||'#ccc'),ctr=hex3('#f2b33d'),tmp=new THREE.Color();
+  const cap=ts.cap||[1,1];let ri=0;
+  const put=(c,T,N,B,r,cc)=>{for(let k=0;k<TK;k++){const a=k/TK*Math.PI*2,ca=Math.cos(a),sa=Math.sin(a);const o3=(ri*TK+k)*3;
+      pos[o3]=c[0]+(N[0]*ca+B[0]*sa)*r;pos[o3+1]=c[1]+(N[1]*ca+B[1]*sa)*r;pos[o3+2]=c[2]+(N[2]*ca+B[2]*sa)*r;col[o3]=cc.r;col[o3+1]=cc.g;col[o3+2]=cc.b;}ri++;};
+  const colorAt=(i)=>{const uo=ts.remap?ts.remap[0]+U[i]*(ts.remap[1]-ts.remap[0]):U[i];const role=roleAt(ts.role,uo);let c=base;
+    if(role==='spec')c=hex3(ROLEC.spec);else if(role==='wrap')c=hex3(ROLEC.wrap);else if(role==='bougie')c=hex3(ROLEC.bougie);else if(o.limbs&&ROLEC[role])c=hex3(ROLEC[role]);
+    tmp.copy(c);if(o.fill){const f=o.fill(id,uo);if(f>0)tmp.lerp(ctr,clamp(f,0,1)*.9);}return tmp.clone();};
+  const cs=P.map((_,i)=>colorAt(i));
+  /* start cap */
+  for(let j=0;j<=TC;j++){const th=j/TC*Math.PI/2,r=cap[0]?R[0]*Math.sin(th):R[0]*j/TC,off=cap[0]?-R[0]*Math.cos(th)*.9:0;put(V.add(P[0],V.mul(F.T[0],off)),F.T[0],F.N[0],F.B[0],Math.max(r,.001),cs[0]);}
+  for(let i=0;i<TM;i++)put(P[i],F.T[i],F.N[i],F.B[i],R[i],cs[i]);
+  const L=TM-1;for(let j=TC;j>=0;j--){const th=j/TC*Math.PI/2,r=cap[1]?R[L]*Math.sin(th):R[L]*j/TC,off=cap[1]?R[L]*Math.cos(th)*.9:0;put(V.add(P[L],V.mul(F.T[L],off)),F.T[L],F.N[L],F.B[L],Math.max(r,.001),cs[L]);}
+  m.geometry.attributes.position.needsUpdate=true;m.geometry.attributes.color.needsUpdate=true;m.geometry.computeVertexNormals();m.geometry.computeBoundingSphere();
+  const kind=(LIB[ts.lib]||{}).kind,op=ts.alpha*(kind==='ctx'?.32:1)*(o.ghost&&o.ghost.includes(id)?.35:1);m.material.opacity=op;m.material.transparent=op<.99;m.material.depthWrite=op>.6;m.visible=op>.01;
+  m.userData={P,R,U,ts};}
+
+/* ---- per-frame scene sync ---- */
+function sync3D(disp,o){if(!G3.ok)return;const seen=new Set();
+  Object.entries(disp.tubes).forEach(([id,ts])=>{seen.add(id);let m=G3.tubes[id];if(!m)m=G3.tubes[id]=makeTubeMesh();updateTube(m,id,ts,o);});
+  Object.keys(G3.tubes).forEach(id=>{if(!seen.has(id)){G3.scene.remove(G3.tubes[id]);G3.tubes[id].geometry.dispose();delete G3.tubes[id];}});
+  /* context organs */
+  const L=disp.liver;G3.liver.position.set(-5.2+1.2*L,1.2+4.2*L,.6+1.6*L);G3.liver.rotation.set(-.5*L,0,-.12*L);G3.liver.visible=o.ctx;G3.spleen.visible=o.ctx;
+  G3.diaph.forEach(d=>d.visible=o.ctx);G3.hiatus.scale.setScalar(disp.hiatus||1);
+  /* masses */
+  const mk=new Set();Object.entries(disp.masses).forEach(([k,m])=>{mk.add(k);let me=G3.masses[k];if(!me){const g=new THREE.IcosahedronGeometry(1,2),p=g.attributes.position;const R=rng(5);for(let i=0;i<p.count;i++){const f=1+(R()-.5)*.28;p.setXYZ(i,p.getX(i)*f,p.getY(i)*f,p.getZ(i)*f);}g.computeVertexNormals();
+    me=G3.masses[k]=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:m.c||0xb77da0,roughness:.8}));G3.massG.add(me);}me.position.set(...m.at);me.scale.setScalar(Math.max(.001,m.r));me.visible=m.r>.05;});
+  Object.keys(G3.masses).forEach(k=>{if(!mk.has(k)){G3.massG.remove(G3.masses[k]);delete G3.masses[k];}});
+  /* anastomotic rings */
+  G3.ringG.clear();(disp.rings||[]).forEach((rg,ri)=>{const m=G3.tubes[rg.t];if(!m)return;const ud=m.userData;let i=0;
+    if(Array.isArray(rg.u)){let bd=1e9;ud.P.forEach((p,k)=>{const d=V.dist(p,rg.u);if(d<bd){bd=d;i=k;}});}else{const u=dispU(ud.ts,rg.u);i=Math.round((u-ud.ts.clip[0])/((ud.ts.clip[1]-ud.ts.clip[0])||1)*(TM-1));}
+    i=clamp(i,0,TM-1);const P=ud.P[i],T=V.norm(V.sub(ud.P[Math.min(TM-1,i+1)],ud.P[Math.max(0,i-1)]));
+    let sc=ud.R[i]*1.12;const grow=rg.born===disp.idx?smooth((disp.ringT-.25)/.6):1;if(grow<=0)return;
+    const grp=new THREE.Group();grp.add(new THREE.Mesh(G3.torGeo,G3.ringMat));
+    const nSt=12;for(let k=0;k<nSt*grow;k++){const a=k/nSt*Math.PI*2;const st=new THREE.Mesh(G3.stGeo,G3.stMat);st.position.set(Math.cos(a),Math.sin(a),0);grp.add(st);}
+    grp.position.set(...P);grp.scale.setScalar(sc);const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),new THREE.Vector3(...T));grp.quaternion.copy(q);G3.ringG.add(grp);rg._p=P;});
+  /* staples */
+  let n=0;const M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),Sc=new THREE.Vector3(1,1,1);
+  (disp.staples||[]).forEach(s=>{const m=G3.tubes[s.t];if(!m)return;const ts=m.userData.ts;const ss=s.end!==undefined?s:Object.assign({},s,{u0:dispU(ts,s.u0),u1:dispU(ts,s.u1)});
+    const pts=staplePts(ts,ss);const frac=s.born===disp.idx?clamp((disp.ringT-.15)/.7,0,1):1;const k1=Math.round(pts.length*frac);
+    for(let k=0;k<k1&&n<900;k++){const q=pts[k];Q.setFromUnitVectors(new THREE.Vector3(1,0,0),new THREE.Vector3(...q.d));M4.compose(new THREE.Vector3(...q.p),Q,Sc);G3.staples.setMatrixAt(n++,M4);}});
+  G3.staples.count=n;G3.staples.instanceMatrix.needsUpdate=true;
+  /* drains */
+  const dk=JSON.stringify(disp.drains||[]);if(dk!==G3.drainKey){G3.drainKey=dk;G3.drainG.clear();(disp.drains||[]).concat(o.chol?[[[-15.5,2.4,1],[-12,2.6,.6],[-9.6,2.5,.1],[-7.6,1.3,.4]]]:[]).forEach(d=>{const c=new THREE.CatmullRomCurve3(d.map(p=>new THREE.Vector3(...p)));
+    G3.drainG.add(new THREE.Mesh(new THREE.TubeGeometry(c,40,.2,8,false),new THREE.MeshStandardMaterial({color:0xf1f1ee,roughness:.5})));});}
+  /* extravasation, ulcers, fistula */
+  G3.leakG.children.forEach(c=>{if(c.geometry!==G3.puffGeo)c.geometry.dispose();});G3.leakG.clear();if(o.sim&&o.showComp){const t=o.t;o.sim.leaks.forEach(L=>{if(L.nd.T>=1e8)return;L.pf.forEach(f=>{const tau=t-(L.nd.T+1.2)-f.tb;if(o.fill&&tau<=0)return;const me=new THREE.Mesh(G3.puffGeo,G3.leakMat);me.position.set(...f.p);me.scale.setScalar(f.s*.8);G3.leakG.add(me);});});
+    o.sim.ulcers.forEach(U=>{const me=new THREE.Mesh(G3.puffGeo,G3.leakMat);me.position.set(...U.p);me.scale.setScalar(U.r*1.1);G3.leakG.add(me);});
+    if(o.sim.byTube.fist){const ns=o.sim.byTube.fist.nodes;const c=new THREE.CatmullRomCurve3(ns.map(n=>new THREE.Vector3(...n.P)));G3.leakG.add(new THREE.Mesh(new THREE.TubeGeometry(c,16,.32,8,false),G3.leakMat));}}
+  G3.dirty=true;}
+function render3D(){if(!G3.ok)return;resize3D();const c=G3.cam,cam=G3.camera,a=c.az*Math.PI/180,e=c.el*Math.PI/180;
+  cam.position.set(c.tg[0]+c.d*Math.sin(a)*Math.cos(e),c.tg[1]+c.d*Math.sin(e),c.tg[2]+c.d*Math.cos(a)*Math.cos(e));cam.lookAt(c.tg[0],c.tg[1],c.tg[2]);
+  G3.R.render(G3.scene,cam);G3.dirty=false;}
+function proj3(P){const v=new THREE.Vector3(...P).project(G3.camera);const w=G3.canvas.clientWidth,h=G3.canvas.clientHeight;return[(v.x+1)/2*w,(1-v.y)/2*h,v.z<1];}
+/* labels */
+function labels3D(disp,show){if(!G3.ok)return;const L=G3.labLayer;if(!show||!disp.labels.length){L.innerHTML='';return;}
+  const html=[];disp.labels.forEach(([tid,u,txt])=>{const m=G3.tubes[tid];if(!m||!m.visible)return;const ts=m.userData.ts,uu=dispU(ts,u);const P=curveAt(ts.pts,uu);const q=proj3(P);if(!q[2])return;
+    html.push(`<span class="lab3" style="left:${q[0].toFixed(0)}px;top:${q[1].toFixed(0)}px">${txt}</span>`);});L.innerHTML=html.join('');}
+/* action icons */
+const ICONS={
+  scalpel:'<path d="M4 30 L22 12 L30 6 L26 16 L8 34 Z" fill="none"/><path d="M22 12 L26 16"/><path d="M8 34 L4 30"/>',
+  scissors:'<g class="bl1"><path d="M20 20 L36 6"/><circle cx="12" cy="30" r="5" fill="none"/><path d="M15 26 L20 20"/></g><g class="bl2"><path d="M20 20 L36 34"/><circle cx="12" cy="10" r="5" fill="none"/><path d="M15 14 L20 20"/></g>',
+  stapler:'<rect x="4" y="12" width="30" height="6" rx="2" fill="none"/><rect x="4" y="22" width="30" height="6" rx="2" fill="none"/><path d="M34 15 L38 15 L38 25 L34 25"/><path d="M9 18v4M14 18v4M19 18v4M24 18v4M29 18v4" class="stp"/>',
+  needle:'<path d="M8 28 A13 13 0 0 1 32 16" fill="none"/><path d="M32 16 L34 12"/><path d="M8 28 Q4 34 10 36 Q16 38 14 32" fill="none" class="thr"/>',
+  retractor:'<path d="M6 34 L6 14 Q6 6 14 6 L32 6" fill="none"/><path d="M32 6 L32 14" /><path d="M22 6 L22 12"/>',
+  grasper:'<path d="M4 36 L22 18"/><path d="M22 18 L34 10 M22 18 L32 22" class="jaw"/>'
+};
+const ICONTXT={scalpel:'Incise',scissors:'Cut',stapler:'Staple',needle:'Suture',retractor:'Retract',grasper:'Bring up'};
+function icons3D(disp,p){if(!G3.ok)return;const L=G3.iconLayer,st=disp.step||{};const ic=st.icons||[];if(p>=1||!ic.length){L.innerHTML='';return;}
+  const html=[];ic.forEach((c,ci)=>{const a=c.a??0,b=c.b??1;const lp=(p-a)/(b-a);if(lp<0||lp>1.05)return;let P;
+    const rp=(ref)=>{const rings=disp.rings||[];const rg=ref==='last'?rings[rings.length-1]:rings[ref];return rg&&rg._p;};
+    const A=Array.isArray(c.at)?c.at:rp(c.at.ring);if(!A)return;const B=c.to?(Array.isArray(c.to)?c.to:rp(c.to.ring)):A;P=V.lerp(A,B||A,ease(clamp(lp*1.1,0,1)));
+    const q=proj3(P);if(!q[2])return;let dx=0,dy=0;if(c.orbit){const ang=lp*Math.PI*4;dx=Math.cos(ang)*26*c.orbit;dy=Math.sin(ang)*26*c.orbit;}
+    const op=clamp(Math.min(lp*6,(1.05-lp)*6),0,1),ph=(lp*6)%1;
+    html.push(`<div class="ic3 k-${c.k}" style="left:${(q[0]+dx).toFixed(0)}px;top:${(q[1]+dy).toFixed(0)}px;opacity:${op.toFixed(2)};--ph:${ph.toFixed(2)}"><svg viewBox="0 0 40 40" width="50" height="50">${ICONS[c.k]||''}</svg><b>${ICONTXT[c.k]||''}</b></div>`);});
+  L.innerHTML=html.join('');}
+/* ================= viewer controller ================= */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const U={opId:'rygb',S:null,idx:0,from:0,tr:1,dur:1,playing:false,wait:0,mode:'both',agent:'iohexol',pod:'early',post:'upright',proj:'AP',field:'upper',flab:true,white:false,link:false,src:'oral',comp:'',t:37,cine:false,spot:false,
+  limbs:true,ctx:true,lab3:true,fill3:false,drill:null,sim:null,simKey:'',dirty3:true,dirtyF:true};
+const GROUPS=[['Core reconstructions',['gj','b2','ryg','whip','hj','rygb']],['Variants',['b2braun','ppw','mgb','mgbs','toupet','mckeown']],['Non-bypass operations',['fundo','sleeve','esoph']]];
+const DEF_FIELD=id=>(id==='esoph'||id==='mckeown')?'chest':(id==='gj'||id==='whip'||id==='ppw'||id==='b2'||id==='b2braun'||id==='hj')?'abd':'upper';
+const op=()=>OPMAP[U.opId],last=()=>U.S.length-1,cur=()=>U.S[U.idx];
+function segInit(id,key,cb){const el=$('#'+id);el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{U[key]=b.dataset.v;segSync(id,U[key]);if(cb)cb();U.dirtyF=true;U.dirty3=true;}));}
+function segSync(id,v){$('#'+id).querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));}
+
+function buildOpSelect(){const s=$('#op');s.innerHTML=GROUPS.map(([g,ids])=>`<optgroup label="${g}">${ids.map(id=>`<option value="${id}">${OPMAP[id].name}</option>`).join('')}</optgroup>`).join('');
+  s.addEventListener('change',()=>{loadOp(s.value);});}
+function loadOp(id,toStep){U.opId=id;const o=op();o.states=o.states||buildStates(o);U.S=o.states;U.idx=toStep??0;U.from=U.idx;U.tr=1;U.playing=false;U.comp='';
+  $('#op').value=id;$('#blurb').textContent=o.blurb;
+  const fin=U.S[last()].step;$('#srcrow').hidden=!fin.cholangio;if(!fin.cholangio)U.src='oral';segSync('src',U.src);
+  $('#jjbtn').hidden=!o.steps.some(s=>s.jjClose);
+  U.field=DEF_FIELD(id);segSync('field',U.field);
+  const cs=$('#comp');cs.innerHTML='<option value="">None: normal postoperative study</option>'+o.comps.map(c=>`<option value="${c.id}">${c.name}${c.early?' (early)':''}</option>`).join('');cs.value='';
+  $('#steps').innerHTML=o.steps.map((s,i)=>`<li><button data-i="${i}"><span>${i+1}</span>${s.title}</button></li>`).join('');
+  $$('#steps button').forEach(b=>b.addEventListener('click',()=>{U.playing=false;goStep(+b.dataset.i);}));
+  $('#dots').innerHTML=o.steps.map((s,i)=>`<button data-i="${i}" aria-label="Step ${i+1}: ${s.title.replace(/"/g,'')}"></button>`).join('');
+  $$('#dots button').forEach(b=>b.addEventListener('click',()=>{U.playing=false;goStep(+b.dataset.i);}));
+  applyCam(true);refreshPanels();U.dirty3=U.dirtyF=true;requestAnimationFrame(alignPanes);}
+function camFor(i){let c=CAM0;for(let k=0;k<=i;k++){if(op().steps[k].cam)c=op().steps[k].cam;}return c;}
+function applyCam(instant){if(U.link){linkCam(instant);return;}G3.user=false;setCam3(camFor(U.idx),instant);}
+function linkCam(instant){const a=VIEWS[U.proj],F=FIELDS[U.field];setCam3({tg:[F.cx,F.cy,0],d:74,az:-a,el:0},instant);}
+function goStep(i,instant){i=clamp(i,0,last());if(i===U.idx&&U.tr>=1){refreshPanels();return;}
+  U.from=U.tr<1?U.idx:U.idx;U.idx=i;U.tr=instant?1:0;U.dur=Math.abs(i-U.from)>1?1.1:(op().steps[i].dur||1.4);U.wait=0;
+  if(i!==last()&&U.comp){U.comp='';$('#comp').value='';}
+  applyCam(instant);refreshPanels();U.dirty3=U.dirtyF=true;}
+function refreshPanels(){const o=op(),st=o.steps[U.idx];
+  $('#cap').innerHTML=`<b>${U.idx+1}. ${st.title}.</b> ${st.cap}`;
+  $$('#steps button').forEach((b,i)=>b.classList.toggle('cur',i===U.idx));
+  $$('#dots button').forEach((b,i)=>{b.classList.toggle('cur',i===U.idx);b.classList.toggle('done',i<U.idx);});
+  $('#vtitle').textContent=U.drill&&U.drill!=='done'?'Unknown case':`${o.name} · ${st.title}`;
+  $('#prev').disabled=U.idx===0;$('#next').disabled=U.idx===last();$('#play').textContent=U.playing?'❚❚ Pause':(U.idx===last()?'↺ Replay operation':'▶ Play operation');
+  const fin=U.idx===last();$('#comp').disabled=false;
+  const c=o.comps.find(c=>c.id===U.comp);
+  $('#compdesc').innerHTML=c?`${c.early?'<span class="chip warn">Early complication</span> ':''}${c.desc}`:(fin?'Choose a complication to add it to the completed operation.':'Complications apply to the completed operation; choosing one jumps to the last step.');
+  advice();legend();
+  const hasF=!!st.fluoro;$('#flmsg').hidden=hasF;if(!hasF)$('#flmsg').innerHTML='<span>Imaging is available for the normal anatomy, the abnormal state and the completed operation.</span>';
+  $('#cinectl').style.opacity=hasF?1:.45;
+  /* barium not allowed through a biliary drain */
+  const chol=U.src==='chol';[...$('#agent').options].forEach(op=>{op.disabled=chol&&AGENTS[op.value].ba;});if(chol&&AGENTS[U.agent].ba){U.agent='iohexol';$('#agent').value='iohexol';}
+}
+function legend(){const L=$('#legend');if(!U.limbs||U.mode==='fluoro'){L.innerHTML=U.mode!=='3d'?'<span>Fluoroscopy: contrast is black by default, as on the monitor.</span>':'';return;}
+  const roles=new Set();if(!U.S)return;Object.values((U.S[U.idx]||{}).tubes||{}).forEach(ts=>{(Array.isArray(ts.role)?ts.role.map(r=>r[1]):[ts.role]).forEach(r=>roles.add(r));});
+  const items=['food','bp','common','excl','spec'].filter(r=>roles.has(r)).map(r=>`<span><i style="background:var(--${r})"></i>${ROLEN[r]}</span>`);
+  if(U.fill3&&U.mode!=='3d')items.push('<span><i style="background:#f2b33d"></i>Contrast (follows the cine)</span>');L.innerHTML=items.join('');}
+function advice(){const A=AGENTS[U.agent],early=U.pod==='early',o=op(),c=o.comps.find(c=>c.id===U.comp),out=[];
+  if(U.src==='chol'){out.push(['ok','Cholangiogram','Iodinated contrast is injected through the biliary drain, so the hepaticojejunostomy is tested directly. Barium is never used here.']);}
+  else if(early&&A.ba)out.push(['bad','Barium early after surgery','If there is a leak, barium stays in the mediastinum or peritoneum and can cause mediastinitis or peritonitis. Start with water-soluble contrast; barium can follow if that study is negative.']);
+  else if(early&&A.iod)out.push(['ok','Water-soluble first','Right for an early study. Water-soluble contrast is less dense and does not coat, so if no leak is seen and concern remains, follow with thin barium: in one series barium showed perforations in 4 of 18 negative water-soluble studies.']);
+  else if(!early&&A.iod)out.push(['warn','Later study','Water-soluble contrast works, but barium shows strictures, ulcers and mucosa better weeks after surgery.']);
+  else out.push(['ok','Barium for later studies','Dense and coating: the best agent for strictures, ulcers, wrap problems and emptying.']);
+  if(U.agent==='diatrizoate'&&U.src!=='chol')out.push(['warn','Aspiration risk',(o.id==='esoph'||o.id==='mckeown'?'After esophagectomy, aspiration is common. ':'')+'Diatrizoate is hyperosmolar: aspirated, it can cause pulmonary edema. Use iohexol when aspiration is likely. It also draws water into the bowel, so it fades distally.']);
+  if(c&&c.mods&&c.mods.leak&&A.iod)out.push(['warn','Small leaks','Compare this leak with thin barium: the same leak is fainter with water-soluble contrast.']);
+  if(c&&c.early&&!early)out.push(['warn','Timing','This is mainly an early complication.']);
+  $('#advice').innerHTML='<div class="grp">Contrast advisor</div>'+out.map(([k,h,t])=>`<p><span class="chip ${k}">${h}</span> ${t}</p>`).join('');}
+
+/* ---------------- fluoro drawing ---------------- */
+const cf=$('#cf'),cfx=cf.getContext('2d'),cfo=$('#cfo'),cfox=cfo.getContext('2d');
+function simFor(){const st=U.S[U.idx];if(!st.step.fluoro)return null;const comp=U.idx===last()?op().comps.find(c=>c.id===U.comp):null;
+  const key=[U.opId,U.idx,U.comp,U.post,U.src].join('|');if(key!==U.simKey){U.sim=prepareSim(st,comp,{posture:U.post,src:U.src});U.sim.key=key;U.simKey=key;}return U.sim;}
+function drawFluoro(){if(U.mode==='3d')return;const sim=simFor();const pr=renderFluoro(cfx,sim,U.t,{angle:VIEWS[U.proj],field:U.field,agent:U.agent,white:U.white,spot:U.spot});
+  cfox.clearRect(0,0,880,880);const s=2;cfox.font='600 22px "Instrument Sans",system-ui,sans-serif';cfox.textBaseline='middle';
+  const txt=(x,y,t,al,col)=>{cfox.textAlign=al||'left';cfox.lineWidth=5;cfox.strokeStyle='rgba(0,0,0,.85)';cfox.strokeText(t,x,y);cfox.fillStyle=col||'#fff';cfox.fillText(t,x,y);};
+  if(sim&&U.flab&&!U.drill){(U.S[U.idx].labels||[]).forEach(([tid,u,t])=>{const ts=sim.tubes[tid],bt=sim.byTube[tid];if(!ts||!bt)return;if(!bt.res&&!bt.gas&&!bt.nodes.some(n=>n.T<U.t))return;const q=pr.p(curveAt(ts.pts,resolveU(ts,u)));if(q[0]<20||q[0]>FW-20||q[1]<14||q[1]>FH-14)return;
+    cfox.fillStyle='#F2C14E';cfox.beginPath();cfox.arc(q[0]*s,q[1]*s,4,0,7);cfox.fill();txt(q[0]*s+10,q[1]*s-14,t,'left','#F2C14E');});}
+  if(U.mark){cfox.lineWidth=4;cfox.strokeStyle='#F2C14E';cfox.beginPath();cfox.arc(U.mark.x*s,U.mark.y*s,U.mark.r*s,0,7);cfox.stroke();cfox.fillStyle='#4FB6CC';cfox.beginPath();cfox.arc(U.mark.ux*s,U.mark.uy*s,7,0,7);cfox.fill();}
+  const side=U.proj==='LAT'?'A':'R';txt(34,440,side,'left','#fff');
+  const p=U.post==='upright'?'Upright':'Supine';txt(866,30,`${U.proj==='LAT'?'Lateral':U.proj} · ${p}`,'right');
+  txt(866,62,U.src==='chol'?'Cholangiogram':AGENTS[U.agent].short,'right','#cfd8de');
+  txt(866,850,fmtT(U.t)+(U.spot?' · spot':''),'right','#cfd8de');
+  const w=$('#warn');const early=U.pod==='early';w.hidden=!(early&&AGENTS[U.agent].ba&&sim&&U.src==='oral');if(!w.hidden)w.textContent='Barium early after surgery: a leak would leave barium outside the bowel.';
+  $('#tread').textContent=fmtT(U.t);$('#t').value=Math.min(120,U.t);U.dirtyF=false;}
+function fmtT(t){if(t>=120)return Math.round(t/60)+' min delayed';return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');}
+
+/* ---------------- 3D sync ---------------- */
+function compDisp(disp){const c=op().comps.find(c=>c.id===U.comp);if(!c||!c.mods.tubes)return disp;const d=Object.assign({},disp,{tubes:Object.assign({},disp.tubes)});
+  Object.entries(c.mods.tubes).forEach(([id,p])=>{if(d.tubes[id])d.tubes[id]=Object.assign({},d.tubes[id],p);else if(p.lib)d.tubes[id]=Object.assign({clip:[0,1],alpha:1,role:'food',cap:[1,1]},p);if(d.tubes[id]&&d.tubes[id].alpha<.01)delete d.tubes[id];});
+  if(c.mods.hiatus)d.hiatus=c.mods.hiatus;return d;}
+function draw3D(){if(U.mode==='fluoro'||!G3.ok)return;const A=U.S[U.from],B=U.S[U.idx];let disp=blendStates(A,B,U.tr);if(U.tr>=1&&U.idx===last()&&U.comp)disp=compDisp(disp);
+  const sim=(U.tr>=1&&B.step.fluoro&&U.fill3&&U.mode!=='3d')?simFor():null;const showComp=U.tr>=1&&U.idx===last()&&!!U.comp;const sim2=showComp?(sim||simFor()):null;
+  sync3D(disp,{limbs:U.limbs,ctx:U.ctx,chol:U.src==='chol'&&U.idx===last(),fill:sim?((id,u)=>fillAt(sim,id,u,U.t,U.agent)):null,sim:sim2,showComp,t:U.t});
+  render3D();labels3D(disp,U.lab3&&U.tr>=1&&!U.drill);icons3D(disp,U.tr);U.dirty3=false;}
+
+/* ---------------- loop ---------------- */
+let lastT=performance.now();
+function loop(now){const dt=Math.min(.1,(now-lastT)/1000);lastT=now;
+  if(U.tr<1){U.tr=Math.min(1,U.tr+dt/U.dur);U.dirty3=true;if(U.tr>=1){U.dirtyF=true;refreshPanels();}}
+  else if(U.playing){U.wait+=dt;if(U.wait>1.5){if(U.idx<last())goStep(U.idx+1);else{U.playing=false;refreshPanels();}}}
+  if(G3.camT<1){stepCam(dt);U.dirty3=true;}
+  if(U.cine){U.t+=dt;if(U.t>=120){U.t=120;U.cine=false;$('#cine').textContent='▶ Cine';}U.dirtyF=true;if(U.fill3)U.dirty3=true;}
+  if(U.dirty3||G3.dirty)draw3D();if(U.dirtyF)drawFluoro();
+  requestAnimationFrame(loop);}
+
+/* keep the viewer's lower edge level with the Steps panel in side-by-side mode */
+function alignPanes(){const ps=[$('#pane3'),$('#paneF')];ps.forEach(p=>{p.style.height='';p.style.aspectRatio='';p.style.maxHeight='';});
+  const sp=$('#stepspanel');if(window.innerWidth<=1100||!sp.offsetHeight)return;
+  const vis=ps.find(p=>!p.hidden);if(!vis)return;
+  const vb=$('.vbox').getBoundingClientRect(),target=sp.getBoundingClientRect().bottom-$('.side').getBoundingClientRect().top;
+  const pr=vis.getBoundingClientRect();const h=clamp(pr.height+(target-vb.height),320,pr.width*1.45);
+  ps.forEach(p=>{p.style.aspectRatio='auto';p.style.maxHeight='none';p.style.height=h.toFixed(1)+'px';});U.dirty3=true;}
+/* ---------------- wiring ---------------- */
+function setMode(m){U.mode=m;segSync('mode',m);$('#pane3').hidden=m==='fluoro';$('#paneF').hidden=m==='3d';$('#panes').classList.toggle('both',m==='both');$('#cinectl').hidden=m==='3d';legend();U.dirty3=U.dirtyF=true;requestAnimationFrame(alignPanes);}
+function initUI(){
+  buildOpSelect();
+  $('#agent').innerHTML=Object.entries(AGENTS).map(([k,a])=>`<option value="${k}">${a.name}</option>`).join('');$('#agent').value=U.agent;
+  $('#agent').addEventListener('change',e=>{U.agent=e.target.value;advice();U.dirtyF=U.dirty3=true;});
+  segInit('mode','mode',()=>setMode(U.mode));segInit('pod','pod',()=>{if(U.pod==='late'&&AGENTS[U.agent].iod){U.agent='thinba';$('#agent').value='thinba';}else if(U.pod==='early'&&AGENTS[U.agent].ba){U.agent='iohexol';$('#agent').value='iohexol';}advice();});
+  segInit('post','post');segInit('proj','proj',()=>{if(U.link)linkCam();});segInit('field','field',()=>{if(U.link)linkCam();});segInit('src','src',()=>{U.t=U.src==='chol'?30:37;refreshPanels();});
+  ['mode','pod','post','proj','field','src'].forEach(k=>segSync(k,U[k]));
+  $('#flab').addEventListener('change',e=>{U.flab=e.target.checked;U.dirtyF=true;});$('#white').addEventListener('change',e=>{U.white=e.target.checked;U.dirtyF=true;});
+  $('#link').addEventListener('change',e=>{U.link=e.target.checked;applyCam();});
+  [['limbs','limbs'],['ctx','ctx'],['lab3','lab3'],['fill3','fill3']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{U[k]=e.target.checked;legend();U.dirty3=true;}));
+  $('#comp').addEventListener('change',e=>{U.comp=e.target.value;const c=op().comps.find(c=>c.id===U.comp);
+    if(c&&c.chol){U.src='chol';segSync('src','chol');}
+    if(U.idx!==last())goStep(last());if(U.mode==='3d')setMode('both');U.t=c&&c.mods&&c.mods.leak?75:U.t;refreshPanels();U.dirtyF=U.dirty3=true;});
+  $('#prev').addEventListener('click',()=>{U.playing=false;goStep(U.idx-1);});$('#next').addEventListener('click',()=>{U.playing=false;goStep(U.idx+1);});
+  $('#play').addEventListener('click',()=>{if(U.playing){U.playing=false;refreshPanels();return;}if(U.idx===last())goStep(0,true);U.playing=true;U.wait=1.5;refreshPanels();});
+  $('#jjbtn').addEventListener('click',()=>{const i=op().steps.findIndex(s=>s.jjClose);U.playing=false;if(U.mode==='fluoro')setMode('both');U.limbs=true;$('#limbs').checked=true;goStep(i);});
+  $('#cine').addEventListener('click',()=>{if(U.cine){U.cine=false;$('#cine').textContent='▶ Cine';return;}if(U.t>=110)U.t=0;U.cine=true;$('#cine').textContent='❚❚ Pause';});
+  $('#t').addEventListener('input',e=>{U.t=+e.target.value;U.cine=false;$('#cine').textContent='▶ Cine';U.dirtyF=U.dirty3=true;});
+  $$('#cinectl [data-dt]').forEach(b=>b.addEventListener('click',()=>{U.cine=false;$('#cine').textContent='▶ Cine';U.t=+b.dataset.dt;U.dirtyF=U.dirty3=true;}));
+  $('#spot').addEventListener('click',()=>{U.spot=!U.spot;$('#spot').setAttribute('aria-pressed',String(U.spot));U.dirtyF=true;});
+  init3D($('#c3'),$('#ov3'));G3.onReset=()=>applyCam();
+  new ResizeObserver(()=>{U.dirty3=true;}).observe($('#pane3'));
+  {let ra=0;const ro=new ResizeObserver(()=>{cancelAnimationFrame(ra);ra=requestAnimationFrame(alignPanes);});ro.observe($('#stepspanel'));ro.observe($('.side'));window.addEventListener('resize',()=>{cancelAnimationFrame(ra);ra=requestAnimationFrame(alignPanes);});if(document.fonts)document.fonts.ready.then(alignPanes);}
+  setMode(window.innerWidth<640?'3d':'both');loadOp(U.opId);goStep(0,true);
+  requestAnimationFrame(loop);}
+/* ================= operations grid, drills, quiz, navigation ================= */
+const FILLS={gj:'Stomach, efferent limb; afferent limb by reflux',b2:'Gastric remnant, efferent limb; afferent limb and stump by reflux',b2braun:'As Billroth II, plus the Braun loop',ryg:'Esophagus straight into the Roux limb and its blind end',
+  whip:'Gastric remnant, efferent limb; afferent limb and bile ducts by reflux',ppw:'Stomach, pylorus, duodenal cuff, efferent limb',hj:'Normal route; Roux limb and ducts by reflux',rygb:'Pouch, Roux limb, blind end. Never the excluded stomach',
+  mgb:'Long pouch and efferent limb; afferent limb partly',mgbs:'Sleeve, then both the pylorus and the loop',fundo:'Esophagus narrowing through the wrap; fundal pseudotumor',toupet:'Milder narrowing through a partial wrap',sleeve:'Narrow tube to a normal antrum and duodenum',
+  esoph:'Esophagus, anastomosis, conduit to a pylorus below the diaphragm',mckeown:'As Ivor Lewis, with the anastomosis in the neck'};
+function buildOpsGrid(){const g=$('#ops');const order=GROUPS.flatMap(x=>x[1]);
+  g.innerHTML=order.map(id=>{const o=OPMAP[id];return`<div class="opc"><div class="th"><canvas width="440" height="440" data-th="${id}" aria-label="Synthetic fluoroscopy: ${o.name}"></canvas></div><div class="bd"><span class="k">${o.variantOf?'Variant':o.group==='Non-bypass operations'?'Non-bypass':'Core reconstruction'}</span><h3>${o.name}</h3><p>${o.blurb}</p><p class="hint"><b>Fills:</b> ${FILLS[id]}</p><button class="mini" data-open="${id}">Open in viewer</button></div></div>`;}).join('');
+  $$('#ops [data-open]').forEach(b=>b.addEventListener('click',()=>{endDrill();loadOp(b.dataset.open);goStep(last(),true);$('#viewer').scrollIntoView({behavior:'smooth'});}));
+  const queue=$$('#ops canvas');const next=()=>{const c=queue.shift();if(!c)return;const o=OPMAP[c.dataset.th];o.states=o.states||buildStates(o);const st=o.states[o.states.length-1];
+    const sim=prepareSim(st,null,{posture:'upright'});sim.key='th'+o.id;renderFluoro(c.getContext('2d'),sim,o.id==='esoph'||o.id==='mckeown'?6:42,{angle:0,field:DEF_FIELD(o.id),agent:'thinba',spot:true});METALKEY='';setTimeout(next,30);};
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();next();}},{rootMargin:'400px'});io.observe(g);}else next();}
+
+/* ---------------- drills ---------------- */
+const SCORE={n:0,ok:0};
+const MAINS=['gj','b2','ryg','whip','hj','rygb','fundo','sleeve','esoph','mgb'];
+const lcName=o=>/^(Roux|Billroth|Nissen|Ivor|McKeown|Toupet|Whipple)/.test(o.name)?o.name:o.name.charAt(0).toLowerCase()+o.name.slice(1);
+const art=o=>/^[AEIOU]/i.test(lcName(o))?'an':'a';
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function setupCase(id,comp,o){document.body.classList.add('drill');U.mark=null;loadOp(id);goStep(last(),true);U.comp=comp||'';$('#comp').value=U.comp;U.agent=o.agent||'thinba';$('#agent').value=U.agent;U.pod=AGENTS[U.agent].ba?'late':'early';segSync('pod',U.pod);
+  U.proj=o.proj||'AP';segSync('proj',U.proj);U.post='upright';segSync('post','upright');U.t=o.t||50;U.cine=false;setMode(o.mode||'fluoro');refreshPanels();U.simKey='';U.dirtyF=U.dirty3=true;}
+function task(html){const t=$('#task');t.hidden=false;t.innerHTML=html;$('#viewer').scrollIntoView({behavior:'smooth',block:'start'});}
+function scoreUp(ok){SCORE.n++;if(ok)SCORE.ok++;$('#score').textContent=`Drill score: ${SCORE.ok} of ${SCORE.n}`;}
+function endDrill(){U.drill=null;U.mark=null;document.body.classList.remove('drill');$('#task').hidden=true;U.dirtyF=U.dirty3=true;}
+function choiceTask(q,opts,correct,explain,after){task(`<p>${q}</p><div class="choices">${opts.map((o,i)=>`<button data-i="${i}">${o}</button>`).join('')}</div><div id="tfb"></div><div class="choices"><button class="mini" id="tnext">Next case</button><button class="mini" id="tend">End drill</button></div>`);
+  let done=false;$$('#task .choices button[data-i]').forEach(b=>b.addEventListener('click',()=>{if(done)return;done=true;const i=+b.dataset.i,ok=Array.isArray(correct)?correct.includes(i):i===correct;
+    b.classList.add(ok?'right':'wrong');$$('#task .choices button[data-i]').forEach(x=>{const j=+x.dataset.i;if(Array.isArray(correct)?correct.includes(j):j===correct)x.classList.add('right');});
+    $('#tfb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Correct.':'Not quite.'} ${explain}</div>`;scoreUp(ok);if(after)after();}));
+  $('#tnext').addEventListener('click',()=>runDrill(U.drill));$('#tend').addEventListener('click',endDrill);}
+function reveal(){U.drill='done';document.body.classList.remove('drill');setMode('both');refreshPanels();U.dirtyF=U.dirty3=true;}
+function runDrill(kind){U.drill=kind;
+  if(kind==='name'){const id=pick(MAINS);setupCase(id,'',{proj:pick(['AP','AP','LPO']),t:pick([30,45,60])});
+    const opts=shuffle([id,...shuffle(MAINS.filter(x=>x!==id)).slice(0,4)]);choiceTask('Normal postoperative study, thin barium. Which operation was done?',opts.map(x=>OPMAP[x].name),opts.indexOf(id),`This is ${art(OPMAP[id])} ${lcName(OPMAP[id])}. Fills: ${FILLS[id].charAt(0).toLowerCase()+FILLS[id].slice(1)}.`,reveal);}
+  else if(kind==='normal'){const id=pick(MAINS);const o=OPMAP[id];const comps=o.comps.filter(c=>!c.chol);const ab=Math.random()<.6&&comps.length;const c=ab?pick(comps):null;
+    const ag=c&&c.early?'iohexol':'thinba';setupCase(id,c?c.id:'',{t:c&&c.mods.leak?80:pick([40,60]),agent:ag});
+    choiceTask(`Postoperative study after ${art(o)} ${lcName(o)}, ${ag==='iohexol'?'early, with iohexol':'thin barium'}. Is it normal for this anatomy?`,['Normal for this anatomy','Abnormal'],ab?1:0,ab?`<b>${c.name}.</b> ${c.desc}`:'This is the expected appearance after this operation.',reveal);}
+  else if(kind==='leak'){const cands=[];MAINS.forEach(id=>OPMAP[id].comps.forEach(c=>{if(c.mods.leak&&!c.chol)cands.push([id,c]);}));const [id,c]=pick(cands);
+    setupCase(id,c.id,{t:90,agent:'iohexol',proj:'AP'});
+    task(`<p>Postoperative study after ${art(OPMAP[id])} ${lcName(OPMAP[id])}. Click on the fluoroscopy image where contrast is leaking.</p><div id="tfb"></div><div class="choices"><button class="mini" id="tnext">Next case</button><button class="mini" id="tend">End drill</button></div>`);
+    $('#tnext').addEventListener('click',()=>runDrill('leak'));$('#tend').addEventListener('click',endDrill);U.leakAns={c,id,done:false};}
+  else if(kind==='agent'){const sc=pick(SCEN);document.body.classList.remove('drill');task('');choiceTask(sc.q,Object.values(AGENTS).map(a=>a.short),sc.ok,sc.ex);}
+}
+const SCEN=[
+  {q:'Day 4 after an Ivor Lewis esophagectomy, new fever. He coughs on a test sip of water. Which agent first?',ok:[0],ex:'Iohexol. A leak is possible, so water-soluble first, and with aspiration risk a low-osmolar nonionic agent avoids pulmonary edema from aspirated diatrizoate.'},
+  {q:'Day 2 after a sleeve gastrectomy, tachycardia. She swallows a test sip well. Which agent first?',ok:[0,1],ex:'Water-soluble contrast: iohexol or diatrizoate. A leak must be excluded before any barium is given.'},
+  {q:'The same patient: the water-soluble study shows no leak, but the tachycardia persists. What next on the table?',ok:[2],ex:'Thin barium. It is denser and coats, and it showed perforations missed by water-soluble contrast in 4 of 18 patients in one series. CT remains an option.'},
+  {q:'Eight months after a gastric bypass, vomiting and food intolerance. You suspect a stricture or marginal ulcer.',ok:[2,3],ex:'Barium. Late after surgery the concern is anatomy and mucosa, not a leak, and barium shows both far better.'},
+  {q:'Two years after a Nissen fundoplication, recurrent heartburn and dysphagia.',ok:[2,3],ex:'Barium, upright and supine, to judge the wrap, the junction and reflux.'},
+  {q:'Day 6 after a total gastrectomy, drain output turns cloudy. Elderly patient with a weak swallow.',ok:[0],ex:'Iohexol: an early leak study in a patient at risk of aspiration.'}];
+function leakClick(e){if(U.drill!=='leak'||!U.leakAns||U.leakAns.done||!U.sim)return;const r=$('#cf').getBoundingClientRect(),sz=Math.min(r.width,r.height),ox=r.left+(r.width-sz)/2,oy=r.top+(r.height-sz)/2,x=(e.clientX-ox)/sz*FW,y=(e.clientY-oy)/sz*FH;
+  const pr=mkProj(VIEWS[U.proj],U.field);const L=U.sim.leaks[0];if(!L)return;let cx=0,cy=0;L.pf.forEach(f=>{const q=pr.p(f.p);cx+=q[0];cy+=q[1];});cx/=L.pf.length;cy/=L.pf.length;
+  const d=Math.hypot(x-cx,y-cy)/pr.sc,ok=d<3.5;U.leakAns.done=true;scoreUp(ok);
+  $('#tfb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Correct.':`Not quite: the leak is about ${d.toFixed(0)} cm from where you clicked.`} <b>${U.leakAns.c.name}.</b> ${U.leakAns.c.desc}</div>`;
+  U.mark={x:cx,y:cy,r:3.5*pr.sc,ux:x,uy:y};U.dirtyF=true;setTimeout(reveal,1400);}
+
+/* ---------------- quiz ---------------- */
+const QUIZ=[
+  {q:'Day 3 after an esophagectomy, suspected leak, and the patient coughs on water. Which first agent is best?',o:['High-density barium','Diatrizoate (Gastrografin)','Iohexol','No contrast; CT only'],a:2,e:'Water-soluble first because a leak is possible; low-osmolar nonionic because aspirated hyperosmolar diatrizoate can cause pulmonary edema.'},
+  {q:'A water-soluble study after surgery shows no leak, but clinical concern remains. What does the evidence support?',o:['Repeat the water-soluble study tomorrow','Follow with thin barium','Stop: water-soluble contrast is as sensitive as barium','Use high-density barium only if the patient is stable for surgery'],a:1,e:'Barium found perforations in 4 of 18 patients with a negative water-soluble study (Buecker 1997).'},
+  {q:'After a Roux-en-Y gastric bypass, which segment should never fill with oral contrast?',o:['The blind end of the Roux limb','The common channel','The excluded stomach','The proximal Roux limb'],a:2,e:'Contrast in the excluded stomach means a gastro-gastric fistula. The short blind end fills normally.'},
+  {q:'Where do sleeve gastrectomy leaks most often occur?',o:['At the pylorus','At the incisura','At the top of the staple line, near the angle of His','In the duodenum'],a:2,e:'The proximal staple line near the angle of His is the classic site.'},
+  {q:'A smooth, rounded filling defect in the fundus after a Nissen fundoplication is usually:',o:['A gastric tumor','The expected appearance of the wrap','A bezoar','A slipped wrap'],a:1,e:'The wrap indents the fundus: the fundal pseudotumor.'},
+  {q:'After fundoplication, a pouch of stomach lies above the narrowing, below the diaphragm, with the junction above the wrap. This is:',o:['A normal wrap','A slipped wrap','A disrupted wrap','A paraesophageal hernia'],a:1,e:'The wrap has slid down around the proximal stomach, creating an hourglass.'},
+  {q:'After a Billroth II, contrast refluxes into the afferent limb and drains promptly. This is:',o:['Afferent loop syndrome','Normal','A duodenal stump leak','A jejunogastric intussusception'],a:1,e:'Reflux into the afferent limb is normal; a dilated limb that retains contrast is not.'},
+  {q:'The most common problem after a Whipple seen on an upper GI study is:',o:['Gastrojejunal leak','Delayed gastric emptying','Pancreaticojejunal leak','Marginal ulcer'],a:1,e:'Delayed gastric emptying is the commonest, after either the classic or the pylorus-preserving operation.'},
+  {q:'Oral contrast reaches the bile ducts after a Roux-en-Y hepaticojejunostomy. What does it mean?',o:['A bile leak','A biliary-enteric fistula needing repair','An expected finding: reflux up the Roux limb','A stricture'],a:2,e:'Reflux and pneumobilia are expected. To test the anastomosis itself, inject through a biliary drain.'},
+  {q:'With diatrizoate, why does the distal small bowel look faint?',o:['It is absorbed by the jejunum','It is hyperosmolar and draws water into the bowel, diluting itself','It flocculates','The pylorus filters it'],a:1,e:'Hyperosmolar ionic contrast pulls fluid into the lumen and becomes less dense as it travels.'},
+  {q:'A gastric bypass patient has crampy pain. The upper GI study looks nearly normal. The best next test for internal hernia is:',o:['Repeat upper GI with barium','CT','Abdominal radiograph','Endoscopy'],a:1,e:'Fluoroscopy can be near normal with an internal hernia; CT shows the mesenteric swirl and clustered loops.'}];
+function buildQuiz(){$('#quiz').innerHTML=QUIZ.map((x,i)=>`<div class="q"><p><b>${i+1}.</b> ${x.q}</p><div class="opts">${x.o.map((o,j)=>`<button data-q="${i}" data-j="${j}">${o}</button>`).join('')}</div><div class="ex" hidden></div></div>`).join('');
+  $$('#quiz button').forEach(b=>b.addEventListener('click',()=>{const q=QUIZ[+b.dataset.q],box=b.closest('.q');if(box.dataset.done)return;box.dataset.done=1;
+    b.classList.add(+b.dataset.j===q.a?'right':'wrong');box.querySelectorAll('button')[q.a].classList.add('right');const ex=box.querySelector('.ex');ex.hidden=false;ex.textContent=q.e;}));}
+
+/* ---------------- section nav ---------------- */
+function initNav(){const links=$$('#secnav a'),hs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1)));
+  const upd=()=>{let c=0;hs.forEach((h,i)=>{if(h&&h.getBoundingClientRect().top<140)c=i;});links.forEach((a,i)=>a.classList.toggle('on',i===c));};
+  let tk=0;window.addEventListener('scroll',()=>{if(!tk){tk=1;requestAnimationFrame(()=>{tk=0;upd();});}},{passive:true});upd();}
+function initPages(){buildOpsGrid();buildQuiz();initNav();$$('#drills .drill').forEach(b=>b.addEventListener('click',()=>runDrill(b.dataset.d)));$('#cf').addEventListener('click',leakClick);}
+initUI();initPages();
+</script>
+</body>
+</html>

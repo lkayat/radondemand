@@ -21,6 +21,7 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 | mr-fingerprinting | MR Fingerprinting | https://claude.ai/artifact/DX2qjbJr9tVyB55663ebZD |
 | liver-mrf | Liver MR Fingerprinting (companion to mr-fingerprinting) | https://claude.ai/artifact/FgGZevgD9W3se7WPvGxfC1 |
 | doppler-console | Doppler ultrasound console trainer | https://claude.ai/artifact/23ZrmYKrejfPzaBssxpawy |
+| postsurgical-upper-gi | Postsurgical upper GI anatomy | https://claude.ai/artifact/JgNJ9XUR2LycuVDbNhB8xE |
 | mr-defecography | MR defecography for pelvic floor weakness | https://claude.ai/artifact/E7kUTeVnJvGz8vixKjKhNV |
 | mri-fistula-in-ano | MRI of fistula-in-ano: anatomy, classification and reporting | https://claude.ai/artifact/J1ScdgcjmVJjAsu4FZvjd8 |
 | prostate-mri-anatomy | Prostate anatomy on MRI: zones, measurements, BPH and treatment changes | https://claude.ai/artifact/14HDbdsaSSdSfHh4Mp1y9X |
@@ -39,4 +40,4 @@ Import the repo in Vercel (Framework Preset: Other). Project name: `radondemand`
 
 ## Adding a lesson
 1. Create `lessons/<new-slug>/index.html` (self-contained).
-2. Add an entry to `LESSONS` in `index.html` (title, fullTitle, url `lessons/<new-slug>/`, area, sub, organs, badge, added, desc, covers, glyph) and a thumbnail in `G`.
+2. Add an entry to `LESSONS` in `index.html` (title, fullTitle, url `lessons/<new-slug>/`, areas, sub, organs, badge, added, desc, covers, glyph) and a thumbnail in `G`.
