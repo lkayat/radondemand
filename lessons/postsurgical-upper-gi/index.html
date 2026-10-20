@@ -1100,10 +1100,19 @@ function refreshPanels(){const o=op(),st=o.steps[U.idx];
   /* barium not allowed through a biliary drain */
   const chol=U.src==='chol';[...$('#agent').options].forEach(op=>{op.disabled=chol&&AGENTS[op.value].ba;});if(chol&&AGENTS[U.agent].ba){U.agent='iohexol';$('#agent').value='iohexol';}
 }
-function legend(){const L=$('#legend');if(!U.limbs||U.mode==='fluoro'){L.innerHTML=U.mode!=='3d'?'<span>Fluoroscopy: contrast is black by default, as on the monitor.</span>':'';return;}
-  const roles=new Set();if(!U.S)return;Object.values((U.S[U.idx]||{}).tubes||{}).forEach(ts=>{(Array.isArray(ts.role)?ts.role.map(r=>r[1]):[ts.role]).forEach(r=>roles.add(r));});
+const FITW={};
+function legendHTML(i,S){if(!U.limbs||U.mode==='fluoro')return U.mode!=='3d'?'<span>Fluoroscopy: contrast is black by default, as on the monitor.</span>':'';
+  S=S||U.S;if(!S)return '';
+  const roles=new Set();Object.values((S[i]||{}).tubes||{}).forEach(ts=>{(Array.isArray(ts.role)?ts.role.map(r=>r[1]):[ts.role]).forEach(r=>roles.add(r));});
   const items=['food','bp','common','excl','spec'].filter(r=>roles.has(r)).map(r=>`<span><i style="background:var(--${r})"></i>${ROLEN[r]}</span>`);
-  if(U.fill3&&U.mode!=='3d')items.push('<span><i style="background:#f2b33d"></i>Contrast (follows the cine)</span>');L.innerHTML=items.join('');}
+  if(U.fill3&&U.mode!=='3d')items.push('<span><i style="background:#f2b33d"></i>Contrast (follows the cine)</span>');return items.join('');}
+/* Site fix: reserve the height of the tallest legend over every step of every operation, so the viewer does not change height between steps */
+function fitLegend(){const L=$('#legend'),w=L.getBoundingClientRect().width;if(!w)return;
+  const key=[U.mode,U.limbs,U.fill3,Math.round(w)].join('|');if(FITW.legend===key)return;
+  L.style.minHeight='';const pr=L.cloneNode(false);pr.removeAttribute('id');pr.style.cssText+=';position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;margin:0;min-height:0;width:'+w+'px';
+  L.parentNode.appendChild(pr);let m=0;for(const o of OPS){o.states=o.states||buildStates(o);for(let i=0;i<o.states.length;i++){pr.innerHTML=legendHTML(i,o.states);m=Math.max(m,pr.offsetHeight);}}
+  pr.remove();L.style.minHeight=Math.ceil(m)+'px';FITW.legend=key;}
+function legend(){const L=$('#legend');L.innerHTML=legendHTML(U.idx);fitLegend();}
 function advice(){const A=AGENTS[U.agent],early=U.pod==='early',o=op(),c=o.comps.find(c=>c.id===U.comp),out=[];
   if(U.src==='chol'){out.push(['ok','Cholangiogram','Iodinated contrast is injected through the biliary drain, so the hepaticojejunostomy is tested directly. Barium is never used here.']);}
   else if(early&&A.ba)out.push(['bad','Barium early after surgery','If there is a leak, barium stays in the mediastinum or peritoneum and can cause mediastinitis or peritonitis. Start with water-soluble contrast; barium can follow if that study is negative.']);
@@ -1153,7 +1162,17 @@ function loop(now){const dt=Math.min(.1,(now-lastT)/1000);lastT=now;
   requestAnimationFrame(loop);}
 
 /* keep the viewer's lower edge level with the Steps panel in side-by-side mode */
-function alignPanes(){const ps=[$('#pane3'),$('#paneF')];ps.forEach(p=>{p.style.height='';p.style.aspectRatio='';p.style.maxHeight='';});
+/* Site fix: reserve the height of the longest caption (and operation blurb) at the current width, so the boxes above the Steps
+   panel never change size while stepping, and the viewer aligned to that panel's bottom edge does not jump. */
+function fitBox(el,texts,html,force){if(!el)return;const w=el.getBoundingClientRect().width;if(!w)return;
+  if(!force&&FITW[el.id]&&Math.abs(FITW[el.id]-w)<.5)return;
+  el.style.minHeight='';const pr=el.cloneNode(false);pr.removeAttribute('id');pr.style.cssText+=';position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;margin:0;min-height:0;width:'+w+'px';
+  el.parentNode.appendChild(pr);let m=0;for(const t of texts){pr[html?'innerHTML':'textContent']=t;m=Math.max(m,pr.offsetHeight);}pr.remove();
+  el.style.minHeight=Math.ceil(m)+'px';FITW[el.id]=w;}
+function fitTexts(force){
+  fitBox($('#cap'),OPS.flatMap(o=>o.steps.map((st,i)=>`<b>${i+1}. ${st.title}.</b> ${st.cap}`)),true,force);
+  fitBox($('#blurb'),OPS.map(o=>o.blurb),false,force);}
+function alignPanes(){fitTexts();fitLegend();const ps=[$('#pane3'),$('#paneF')];ps.forEach(p=>{p.style.height='';p.style.aspectRatio='';p.style.maxHeight='';});
   const sp=$('#stepspanel');if(window.innerWidth<=1100||!sp.offsetHeight)return;
   const vis=ps.find(p=>!p.hidden);if(!vis)return;
   const vb=$('.vbox').getBoundingClientRect(),target=sp.getBoundingClientRect().bottom-$('.side').getBoundingClientRect().top;
@@ -1183,7 +1202,7 @@ function initUI(){
   $('#spot').addEventListener('click',()=>{U.spot=!U.spot;$('#spot').setAttribute('aria-pressed',String(U.spot));U.dirtyF=true;});
   init3D($('#c3'),$('#ov3'));G3.onReset=()=>applyCam();
   new ResizeObserver(()=>{U.dirty3=true;}).observe($('#pane3'));
-  {let ra=0;const ro=new ResizeObserver(()=>{cancelAnimationFrame(ra);ra=requestAnimationFrame(alignPanes);});ro.observe($('#stepspanel'));ro.observe($('.side'));window.addEventListener('resize',()=>{cancelAnimationFrame(ra);ra=requestAnimationFrame(alignPanes);});if(document.fonts)document.fonts.ready.then(alignPanes);}
+  {let ra=0;const ro=new ResizeObserver(()=>{cancelAnimationFrame(ra);ra=requestAnimationFrame(alignPanes);});ro.observe($('#stepspanel'));ro.observe($('.side'));window.addEventListener('resize',()=>{cancelAnimationFrame(ra);ra=requestAnimationFrame(alignPanes);});if(document.fonts)document.fonts.ready.then(()=>{fitTexts(true);FITW.legend='';legend();alignPanes();});}
   setMode(window.innerWidth<640?'3d':'both');loadOp(U.opId);goStep(0,true);
   requestAnimationFrame(loop);}
 /* ================= operations grid, drills, quiz, navigation ================= */
