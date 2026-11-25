@@ -21,6 +21,7 @@ No build step, no dependencies. Every page is a single self-contained HTML file
 | mr-fingerprinting | MR Fingerprinting | https://claude.ai/artifact/DX2qjbJr9tVyB55663ebZD |
 | liver-mrf | Liver MR Fingerprinting (companion to mr-fingerprinting) | https://claude.ai/artifact/FgGZevgD9W3se7WPvGxfC1 |
 | doppler-console | Doppler ultrasound console trainer | https://claude.ai/artifact/23ZrmYKrejfPzaBssxpawy |
+| peritoneal-retroperitoneal-spaces | Peritoneal, retroperitoneal and extraperitoneal spaces (real CT from TCIA C4KC-KiTS, CC BY 3.0, plus phantom) | https://claude.ai/artifact/MTyWPhvMG4ehvr6urs1Zjj |
 | postsurgical-upper-gi | Postsurgical upper GI anatomy | https://claude.ai/artifact/JgNJ9XUR2LycuVDbNhB8xE |
 | mr-defecography | MR defecography for pelvic floor weakness | https://claude.ai/artifact/E7kUTeVnJvGz8vixKjKhNV |
 | mri-fistula-in-ano | MRI of fistula-in-ano: anatomy, classification and reporting | https://claude.ai/artifact/J1ScdgcjmVJjAsu4FZvjd8 |
